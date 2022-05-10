@@ -1,6 +1,34 @@
 import mongoose from 'mongoose'
 
 
+var statsSchema = new mongoose.Schema({
+
+    elo: {
+        type: mongoose.SchemaTypes.Number,
+        default: 0
+    }, 
+    wins: {
+        type: mongoose.SchemaTypes.Number,
+        default: 0
+    }, 
+    losses: {
+        type: mongoose.SchemaTypes.Number,
+        default: 0
+    }, 
+    ship_destroyed:{ 
+        type :mongoose.SchemaTypes.Number,
+        default: 0
+    }, 
+    total_shots: {
+        type: mongoose.SchemaTypes.Number,
+        default: 0
+    },
+    hits: {
+       type: mongoose.SchemaTypes.Number,
+       default: 0
+    }
+})
+
 var userSchema = new mongoose.Schema({
 
     username: {
@@ -20,14 +48,7 @@ var userSchema = new mongoose.Schema({
         type: [mongoose.SchemaTypes.ObjectId]
     }, 
 
-    stats: {
-        elo: mongoose.SchemaTypes.Number = 0, 
-        wins: mongoose.SchemaTypes.Number = 0, 
-        losses: mongoose.SchemaTypes.Number = 0, 
-        ship_destroyed: mongoose.SchemaTypes.Number = 0, 
-        total_shots: mongoose.SchemaTypes.Number = 0,
-        hits: mongoose.SchemaTypes.Number = 0
-    },
+    stats: statsSchema,
 
     roles: {
         type: [mongoose.SchemaTypes.String],
