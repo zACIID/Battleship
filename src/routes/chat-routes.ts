@@ -4,14 +4,15 @@ const router = new express.Router();
 
 
 // Retrieving schema from model
-const chats = require('../models/chat');
+const chatSchema = require('../models/chat');
+const userSchema = require('../models/user');
+const matchSchema = require('../models/match');
 
-
-router.get('/', (req, res, next) => {
+router.get('/chats', (req, res, next) => {
 
 	// Check if user is logged
     if (!req.user_id) { return res.status(401).send('Not authenticated'); }
-    
+
 	const { ids } = req.query;
     if (!ids) {
       return res.status(400).send('Bad Request');
@@ -19,16 +20,13 @@ router.get('/', (req, res, next) => {
 
 	// Retrieve userId from the parameters of the request
 	const user = req.params.userId;
-	
+
 	// Find all the existing chat where an user is found inside the "users" list
-    chats.find({ users: user })
+    userSchema.findById(user)
     .lean()
     .exec()
     .then(found => {
-        if (found.length === 0) {
-            return res.status(404).send('Chats not found');
-        }
-        res.json(found);
+        res.json(found.chats);
     })
 	.catch(next);
 })
