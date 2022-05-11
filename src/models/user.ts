@@ -48,6 +48,10 @@ var userSchema = new mongoose.Schema({
         type: [mongoose.SchemaTypes.ObjectId]
     }, 
 
+    chats: {
+        type: [mongoose.SchemaTypes.ObjectId]
+    }, 
+
     stats: statsSchema,
 
     roles: {

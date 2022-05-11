@@ -1,31 +1,13 @@
 import mongoose from 'mongoose'
 
 
-var matchChatSchema = new mongoose.Schema({
-    content:  {
-        type: mongoose.SchemaTypes.String,
-        required: true 
-    },
-
-    timestamp: {
-        type: mongoose.SchemaTypes.Date,
-        required: true
-    },
-
-    username: {
-        type: mongoose.SchemaTypes.String,  
-        required: true
-    },
-})
-
-
 var matchSchema = new mongoose.Schema({
 
-    player1: mongoose.SchemaTypes.ObjectId,
+    player_1: mongoose.SchemaTypes.ObjectId,
 
-    player2: mongoose.SchemaTypes.ObjectId,
+    player_2: mongoose.SchemaTypes.ObjectId,
 
-    players_chat: [matchChatSchema],
+    players_chat: mongoose.SchemaTypes.ObjectId,
 
-    observers_chat: [matchChatSchema]
+    observers_chat: mongoose.SchemaTypes.ObjectId
 })
