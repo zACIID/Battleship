@@ -26,6 +26,8 @@ const io = require('socket.io');
 const URI = process.env.URI;
 
 console.log("demanding the sauce...");
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
 mongoose.connect(URI)
 .then(()=>{
     
@@ -46,11 +48,6 @@ mongoose.connect(URI)
       console.log(err);
     }
 );
-
-
-app.use('/match', require('./routes/match-routes'))
-app.use('/user/:userId/chats', require('./routes/chat-routes'))
-app.use('/user', require('./routes/user-routes'))
 
 
 // Creation of JWT middleware
