@@ -15,8 +15,9 @@ const DB_URI: string = process.env.URI;
 let io_server: io.Server = null;
 
 console.log("demanding the sauce...");
-
-mongoose.connect(DB_URI)
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
+mongoose.connect(URI)
 .then(()=>{
     console.log("Sauce received!");
     
@@ -35,11 +36,6 @@ mongoose.connect(DB_URI)
       console.log(err);
     }
 );
-
-
-app.use('/match', require('./routes/match-routes'))
-app.use('/user/:userId/chats', require('./routes/chat-routes'))
-app.use('/user', require('./routes/user-routes'))
 
 
 // Creation of JWT middleware
