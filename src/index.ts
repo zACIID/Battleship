@@ -1,12 +1,11 @@
+require('dotenv').config({path:'../.env'});
+const mongoose = require('mongoose');
+/*
 import fs from 'fs';
 import http from'http';                  // HTTP module
 import https from 'https';                // HTTPS module
-import colors from 'colors';
 
-colors.enabled = true;
 
-import mongoose from 'mongoose';
-import mongo from 'mongodb';
 
 
 
@@ -25,32 +24,81 @@ import cors from 'cors';                  // Enable CORS middleware
 import io from 'socket.io';               // Socket.io websocket library
 import { nextTick } from 'process';
 
-const user = {username: "admin", password: "sauceRealHard"} // this needs to be hidden
+*/
 
-const dbname = "BattleShips"
+const fs = require('fs');
+const http = require('http');                 
+const https = require('https'); 
 
-const uri = "mongodb+srv://" + user.username + ":" + user.password + "@cluster0.dzbb4.mongodb.net/" + dbname + "?retryWrites=true&w=majority"
+const express = require('express');
+const bodyparser = require('body-parser'); 
 
-const MongoClient = mongo.MongoClient
+var ios = undefined;
+var app = express();
 
-async function run(){
 
-    const client = new MongoClient(uri);
- 
-    try {
-        // Connect to the MongoDB cluster
-        console.log("demanding the sauce...")
+const passport = require('passport');           
+const passportHTTP = require('passport-http');  
 
-        await client.connect();
-        
-        console.log("sauce received!")
+const jsonwebtoken = require('jsonwebtoken');  
+const {jwt} = require('express-jwt');
 
-    } catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
+const cors = require('cors');                  
+const io = require('socket.io');  
+
+
+
+const URI = process.env.URI;
+
+console.log("demanding the sauce...");
+mongoose.connect(URI)
+.then(()=>{
+    
+    console.log("Sauce received!");
+    
+    let server = http.createServer(app);
+
+    ios = io(server);
+    ios.on('connection', function (client) {
+        console.log("Socket.io client connected");
+    });
+
+    server.listen(8080, () => console.log("HTTP Server started on port 8080"));
+})
+.catch(
+    (err) => {
+      console.log("Error Occurred during initialization" );
+      console.log(err);
     }
-}
+);
 
-run().catch(console.error);
+
+// Creation of JWT middleware
+//var auth = jwt( {secret: process.env.JWT_SECRET} );
+
+app.use( cors() );
+
+// Middleware that handle errors
+app.use( function(err,req,res,next) {
+
+    console.log("Request error: " + JSON.stringify(err) );
+    res.status( err.statusCode || 500 ).json( err );
+
+});
+
+
+
+
+// Middleware that will report any error 404 
+app.use( (req,res,next) => {
+    res.status(404).json({statusCode:404, error:true, errormessage: "Invalid endpoint"} );
+})
+
+app.get("/", (req, res) => {
+
+    res.status(200).json( { api_version: "1.0"} );
+
+});
+
+
 
