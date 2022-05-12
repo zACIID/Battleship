@@ -1,63 +1,29 @@
-/* TODO come li facciamo gli import?
-*   1. import {qualcosa} from "modulo"
-*   2. const modulo = require("modulo")
-*
-*   Perché usare il primo: (è quello che usa il prof credo) il punto principale
-*   è che così funziona il type hinting di typescript.
-*   Inoltre, in teoria, alcuni campi di tsconfig.json possono essere settati
-*   per generare moduli commonJs supportati da Node.
-*   Dunque, in teoria, quando il file typescript viene compilato, gli import vengono sostituiti da require.
-*   Per esempio, nel tutorial seguente (per creare un tsconfig.json adatto a Node)
-*   viene importato express usando questo stile:
-*   https://blog.logrocket.com/how-to-set-up-node-typescript-express/#generating-tsconfig-json
-*
-*   Perché usare il secondo: perché su node è standard usare const x = require("x")
-*   Quindi, se è vero che typescript compila automaticamente gli import {x} from "x",
-*   allora require diventa scomodo e basta
-*
-*   L'importante è comunque mettersi d'accordo sull'usare solo uno stile di import,
-*   perché metterne due insieme rompe tutto
-*
-*/
-
-import exp = require("constants");
-
-require('dotenv').config({path:'../.env'});
-const mongoose = require('mongoose');
-
-const fs = require('fs');
-const http = require('http');                 
-const https = require('https'); 
-
-import * as express from "express";
-const bodyparser = require('body-parser'); 
-
-let ios = undefined;
-const app = express();
-
-const passport = require('passport');           
-const passportHTTP = require('passport-http');  
-
-const jsonwebtoken = require('jsonwebtoken');  
-const jwt = require('express-jwt');
-
-const cors = require('cors');                  
-const io = require('socket.io');
+import * as dotenv from "dotenv";
+import * as http from "http";
+import express from "express";
+import {Express} from "express";
+import cors from "cors";
+import * as io from "socket.io";
+import * as mongoose from "mongoose";
 
 
+dotenv.config({path:'../.env'});
 
-const URI = process.env.URI;
+const app: Express = express();
+const DB_URI: string = process.env.URI;
+
+let io_server: io.Server = null;
 
 console.log("demanding the sauce...");
-connect(URI)
+
+mongoose.connect(DB_URI)
 .then(()=>{
-    
     console.log("Sauce received!");
     
-    let server = http.createServer(app);
+    const server: http.Server = http.createServer(app);
 
-    ios = io(server);
-    ios.on('connection', function (client) {
+    io_server = new io.Server(server);
+    io_server.on('connection', function (client) {
         console.log("Socket.io client connected");
     });
 
@@ -79,14 +45,14 @@ app.use('/user', require('./routes/user-routes'))
 // Creation of JWT middleware
 //var auth = jwt( {secret: process.env.JWT_SECRET} );
 
-app.use( cors() );
+app.use(cors());
 
-// Middleware that handle errors
-app.use( function(err, req, res, next) {
-
+// Middleware that handles errors
+app.use( function(err,
+                  req, res,
+                  next) {
     console.log("Request error: " + JSON.stringify(err) );
     res.status( err.statusCode || 500 ).json( err );
-
 });
 
 
@@ -96,9 +62,7 @@ app.use( (req,res,next) => {
 })
 
 app.get("/", (req, res) => {
-
     res.status(200).json( { api_version: "1.0"} );
-
 });
 
 
