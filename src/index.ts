@@ -1,3 +1,26 @@
+/* TODO come li facciamo gli import?
+*   1. import {qualcosa} from "modulo"
+*   2. const modulo = require("modulo")
+*
+*   Perché usare il primo: (è quello che usa il prof credo) il punto principale
+*   è che così funziona il type hinting di typescript.
+*   Inoltre, in teoria, alcuni campi di tsconfig.json possono essere settati
+*   per generare moduli commonJs supportati da Node.
+*   Dunque, in teoria, quando il file typescript viene compilato, gli import vengono sostituiti da require.
+*   Per esempio, nel tutorial seguente (per creare un tsconfig.json adatto a Node)
+*   viene importato express usando questo stile:
+*   https://blog.logrocket.com/how-to-set-up-node-typescript-express/#generating-tsconfig-json
+*
+*   Perché usare il secondo: perché su node è standard usare const x = require("x")
+*   Quindi, se è vero che typescript compila automaticamente gli import {x} from "x",
+*   allora require diventa scomodo e basta
+*
+*   L'importante è comunque mettersi d'accordo sull'usare solo uno stile di import,
+*   perché metterne due insieme rompe tutto
+*
+*/
+
+import exp = require("constants");
 
 require('dotenv').config({path:'../.env'});
 const mongoose = require('mongoose');
@@ -6,7 +29,7 @@ const fs = require('fs');
 const http = require('http');                 
 const https = require('https'); 
 
-const express = require('express');
+import * as express from "express";
 const bodyparser = require('body-parser'); 
 
 let ios = undefined;
@@ -19,14 +42,14 @@ const jsonwebtoken = require('jsonwebtoken');
 const jwt = require('express-jwt');
 
 const cors = require('cors');                  
-const io = require('socket.io');  
+const io = require('socket.io');
 
 
 
 const URI = process.env.URI;
 
 console.log("demanding the sauce...");
-mongoose.connect(URI)
+connect(URI)
 .then(()=>{
     
     console.log("Sauce received!");

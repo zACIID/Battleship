@@ -1,14 +1,11 @@
+import * as express from "express";
+import {Router} from "express";
+import {Chat} from "../models/chat" ;
 
 
-const router = new express.Router();
-
-
-// Retrieving schema from model
-const chats = require('../models/chat');
-
+const router: Router = Router()
 
 router.get('/', (req, res, next) => {
-
 	// Check if user is logged
     if (!req.user_id) { return res.status(401).send('Not authenticated'); }
     
@@ -21,7 +18,7 @@ router.get('/', (req, res, next) => {
 	const user = req.params.userId;
 	
 	// Find all the existing chat where an user is found inside the "users" list
-    chats.find({ users: user })
+    Chat.find({ users: user })
     .lean()
     .exec()
     .then(found => {
@@ -33,4 +30,4 @@ router.get('/', (req, res, next) => {
 	.catch(next);
 })
 
-module.exports = router
+export default router
