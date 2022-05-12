@@ -176,7 +176,7 @@ UserSchema.methods.addFriends = function( friend_ids: [Types.ObjectId] ) : void 
 
 UserSchema.methods.removeRole = function( role: UserRoles ) : void {
     this.roles.forEach(function(part, index) {
-        if (this[index] === role.valueOf())  this.splice(index, 1) 
+        if (part === role.valueOf())  this.splice(index, 1) 
     }, this.roles)
 }
 
