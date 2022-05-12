@@ -188,18 +188,8 @@ UserSchema.methods.isModerator = function() : boolean {
     return this.hasRole(UserRoles.Moderator)
 }
 
-<<<<<<< Updated upstream
-
 UserSchema.methods.isAdmin = function() : boolean {
     return this.hasRole(UserRoles.Admin)
-=======
-<<<<<<< Updated upstream
-UserSchema.methods.isAdmin = function() : boolean {
-=======
-userSchema.methods.isAdmin = function() : boolean {
->>>>>>> Stashed changes
-    return this.hasRole("admin")
->>>>>>> Stashed changes
 }
 
 UserSchema.methods.hasRole = function(role: UserRoles) : boolean {
