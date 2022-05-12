@@ -86,6 +86,14 @@ export interface IUser extends Document {
      removeFriends(friend_ids: [Types.ObjectId]): void;
 
      /**
+     * Removes the provided user id from this instance's friends list.
+     * If a user id is already in the friends list, nothing happens. TODO or an exception is thrown?
+     *
+     * @param friend_id collection of user ids to remove from the friends list
+     */
+      removeFriend(friend_id: Types.ObjectId): void;
+
+     /**
       * Adds the provided role to this instance.
       * If the user already has the role, it is not added a second time. TODO or an exception is thrown?
       *
@@ -117,6 +125,13 @@ export interface IUser extends Document {
      * Returns true if the user is an admin, false otherwise.
      */
     isAdmin(): boolean;
+
+    /**
+     * Returns true if the user is friend with key owner, false otherwise.
+     * 
+     * @param key friend's key to look for
+     */
+    isFriend(key: Types.ObjectId) : boolean;
 }
 
 export const UserSchema = new Schema<IUser>({
@@ -180,6 +195,18 @@ UserSchema.methods.removeRole = function( role: UserRoles ) : void {
     }, this.roles)
 }
 
+UserSchema.methods.removeFriend = function( friend_id: Types.ObjectId ) : void {
+    this.friends.forEach(function(part, index) {
+        if (part === friend_id)  this.splice(index, 1) 
+    }, this.friends)
+}
+
+UserSchema.methods.removeFriends = function( friend_ids: Types.ObjectId ) : void {
+    friend_ids.forEach(function(friend_id) {
+        this.removeFriend(friend_id)
+    }, this)
+}   
+
 UserSchema.methods.setRole = function( role: UserRoles ) : void {
     this.roles.push(role.valueOf())
 }
@@ -192,8 +219,8 @@ UserSchema.methods.isAdmin = function() : boolean {
     return this.hasRole(UserRoles.Admin)
 }
 
-UserSchema.methods.hasRole = function(role: UserRoles) : boolean {
-    let value: boolean = false;
+UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
+    let value: boolean = false
     this.roles.forEach(element => {
         if (element === role.valueOf()) {
             value = true;
@@ -203,6 +230,17 @@ UserSchema.methods.hasRole = function(role: UserRoles) : boolean {
     return value;
 }
 
+UserSchema.methods.isFriend = function( key: Types.ObjectId ) : boolean {
+    let value : boolean = false
+    this.roles.forEach(element => {
+        if (element === key) {
+            value = true;
+        }
+    });
+
+    return value;
+
+}
 
 
 export const User: Model<IUser> = mongoose.model("User", UserSchema, "users")
