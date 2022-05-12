@@ -1,8 +1,14 @@
 import * as mongoose from "mongoose";
-import {Document, Model, Schema, SchemaTypes} from "mongoose";
+import {Document, Model, Schema, Types, SchemaTypes} from "mongoose";
 
 
-const messageSchema = new Schema({
+export interface IMessage extends Document {
+    content: string,
+    timestamp: Date,
+    author: Types.ObjectId
+}
+
+export const MessageSchema = new Schema<IMessage>({
     content:  {
         type: SchemaTypes.String,
         required: true
@@ -20,16 +26,22 @@ const messageSchema = new Schema({
 })
 
 
-// TODO come si fa a ricercare che una chat corrisponde a due soli utenti?
-//  bisogna controllare che nella lista di user ci siano esattamente due utenti e che siano esattamente quei due?
-const chatSchema = new Schema({
+export interface IChat extends Document {
+    users: [Types.ObjectId],
+    messages: [IMessage]
+}
+
+export const ChatSchema = new Schema<IChat>({
 
     users: {
         type: [SchemaTypes.ObjectId],
         required: true
     },
 
-    messages: [messageSchema]
+    messages: {
+        type: MessageSchema,
+        default: []
+    }
 })
 
-export const Chat: Model<Document> = mongoose.model("Chat", chatSchema)
+export const Chat: Model<IChat> = mongoose.model("Chat", ChatSchema, "chats")

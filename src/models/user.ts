@@ -1,12 +1,20 @@
 import * as mongoose from "mongoose";
-import {Document, Model, Schema, SchemaTypes} from "mongoose";
+import {Document, Model, Schema, SchemaTypes, Types} from "mongoose";
+import {IChat, ChatSchema} from "./chat";
 
 
+export interface IStats extends Document {
+    elo: number;
+    wins: number;
+    losses: number;
+    ships_destroyed: number;
+    total_shots: number;
+    hits: number;
+}
 
-var statsSchema = new mongoose.Schema({
-
+export const StatsSchema = new Schema<IStats>({
     elo: {
-        type: mongoose.SchemaTypes.Number,
+        type: SchemaTypes.Number,
         default: 0,
         index: true
     }, 
@@ -18,7 +26,7 @@ var statsSchema = new mongoose.Schema({
         type: SchemaTypes.Number,
         default: 0
     }, 
-    ship_destroyed:{ 
+    ships_destroyed: { 
         type: SchemaTypes.Number,
         default: 0
     }, 
@@ -33,8 +41,25 @@ var statsSchema = new mongoose.Schema({
 })
 
 
-const userSchema = new Schema({
+export interface IUser extends Document {
+    username: string;
+    mail: string;
+    friends: [Types.ObjectId];
+    chats: [IChat];
+    stats: IStats;
+    roles: [string];
+    salt: string;
+    pwd_hash: string;
 
+    addFriends(friend_ids: [Types.ObjectId]): void;
+    setRole(role: string): void;
+    removeRole(role: string): void;
+    isModerator(): boolean;
+    isAdmin(): boolean;
+    hasRole(role: string): boolean;
+}
+
+export const UserSchema = new Schema<IUser>({
     username: {
         type: SchemaTypes.String,
         required: true, 
@@ -54,10 +79,11 @@ const userSchema = new Schema({
     }, 
 
     chats: {
-        type: [SchemaTypes.ObjectId]
+        type: [SchemaTypes.ObjectId],
+        default: []
     }, 
 
-    stats: statsSchema,
+    stats: StatsSchema,
 
     roles: {
         type: [SchemaTypes.String],
@@ -75,40 +101,34 @@ const userSchema = new Schema({
     }
 })
 
-export const User: Model<Document> = mongoose.model("User", userSchema)
-
-
-userSchema.methods.addFriends = function( data: [] ) : void {
-    for(var id of data){
+UserSchema.methods.addFriends = function( friend_ids: [Types.ObjectId] ) : void {
+    for (const id of friend_ids) {
         if (id !== this._id)
             this.friends.push(id)
     }
 }
 
-userSchema.methods.setModerator = function() : void {
-    if(!this.isModerator())
-        this.role.push("moderator")
-}
 
-userSchema.methods.setAdmin = function() : void {
-    if (!this.isAdmin())
-        this.role.push("admin")
-}
+// TODO setRole(role: string), removeRole(role: string)
 
-userSchema.methods.hasRole = function( role: string ) : boolean {
-    var value: boolean = false;
-    this.roles.array.forEach(element => {
-        if (element === role) value = true;
-    });
-    return value;
-}
-
-userSchema.methods.isModerator = function() : boolean {
+UserSchema.methods.isModerator = function() : boolean {
     return this.hasRole("moderator")
 }
 
-userSchema.methods.isAdmin = function( role: string ) : boolean {
+UserSchema.methods.isAdmin = function() : boolean {
     return this.hasRole("admin")
 }
 
+UserSchema.methods.hasRole = function(role: string) : boolean {
+    let value: boolean = false;
+    this.roles.forEach(element => {
+        if (element === role) {
+            value = true;
+        }
+    });
+
+    return value;
+}
+
+export const User: Model<IUser> = mongoose.model("User", UserSchema, "users")
 

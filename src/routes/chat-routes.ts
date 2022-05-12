@@ -1,11 +1,11 @@
 import * as express from "express";
-import {Router} from "express";
+import {Router, Request, Response, NextFunction} from "express";
 import {Chat} from "../models/chat" ;
 
 
 const router: Router = Router()
 
-router.get('/', (req, res, next) => {
+router.get('/', (req: Request, res: Response, next: NextFunction) => {
 	// Check if user is logged
     if (!req.user_id) { return res.status(401).send('Not authenticated'); }
     
