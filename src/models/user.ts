@@ -1,7 +1,14 @@
 import mongoose from 'mongoose'
 
 
-var statsSchema = new mongoose.Schema({
+export interface IUser extends Document{
+    username: string,
+    mail: string,
+    
+}
+
+
+const statsSchema: mongoose.Schema = new mongoose.Schema({
 
     elo: {
         type: mongoose.SchemaTypes.Number,
@@ -29,7 +36,7 @@ var statsSchema = new mongoose.Schema({
     }
 })
 
-var userSchema = new mongoose.Schema({
+const userSchema: mongoose.Schema = new mongoose.Schema({
 
     username: {
         type: mongoose.SchemaTypes.String,
@@ -69,3 +76,7 @@ var userSchema = new mongoose.Schema({
         required: false 
     }
 })
+
+
+export default mongoose.model('User', userSchema);
+

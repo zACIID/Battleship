@@ -1,31 +1,48 @@
-import mongoose from 'mongoose'
+import * as mongoose from "mongoose";
+import {Model, Schema, Types, SchemaTypes, Document} from "mongoose";
 
 
-var chatSchema = new mongoose.Schema({
+export interface IMessage extends Document{
+    content: string,
+    timestamp: Date,
+    author: Types.ObjectId
+}
 
-    users: {
-        type: [mongoose.SchemaTypes.ObjectId],
+const messageSchema = new Schema<IMessage>({
+    content:  {
+        type: SchemaTypes.String,
         required: true
     },
 
-    messages: [{
+    timestamp: {
+        type: SchemaTypes.Date,
+        required: true
+    },
 
-        content:  {
-            type: mongoose.SchemaTypes.String,
-            required: true 
-        },
-    
-        timestamp: {
-            type: mongoose.SchemaTypes.Date,
-            required: true
-        },
-    
-        author: {
-            type: mongoose.SchemaTypes.ObjectId,
-            required: true
-        },
-
-    }]
-
-    
+    author: {
+        type: SchemaTypes.ObjectId,
+        required: true
+    }
 })
+
+
+export interface IChat extends Document{
+    
+    users: [Types.ObjectId],
+    messages: [IMessage]
+}
+
+const chatSchema = new Schema<IChat>({
+
+    users: {
+        type: [SchemaTypes.ObjectId],
+        required: true
+    },
+
+    messages: {
+        type: messageSchema,
+        default: []
+    }
+})
+
+export const Chat: Model<IChat> = mongoose.model("Chat", chatSchema, "chats")

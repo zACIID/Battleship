@@ -10,6 +10,6 @@ Endpoints                               Method     Description
  /chats/:chatId                         DELETE     Delete a chat by ID
 
  /chats/:chatId/messages                GET        Returns all the messages in a chat
- /chats/:chatId/messages                POST       Add a new message in a chat
+ /chats/:chatId/messages                POST       Post a new message in a chat
 
 

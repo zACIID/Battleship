@@ -11,3 +11,6 @@ var matchSchema = new mongoose.Schema({
 
     observers_chat: mongoose.SchemaTypes.ObjectId
 })
+
+
+export default mongoose.model('Match', matchSchema);
