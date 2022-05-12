@@ -8,7 +8,7 @@ import {IChat, ChatSchema} from "./chat";
  * This does not extend Document because it represents a sub-document,
  * so it does not need Document methods/fields like _id, __v, save(), etc.
  */
-export interface IStats {
+ export interface IStats {
     elo: number;
     wins: number;
     losses: number;
@@ -49,7 +49,7 @@ export const StatsSchema = new Schema<IStats>({
  * Enumeration that defines all the possible roles that can be
  * assigned to some user.
  */
-export enum UserRoles {
+ export enum UserRoles {
     Base = "base",
     Moderator = "moderator",
     Admin = "admin"
@@ -68,7 +68,7 @@ export interface IUser extends Document {
     roles: [string];
     salt: string;
     pwd_hash: string;
-
+    
     /**
      * Adds the provided collection of user ids to this instance's friends list.
      * If a user id is already in the friends list, it is not added. TODO or an exception is thrown?
@@ -76,43 +76,43 @@ export interface IUser extends Document {
      * @param friend_ids collection of user ids to add to the friends list
      */
     addFriends(friend_ids: [Types.ObjectId]): void;
-
+    
     /**
      * Removes the provided user ids from this instance's friends list.
      * If a user id is already in the friends list, nothing happens. TODO or an exception is thrown?
      *
      * @param friend_ids collection of user ids to remove from the friends list
      */
-    removeFriends(friend_ids: [Types.ObjectId]): void;
+     removeFriends(friend_ids: [Types.ObjectId]): void;
 
-    /**
-     * Adds the provided role to this instance.
-     * If the user already has the role, it is not added a second time. TODO or an exception is thrown?
-     *
-     * @param role role to be set
-     */
-    setRole(role: UserRoles): void;
-
-    /**
-     * Removes the provided role from this instance.
-     * If the user doesn't have the role, nothing happens. TODO or an exception is thrown?
-     *
-     * @param role role to be removed
-     */
-    removeRole(role: UserRoles): void;
-
-    /**
-     * Returns true if the user has the provided role, false otherwise.
-     *
-     * @param role role to check
-     */
-    hasRole(role: UserRoles): boolean;
-
-    /**
-     * Returns true if the user is a moderator, false otherwise.
-     */
-    isModerator(): boolean;
-
+     /**
+      * Adds the provided role to this instance.
+      * If the user already has the role, it is not added a second time. TODO or an exception is thrown?
+      *
+      * @param role role to be set
+      */
+     setRole(role: UserRoles): void;
+ 
+     /**
+      * Removes the provided role from this instance.
+      * If the user doesn't have the role, nothing happens. TODO or an exception is thrown?
+      *
+      * @param role role to be removed
+      */
+     removeRole(role: UserRoles): void;
+ 
+     /**
+      * Returns true if the user has the provided role, false otherwise.
+      *
+      * @param role role to check
+      */
+     hasRole(role: UserRoles): boolean;
+ 
+     /**
+      * Returns true if the user is a moderator, false otherwise.
+      */
+     isModerator(): boolean;
+     
     /**
      * Returns true if the user is an admin, false otherwise.
      */
@@ -170,33 +170,41 @@ export const UserSchema = new Schema<IUser>({
 UserSchema.methods.addFriends = function( friend_ids: [Types.ObjectId] ) : void {
     for (const id of friend_ids) {
         if (id !== this._id)
-            this.friends.push(id);
+            this.friends.push(id)
     }
 }
 
-UserSchema.methods.setRole = function(role: UserRoles) : void {
-    this.roles.push(role.valueOf())
+UserSchema.methods.removeRole = function( role: UserRoles ) : void {
+    this.roles.forEach(function(part, index) {
+        if (this[index] === role.valueOf())  this.splice(index, 1) 
+    }, this.roles)
 }
 
-UserSchema.methods.removeRole = function(role: UserRoles) : void {
+UserSchema.methods.setRole = function( role: UserRoles ) : void {
     this.roles.push(role.valueOf())
 }
 
 UserSchema.methods.isModerator = function() : boolean {
-    return this.hasRole(UserRoles.Moderator);
+    return this.hasRole(UserRoles.Moderator)
 }
 
+
 UserSchema.methods.isAdmin = function() : boolean {
-    return this.hasRole(UserRoles.Admin);
+    return this.hasRole(UserRoles.Admin)
 }
 
 UserSchema.methods.hasRole = function(role: UserRoles) : boolean {
-    for (const user_role in this.roles) {
-        if (user_role === role.valueOf()) {
-            return true;
+    let value: boolean = false;
+    this.roles.forEach(element => {
+        if (element === role.valueOf()) {
+            value = true;
         }
-    }
+    });
+
+    return value;
 }
+
+
 
 export const User: Model<IUser> = mongoose.model("User", UserSchema, "users")
 
