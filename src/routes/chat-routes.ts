@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
-const router = new express.Router();
+const router = Router();
 
 // Retrieving schema from model
 import {Chat, IChat, IMessage} from '../models/chat';
-import userSchema from '../models/user';
-import matchSchema from '../models/match';
+import {User, IUser} from '../models/user';
+import {Match, IMatch} from '../models/match';
 
 
 /*
@@ -44,17 +44,14 @@ router.get('/chats', async (req: CustomRequest, res: Response, next: NextFunctio
 
     try{
 	    // Find all the existing chat where an user is found inside the "users" list
-        let found: IUser  = await userSchema.findById(user).exec();
+        let found: IUser  = await User.findById(user).exec();
         res.json(found.chats);
     }
     catch(err){
         console.log(err);
         next(err);
     }
-    
-    
 })
-
 
 
 router.get('/chats/:chatId/messages', async (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -83,11 +80,11 @@ router.post('/chats/:chatId/messages', async (req: CustomRequest, res: Response,
 	// Retrieve userId from the parameters of the request
 	const chat: string = req.params.chatId;
 
-    try{
+    try {
 
-        let found: IChat = await Chat.findById(chat).exec();
-        
-        let newMessage: IMessage = {
+        const found: IChat = await Chat.findById(chat).exec();
+
+        const newMessage: IMessage = {
             content: req.body.content,
             timestamp: new Date(),
             author: req.body.user_id
@@ -102,9 +99,6 @@ router.post('/chats/:chatId/messages', async (req: CustomRequest, res: Response,
         console.log(err);
         next(err);
     }
-    
-    
-	
 });
 
 module.exports = router
