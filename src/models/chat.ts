@@ -2,7 +2,13 @@ import * as mongoose from "mongoose";
 import {Document, Model, Schema, Types, SchemaTypes} from "mongoose";
 
 
-export interface IMessage extends Document {
+/**
+ * Interface that represent a message sub-document found in a Chat document.
+ *
+ * This does not extend Document because it represents a sub-document,
+ * so it does not need Document methods/fields like _id, __v, save(), etc.
+ */
+export interface IMessage {
     content: string;
     timestamp: Date;
     author: Types.ObjectId;
@@ -25,7 +31,10 @@ export const MessageSchema = new Schema<IMessage>({
     }
 })
 
-
+/**
+ * Interface that represents a Chat document.
+ * Such document represents a chat between different users of the system.
+ */
 export interface IChat extends Document {
     users: [Types.ObjectId];
     messages: [IMessage];

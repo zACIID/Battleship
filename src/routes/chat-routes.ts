@@ -5,7 +5,7 @@ const router = Router();
 // Retrieving schema from model
 import {Chat, IChat, IMessage} from '../models/chat';
 import {User, IUser} from '../models/user';
-import {Match} from '../models/match';
+import {Match, IMatch} from '../models/match';
 
 
 /*
@@ -84,8 +84,7 @@ router.post('/chats/:chatId/messages', async (req: CustomRequest, res: Response,
 
         const found: IChat = await Chat.findById(chat).exec();
 
-        // TODO dividere IMessage in IMessage e IMessageDocument extends IMessage?
-        const newMessage = {
+        const newMessage: IMessage = {
             content: req.body.content,
             timestamp: new Date(),
             author: req.body.user_id
@@ -100,9 +99,6 @@ router.post('/chats/:chatId/messages', async (req: CustomRequest, res: Response,
         console.log(err);
         next(err);
     }
-    
-    
-	
 });
 
 module.exports = router
