@@ -16,7 +16,6 @@ const importTest = (name, path) => {
 const initializeDB = async () => {
 
     // DB INIZIALIZATION
-    Chat.
 
 }
 
