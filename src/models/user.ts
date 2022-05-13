@@ -70,12 +70,12 @@ export interface IUser extends Document {
     pwd_hash: string;
     
     /**
-     * Adds the provided collection of user ids to this instance's friends list.
+     * Adds the provided user id to this instance's friends list.
      * If a user id is already in the friends list, it is not added. TODO or an exception is thrown?
      *
-     * @param friend_ids collection of user ids to add to the friends list
+     * @param friend_id collection of user ids to add to the friends list
      */
-    addFriends(friend_ids: [Types.ObjectId]): void;
+     addFriend(friend_id: Types.ObjectId): Promise<void>;
     
     /**
      * Removes the provided user ids from this instance's friends list.
@@ -83,7 +83,7 @@ export interface IUser extends Document {
      *
      * @param friend_ids collection of user ids to remove from the friends list
      */
-     removeFriends(friend_ids: [Types.ObjectId]): void;
+     removeFriends(friend_ids: [Types.ObjectId]): Promise<void>;
 
      /**
      * Removes the provided user id from this instance's friends list.
@@ -91,7 +91,7 @@ export interface IUser extends Document {
      *
      * @param friend_id collection of user ids to remove from the friends list
      */
-      removeFriend(friend_id: Types.ObjectId): void;
+      removeFriend(friend_id: Types.ObjectId): Promise<void>;
 
      /**
       * Adds the provided role to this instance.
@@ -182,10 +182,26 @@ export const UserSchema = new Schema<IUser>({
     }
 })
 
-UserSchema.methods.addFriends = function( friend_ids: [Types.ObjectId] ) : void {
-    for (const id of friend_ids) {
-        if (id !== this._id)
-            this.friends.push(id)
+/*
+details.updateOne(
+    { name: "John" },
+    { $addToSet: { locations: ["New York", "Texas", "Detroit"] } }
+ */
+
+/*
+Favorite.updateOne({
+  name
+}, {
+  $pullAll: {
+    favorites: req.params.deleteUid,
+  },
+})
+*/
+
+UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId ) : Promise<void> {
+    if (!this.isFriend(friend_id)) {
+        this.friend.push(friend_id)
+        User.updateOne({ _id: friend_id }, { $addToSet: { friends: [this._id] }})
     }
 }
 
@@ -195,13 +211,16 @@ UserSchema.methods.removeRole = function( role: UserRoles ) : void {
     }, this.roles)
 }
 
-UserSchema.methods.removeFriend = function( friend_id: Types.ObjectId ) : void {
+UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId ) : Promise<void> {
     this.friends.forEach(function(part, index) {
-        if (part === friend_id)  this.splice(index, 1) 
-    }, this.friends)
+        if (part === friend_id) {
+            this.friends.splice(index, 1) 
+            User.updateOne({ _id: friend_id }, { $pullAll: { friends: this._id }})
+        }
+    }, this)
 }
 
-UserSchema.methods.removeFriends = function( friend_ids: Types.ObjectId ) : void {
+UserSchema.methods.removeFriends = async function( friend_ids: Types.ObjectId ) : Promise<void> {
     friend_ids.forEach(function(friend_id) {
         this.removeFriend(friend_id)
     }, this)
@@ -222,9 +241,7 @@ UserSchema.methods.isAdmin = function() : boolean {
 UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
     let value: boolean = false
     this.roles.forEach(element => {
-        if (element === role.valueOf()) {
-            value = true;
-        }
+        if (element === role.valueOf()) value = true;
     });
 
     return value;
@@ -233,15 +250,12 @@ UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
 UserSchema.methods.isFriend = function( key: Types.ObjectId ) : boolean {
     let value : boolean = false
     this.roles.forEach(element => {
-        if (element === key) {
-            value = true;
-        }
+        if (element === key) value = true;
     });
 
     return value;
 
 }
-
 
 export const User: Model<IUser> = mongoose.model("User", UserSchema, "users")
 
