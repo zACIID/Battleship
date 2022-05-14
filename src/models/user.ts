@@ -200,7 +200,7 @@ Favorite.updateOne({
 
 UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId ) : Promise<void> {
     if (!this.isFriend(friend_id)) {
-        this.friend.push(friend_id)
+        this.friends.push(friend_id)
         User.updateOne({ _id: friend_id }, { $addToSet: { friends: [this._id] }})
     }
 }
@@ -220,7 +220,7 @@ UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId ) : 
     }, this)
 }
 
-UserSchema.methods.removeFriends = async function( friend_ids: Types.ObjectId ) : Promise<void> {
+UserSchema.methods.removeFriends = async function( friend_ids: [Types.ObjectId] ) : Promise<void> {
     friend_ids.forEach(function(friend_id) {
         this.removeFriend(friend_id)
     }, this)
@@ -249,8 +249,9 @@ UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
 
 UserSchema.methods.isFriend = function( key: Types.ObjectId ) : boolean {
     let value : boolean = false
-    this.roles.forEach(element => {
-        if (element === key) value = true;
+    this.roles.forEach( (element: string) => {
+        // element and key should be both string because element parameter must be string (in order the foreach to work)
+        if (element === key.toString()) value = true;
     });
 
     return value;
