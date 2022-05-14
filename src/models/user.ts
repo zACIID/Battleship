@@ -74,8 +74,9 @@ export interface IUser extends Document {
      * If a user id is already in the friends list, it is not added. TODO or an exception is thrown?
      *
      * @param friend_id collection of user ids to add to the friends list
+     * @param auto_call flag, if true the function will call itself for the other object instance 
      */
-     addFriend(friend_id: Types.ObjectId): Promise<void>;
+     addFriend(friend_id: Types.ObjectId, auto_call: boolean): Promise<void>;
     
     /**
      * Removes the provided user ids from this instance's friends list.
@@ -90,8 +91,9 @@ export interface IUser extends Document {
      * If a user id is already in the friends list, nothing happens. TODO or an exception is thrown?
      *
      * @param friend_id collection of user ids to remove from the friends list
+     * @param auto_call flag, if true the function will call itself for the other object instance 
      */
-      removeFriend(friend_id: Types.ObjectId): Promise<void>;
+      removeFriend(friend_id: Types.ObjectId, auto_call: boolean): Promise<void>;
 
      /**
       * Adds the provided role to this instance.
@@ -150,7 +152,8 @@ export const UserSchema = new Schema<IUser>({
     },
 
     friends: {
-        type: [SchemaTypes.ObjectId]
+        type: [SchemaTypes.ObjectId],
+        default: []
     }, 
 
     chats: {
@@ -182,46 +185,39 @@ export const UserSchema = new Schema<IUser>({
     }
 })
 
-/*
-details.updateOne(
-    { name: "John" },
-    { $addToSet: { locations: ["New York", "Texas", "Detroit"] } }
- */
-
-/*
-Favorite.updateOne({
-  name
-}, {
-  $pullAll: {
-    favorites: req.params.deleteUid,
-  },
-})
-*/
-
-UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId ) : Promise<void> {
+UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_call: boolean = true ) : Promise<void> {
     if (!this.isFriend(friend_id)) {
-        this.friends.push(friend_id)
-        User.updateOne({ _id: friend_id }, { $addToSet: { friends: [this._id] }})
+        this.friend.push(friend_id)
+        if (auto_call) {
+            var user: IUser = await getUserById(friend_id)
+            await user.addFriend(this._id, false)
+            user.save() // ??
+        }
     }
 }
 
 UserSchema.methods.removeRole = function( role: UserRoles ) : void {
-    this.roles.forEach(function(part, index) {
+    this.roles.forEach(function(part: string, index: number) {
         if (part === role.valueOf())  this.splice(index, 1) 
     }, this.roles)
 }
 
-UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId ) : Promise<void> {
-    this.friends.forEach(function(part, index) {
-        if (part === friend_id) {
+UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId, auto_call: boolean = true ) : Promise<void> {
+    for (var index in this.friends){
+        if (this.friends[index] === friend_id) {
             this.friends.splice(index, 1) 
-            User.updateOne({ _id: friend_id }, { $pullAll: { friends: this._id }})
+            if (auto_call) {
+                var user: IUser = await getUserById(friend_id)
+                await user.removeFriend(this._id, false)
+                user.save() // ??
+            }
         }
-    }, this)
+    }
 }
 
-UserSchema.methods.removeFriends = async function( friend_ids: [Types.ObjectId] ) : Promise<void> {
-    friend_ids.forEach(function(friend_id) {
+// this function doesn't wait the update of removeFriend function, it just loops without giving a shit
+UserSchema.methods.removeFriends = async function( friend_ids: Types.ObjectId ) : Promise<void> {
+    friend_ids.forEach(function(friend_id: Types.ObjectId) {
         this.removeFriend(friend_id)
     }, this)
 }   
@@ -240,7 +236,7 @@ UserSchema.methods.isAdmin = function() : boolean {
 
 UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
     let value: boolean = false
-    this.roles.forEach(element => {
+    this.roles.forEach((element: string) => {
         if (element === role.valueOf()) value = true;
     });
 
@@ -249,13 +245,21 @@ UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
 
 UserSchema.methods.isFriend = function( key: Types.ObjectId ) : boolean {
     let value : boolean = false
-    this.roles.forEach( (element: string) => {
-        // element and key should be both string because element parameter must be string (in order the foreach to work)
-        if (element === key.toString()) value = true;
+    this.friends.forEach((element: Types.ObjectId) => {
+        if (element === key) value = true;
     });
 
     return value;
+}
 
+export async function getUserById( _id : Types.ObjectId ) : Promise<IUser> {
+    var userData = await User.findOne({ _id })
+    return new User(userData)
+}
+
+export async function getUserByUsername( username : string ) : Promise<IUser> {
+    var userData = await User.findOne({ username })
+    return new User(userData)
 }
 
 export const User: Model<IUser> = mongoose.model("User", UserSchema, "users")
