@@ -173,6 +173,7 @@ export interface UserDocument {
    */
   isFriend(key: Types.ObjectId): boolean;
 
+  // TODO add docs for these methods
   setPassword(pwd: string): Promise<UserDocument>;
 
   validatePassword(pwd: string): Promise<boolean>;
@@ -213,12 +214,16 @@ export const UserSchema = new Schema<UserDocument>({
 
   stats: StatsSchema,
 
-  roles: {
-    type: [SchemaTypes.String],
-    required: true,
-    enum: [UserRoles.Base.valueOf(), UserRoles.Moderator.valueOf(), UserRoles.Admin.valueOf()],
-    default: UserRoles.Base.valueOf(),
-  },
+    roles: {
+        type: [SchemaTypes.String],
+        required: true,
+        enum: [
+            UserRoles.Base.valueOf(),
+            UserRoles.Moderator.valueOf(),
+            UserRoles.Admin.valueOf()
+        ],
+        default: UserRoles.Base.valueOf()
+    },
 
   salt: {
     type: SchemaTypes.String,

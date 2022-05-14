@@ -7,6 +7,18 @@ import {ChatModel, ChatDocument, Message} from '../models/chat';
 import {UserModel, UserDocument} from '../models/user';
 import {MatchModel, MatchDocument} from '../models/match';
 
+/*
+Endpoints                               Method     Description
+
+ /chats                                 GET        Returns the list of all the chat of a user
+ /chats                                 POST       Add a new chat in the user's chat list
+
+ /chats/:chatId                         DELETE     Delete a chat by ID
+
+ /chats/:chatId/messages                GET        Returns all the messages in a chat
+ /chats/:chatId/messages                POST       Post a new message in a chat
+*/
+
 interface CustomRequest extends Request {
   user_id: string;
 }
