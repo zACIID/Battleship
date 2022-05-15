@@ -1,3 +1,4 @@
+import { error } from "console";
 import * as mongoose from "mongoose";
 import {Document, Model, Schema, SchemaTypes, Types} from "mongoose";
 import {IChat, ChatSchema} from "./chat";
@@ -185,15 +186,16 @@ export const UserSchema = new Schema<IUser>({
     }
 })
 
-UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_call: boolean = true ) : Promise<void> {
+UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_call: boolean = true) : Promise<void> {
     if (!this.isFriend(friend_id)) {
         this.friend.push(friend_id)
         if (auto_call) {
-            var user: IUser = await getUserById(friend_id)
-            await user.addFriend(this._id, false)
-            user.save() // ??
+            var user: IUser = await getUserById(friend_id).catch((err: Error) => Promise.reject(new Error(err.message)))
+            await user.addFriend(this._id, false).catch((err: Error) => Promise.reject(new Error(err.message)))
         }
+        return this.save()
     }
+    else return Promise.reject(new Error("this id is already in the array: " + friend_id))
 }
 
 UserSchema.methods.removeRole = function( role: UserRoles ) : void {
@@ -207,19 +209,22 @@ UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId, aut
         if (this.friends[index] === friend_id) {
             this.friends.splice(index, 1) 
             if (auto_call) {
-                var user: IUser = await getUserById(friend_id)
-                await user.removeFriend(this._id, false)
-                user.save() // ??
+                var user: IUser = await getUserById(friend_id).catch((err: Error) => Promise.reject(new Error(err.message)))
+                await user.removeFriend(this._id, false).catch((err: Error)=> Promise.reject(new Error(err.message)))
             }
+            return this.save()
         }
     }
+    return Promise.reject(new Error("There's no id equal to that" + friend_id))
 }
 
-// this function doesn't wait the update of removeFriend function, it just loops without giving a shit
 UserSchema.methods.removeFriends = async function( friend_ids: Types.ObjectId ) : Promise<void> {
-    friend_ids.forEach(function(friend_id: Types.ObjectId) {
-        this.removeFriend(friend_id)
-    }, this)
+    var id: Types.ObjectId
+    var failures: [string]
+    for (id  of  friend_ids) {
+        await this.removeFriend(id).catch((err: Error) => failures.push(err.message))
+    }
+    return (!failures)? Promise.resolve() : Promise.reject(new Error("Errors occured: " + failures))
 }   
 
 UserSchema.methods.setRole = function( role: UserRoles ) : void {
@@ -246,20 +251,20 @@ UserSchema.methods.hasRole = function( role: UserRoles ) : boolean {
 UserSchema.methods.isFriend = function( key: Types.ObjectId ) : boolean {
     let value : boolean = false
     this.friends.forEach((element: Types.ObjectId) => {
-        if (element === key) value = true;
+        if (element === key) value = true
     });
 
     return value;
 }
 
 export async function getUserById( _id : Types.ObjectId ) : Promise<IUser> {
-    var userData = await User.findOne({ _id })
-    return new User(userData)
+    var userData = await User.findOne({ _id }).catch((err: Error) => Promise.reject(new Error("No user with that id")))
+    return Promise.resolve(new User(userData))
 }
 
 export async function getUserByUsername( username : string ) : Promise<IUser> {
-    var userData = await User.findOne({ username })
-    return new User(userData)
+    var userData = await User.findOne({ username }).catch((err: Error) => Promise.reject(new Error("No user with that username")))
+    return Promise.resolve(new User(userData))
 }
 
 export const User: Model<IUser> = mongoose.model("User", UserSchema, "users")
