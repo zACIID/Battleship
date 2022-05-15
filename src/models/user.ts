@@ -220,6 +220,7 @@ UserSchema.methods.removeNotification = async function (
 
             return this.save();
         }
+        return this.save()
     }
 
     return Promise.reject(new Error('Notification not found'));
@@ -357,6 +358,7 @@ UserSchema.methods.removeRelationship = async function (
                     return Promise.reject(new Error(err.message));
                 }
             }
+            return this.save()
         }
     }
     if (found) {
