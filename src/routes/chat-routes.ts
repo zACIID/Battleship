@@ -1,11 +1,11 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import {Router, Request, Response, NextFunction} from 'express';
 
 const router = Router();
 
 // Retrieving schema from model
-import { Chat, IChat, IMessage } from '../models/chat';
-import { UserModel, UserDocument } from '../models/user';
-import { Match, IMatch } from '../models/match';
+import {ChatModel, ChatDocument, Message} from '../models/chat';
+import {UserModel, UserDocument} from '../models/user';
+import {MatchModel, MatchDocument} from '../models/match';
 
 interface CustomRequest extends Request {
   user_id: string;
@@ -18,24 +18,21 @@ function integrityCheck(request: CustomRequest, response: Response): Response {
   }
 }
 
-router.get(
-  '/chats',
-  async (req: CustomRequest, res: Response, next: NextFunction) => {
-    integrityCheck(req, res);
+router.get('/chats', async (req: CustomRequest, res: Response, next: NextFunction) => {
+  integrityCheck(req, res);
 
-    // Retrieve userId from the parameters of the request
-    const user: string = req.params.userId;
+  // Retrieve userId from the parameters of the request
+  const user: string = req.params.userId;
 
-    try {
-      // Find all the existing chat where an user is found inside the "users" list
-      let found: UserDocument = await UserModel.findById(user).exec();
-      res.json(found.chats);
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
+  try {
+    // Find all the existing chat where an user is found inside the "users" list
+    const found: UserDocument = await UserModel.findById(user).exec();
+    res.json(found.chats);
+  } catch (err) {
+    console.log(err);
+    next(err);
   }
-);
+});
 
 router.get(
   '/chats/:chatId/messages',
@@ -47,7 +44,7 @@ router.get(
 
     try {
       // Find all the existing chat where an user is found inside the "users" list
-      let found: IChat = await Chat.findById(chat).exec();
+      const found: ChatDocument = await ChatModel.findById(chat).exec();
 
       res.json(found.messages);
     } catch (err) {
@@ -66,9 +63,9 @@ router.post(
     const chat: string = req.params.chatId;
 
     try {
-      const found: IChat = await Chat.findById(chat).exec();
+      const found: ChatDocument = await ChatModel.findById(chat).exec();
 
-      const newMessage: IMessage = {
+      const newMessage: Message = {
         content: req.body.content,
         timestamp: new Date(),
         author: req.body.user_id,
@@ -76,10 +73,7 @@ router.post(
 
       found.messages.push(newMessage);
 
-      await Chat.updateOne(
-        { _id: found._id },
-        { $set: { messages: found.messages } }
-      );
+      await ChatModel.updateOne({_id: found._id}, {$set: {messages: found.messages}});
     } catch (err) {
       //For logging purposes
       console.log(err);

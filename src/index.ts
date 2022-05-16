@@ -1,12 +1,11 @@
 import * as dotenv from 'dotenv';
 import * as http from 'http';
-import express from 'express';
-import { Express } from 'express';
+import express, {Express} from 'express';
 import cors from 'cors';
 import * as io from 'socket.io';
 import * as mongoose from 'mongoose';
 
-dotenv.config({ path: '../.env' });
+dotenv.config({path: '../.env'});
 
 const app: Express = express();
 const DB_URI: string = process.env.DB_URI;
@@ -48,11 +47,9 @@ app.use(function (err, req, res, next) {
 
 // Middleware that will report any error 404
 app.use((req, res, next) => {
-  res
-    .status(404)
-    .json({ statusCode: 404, error: true, errormessage: 'Invalid endpoint' });
+  res.status(404).json({statusCode: 404, error: true, errormessage: 'Invalid endpoint'});
 });
 
 app.get('/', (req, res) => {
-  res.status(200).json({ api_version: '1.0' });
+  res.status(200).json({api_version: '1.0'});
 });
