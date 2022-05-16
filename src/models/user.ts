@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import {Document, Model, Schema, SchemaTypes, Types} from "mongoose";
 import {IChat, ChatSchema} from "./chat";
-import crypto = require('crypto');
+import bcrypt from 'bcrypt'
 
 /**
  * Interface that represent a stats sub-document found in a User document.
@@ -9,7 +9,8 @@ import crypto = require('crypto');
  * This does not extend Document because it represents a sub-document,
  * so it does not need Document methods/fields like _id, __v, save(), etc.
  */
- export interface IStats {
+export interface IUserStats {
+    top_elo: number;
     elo: number;
     wins: number;
     losses: number;
@@ -18,7 +19,11 @@ import crypto = require('crypto');
     hits: number;
 }
 
-export const StatsSchema = new Schema<IStats>({
+export const StatsSchema = new Schema<IUserStats>({
+    top_elo: {
+        type: SchemaTypes.Number,
+        default: 0
+    },
     elo: {
         type: SchemaTypes.Number,
         default: 0,
@@ -57,18 +62,58 @@ export const StatsSchema = new Schema<IStats>({
 }
 
 /**
+ * Enumeration that defines all the possible notification types receivable by a user
+ */
+export enum NotificationTypes {
+    FriendRequest = "FriendRequest",
+    MatchRequest = "MatchRequest" 
+}
+
+
+/**
+ * Interface that represents a User notification
+ */
+export interface IRequestNotification {
+    typeRequest: NotificationTypes,
+    requester: Types.ObjectId
+}
+
+
+/**
+ * A notification is strictly identified by the pair (type, requester)
+ */
+export const NotificationSchema = new Schema<IRequestNotification>({
+    typeRequest: {
+        type: [SchemaTypes.String],
+        required: true,
+        enum: [
+            NotificationTypes.FriendRequest.valueOf(),
+            NotificationTypes.MatchRequest.valueOf()
+        ]
+    },
+    requester: {
+        type: Types.ObjectId,
+        required: true,
+    }
+})
+
+
+
+
+/**
  * Interface that represents a User document.
  * Such document represents a user of the system.
  */
-export interface IUser extends Document {
+export interface IUser {
     username: string;
     mail: string;
     friends: Types.ObjectId[];
-    chats: IChat[];
-    stats: IStats;
+    chats: Types.ObjectId[];
+    stats: IUserStats;
     roles: string[];
     salt: string;
     pwd_hash: string;
+    notifications: IRequestNotification[];
     
     /**
      * Adds the provided user id to this instance's friends list.
@@ -137,7 +182,16 @@ export interface IUser extends Document {
     isFriend(key: Types.ObjectId) : boolean;
 
     setPassword(pwd:string) : Promise<IUser>,
-    validatePassword(pwd:string) : boolean,
+
+    validatePassword(pwd:string) : Promise<boolean>,
+
+    addNotification(type: NotificationTypes, requester: Types.ObjectId) : Promise<IUser>,
+
+    removeNotification(type: NotificationTypes, requester: Types.ObjectId) : Promise<IUser>,
+
+    addChat(_id: Types.ObjectId) : Promise<IUser>,
+
+    removeChat(_id: Types.ObjectId) : Promise<IUser>
 
 }
 
@@ -187,16 +241,72 @@ export const UserSchema = new Schema<IUser>({
     pwd_hash: {
         type: SchemaTypes.String,
         required: false 
-    }
+    },
+
+    notifications: [{
+        typeRequest: {
+            type: [SchemaTypes.String],
+            required: true,
+            enum: [
+                NotificationTypes.FriendRequest.valueOf(),
+                NotificationTypes.MatchRequest.valueOf()
+            ]
+        },
+        requester: {
+            type: Types.ObjectId,
+            required: true,
+        }
+    }],
+
+    online: SchemaTypes.Boolean,
+
 })
 
-UserSchema.methods.setPassword = async function( pwd: string ) : Promise<IUser>{
-    this.salt = crypto.randomBytes(16).toString('hex'); // We use a random 16-bytes hex string for salt
 
-    var hmac = crypto.createHmac('sha512', this.salt );
-    hmac.update( pwd );
-    this.digest = hmac.digest('hex'); // The final digest depends both by the password and the salt
+UserSchema.methods.addNotification = async function( typeRequest: NotificationTypes, requester: Types.ObjectId ) : Promise<IUser>{
+    if (this.notifications.includes( { typeRequest, requester } )) Promise.reject(new Error("Notification already sent"));
+    this.notifications.push( {typeRequest, requester} );
+    return this.save();
 }
+
+UserSchema.methods.removeNotification = async function( typeRequest: NotificationTypes, requester: Types.ObjectId ) : Promise<IUser>{
+    for(let idx in this.notifications){
+        if (this.notifications[idx].typeRequest === typeRequest && this.notifications[idx].requester === requester)
+            this.notifications.splice(parseInt(idx), 1);
+    }
+    return this.save();
+}
+
+/* WARNING: chat must be already created, chats field just contains it's ObjectId */
+UserSchema.methods.addChat = async function(_id: Types.ObjectId) : Promise<IUser>{
+    if (this.chats.includes( _id )) Promise.reject(new Error("User already part of this chat"));
+    this.chats.push( _id );
+    return this.save();
+}
+
+UserSchema.methods.removeChat = async function(_id: Types.ObjectId) : Promise<IUser>{
+    for(let idx in this.chats){
+        if ( this.chats[idx] === _id )
+            this.chats.splice(parseInt(idx), 1);
+    }
+    return this.save();
+}
+
+UserSchema.methods.setPassword = async function( pwd: string ) : Promise<IUser>{
+
+    let salt = await bcrypt.genSalt(10).catch( (error) => Promise.reject(new Error("Error with salt generation: " + error.message)) );
+    let hashedPw = await bcrypt.hash(pwd, salt).catch( (error) => Promise.reject(new Error("Error with password encryption: " + error.message)) );
+
+    this.pwd_hash = hashedPw;
+    return this.save();
+}
+
+UserSchema.methods.validatePassword = async function( pwd:string ) : Promise<boolean> {
+
+    let hashedPw = await bcrypt.hash(pwd, this.salt).catch( (error) => Promise.reject(new Error("Error with password encryption: " + error.message)) );
+
+    return (this.pwd_hash === hashedPw);
+} 
 
 
 UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_call?: boolean ) : Promise<IUser> {
