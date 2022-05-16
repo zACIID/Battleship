@@ -1,7 +1,7 @@
-import { error } from "console";
 import * as mongoose from "mongoose";
 import {Document, Model, Schema, SchemaTypes, Types} from "mongoose";
 import {IChat, ChatSchema} from "./chat";
+import crypto = require('crypto');
 
 /**
  * Interface that represent a stats sub-document found in a User document.
@@ -63,10 +63,10 @@ export const StatsSchema = new Schema<IStats>({
 export interface IUser extends Document {
     username: string;
     mail: string;
-    friends: [Types.ObjectId];
-    chats: [IChat];
+    friends: Types.ObjectId[];
+    chats: IChat[];
     stats: IStats;
-    roles: [string];
+    roles: string[];
     salt: string;
     pwd_hash: string;
     
@@ -77,7 +77,7 @@ export interface IUser extends Document {
      * @param friend_id collection of user ids to add to the friends list
      * @param auto_call flag, if true the function will call itself for the other object instance 
      */
-     addFriend(friend_id: Types.ObjectId, auto_call: boolean): Promise<void>;
+     addFriend(friend_id: Types.ObjectId, auto_call?: boolean): Promise<IUser>;
     
     /**
      * Removes the provided user ids from this instance's friends list.
@@ -85,7 +85,7 @@ export interface IUser extends Document {
      *
      * @param friend_ids collection of user ids to remove from the friends list
      */
-     removeFriends(friend_ids: [Types.ObjectId]): Promise<void>;
+     removeFriends(friend_ids: [Types.ObjectId]): Promise<IUser>;
 
      /**
      * Removes the provided user id from this instance's friends list.
@@ -94,7 +94,7 @@ export interface IUser extends Document {
      * @param friend_id collection of user ids to remove from the friends list
      * @param auto_call flag, if true the function will call itself for the other object instance 
      */
-      removeFriend(friend_id: Types.ObjectId, auto_call: boolean): Promise<void>;
+      removeFriend(friend_id: Types.ObjectId, auto_call?: boolean): Promise<IUser>;
 
      /**
       * Adds the provided role to this instance.
@@ -102,7 +102,7 @@ export interface IUser extends Document {
       *
       * @param role role to be set
       */
-     setRole(role: UserRoles): void;
+     setRole(role: UserRoles): Promise<IUser>;
  
      /**
       * Removes the provided role from this instance.
@@ -110,7 +110,7 @@ export interface IUser extends Document {
       *
       * @param role role to be removed
       */
-     removeRole(role: UserRoles): void;
+     removeRole(role: UserRoles): Promise<IUser>;
  
      /**
       * Returns true if the user has the provided role, false otherwise.
@@ -135,6 +135,10 @@ export interface IUser extends Document {
      * @param key friend's key to look for
      */
     isFriend(key: Types.ObjectId) : boolean;
+
+    setPassword(pwd:string) : Promise<IUser>,
+    validatePassword(pwd:string) : boolean,
+
 }
 
 export const UserSchema = new Schema<IUser>({
@@ -186,10 +190,19 @@ export const UserSchema = new Schema<IUser>({
     }
 })
 
-UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_call: boolean = true) : Promise<void> {
+UserSchema.methods.setPassword = async function( pwd: string ) : Promise<IUser>{
+    this.salt = crypto.randomBytes(16).toString('hex'); // We use a random 16-bytes hex string for salt
+
+    var hmac = crypto.createHmac('sha512', this.salt );
+    hmac.update( pwd );
+    this.digest = hmac.digest('hex'); // The final digest depends both by the password and the salt
+}
+
+
+UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_call?: boolean ) : Promise<IUser> {
     if (!this.isFriend(friend_id)) {
-        this.friend.push(friend_id)
-        if (auto_call) {
+        this.friends.push(friend_id)
+        if (auto_call === undefined || auto_call) {
             var user: IUser = await getUserById(friend_id).catch((err: Error) => Promise.reject(new Error(err.message)))
             await user.addFriend(this._id, false).catch((err: Error) => Promise.reject(new Error(err.message)))
         }
@@ -198,17 +211,20 @@ UserSchema.methods.addFriend = async function( friend_id: Types.ObjectId, auto_c
     else return Promise.reject(new Error("this id is already in the array: " + friend_id))
 }
 
-UserSchema.methods.removeRole = function( role: UserRoles ) : void {
-    this.roles.forEach(function(part: string, index: number) {
-        if (part === role.valueOf())  this.splice(index, 1) 
-    }, this.roles)
+UserSchema.methods.removeRole = async function( role: UserRoles ) : Promise<IUser> {
+    for(let idx in this.roles){
+        if (this.roles[idx] === role.valueOf())
+            this.roles.splice(parseInt(idx), 1);
+    }
+    return this.save();
 }
 
-UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId, auto_call: boolean = true ) : Promise<void> {
-    for (var index in this.friends){
-        if (this.friends[index] === friend_id) {
-            this.friends.splice(index, 1) 
-            if (auto_call) {
+UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId, auto_call?: boolean) : Promise<IUser> {
+    
+    for (let idx in this.friends){
+        if (this.friends[idx] === friend_id) {
+            this.friends.splice(parseInt(idx), 1) 
+            if (auto_call === undefined || auto_call) {
                 var user: IUser = await getUserById(friend_id).catch((err: Error) => Promise.reject(new Error(err.message)))
                 await user.removeFriend(this._id, false).catch((err: Error)=> Promise.reject(new Error(err.message)))
             }
@@ -218,17 +234,18 @@ UserSchema.methods.removeFriend = async function( friend_id: Types.ObjectId, aut
     return Promise.reject(new Error("There's no id equal to that" + friend_id))
 }
 
-UserSchema.methods.removeFriends = async function( friend_ids: Types.ObjectId ) : Promise<void> {
-    var id: Types.ObjectId
-    var failures: [string]
+UserSchema.methods.removeFriends = async function( friend_ids: [Types.ObjectId] ) : Promise<void> {
+    var id: Types.ObjectId;
+    var failures: string[] = new Array<string>();
     for (id  of  friend_ids) {
         await this.removeFriend(id).catch((err: Error) => failures.push(err.message))
     }
-    return (!failures)? Promise.resolve() : Promise.reject(new Error("Errors occured: " + failures))
+    return (failures.length === 0)? Promise.resolve() : Promise.reject(new Error("Errors occured: " + failures));
 }   
 
-UserSchema.methods.setRole = function( role: UserRoles ) : void {
-    this.roles.push(role.valueOf())
+UserSchema.methods.setRole = async function( role: UserRoles ) : Promise<IUser> {
+    this.roles.push(role.valueOf());
+    return this.save();
 }
 
 UserSchema.methods.isModerator = function() : boolean {
