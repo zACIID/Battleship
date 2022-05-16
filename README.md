@@ -34,11 +34,7 @@ The type should be one of the following:
 - **devops**: Changes to code that only affect deployment, logging, etc. No changes to user code.
 - **chore**: Any other changes causing no changes to user code.
 
-The body of the commit message (if any) should begin after one blank line. If the commit meets the definition of a major version change according to semantic versioning (e.g. a change in API visible to an external module), the commit message body should begin with `BREAKING CHANGE: <description>`.
-
-Presence of a `fix` commit in a release should increment the number in the third (PATCH) position.
-Presence of a `feat` commit in a release should increment the number in the second (MINOR) position.
-Presence of a `BREAKING CHANGE` commit in a release should increment the number in the first (MAJOR) position.
+The body of the commit message (if any) should begin after one blank line.
 
 This is based on <https://www.conventionalcommits.org> 
 and the [Conveyal R5 Structured Commit Messages Guide](https://github.com/conveyal/r5#structured-commit-messages).
