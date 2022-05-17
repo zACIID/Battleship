@@ -11,17 +11,17 @@ import bcrypt from 'bcrypt';
  * so it does not need Document methods/fields like _id, __v, save(), etc.
  */
 export interface UserStats {
-    top_elo: number;
+    topElo: number;
     elo: number;
     wins: number;
     losses: number;
-    ships_destroyed: number;
-    total_shots: number;
+    shipsDestroyed: number;
+    totalShots: number;
     hits: number;
 }
 
 export const StatsSchema = new Schema<UserStats>({
-    top_elo: {
+    topElo: {
         type: SchemaTypes.Number,
         default: 0,
     },
@@ -38,15 +38,15 @@ export const StatsSchema = new Schema<UserStats>({
         type: SchemaTypes.Number,
         default: 0,
     },
-    ships_destroyed: {
+    shipsDestroyed: {
         type: SchemaTypes.Number,
         default: 0,
     },
-    total_shots: {
+    totalShots: {
         type: SchemaTypes.Number,
         default: 0,
     },
-    hits: {
+    totalHits: {
         type: SchemaTypes.Number,
         default: 0,
     },
@@ -94,14 +94,32 @@ export const NotificationSchema = new Schema<RequestNotification>({
 });
 
 /**
+ * Interface that represents relationship information for some user.
+ */
+export interface Relationship {
+    friendId: Types.ObjectId;
+    chatId: Types.ObjectId;
+}
+
+export const RelationshipSchema = new Schema<Relationship>({
+    friendId: {
+        type: SchemaTypes.ObjectId,
+        required: true
+    },
+    chatId: {
+        type: SchemaTypes.ObjectId,
+        required: true
+    },
+});
+
+/**
  * Interface that represents a User document.
  * Such document represents a user of the system.
  */
 export interface UserDocument {
     username: string;
     mail: string;
-    friends: Types.ObjectId[];
-    chats: Types.ObjectId[];
+    relationships: [Relationship];
     stats: UserStats;
     roles: string[];
     salt: string;
@@ -203,13 +221,8 @@ export const UserSchema = new Schema<UserDocument>({
         match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/,
     },
 
-    friends: {
-        type: [SchemaTypes.ObjectId],
-        default: [],
-    },
-
-    chats: {
-        type: [SchemaTypes.ObjectId],
+    relationships: {
+        type: [RelationshipSchema],
         default: [],
     },
 
@@ -275,7 +288,9 @@ UserSchema.methods.removeNotification = async function (
     return this.save();
 };
 
-/* TODO WARNING: chat must be already created, chats field just contains it's ObjectId */
+// TODO implement all of below considering the change done to UserSchema:
+//  relationships replaces friends and chats
+
 UserSchema.methods.addChat = async function (id: Types.ObjectId): Promise<UserDocument> {
     if (this.chats.includes(id)) {
         await Promise.reject(new Error('User already part of this chat'));
@@ -350,7 +365,7 @@ UserSchema.methods.removeFriend = async function (
     // TODO così non si scorrono gli indici, ma gli element degli array.
     //  quello che si voleva fare era for (i=0; i<this.friend.length; i++) ??
     //  se è così, cambiare anche nel resto del codice
-    for (let idx in this.friends) {
+    for (let idx in this.relationships) {
         if (this.friends[idx] === friend_id) {
             this.friends.splice(parseInt(idx), 1);
 
@@ -424,7 +439,7 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
     );
 }
 
-export async function newUser(data): Promise<UserDocument> {
+export async function createUser(data): Promise<UserDocument> {
     getUserByUsername(data.username).catch((err) => {
         const user = new UserModel(data);
         return user.save();

@@ -25,11 +25,11 @@ export const MatchStatsSchema = new Schema<MatchStats>({
     end_time: {
         type: SchemaTypes.Date,
     },
-    total_shots: {
+    totalShots: {
         type: SchemaTypes.Number,
         default: 0,
     },
-    ships_destroyed: {
+    shipsDestroyed: {
         type: SchemaTypes.Number,
         default: 0,
     },

@@ -1,5 +1,5 @@
 import {Router, Request, Response, NextFunction} from 'express';
-import {UserModel, getUserByUsername, newUser, UserDocument} from '../models/user';
+import {UserModel, getUserByUsername, createUser, UserDocument} from '../models/user';
 import passport from 'passport';
 import passportHTTP from 'passport-http';
 import jsonwebtoken from 'jsonwebtoken';
@@ -60,7 +60,7 @@ router.get(
 router.post('/auth/signup', async (req: Request, res: Response) => {
     let u: UserDocument;
     try {
-        u = await newUser(req.body);
+        u = await createUser(req.body);
     } catch (err) {
         return res.status(400).json({error: true, errormessage: err.message});
     }
