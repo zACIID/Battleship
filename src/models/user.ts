@@ -424,4 +424,11 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
   );
 }
 
+
+export async function newUser(data): Promise<UserDocument>{
+	return new UserModel(data);
+}
+
+
+
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');

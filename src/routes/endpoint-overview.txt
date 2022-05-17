@@ -8,10 +8,12 @@ PATCH is always for updating a resource
 
 Endpoints                               Method     Description
 
+/auth/signin                            POST        Login
+/auth/signup                            POST        Add a new user in the database using request body data
 
 /users                                  GET         Returns a list of all the users, better if ordered by elo desc (useful for showing the scoreboard)
 
-/users                          C       POST        Add a new user in the database using request body data
+
 /users/:userId                  R       GET         Return the user who matches with the userId
 /users/:userId                  U       PATCH       Update a particular user with request body data
 /users/:userId                  D       DELETE      Delete the user with id == userId

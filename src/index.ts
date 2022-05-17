@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as http from 'http';
-import express, {Express} from 'express';
+import express, {Express, NextFunction} from 'express';
 import cors from 'cors';
 import * as io from 'socket.io';
 import * as mongoose from 'mongoose';
@@ -12,6 +12,8 @@ const DB_URI: string = process.env.DB_URI;
 
 let io_server: io.Server = null;
 
+
+/* Database Connection */
 console.log('demanding the sauce...');
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
@@ -34,22 +36,19 @@ mongoose
     console.log(err);
   });
 
-// Creation of JWT middleware
+
+
+/* Creation of JWT middleware */
 //var auth = jwt( {secret: process.env.JWT_SECRET} );
 
+
+/* Allows server to respond to a particular request that asks which request options it accept */
 app.use(cors());
 
-// Middleware that handles errors
-app.use(function (err, req, res, next) {
-  console.log('Request error: ' + JSON.stringify(err));
-  res.status(err.statusCode || 500).json(err);
-});
 
-// Middleware that will report any error 404
-app.use((req, res, next) => {
-  res.status(404).json({statusCode: 404, error: true, errormessage: 'Invalid endpoint'});
-});
+/* Alternative to bodyparser which is deprecated */
+app.use(express.urlencoded({extended: true}));
+app.use(express.json()) // To parse the incoming requests with JSON payloads
 
-app.get('/', (req, res) => {
-  res.status(200).json({api_version: '1.0'});
-});
+
+
