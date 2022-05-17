@@ -2,6 +2,8 @@ import * as mongoose from 'mongoose';
 import {Model, Schema, SchemaTypes, Types} from 'mongoose';
 import bcrypt from 'bcrypt';
 
+// TODO consider exporting sub-documents/schemas to their own files
+//  for readability purposes
 /**
  * Interface that represent a stats sub-document found in a User document.
  *
