@@ -4,83 +4,156 @@
 
 - [API Docs](#api-docs)
   - [Table of Contents](#table-of-contents)
-  - [Notes](#notes)
-  - [How Authentication works](#how-authentication-works)
-  - [Endpoints](#endpoints)
+  - [How API Authentication works](#how-api-authentication-works)
+  - [Model](#model)
+    - [UserInfo](#userinfo)
+    - [User](#user)
+    - [UserStats](#userstats)
+  - [Authentication Endpoints](#authentication-endpoints)
     - [User Login](#user-login)
       - [Request body](#request-body)
       - [Response body](#response-body)
-        - [Success](#success)
-        - [Error](#error)
     - [User Registration](#user-registration)
       - [Request body](#request-body-1)
       - [Response body](#response-body-1)
-        - [Success](#success-1)
-        - [Error](#error-1)
-    - [Retrieve All Users](#retrieve-all-users)
+  - [User Endpoints](#user-endpoints)
+    - [Retrieve User Leaderboard](#retrieve-user-leaderboard)
       - [Query Parameters](#query-parameters)
       - [Response body](#response-body-2)
-        - [Success](#success-2)
-        - [Error](#error-2)
-    - [Retrieve Single User](#retrieve-single-user)
+    - [Retrieve User](#retrieve-user)
       - [Url Parameters](#url-parameters)
       - [Response body](#response-body-3)
-        - [Success](#success-3)
-        - [Error](#error-3)
     - [Update User](#update-user)
       - [Url Parameters](#url-parameters-1)
       - [Request body](#request-body-2)
       - [Response body](#response-body-4)
-        - [Success](#success-4)
-        - [Error](#error-4)
     - [Delete User](#delete-user)
       - [Url Parameters](#url-parameters-2)
       - [Response body](#response-body-5)
-        - [Success](#success-5)
-        - [Error](#error-5)
     - [Retrieve User Stats](#retrieve-user-stats)
       - [Url Parameters](#url-parameters-3)
       - [Response body](#response-body-6)
-        - [Success](#success-6)
-        - [Error](#error-6)
     - [Update User Stats](#update-user-stats)
       - [Url Parameters](#url-parameters-4)
       - [Request body](#request-body-3)
       - [Response body](#response-body-7)
-        - [Success](#success-7)
-        - [Error](#error-7)
-    - [Retrieve User Chats (TODO)](#retrieve-user-chats-todo)
+  - [Relationship Endpoints](#relationship-endpoints)
+    - [Retrieve User Relationships](#retrieve-user-relationships)
       - [Url Parameters](#url-parameters-5)
       - [Response body](#response-body-8)
-        - [Success](#success-8)
-        - [Error](#error-8)
-    - [Update User Chats (TODO)](#update-user-chats-todo)
+    - [Add User Relationship](#add-user-relationship)
       - [Url Parameters](#url-parameters-6)
       - [Request body](#request-body-4)
       - [Response body](#response-body-9)
-        - [Success](#success-9)
-        - [Error](#error-9)
-    - [Retrieve User Friends (TODO)](#retrieve-user-friends-todo)
+    - [Remove User Relationship](#remove-user-relationship)
       - [Url Parameters](#url-parameters-7)
-      - [Response body](#response-body-10)
-        - [Success](#success-10)
-        - [Error](#error-10)
-    - [Update User Friends (TODO)](#update-user-friends-todo)
-      - [Url Parameters](#url-parameters-8)
       - [Request body](#request-body-5)
+      - [Response body](#response-body-10)
+  - [Role Endpoints](#role-endpoints)
+    - [Retrieve User Roles](#retrieve-user-roles)
+      - [Url Parameters](#url-parameters-8)
       - [Response body](#response-body-11)
-        - [Success](#success-11)
-        - [Error](#error-11)
+    - [Add User Role](#add-user-role)
+      - [Url Parameters](#url-parameters-9)
+      - [Request body](#request-body-6)
+      - [Response body](#response-body-12)
+    - [Remove User Role](#remove-user-role)
+      - [Url Parameters](#url-parameters-10)
+      - [Request body](#request-body-7)
+      - [Response body](#response-body-13)
+  - [Match Endpoints](#match-endpoints)
+    - [Create Match](#create-match)
+      - [Request body](#request-body-8)
+      - [Response body](#response-body-14)
+    - [Retrieve Match](#retrieve-match)
+      - [Url Parameters](#url-parameters-11)
+      - [Response body](#response-body-15)
+    - [Update Match](#update-match)
+      - [Url Parameters](#url-parameters-12)
+      - [Request body](#request-body-9)
+      - [Response body](#response-body-16)
+    - [Delete Match](#delete-match)
+      - [Url Parameters](#url-parameters-13)
+      - [Response body](#response-body-17)
+    - [Retrieve Match Stats](#retrieve-match-stats)
+      - [Url Parameters](#url-parameters-14)
+      - [Response body](#response-body-18)
+    - [Update Match Stats](#update-match-stats)
+      - [Url Parameters](#url-parameters-15)
+      - [Request body](#request-body-10)
+      - [Response body](#response-body-19)
+  - [Chat Endpoints](#chat-endpoints)
+    - [Create Chat (TODO è necessario?)](#create-chat-todo-è-necessario)
+      - [Request body](#request-body-11)
+      - [Response body](#response-body-20)
+    - [Retrieve Chat](#retrieve-chat)
+      - [Url Parameters](#url-parameters-16)
+      - [Response body](#response-body-21)
+    - [Update Chat (TODO è necessario?)](#update-chat-todo-è-necessario)
+      - [Url Parameters](#url-parameters-17)
+      - [Request body](#request-body-12)
+      - [Response body](#response-body-22)
+    - [Delete Chat](#delete-chat)
+      - [Url Parameters](#url-parameters-18)
+      - [Response body](#response-body-23)
+    - [Retrieve Chat Messages](#retrieve-chat-messages)
+      - [Url Parameters](#url-parameters-19)
+      - [Response body](#response-body-24)
+    - [Add Message to Chat](#add-message-to-chat)
+      - [Url Parameters](#url-parameters-20)
+      - [Request body](#request-body-13)
+      - [Response body](#response-body-25)
+    - [Remove Message from Chat (TODO? lo supportiamo?)](#remove-message-from-chat-todo-lo-supportiamo)
+      - [Url Parameters](#url-parameters-21)
+      - [Request body](#request-body-14)
+      - [Response body](#response-body-26)
 
-## Notes
-
-[To return something with POST, PUT, PATCH?](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#useful-post-responses)
-
-## How Authentication works
+## How API Authentication works
 
 define how authenticating for the API works: Basic Authentication, use of jwt and how to retrieve it, what error is returned if auth fails (401=?)
 
-## Endpoints
+## Model
+
+### UserInfo
+
+```json
+{
+    "username": "",
+    "email": "",
+    "roles": [],
+    "password": ""
+}
+// Rest of the fields are defaults, so they are not to be provided
+```
+
+### User
+
+```json
+{
+    "username": "",
+    "email": "",
+    "roles": [],
+    "password": ""
+}
+// Rest of the fields are defaults, so they are not to be provided
+```
+
+### UserStats
+
+```json
+{
+    "top_elo": 0,
+    "elo": 0,
+    "wins": 0,
+    "losses": 0,
+    "ships_destroyed": 0,
+    "total_shots": 0,
+    "hits": 0
+}
+```
+
+
+## Authentication Endpoints
 
 ### User Login
 
@@ -91,9 +164,6 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 #### Request body
 
 ```json
-{
-    "Authorization": "xxx" // TODO check header?
-}
 {
     "email": "",
     "password": ""
@@ -114,11 +184,11 @@ Status Code: 200
 
 ##### Error
 
-Status Code: **TODO** ??
+Status Code: 500
 
-```jsonI
+```json
 {
-
+    "errorMessage": ""
 }
 ```
 
@@ -134,14 +204,10 @@ Status Code: **TODO** ??
 {
     "username": "",
     "email": "",
-
-    // This is "Base" if a normal registration is happening,
-    // "Base", "Moderator" if a mod is creating another mod
     "roles": [],
     "password": ""
-
-    // The rest of user fields are default
 }
+// Rest of the fields are defaults, so they are not to be provided
 ```
 
 #### Response body
@@ -152,33 +218,34 @@ Status Code: 201
 
 ```json
 {
-    "username": ""
-    // TODO ritorna tutto l'oggetto?
+    "userId": ""
+    "email": "",
+    "roles": [],
+    "password": "",
+
 }
 ```
 
 ##### Error
 
-Status Code: **TODO** ??
+Status Code: 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
 
-### Retrieve All Users
+## User Endpoints
+
+### Retrieve User Leaderboard
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users | GET | Retrieve all the users in the database |
+| /leaderboard | GET | Retrieve part of the leaderboard |
 
 [Pagination in Mongoose](https://stackoverflow.com/questions/5539955/how-to-paginate-with-mongoose-in-node-js). </br>
-req.query is then used to retrieve the query parameters
-
-**TODO** Originale:
-Returns a list of all the users, better if ordered by elo desc (useful for showing the scoreboard). Magari un endpoint un po' rischioso da fare in generale, meglio un endpoint+modello Leaderboard per esporre meno informazioni? </br>
+*req.query* is then used to retrieve the query parameters
 
 #### Query Parameters
 
@@ -194,9 +261,12 @@ Returns a list of all the users, better if ordered by elo desc (useful for showi
 Status Code: 200
 
 ```json
-    "users": [
+    "leaderboard": [
         {
-            // User fields
+            // Leaderboard records obj
+            "userId": "",
+            "username": "",
+            "elo": 0
         },
         ...
     ],
@@ -214,7 +284,7 @@ Status Code: 500
 }
 ```
 
-### Retrieve Single User
+### Retrieve User
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
@@ -244,7 +314,6 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
@@ -253,7 +322,7 @@ Status Codes: 404, 500
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId | PATCH | Update a particular user with request body data |
+| /users/:userId | PATCH | Update the match with the specified id |
 
 #### Url Parameters
 
@@ -265,10 +334,7 @@ Status Codes: 404, 500
 
 ```json
 {
-    // Only the user fields that need to be updated
-    // TODO no email, password, username?
-    //  come fare per stats visto che c'è anche l'endpoint apposito? 
-    //  si accetta?
+    // User fields that need to be updated
 }
 ```
 
@@ -280,7 +346,7 @@ Status Code: 200
 
 ```json
 {
-    // TODO ritorna i campi modificati?
+    // All the updated fields
 }
 ```
 
@@ -290,7 +356,6 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
@@ -313,13 +378,16 @@ Status Codes: 404, 500
 
 Status Code: 204
 
+```json
+// empty response
+```
+
 ##### Error
 
 Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
@@ -354,7 +422,6 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
@@ -369,7 +436,7 @@ Status Codes: 404, 500
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the user to retrieve the statistics of |
+| userId | string | Id of the user to update the statistics of |
 
 #### Request body
 
@@ -387,7 +454,7 @@ Status Code: 200
 
 ```json
 {
-    // TODO only fields that were updated?
+    // All the updated stats field
 }
 ```
 
@@ -397,24 +464,23 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
 
-### Retrieve User Chats (TODO)
+## Relationship Endpoints
+
+### Retrieve User Relationships
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/chats | GET | Retrieve all the chats that the specified user is involved in |
-
-Cosa ritorna? chat ids oppure chat intere?
+| /users/:userId/relationships | GET | Retrieve the relationships of the specified user |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the user to retrieve the chats of |
+| userId | string | Id of the user to retrieve the relationships of |
 
 #### Response body
 
@@ -424,9 +490,10 @@ Status Code: 200
 
 ```json
 {
-    "chats": [
+    "relationships": [
         {
-            // Chat object
+            "friendId": "",
+            "chatId": "",
         }
         ...
     ]
@@ -439,24 +506,405 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
 
-### Update User Chats (TODO)
+### Add User Relationship
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/chats | PATCH | Update the chats for the specified user |
-
-Come funziona questo?
+| /users/:userId/relationships | POST | Add a relationship to the specified user |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the user to update the chats of |
+| userId | string | Id of the user to add the relationship to |
+
+#### Request body
+
+```json
+// Relationship obj
+{
+    "friendId": "",
+    "chatId": ""
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 201
+
+```json
+{
+    // Created relationship obj
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Remove User Relationship
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/relationships | DELETE | Remove a social relationship from the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to remove the relationship from |
+
+#### Request body
+
+```json
+// Relationship obj to delete
+{
+    "friendId": "",
+    "chatId": ""
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 204
+
+```json
+// empty response
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+## Role Endpoints
+
+### Retrieve User Roles
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/roles | GET | Retrieve the roles of the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to retrieve the roles of |
+
+#### Response body
+
+##### Success
+
+Status Code: 200
+
+```json
+{
+    "roles": [] // Base, Moderator, Admin
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Add User Role
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/roles | POST | Add a role to the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to add the role to |
+
+#### Request body
+
+```json
+{
+    "role": "role to add" // either Base, Moderator, Admin
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 201
+
+```json
+{
+    "role": "role that was added"
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Remove User Role
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/roles | DELETE | Remove a role from the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to remove the role from |
+
+#### Request body
+
+```json
+{
+    "role": "role to remove" // either Base, Moderator, Admin
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 204
+
+```json
+// empty response
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+## Match Endpoints
+
+### Create Match
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches | POST | Create a new match |
+
+#### Request body
+
+```json
+{
+    // Match info obj
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 201
+
+```json
+{
+    // Match obj
+}
+```
+
+##### Error
+
+Status Code: 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Retrieve Match
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId | GET | Retrieve the match with the specified id |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the match to retrieve |
+
+#### Response body
+
+##### Success
+
+Status Code: 200
+
+```json
+{
+    // Match obj
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Update Match
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId | PATCH | Update the match with the specified id |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| matchId | string | Id of the match to update |
+
+#### Request body
+
+```json
+{
+    // Match fields that need to be updated
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 200
+
+```json
+{
+    // All the updated fields
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Delete Match  
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId | DELETE | Delete the match with the provided id |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| matchId | string | Id of the match to delete |
+
+#### Response body
+
+##### Success
+
+Status Code: 204
+
+```json
+// empty response
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Retrieve Match Stats
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId/stats | GET | Retrieve the statistics of the specified match |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| matchId | string | Id of the match to retrieve the statistics of |
+
+#### Response body
+
+##### Success
+
+Status Code: 200
+
+```json
+{
+    // Match stat object
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Update Match Stats
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId/stats | PATCH | Update the statistics of the specified match |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the match to update the statistics of |
 
 #### Request body
 
@@ -474,7 +922,7 @@ Status Code: 200
 
 ```json
 {
-    // TODO only fields that were updated?
+    // All the updated stats field
 }
 ```
 
@@ -484,24 +932,103 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
 
-### Retrieve User Friends (TODO)
+## Chat Endpoints
+
+### Create Chat (TODO è necessario?)
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/friends | GET | Retrieve all the friends of the specified user |
+| /chats | POST | Create a new chat |
 
-Cosa ritorna? friend ids oppure lista di users?
+#### Request body
+
+```json
+{
+    // Chat info obj
+}
+```
+
+#### Response body
+
+##### Success
+
+Status Code: 201
+
+```json
+{
+    // Chat obj
+}
+```
+
+##### Error
+
+Status Code: 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Retrieve Chat
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId | GET | Retrieve the chat with the specified id |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the user to retrieve the friends of |
+| chatId | string | Id of the chat to retrieve |
+
+#### Response body
+
+##### Success
+
+Status Code: 201
+
+```json
+{
+    // Chat obj
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Update Chat (TODO è necessario?)
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId | PATCH | Update the chat with the specified id |
+
+**TODO** Mi chiedo se sia necessario, perché noi abbiamo già endpoint POST e DELETE per aggiungere e deletare messaggi.
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| chatId | string | Id of the chat to update |
+
+#### Request body
+
+```json
+{
+    // Chat fields that need to be updated
+}
+```
 
 #### Response body
 
@@ -511,9 +1038,77 @@ Status Code: 200
 
 ```json
 {
-    "friends": [
+    // All the updated fields
+}
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Delete Chat  
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId | DELETE | Delete the chat with the provided id |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| chatId | string | Id of the chat to delete |
+
+#### Response body
+
+##### Success
+
+Status Code: 204
+
+```json
+// empty response
+```
+
+##### Error
+
+Status Codes: 404, 500
+
+```json
+{
+    "errorMessage": ""
+}
+```
+
+### Retrieve Chat Messages
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId/messages  | GET | Retrieve the messages of the specified chat |
+
+**TODO** some form of pagination since messages tend to accumulate fast?
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| chatId | string | Id of the chat to retrieve the messages of |
+
+#### Response body
+
+##### Success
+
+Status Code: 200
+
+```json
+{
+    "messages": [
         {
-            // TODO user object ??
+            // Message obj
         }
         ...
     ]
@@ -526,30 +1121,27 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
 
-### Update User Friends (TODO)
+### Add Message to Chat
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/chats | PATCH | Update the friends list of the specified user |
-
-Come funziona questo?
+| /chats/:chatId/messages | POST | Add a message to the specified chat |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the user to updated the friends list of |
+| chatId | string | Id of the chat to add the message to |
 
 #### Request body
 
 ```json
 {
-    // TODO ??
+    // Message obj
 }
 ```
 
@@ -557,11 +1149,11 @@ Come funziona questo?
 
 ##### Success
 
-Status Code: 200
+Status Code: 201
 
 ```json
 {
-    // TODO only fields that were updated?
+    // Created message obj
 }
 ```
 
@@ -571,38 +1163,46 @@ Status Codes: 404, 500
 
 ```json
 {
-    "error": true,
     "errorMessage": ""
 }
 ```
 
+### Remove Message from Chat (TODO? lo supportiamo?)
 
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId/messages | DELETE | Remove a message from the specified chat |
 
+#### Url Parameters
 
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| chatId | string | Id of the chat to remove the message from |
 
+#### Request body
 
+```json
+{
+    // Message obj to delete
+}
+```
 
+#### Response body
 
-/users/:userId/roles                    GET
-/users/:userId/roles                    PATCH
+##### Success
 
+Status Code: 204
 
+```json
+// empty response
+```
 
-/matches                        C       POST        Create a new match
-/matches/:matchId               R       GET         Return the match identified by matchId
-/matches/:matchId               U       PATCH       Update information about a particular match
-/matches/:matchId               D       DELETE      Delete the match identified by matchId
+##### Error
 
-/matches/:matchId/stats                 GET
-/matches/:matchId/stats                 PATCH
+Status Codes: 404, 500
 
-
-/chats                          C      POST       Create a new chat
-/chats/:chatId                  R      GET        Return the chat identified by chatId
-/chats/:chatId                  U      PATCH      Update the chat identified by chatId
-/chats/:chatId                  D      DELETE     Delete a chat by ID
-
-/chats/:chatId/messages                GET        
-/chats/:chatId/messages                PATCH      
-
-
+```json
+{
+    "errorMessage": ""
+}
+```
