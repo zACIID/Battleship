@@ -1,6 +1,8 @@
 # Tecnologie-Applicazioni-Web
 
-## actually using node v.16.15.0, latest LTS available
+## Node Version
+
+Currently using node v.16.15.0, latest LTS available
 
 ## Code Styling Guide
 
