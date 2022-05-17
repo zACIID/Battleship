@@ -6,8 +6,9 @@ Currently using node v.16.15.0, latest LTS available
 
 ## Code Styling Guide
 
-A mostly reasonable approach to TypeScript based off of [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
-[Code Styling Guide](https://github.com/excelmicro/typescript#excel-micro-typescript-style-guide)
+A mostly reasonable approach to TypeScript based off of [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript):
+</br>
+[**Code Styling Guide**](https://github.com/excelmicro/typescript#excel-micro-typescript-style-guide)
 
 ### Setup of prettier and eslint for Typescript and Airbnb coding style
 
