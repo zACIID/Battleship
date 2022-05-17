@@ -419,15 +419,19 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
-  return await UserModel.findOne({username}).catch((err: Error) =>
-    Promise.reject(new Error('No user with that username'))
-  );
+    return await UserModel.findOne({username}).catch((err: Error) =>
+        Promise.reject(new Error('No user with that username'))
+    );
 }
 
 
 export async function newUser(data): Promise<UserDocument>{
-	const user = new UserModel(data);
-  return user.save();
+	getUserByUsername(data.username)
+	.catch((err) => {
+		const user = new UserModel(data);
+		return user.save();
+	});
+	return Promise.reject(new Error("User already exists"));
 }
 
 
