@@ -21,7 +21,7 @@ declare module 'express' {
  */
 passport.use( new passportHTTP.BasicStrategy( async function(username: string, password: string, done: Function) {
         
-        let user: UserDocument = await getUserByUsername(username)
+        let user: UserDocument = await getUserByUsername(username).catch((err: Error)  => done({statuscode: 500, error: true, errormessage: err}))
 
         if( user.validatePassword( password ) ) {
             return done(null, user);
@@ -56,19 +56,17 @@ router.get("/login", passport.authenticate('basic', { session: false }), (req: R
  */
 router.post('/users', async (req: Request, res: Response) => {
 
-    try{
-        let u = await newUser( req.body );
-		await u.setPassword( req.body.password );
+    let u : UserDocument
+    try {
+        u = await newUser( req.body )
+    }
+    catch(err) {
+        res.status(400).json({ error:true, errormessage: err});
+    }
 
-		return res.status(200).json({ error: false, errormessage: "", id: u.username });
-    }
-	//there's no way that typescript can verify at compile time the type of the error thrown
-    catch(err: any){
-        if( err.code === 11000 ){
-            return res.status(400).json({ error:true, errormessage: "User already exists"});
-		}
-        return res.status(404).json({ error: true, errormessage: "DB error: " + err.message }); 
-    }
+    await u.setPassword( req.body.password ).catch((err: Error) => res.status(500).json({error: true, errormessage: err}))
+
+    return res.status(200).json({ error: false, errormessage: "", id: u.username });
 
 
 });

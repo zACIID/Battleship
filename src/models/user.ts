@@ -426,7 +426,8 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
 
 
 export async function newUser(data): Promise<UserDocument>{
-	return new UserModel(data);
+	const user = new UserModel(data);
+  return user.save();
 }
 
 
