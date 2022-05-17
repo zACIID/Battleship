@@ -10,7 +10,7 @@ dotenv.config({path: '../.env'});
 const app: Express = express();
 const DB_URI: string = process.env.DB_URI;
 
-let io_server: io.Server = null;
+let ioServer: io.Server = null;
 
 /* Database Connection */
 console.log('demanding the sauce...');
@@ -23,8 +23,8 @@ mongoose
 
         const server: http.Server = http.createServer(app);
 
-        io_server = new io.Server(server);
-        io_server.on('connection', function (client) {
+        ioServer = new io.Server(server);
+        ioServer.on('connection', function (client) {
             console.log('Socket.io client connected');
         });
 

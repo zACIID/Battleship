@@ -14,7 +14,7 @@ declare module 'express' {
 }
 
 /**
- *  Function provided to passport middleware which verify user credentials
+ *  Function provided to passport middleware which verifies user credentials
  */
 passport.use(
     new passportHTTP.BasicStrategy(async function (
@@ -22,11 +22,12 @@ passport.use(
         password: string,
         done: Function
     ) {
-        let user: UserDocument = await getUserByUsername(username).catch((err: Error) =>
+        let user: UserDocument = await getUserByUsername(username)
+          .catch((err: Error) =>
             done({statuscode: 500, error: true, errormessage: err})
         );
 
-        if (user.validatePassword(password)) {
+        if (await user.validatePassword(password)) {
             return done(null, user);
         }
         return done(null, false);
@@ -40,28 +41,28 @@ router.get(
     '/auth/signin',
     passport.authenticate('basic', {session: false}),
     (req: Request, res: Response) => {
-        var tokendata = {
+        const tokendata = {
             username: req.user.username,
             roles: req.user.roles,
             mail: req.user.mail,
         };
 
         // Token generation with 1h duration
-        var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {expiresIn: '1h'});
+        const signed_token = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {expiresIn: '1h'});
 
-        return res.status(200).json({error: false, errormessage: '', token: token_signed});
+        return res.status(200).json({error: false, errormessage: '', token: signed_token});
     }
 );
 
 /**
- * Request must contain at least these information -> username: string, email: string, roles: string[], password: string
+ * Request must contain at least this information -> username: string, email: string, roles: string[], password: string
  */
 router.post('/auth/signup', async (req: Request, res: Response) => {
     let u: UserDocument;
     try {
         u = await newUser(req.body);
     } catch (err) {
-        res.status(400).json({error: true, errormessage: err.message});
+        return res.status(400).json({error: true, errormessage: err.message});
     }
 
     await u
