@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
-import {Document, Model, Schema, SchemaTypes, Types} from 'mongoose';
-import {ChatDocument, ChatSchema} from './chat';
+import {Model, Schema, SchemaTypes, Types} from 'mongoose';
 import bcrypt from 'bcrypt';
 
 /**
