@@ -291,11 +291,11 @@ UserSchema.methods.removeChat = async function (id: Types.ObjectId): Promise<Use
 };
 
 UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocument> {
-  const salt = await bcrypt.genSalt(10).catch((error) =>
+  const salt = await bcrypt.genSalt(10).catch((error: Error) =>
     Promise.reject(new Error('Error with salt generation: ' + error.message))
   );
 
-  this.pwd_hash = await bcrypt.hash(pwd, salt).catch((error) =>
+  this.pwd_hash = await bcrypt.hash(pwd, salt).catch((error: Error) =>
     Promise.reject(new Error('Error with password encryption: ' + error.message))
   );
 
@@ -305,7 +305,7 @@ UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocum
 UserSchema.methods.validatePassword = async function (pwd: string): Promise<boolean> {
   const hashedPw = await bcrypt
     .hash(pwd, this.salt)
-    .catch((error) =>
+    .catch((error: Error) =>
       Promise.reject(new Error('Error with password encryption: ' + error.message))
     );
 
