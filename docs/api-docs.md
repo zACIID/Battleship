@@ -4,6 +4,7 @@
 
 - [API Docs](#api-docs)
   - [Table of Contents](#table-of-contents)
+  - [TODO notification endpoints?](#todo-notification-endpoints)
   - [How API Authentication works](#how-api-authentication-works)
   - [Model](#model)
     - [UserInfo](#userinfo)
@@ -108,6 +109,11 @@
       - [Request body](#request-body-14)
       - [Response body](#response-body-26)
 
+
+## TODO notification endpoints?
+
+notifications endpoints like user/:userId/notifications?
+
 ## How API Authentication works
 
 define how authenticating for the API works: Basic Authentication, use of jwt and how to retrieve it, what error is returned if auth fails (401=?)
@@ -116,41 +122,35 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 ### UserInfo
 
-```json
-{
-    "username": "",
-    "email": "",
-    "roles": [],
-    "password": ""
-}
-// Rest of the fields are defaults, so they are not to be provided
-```
+| Attribute | Data Type |
+| :-------- | :-------- |
+| username | string |
+| email | string |
+| roles | string[] |
+| password | string |
+
 
 ### User
 
-```json
-{
-    "username": "",
-    "email": "",
-    "roles": [],
-    "password": ""
-}
-// Rest of the fields are defaults, so they are not to be provided
-```
+| Attribute | Data Type |
+| :-------- | :-------- |
+| username | string |
+| mail | string |
+| roles | string[] |
+
+TODO capire se mettere anche notifications, relationships, stats
 
 ### UserStats
 
-```json
-{
-    "top_elo": 0,
-    "elo": 0,
-    "wins": 0,
-    "losses": 0,
-    "ships_destroyed": 0,
-    "total_shots": 0,
-    "hits": 0
-}
-```
+| Attribute | Data Type |
+| :-------- | :-------- |
+| elo | number |
+| topElo | number |
+| wins | number |
+| losses | number |
+| shipsDestroyed | number |
+| totalShots | number |
+| totalHits | number |
 
 
 ## Authentication Endpoints
