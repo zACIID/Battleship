@@ -276,7 +276,7 @@ UserSchema.methods.removeNotification = async function (
 /* TODO WARNING: chat must be already created, chats field just contains it's ObjectId */
 UserSchema.methods.addChat = async function (id: Types.ObjectId): Promise<UserDocument> {
   if (this.chats.includes(id)) {
-    await Promise.reject(new Error('User already part of this chat'));
+    return Promise.reject(new Error('User already part of this chat'));
   }
   this.chats.push(id);
 
