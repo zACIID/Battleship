@@ -341,9 +341,6 @@ UserSchema.methods.removeFriend = async function (
   friend_id: Types.ObjectId,
   auto_call?: boolean
 ): Promise<UserDocument> {
-  // TODO così non si scorrono gli indici, ma gli element degli array.
-  //  quello che si voleva fare era for (i=0; i<this.friend.length; i++) ??
-  //  se è così, cambiare anche nel resto del codice
   for (let idx in this.friends) {
     if (this.friends[idx] === friend_id) {
       this.friends.splice(parseInt(idx), 1);
