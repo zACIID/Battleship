@@ -22,8 +22,7 @@ passport.use(
         password: string,
         done: Function
     ) {
-        let user: UserDocument = await getUserByUsername(username)
-          .catch((err: Error) =>
+        let user: UserDocument = await getUserByUsername(username).catch((err: Error) =>
             done({statuscode: 500, error: true, errormessage: err})
         );
 
@@ -41,14 +40,16 @@ router.get(
     '/auth/signin',
     passport.authenticate('basic', {session: false}),
     (req: Request, res: Response) => {
-        const tokendata = {
+        const tokenData = {
             username: req.user.username,
             roles: req.user.roles,
             mail: req.user.mail,
         };
 
         // Token generation with 1h duration
-        const signed_token = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {expiresIn: '1h'});
+        const signed_token = jsonwebtoken.sign(tokenData, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
 
         return res.status(200).json({error: false, errormessage: '', token: signed_token});
     }

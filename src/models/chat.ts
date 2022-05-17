@@ -1,49 +1,26 @@
 import * as mongoose from 'mongoose';
-import {Document, Model, Schema, Types, SchemaTypes} from 'mongoose';
+import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
+
+import { Message, MessageSchema } from "./message";
 
 /**
- * Interface that represent a message sub-document found in a Chat document.
- *
- * This does not extend Document because it represents a sub-document,
- * so it does not need Document methods/fields like _id, __v, save(), etc.
+ * Interface that represents a Chat between different users of the system.
  */
-export interface Message {
-    content: string;
-    timestamp: Date;
-    author: Types.ObjectId;
-}
-
-export const MessageSchema = new Schema<Message>({
-    content: {
-        type: SchemaTypes.String,
-        required: true,
-    },
-
-    timestamp: {
-        type: SchemaTypes.Date,
-        required: true,
-    },
-
-    author: {
-        type: SchemaTypes.ObjectId,
-        required: true,
-    },
-});
-
-/**
- * Interface that represents a Chat document.
- * Such document represents a chat between different users of the system.
- */
-export interface ChatDocument extends Document {
+export interface Chat {
     users: Types.ObjectId[];
     messages: Message[];
 
+    // TODO add docs
     addUser(user_id: Types.ObjectId): Promise<ChatDocument>;
-
     removeUser(user_id: Types.ObjectId): Promise<ChatDocument>;
-
     addMessage(content: string, timestamp: Date, author: Types.ObjectId);
 }
+
+/**
+ * Interface that represents a Chat document, which is the internal representation
+ * of a Chat object in the database.
+ */
+export interface ChatDocument extends Chat, Document {}
 
 export const ChatSchema = new Schema<ChatDocument>({
     users: {

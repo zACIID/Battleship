@@ -1,56 +1,10 @@
 import * as mongoose from 'mongoose';
-import {Model, Schema, SchemaTypes, Types} from 'mongoose';
+import { Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-// TODO consider exporting sub-documents/schemas to their own files
-//  for readability purposes
-/**
- * Interface that represent a stats sub-document found in a User document.
- *
- * This does not extend Document because it represents a sub-document,
- * so it does not need Document methods/fields like _id, __v, save(), etc.
- */
-export interface UserStats {
-    topElo: number;
-    elo: number;
-    wins: number;
-    losses: number;
-    shipsDestroyed: number;
-    totalShots: number;
-    hits: number;
-}
-
-export const StatsSchema = new Schema<UserStats>({
-    topElo: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-    elo: {
-        type: SchemaTypes.Number,
-        default: 0,
-        index: true,
-    },
-    wins: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-    losses: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-    shipsDestroyed: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-    totalShots: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-    totalHits: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-});
+import { RequestNotification, RequestTypes } from './notification';
+import { UserStats } from "./user-stats";
+import { Relationship, RelationshipSchema } from "./relationship";
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -63,60 +17,9 @@ export enum UserRoles {
 }
 
 /**
- * Enumeration that defines all the possible notification types receivable by a user
+ * Interface that represents a User of the system.
  */
-export enum RequestTypes {
-    FriendRequest = 'FriendRequest',
-    MatchRequest = 'MatchRequest',
-}
-
-/**
- * Interface that represents a User notification
- */
-export interface RequestNotification {
-    requestType: RequestTypes;
-    requester: Types.ObjectId;
-}
-
-/**
- * A notification is strictly identified by the pair (type, requester)
- */
-export const NotificationSchema = new Schema<RequestNotification>({
-    typeRequest: {
-        type: [SchemaTypes.String],
-        required: true,
-        enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
-    },
-    requester: {
-        type: Types.ObjectId,
-        required: true,
-    },
-});
-
-/**
- * Interface that represents relationship information for some user.
- */
-export interface Relationship {
-    friendId: Types.ObjectId;
-    chatId: Types.ObjectId;
-}
-
-export const RelationshipSchema = new Schema<Relationship>({
-    friendId: {
-        type: SchemaTypes.ObjectId,
-        required: true
-    },
-    chatId: {
-        type: SchemaTypes.ObjectId,
-        required: true
-    },
-});
-
-/**
- * Interface that represents a User document.
- * Such document represents a user of the system.
- */
-export interface UserDocument {
+export interface User {
     username: string;
     mail: string;
     relationships: [Relationship];
@@ -125,10 +28,17 @@ export interface UserDocument {
     salt: string;
     pwd_hash: string;
     notifications: RequestNotification[];
+}
 
+/**
+ * Interface that represents a User document, which is the
+ * internal representation of a Chat object in the database.
+ * It exposes some useful methods to interact with the database object.
+ */
+export interface UserDocument extends User, Document {
     /**
      * Adds the provided user id to this instance's friends list.
-     * If a user id is already in the friends list, it is not added. TODO or an exception is thrown?
+     * If a user id is already in the friends list, it is not added.
      *
      * @param friend_id collection of user ids to add to the friends list
      * @param auto_call flag, if true the function will call itself for the other object instance
@@ -137,7 +47,7 @@ export interface UserDocument {
 
     /**
      * Removes the provided user ids from this instance's friends list.
-     * If a user id is already in the friends list, nothing happens. TODO or an exception is thrown?
+     * If a user id is already in the friends list, nothing happens.
      *
      * @param friend_ids collection of user ids to remove from the friends list
      */
@@ -145,7 +55,7 @@ export interface UserDocument {
 
     /**
      * Removes the provided user id from this instance's friends list.
-     * If a user id is already in the friends list, nothing happens. TODO or an exception is thrown?
+     * If a user id is already in the friends list, nothing happens.
      *
      * @param friend_id collection of user ids to remove from the friends list
      * @param auto_call flag, if true the function will call itself for the other object instance
@@ -154,15 +64,15 @@ export interface UserDocument {
 
     /**
      * Adds the provided role to this instance.
-     * If the user already has the role, it is not added a second time. TODO or an exception is thrown?
+     * If the user already has the role, it is not added a second time.
      *
      * @param role role to be set
      */
-    setRole(role: UserRoles): Promise<UserDocument>;
+    addRole(role: UserRoles): Promise<UserDocument>;
 
     /**
      * Removes the provided role from this instance.
-     * If the user doesn't have the role, nothing happens. TODO or an exception is thrown?
+     * If the user doesn't have the role, nothing happens.
      *
      * @param role role to be removed
      */
@@ -290,7 +200,6 @@ UserSchema.methods.removeNotification = async function (
 
 // TODO implement all of below considering the change done to UserSchema:
 //  relationships replaces friends and chats
-
 UserSchema.methods.addChat = async function (id: Types.ObjectId): Promise<UserDocument> {
     if (this.chats.includes(id)) {
         await Promise.reject(new Error('User already part of this chat'));
@@ -427,6 +336,8 @@ UserSchema.methods.isFriend = function (key: Types.ObjectId): boolean {
     return value;
 };
 
+export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
+
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
     return await UserModel.findOne({_id}).catch((err: Error) =>
         Promise.reject(new Error('No user with that id'))
@@ -444,7 +355,6 @@ export async function createUser(data): Promise<UserDocument> {
         const user = new UserModel(data);
         return user.save();
     });
+
     return Promise.reject(new Error('User already exists'));
 }
-
-export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
