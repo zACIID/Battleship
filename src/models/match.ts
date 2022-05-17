@@ -7,32 +7,32 @@ import {ChatModel, ChatDocument} from './chat';
  *
  */
 export interface MatchStats {
-  winner: Types.ObjectId;
-  start_time: Date;
-  end_time: Date;
-  total_shots: number;
-  ships_destroyed: number;
+    winner: Types.ObjectId;
+    start_time: Date;
+    end_time: Date;
+    total_shots: number;
+    ships_destroyed: number;
 }
 
 export const MatchStatsSchema = new Schema<MatchStats>({
-  winner: {
-    type: SchemaTypes.ObjectId,
-  },
-  start_time: {
-    type: SchemaTypes.Date,
-    required: true,
-  },
-  end_time: {
-    type: SchemaTypes.Date,
-  },
-  total_shots: {
-    type: SchemaTypes.Number,
-    default: 0,
-  },
-  ships_destroyed: {
-    type: SchemaTypes.Number,
-    default: 0,
-  },
+    winner: {
+        type: SchemaTypes.ObjectId,
+    },
+    start_time: {
+        type: SchemaTypes.Date,
+        required: true,
+    },
+    end_time: {
+        type: SchemaTypes.Date,
+    },
+    total_shots: {
+        type: SchemaTypes.Number,
+        default: 0,
+    },
+    ships_destroyed: {
+        type: SchemaTypes.Number,
+        default: 0,
+    },
 });
 
 /**
@@ -41,23 +41,23 @@ export const MatchStatsSchema = new Schema<MatchStats>({
  * of chatroom that such match supports.
  */
 export interface MatchDocument extends Document {
-  player_1: Types.ObjectId;
-  player_2: Types.ObjectId;
-  players_chat: ChatDocument;
-  observers_chat: ChatDocument;
-  stats: MatchStats;
+    player_1: Types.ObjectId;
+    player_2: Types.ObjectId;
+    players_chat: ChatDocument;
+    observers_chat: ChatDocument;
+    stats: MatchStats;
 }
 
 export const MatchSchema = new Schema<MatchDocument>({
-  player_1: SchemaTypes.ObjectId,
+    player_1: SchemaTypes.ObjectId,
 
-  player_2: SchemaTypes.ObjectId,
+    player_2: SchemaTypes.ObjectId,
 
-  players_chat: ChatModel,
+    players_chat: ChatModel,
 
-  observers_chat: ChatModel,
+    observers_chat: ChatModel,
 
-  stats: MatchStatsSchema,
+    stats: MatchStatsSchema,
 });
 
 export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'matches');

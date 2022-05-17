@@ -8,25 +8,25 @@ const Match = require('../src/models/match');
 const Chat = require('../src/models/chat');
 
 const importTest = (name, path) => {
-  describe(name, () => {
-    require(path);
-  });
+    describe(name, () => {
+        require(path);
+    });
 };
 
 const initializeDB = async () => {
-  // DB INIZIALIZATION
+    // DB INIZIALIZATION
 };
 
 describe('Test', () => {
-  // Init Database
-  before(async () => {
-    await initializeDB();
-  });
+    // Init Database
+    before(async () => {
+        await initializeDB();
+    });
 
-  importTest(' Chat Endpoints Test', './ChatTest/chat-endpoints');
+    importTest(' Chat Endpoints Test', './ChatTest/chat-endpoints');
 
-  // Cleanup
-  after(async () => {
-    await Chat.deleteMany({});
-  });
+    // Cleanup
+    after(async () => {
+        await Chat.deleteMany({});
+    });
 });
