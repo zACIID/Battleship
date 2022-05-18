@@ -15,8 +15,7 @@ interface PatchUserBody {
 }
 
 interface PatchStatsBody {
-    username: string;
-    password: string;
+    //??
 }
 
 interface PatchUserRequest extends Request {
