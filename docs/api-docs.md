@@ -4,7 +4,6 @@
 
 - [API Docs](#api-docs)
   - [Table of Contents](#table-of-contents)
-  - [TODO notification endpoints?](#todo-notification-endpoints)
   - [How API Authentication works](#how-api-authentication-works)
   - [Resources](#resources)
     - [Error](#error)
@@ -20,6 +19,8 @@
     - [MatchStats](#matchstats)
     - [Chat](#chat)
     - [Message](#message)
+    - [Notification](#notification)
+    - [LeaderboardEntry](#leaderboardentry)
   - [Authentication Endpoints](#authentication-endpoints)
     - [User Login](#user-login)
       - [Example Request Body](#example-request-body)
@@ -28,15 +29,15 @@
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-1)
   - [User Endpoints](#user-endpoints)
-    - [Retrieve User Leaderboard](#retrieve-user-leaderboard)
-      - [Query Parameters](#query-parameters)
-      - [Example Response Body](#example-response-body-2)
     - [Retrieve User](#retrieve-user)
       - [Url Parameters](#url-parameters)
+      - [Example Response Body](#example-response-body-2)
+    - [Retrieve Multiple Users](#retrieve-multiple-users)
+      - [Example Request Body](#example-request-body-2)
       - [Example Response Body](#example-response-body-3)
     - [Update User](#update-user)
       - [Url Parameters](#url-parameters-1)
-      - [Example Request Body](#example-request-body-2)
+      - [Example Request Body](#example-request-body-3)
       - [Example Response Body](#example-response-body-4)
     - [Delete User](#delete-user)
       - [Url Parameters](#url-parameters-2)
@@ -46,7 +47,7 @@
       - [Example Response Body](#example-response-body-6)
     - [Update User Stats](#update-user-stats)
       - [Url Parameters](#url-parameters-4)
-      - [Example Request Body](#example-request-body-3)
+      - [Example Request Body](#example-request-body-4)
       - [Example Response Body](#example-response-body-7)
   - [Relationship Endpoints](#relationship-endpoints)
     - [Retrieve User Relationships](#retrieve-user-relationships)
@@ -54,11 +55,11 @@
       - [Example Response Body](#example-response-body-8)
     - [Add User Relationship](#add-user-relationship)
       - [Url Parameters](#url-parameters-6)
-      - [Example Request Body](#example-request-body-4)
+      - [Example Request Body](#example-request-body-5)
       - [Example Response Body](#example-response-body-9)
     - [Remove User Relationship](#remove-user-relationship)
       - [Url Parameters](#url-parameters-7)
-      - [Example Request Body](#example-request-body-5)
+      - [Example Request Body](#example-request-body-6)
       - [Example Response Body](#example-response-body-10)
   - [Role Endpoints](#role-endpoints)
     - [Retrieve User Roles](#retrieve-user-roles)
@@ -66,59 +67,69 @@
       - [Example Response Body](#example-response-body-11)
     - [Add User Role](#add-user-role)
       - [Url Parameters](#url-parameters-9)
-      - [Example Request Body](#example-request-body-6)
+      - [Example Request Body](#example-request-body-7)
       - [Example Response Body](#example-response-body-12)
     - [Remove User Role](#remove-user-role)
       - [Url Parameters](#url-parameters-10)
-      - [Example Request Body](#example-request-body-7)
+      - [Example Request Body](#example-request-body-8)
       - [Example Response Body](#example-response-body-13)
+  - [Notification Endpoints](#notification-endpoints)
+    - [Retrieve Notifications](#retrieve-notifications)
+      - [Url Parameters](#url-parameters-11)
+      - [Query Parameters](#query-parameters)
+      - [Example Response Body](#example-response-body-14)
+    - [Add Notification](#add-notification)
+      - [Url Parameters](#url-parameters-12)
+      - [Example Request Body](#example-request-body-9)
+      - [Example Response Body](#example-response-body-15)
+    - [Remove Notification](#remove-notification)
+      - [Url Parameters](#url-parameters-13)
+      - [Example Request Body](#example-request-body-10)
+      - [Example Response Body](#example-response-body-16)
   - [Match Endpoints](#match-endpoints)
     - [Create Match](#create-match)
-      - [Example Request Body](#example-request-body-8)
-      - [Example Response Body](#example-response-body-14)
-    - [Retrieve Match](#retrieve-match)
-      - [Url Parameters](#url-parameters-11)
-      - [Example Response Body](#example-response-body-15)
-    - [Delete Match](#delete-match)
-      - [Url Parameters](#url-parameters-13)
-      - [Example Response Body](#example-response-body-17)
-    - [Update Match Stats](#update-match-stats)
-      - [Url Parameters](#url-parameters-15)
-      - [Example Request Body](#example-request-body-10)
-      - [Example Response Body](#example-response-body-19)
-  - [Chat Endpoints](#chat-endpoints)
-    - [Create Chat (TODO è necessario?)](#create-chat-todo-è-necessario)
       - [Example Request Body](#example-request-body-11)
+      - [Example Response Body](#example-response-body-17)
+    - [Retrieve Match](#retrieve-match)
+      - [Url Parameters](#url-parameters-14)
+      - [Example Response Body](#example-response-body-18)
+    - [Delete Match](#delete-match)
+      - [Url Parameters](#url-parameters-15)
+      - [Example Response Body](#example-response-body-19)
+    - [Update Match Stats](#update-match-stats)
+      - [Url Parameters](#url-parameters-16)
+      - [Example Request Body](#example-request-body-12)
       - [Example Response Body](#example-response-body-20)
     - [Retrieve Chat](#retrieve-chat)
-      - [Url Parameters](#url-parameters-16)
-      - [Example Response Body](#example-response-body-21)
-    - [Update Chat (TODO è necessario?)](#update-chat-todo-è-necessario)
       - [Url Parameters](#url-parameters-17)
-      - [Example Request Body](#example-request-body-12)
-      - [Example Response Body](#example-response-body-22)
+      - [Example Response Body](#example-response-body-21)
     - [Delete Chat](#delete-chat)
       - [Url Parameters](#url-parameters-18)
-      - [Example Response Body](#example-response-body-23)
-    - [Retrieve Chat Messages](#retrieve-chat-messages)
+      - [Example Response Body](#example-response-body-22)
+    - [Add User to Chat](#add-user-to-chat)
       - [Url Parameters](#url-parameters-19)
-      - [Example Response Body](#example-response-body-24)
-    - [Add Message to Chat](#add-message-to-chat)
-      - [Url Parameters](#url-parameters-20)
       - [Example Request Body](#example-request-body-13)
-      - [Example Response Body](#example-response-body-25)
-    - [Remove Message from Chat (TODO? lo supportiamo?)](#remove-message-from-chat-todo-lo-supportiamo)
+      - [Example Response Body](#example-response-body-23)
+    - [Remove User from Chat](#remove-user-from-chat)
+      - [Url Parameters](#url-parameters-20)
+      - [Example Response Body](#example-response-body-24)
+    - [Retrieve Chat Messages](#retrieve-chat-messages)
       - [Url Parameters](#url-parameters-21)
+      - [Query Parameters](#query-parameters-1)
+      - [Example Response Body](#example-response-body-25)
+    - [Add Message to Chat](#add-message-to-chat)
+      - [Url Parameters](#url-parameters-22)
       - [Example Request Body](#example-request-body-14)
       - [Example Response Body](#example-response-body-26)
-
-## TODO notification endpoints?
-
-notifications endpoints like user/:userId/notifications?
+  - [Leaderboard Endpoints](#leaderboard-endpoints)
+    - [Retrieve Leaderboard](#retrieve-leaderboard)
+      - [Query Parameters](#query-parameters-2)
+      - [Example Response Body](#example-response-body-27)
 
 ## How API Authentication works
 
 define how authenticating for the API works: Basic Authentication, use of jwt and how to retrieve it, what error is returned if auth fails (401=?)
+TODO
 
 ## Resources
 
@@ -126,16 +137,16 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| timestamp | number | time (in Unix seconds) that the error occurred at |
-| requestPath | string | path of the request that lead to this error |
-| errorMsg | string | error message |
+| timestamp | number | Time (in Unix seconds) that the error occurred at |
+| requestPath | string | Path of the request that lead to this error |
+| errorMsg | string | Error message |
 
 ### LoginInfo
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| username | string | username credential |
-| password | string | password credential |
+| username | string | Username credential |
+| password | string | Password credential |
 
 ### JWT
 
@@ -147,40 +158,38 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 | Attribute | Data Type |
 | :-------- | :-------- |
-| username | string | username credential |
-| password | string | password credential |
-| email | string | e-mail address|
-| roles | string[] | list of roles to assign to the user |
+| username | string | Username credential |
+| password | string | Password credential |
+| roles | string[] | List of roles to assign to the user |
+| online | boolean | Status of the user right after registration. True if a normal user is registering, because after that he is automatically redirected to the home page, false in other cases such as a moderator creating another moderator account. |
 
 ### User
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| userId | string | id of the user |
-| username | string | username of the user |
-| email | string | e-mail address of the user |
-| roles | string[] | list of roles assigned to the user |
-
-TODO capire se mettere anche notifications, relationships, stats
+| userId | string | Id of the user |
+| username | string | Username of the user |
+| roles | string[] | List of roles assigned to the user |
+| online | boolean | Status of the user |
 
 ### UserStats
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| elo | number | elo of the user |
-| topElo | number | highest elo reached by the user |
-| wins | number | total number of victories of the user |
-| losses | number | total number of losses of the user |
-| shipsDestroyed | number | total number of ships destroyed by the user |
-| totalShots | number | total number of shots of the user |
-| totalHits | number | total number of hits by the user |
+| elo | number | Elo of the user |
+| topElo | number | Highest elo reached by the user |
+| wins | number | Total number of victories of the user |
+| losses | number | Total number of losses of the user |
+| shipsDestroyed | number | Total number of ships destroyed by the user |
+| totalShots | number | Total number of shots of the user |
+| totalHits | number | Total number of hits by the user |
 
 ### Relationship
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| friendId | string | id of some friend user |
-| chatId | string | id of the chat with the above friend |
+| friendId | string | Id of some friend user |
+| chatId | string | Id of the chat with the above friend |
 
 ### Role
 
@@ -192,43 +201,60 @@ TODO capire se mettere anche notifications, relationships, stats
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| player1 | string | id of player #1 of the match |
-| player2 | string | id of player #2 of the match |
+| player1 | string | Id of player #1 of the match |
+| player2 | string | Id of player #2 of the match |
 
 ### Match
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| player1 | string | id of player #1 of the match |
-| player2 | string | id of player #2 of the match |
-| playerChat | [Chat](#chat) **TODO** oppure id? | TODO |
-| observerChat | [Chat](#chat) **TODO** oppure id? | TODO |
+| matchId | string | Id of the match |
+| player1 | string | Id of player #1 of the match |
+| player2 | string | Id of player #2 of the match |
+| playersChat | string | Id of the players chat |
+| observersChat | string | Id of the observers chat |
+| stats | [MatchStats](#matchstats) | Stats of the match |
 
 ### MatchStats
-**TODO** ha senso questo oggetto (e i relativi endpoints) se quando finisce il match noi cancelliamo tutto? mi sembra un oggetto sensato solo se c'è la possibilità di mantenerlo, tipo con la cronologia match (che però non implementiamo)?
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| winner | string | id of player that won the match |
-| startTime | number | time (in Unix seconds) that the match started at |
-| endTime | number | time (in Unix seconds) that the match ended at |
-| totalShots | number | total shots fired during the match |
-| shipsDestroyed | number | number of ships destroyed during the match |
+| winner | string | Id of player that won the match |
+| startTime | number | Time (in Unix seconds) that the match started at |
+| endTime | number | Time (in Unix seconds) that the match ended at |
+| totalShots | number | Total shots fired during the match |
+| shipsDestroyed | number | Number of ships destroyed during the match |
 
 ### Chat
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| users | string[] | ids of the users involved in the chat |
-| messages | [Message](#message)[] | messages exchanged in the chat |
+| chatId | string | Id of the chat |
+| users | string[] | Ids of the users involved in the chat |
+| messages | [Message](#message)[] | Messages exchanged in the chat |
 
 ### Message
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| author | string | id of the user that sent this message |
-| content | string | id of player #1 of the match |
-| timestamp | string | id of player #2 of the match |
+| author | string | Id of the user that sent this message |
+| content | string | Content of the message |
+| timestamp | number | Time (in Unix seconds) that the message was sent at |
+
+### Notification
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| type | string | type of the notification |
+| sender | string | Id of the user that generated the notification |
+
+### LeaderboardEntry
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| userId | string | Id of the user that this leaderboard entry refers to |
+| username | string | Name of the user that this leaderboard entry refers to |
+| elo | number | Elo of the user that this leaderboard entry refers to |
 
 ## Authentication Endpoints
 
@@ -244,8 +270,6 @@ TODO capire se mettere anche notifications, relationships, stats
 
 ```json
 {
-    // TODO login con email o username?
-    //  e se si usa username, a cosa serve email?
     "username": "username",
     "password": "password"
 }
@@ -271,7 +295,7 @@ TODO capire se mettere anche notifications, relationships, stats
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -293,7 +317,7 @@ TODO capire se mettere anche notifications, relationships, stats
     "password": "",
     "email": "",
     "roles": [],
-    "online": true if it's a plain user registration, false if a moderator is creating another moderator
+    "online": true
 }
 ```
 
@@ -310,8 +334,7 @@ TODO capire se mettere anche notifications, relationships, stats
     "username": "",
     "email": "",
     "roles": [],
-    "online": 
-
+    "online": true
 }
 ```
 
@@ -322,61 +345,13 @@ TODO capire se mettere anche notifications, relationships, stats
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
 ```
 
 ## User Endpoints
-
-### Retrieve User Leaderboard
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /leaderboard | GET | Retrieve part of the leaderboard |
-
-[Pagination in Mongoose](https://stackoverflow.com/questions/5539955/how-to-paginate-with-mongoose-in-node-js).
-**req.query*** is then used to retrieve the query parameters
-
-#### Query Parameters
-
-| Name | Data Type | Required | Description | Default | Constraints |
-| :--- | :-------- | :------- | :---------- | :------ | :---------- |
-| limit | Integer | No | Number of users to be returned | 50 |limit <= 50 && limit >= 0 |
-| page | Integer | No | Number indicating the page of results that has to be returned | 1 | page >= 1 |
-
-#### Example Response Body
-
-##### Success
-
-Status Code: 200
-
-```json
-    "leaderboard": [
-        {
-            // Leaderboard records obj
-            "userId": "",
-            "username": "",
-            "elo": 0
-        },
-        ...
-    ],
-    "nextPage": "url to the next page of results"
-```
-
-##### Error
-
-- Status Code: 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600, // Unix seconds timestamp
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
 
 ### Retrieve User
 
@@ -394,11 +369,18 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- [User](#user) resource with the specified id
 
 ```json
 {
-    // User fields
+    "userId": "user-id-1",
+    "username": "username",
+    "roles": [
+        "Base", 
+        "Moderator"
+    ],
+    "online": true
 }
 ```
 
@@ -409,7 +391,74 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Retrieve Multiple Users
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users | GET | Retrieve the user with the ids specified in the request body |
+
+**TODO** se un id non è valido, si lancia un 404 o si ritornano solo gli user trovati? io dico 404
+
+#### Example Request Body
+
+Object representing the ids of the users to retrieve
+
+```json
+{
+    "userIds": [
+        "user-id-1",
+        "user-id-2"
+    ]
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 200
+- [User](#user) resource with the specified id
+
+```json
+{
+    "users": [
+        {
+            "userId": "user-id-1",
+            "username": "username1",
+            "roles": [
+                "Base", 
+                "Moderator"
+            ],
+            "online": true
+        },
+        {
+            "userId": "user-id-2",
+            "username": "username2",
+            "roles": [
+                "Base", 
+                "Moderator"
+            ],
+            "online": true
+        },
+        ...
+    ]
+}
+```
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -429,13 +478,12 @@ Status Code: 200
 
 #### Example Request Body
 
-Only the [User](#user) fields that need to be updated
+Only the [User](#user) fields that need to be updated, except *userId*
 
 ```json
 {
     "username": "new username",
     "password": "new password"
-    // Other fields that do not need an update can be omitted
 }
 ```
 
@@ -443,11 +491,13 @@ Only the [User](#user) fields that need to be updated
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- Only the [User](#user) fields that have been updated
 
 ```json
 {
-    // All the updated fields
+    "username": "new username",
+    "password": "new password"
 }
 ```
 
@@ -458,7 +508,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -480,11 +530,8 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 204
-
-```json
-// empty response
-```
+- Status Code: 204
+- Empty response
 
 ##### Error
 
@@ -493,7 +540,7 @@ Status Code: 204
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -515,11 +562,18 @@ Status Code: 204
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- [UserStats](#userstats) resource that refers to the specified user
 
 ```json
 {
-    // User stat object
+    "elo": 2500,
+    "topElo": 3000,
+    "wins": 189,
+    "losses": 121,
+    "shipsDestroyed": 1000,
+    "totalShots": 12463,
+    "totalHits": 6213
 }
 ```
 
@@ -530,7 +584,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -557,7 +611,6 @@ Only the [UserStats](#userstats) fields that need to be updated
     "elo": 2500,
     "hits": 4000,
     "shipsDestroyed": 120
-    // Other fields that do not need an update can be omitted
 }
 ```
 
@@ -565,11 +618,14 @@ Only the [UserStats](#userstats) fields that need to be updated
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- Only the [UserStats](#userstats) fields that have been updated
 
 ```json
 {
-    // All the updated stats field
+    "elo": 2500,
+    "hits": 4000,
+    "shipsDestroyed": 120
 }
 ```
 
@@ -580,7 +636,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -604,14 +660,15 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- Array of [Relationship](#relationship) resources referring to the specified user
 
 ```json
 {
     "relationships": [
         {
-            "friendId": "",
-            "chatId": "",
+            "friendId": "friend-id-1",
+            "chatId": "chat-with-friend-id",
         }
         ...
     ]
@@ -625,7 +682,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -649,8 +706,8 @@ Status Code: 200
 
 ```json
 {
-    "friendId": "some-friend-id",
-    "chatId": "some-chat-id"
+    "friendId": "friend-id-1",
+    "chatId": "chat-with-friend-id"
 }
 ```
 
@@ -658,11 +715,13 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 201
+- Status Code: 201
+- The [Relationship](#relationship) resource that has just been created
 
 ```json
 {
-    // Created relationship obj
+    "friendId": "friend-id-1",
+    "chatId": "chat-with-friend-id"
 }
 ```
 
@@ -673,7 +732,7 @@ Status Code: 201
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -697,8 +756,8 @@ Status Code: 201
 
 ```json
 {
-    "friendId": "",
-    "chatId": ""
+    "friendId": "friend-id-1",
+    "chatId": "chat-with-friend-id"
 }
 ```
 
@@ -706,11 +765,8 @@ Status Code: 201
 
 ##### Success
 
-Status Code: 204
-
-```json
-// empty response
-```
+- Status Code: 204
+- Empty response
 
 ##### Error
 
@@ -719,7 +775,7 @@ Status Code: 204
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -743,11 +799,12 @@ Status Code: 204
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- Resource representing the roles of the specified user
 
 ```json
 {
-    "roles": [] // Base, Moderator, Admin
+    "roles": []
 }
 ```
 
@@ -758,7 +815,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -791,11 +848,11 @@ Status Code: 200
 ##### Success
 
 - Status Code: 201
-- [Role](#role) resource representing the role that was just added
+- [Role](#role) resource representing the role that has just been added
 
 ```json
 {
-    "role": "role that was added"
+    "role": "Moderator
 }
 ```
 
@@ -806,7 +863,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -838,10 +895,61 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 204
+- Status Code: 204
+- Empty response
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
 
 ```json
-// empty response
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+## Notification Endpoints
+
+### Retrieve Notifications
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/notifications | GET | Retrieve the notifications of the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to retrieve the notifications of |
+
+#### Query Parameters
+
+| Name | Data Type | Required | Description | Default | Constraints |
+| :--- | :-------- | :------- | :---------- | :------ | :---------- |
+| limit | Integer | No | Maximum number of notifications to be returned | 100 | limit <= 500 && limit >= 0 |
+| skip | Integer | No | Number of notifications to skip before starting to select users to send | 0 | skip >= 0 |
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 200
+- Array of [Notification](#notification) resources that were sent to the specified user, of maximum length *limit*
+
+```json
+{
+    "notifications": [
+        {
+            "type": "FriendRequest",
+            "sender": "sender-id"
+        }
+        ...
+    ],
+    "nextPage": "baseUrl/users/:userId/notifications?limit=500&skip=500"
+}
 ```
 
 ##### Error
@@ -851,7 +959,100 @@ Status Code: 204
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Add Notification
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/notifications | POST | Add a notification to the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to add the notification to |
+
+#### Example Request Body
+
+[Notification](#notification) resource representing the notification to add to the user
+
+```json
+{
+    "type": "FriendRequest",
+    "sender": "sender-id"
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 201
+- [Notification](#notification) resource that was just added to the user
+
+```json
+{
+    "type": "FriendRequest",
+    "sender": "sender-id"
+}
+```
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Remove Notification
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /users/:userId/notifications | DELETE | Remove the notification from the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to remove the notification from |
+
+#### Example Request Body
+
+[Notification](#notification) resource to remove from the user
+
+```json
+{
+    "type": "FriendRequest",
+    "sender": "sender-id"
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 204
+- Empty response
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -885,9 +1086,10 @@ Status Code: 204
 
 ```json
 {
+    "matchId": "match-id",
     "player1": "player1-id",
     "player2": "player2-id",
-    "playerChat": "players-chat-id",
+    "playersChat": "players-chat-id",
     "observersChat": "observers-chat-id"
 }
 ```
@@ -899,7 +1101,7 @@ Status Code: 204
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -921,11 +1123,23 @@ Status Code: 204
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- [Match](#match) resource with the specified id
 
 ```json
 {
-    // Match obj
+    "matchId": "match-id",
+    "player1": "player1-id",
+    "player2": "player2-id",
+    "playersChat": "players-chat-id",
+    "observersChat": "observers-chat-id",
+    "stats": {
+        "winner": "winner-user-id",
+        "startTime": 1651881600,
+        "endTime": 1651881600,
+        "shipsDestroyed": 5,
+        "totalShots": 40
+    }
 }
 ```
 
@@ -936,7 +1150,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -958,11 +1172,8 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 204
-
-```json
-// empty response
-```
+- Status Code: 204
+- Empty response
 
 ##### Error
 
@@ -971,7 +1182,7 @@ Status Code: 204
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -1005,11 +1216,14 @@ Only the [MatchStats](#matchstats) fields that need to be updated
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- Only the [MatchStats](#matchstats) fields that have been updated
 
 ```json
 {
-    // The entire updated object -> useful to show the endgame results
+    "winner": "id of the winner",
+    "totalShots": 16,
+    "shipsDestroyed": 8
 }
 ```
 
@@ -1020,48 +1234,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
-
-## Chat Endpoints
-
-### Create Chat (TODO è necessario?)
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /chats | POST | Create a new chat |
-
-#### Example Request Body
-
-```json
-{
-    // Chat info obj
-}
-```
-
-#### Example Response Body
-
-##### Success
-
-Status Code: 201
-
-```json
-{
-    // Chat obj
-}
-```
-
-##### Error
-
-- Status Code: 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -1083,11 +1256,23 @@ Status Code: 201
 
 ##### Success
 
-Status Code: 201
+- Status Code: 201
+- [Chat](#chat) resource with the specified id
 
 ```json
 {
-    // Chat obj
+    "chatId": "chat-id",
+    "users": [
+        "user-id-1", "user-id-2"
+    ],
+    "messages": [
+        {
+            "author": "author-user-id",
+            "timestamp": 1651881600,
+            "content": "message"
+        },
+        ...
+    ]
 }
 ```
 
@@ -1098,54 +1283,7 @@ Status Code: 201
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
-
-### Update Chat (TODO è necessario?)
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /chats/:chatId | PATCH | Update the chat with the specified id |
-
-**TODO** Mi chiedo se sia necessario, perché noi abbiamo già endpoint POST e DELETE per aggiungere e deletare messaggi.
-
-#### Url Parameters
-
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| chatId | string | Id of the chat to update |
-
-#### Example Request Body
-
-```json
-{
-    // Chat fields that need to be updated
-}
-```
-
-#### Example Response Body
-
-##### Success
-
-Status Code: 200
-
-```json
-{
-    // All the updated fields
-}
-```
-
-##### Error
-
-- Status Codes: 404, 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -1167,10 +1305,55 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 204
+- Status Code: 204
+- Empty response
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
 
 ```json
-// empty response
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Add User to Chat
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId/users | POST | Add the user with the provided id (in the request body) to the specified chat |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| chatId | string | Id of the user to add to the chat |
+
+#### Example Request Body
+
+Resource representing the id of the user to add to the chat
+
+```json
+{
+    "userId": "user-id-1"
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 200
+- Resource representing the id of the user that was just added
+
+```json
+{
+    "userId": "user-id-1"
+}
 ```
 
 ##### Error
@@ -1180,7 +1363,40 @@ Status Code: 204
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Remove User from Chat
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /chats/:chatId/users/:userId | DELETE | Remove the user with the specified id from the specified chat |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| chatId | string | Id of the chat to remove the user from |
+| userId | string | Id of the user to remove from the chat |
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 204
+- Empty response
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -1190,9 +1406,7 @@ Status Code: 204
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId/messages  | GET | Retrieve the messages of the specified chat |
-
-**TODO** some form of pagination since messages tend to accumulate fast?
+| /chats/:chatId/messages | GET | Retrieve the messages of the specified chat |
 
 #### Url Parameters
 
@@ -1200,20 +1414,31 @@ Status Code: 204
 | :--- | :-------- | :---------- |
 | chatId | string | Id of the chat to retrieve the messages of |
 
+#### Query Parameters
+
+| Name | Data Type | Required | Description | Default | Constraints |
+| :--- | :-------- | :------- | :---------- | :------ | :---------- |
+| limit | Integer | No | Maximum number of messages to be returned | 100 | limit <= 500 && limit >= 0 |
+| skip | Integer | No | Number of users to skip before starting to select users to send | 0 | skip >= 0 |
+
 #### Example Response Body
 
 ##### Success
 
-Status Code: 200
+- Status Code: 200
+- Array of [Message](#message) resources that were sent in the specified chat, of maximum length *limit*
 
 ```json
 {
     "messages": [
         {
-            // Message obj
+            "author": "author-user-id",
+            "content": "message",
+            "timestamp": 1651881600
         }
         ...
-    ]
+    ],
+    "nextPage": "baseUrl/chats/:chatId/messages?limit=100&skip=100"
 }
 ```
 
@@ -1224,7 +1449,7 @@ Status Code: 200
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
@@ -1248,7 +1473,9 @@ Status Code: 200
 
 ```json
 {
-    // Message obj
+    "author": "author-user-id",
+    "content": "message",
+    "timestamp": 1651881600
 }
 ```
 
@@ -1256,11 +1483,14 @@ Status Code: 200
 
 ##### Success
 
-Status Code: 201
+- Status Code: 201
+- [Message](#message) resource that was just added to the chat
 
 ```json
 {
-    // Created message obj
+    "author": "author-user-id",
+    "content": "message",
+    "timestamp": 1651881600
 }
 ```
 
@@ -1271,52 +1501,54 @@ Status Code: 201
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
 ```
 
-### Remove Message from Chat (TODO? lo supportiamo?)
+## Leaderboard Endpoints
+
+### Retrieve Leaderboard
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId/messages | DELETE | Remove a message from the specified chat |
+| /leaderboard | GET | Retrieve part of the leaderboard, which is ordered by elo |
 
-#### Url Parameters
+#### Query Parameters
 
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| chatId | string | Id of the chat to remove the message from |
-
-#### Example Request Body
-
-[Message](#message) resource representing the message to delete from the chat
-
-```json
-{
-    // Message obj to delete
-}
-```
+| Name | Data Type | Required | Description | Default | Constraints |
+| :--- | :-------- | :------- | :---------- | :------ | :---------- |
+| limit | Integer | No | Maximum number of users to be returned | 50 | limit <= 50 && limit >= 0 |
+| skip | Integer | No | Number of users to skip before starting to select users to send | 0 | skip >= 0 |
 
 #### Example Response Body
 
 ##### Success
 
-Status Code: 204
+- Status Code: 200
+- Array of [LeaderboardEntry](#leaderboardentry) resources, of maximum length *limit*
 
 ```json
-// empty response
+    "leaderboard": [
+        {
+            "userId": "",
+            "username": "",
+            "elo": 0
+        },
+        ...
+    ],
+    "nextPage": "baseUrl/leaderboard?limit=50&skip=50"
 ```
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Code: 500
 - [Error](#error) resource
 
 ```json
 {
-    "timestamp": 1651881600, // Unix seconds timestamp
+    "timestamp": 1651881600,
     "errorMessage": "some error message",
     "requestPath": "error/request/path"
 }
