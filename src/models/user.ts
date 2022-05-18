@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
+import { NotificationSchema, Notification, NotificationTypes } from './notification';
 import { UserStats } from './user-stats';
 import { Relationship, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
@@ -28,7 +28,7 @@ export interface User {
     roles: string[];
     salt: string;
     pwd_hash: string;
-    notifications: RequestNotification[];
+    notifications: Notification[];
 }
 
 /**
@@ -108,9 +108,9 @@ export interface UserDocument extends User, Document {
 
     validatePassword(pwd: string): Promise<boolean>;
 
-    addNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
+    addNotification(type: NotificationTypes, requester: Types.ObjectId): Promise<UserDocument>;
 
-    removeNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
+    removeNotification(type: NotificationTypes, requester: Types.ObjectId): Promise<UserDocument>;
 
     addChat(_id: Types.ObjectId): Promise<UserDocument>;
 
@@ -165,7 +165,7 @@ export const UserSchema = new Schema<UserDocument>({
 });
 
 UserSchema.methods.addNotification = async function (
-    typeRequest: RequestTypes,
+    typeRequest: NotificationTypes,
     requester: Types.ObjectId
 ): Promise<UserDocument> {
     if (this.notifications.includes({ requestType: typeRequest, requester }))
@@ -177,7 +177,7 @@ UserSchema.methods.addNotification = async function (
 };
 
 UserSchema.methods.removeNotification = async function (
-    typeRequest: RequestTypes,
+    typeRequest: NotificationTypes,
     requester: Types.ObjectId
 ): Promise<UserDocument> {
     for (const idx in this.notifications) {
