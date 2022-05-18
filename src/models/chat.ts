@@ -9,18 +9,20 @@ import { Message, MessageSchema } from "./message";
 export interface Chat {
     users: Types.ObjectId[];
     messages: Message[];
+}
 
+/**
+ * Interface that represents a Chat document, which is the
+ * internal representation of a Chat object in the database.
+ * It also exposes some useful methods to update the state of the chat
+ * document in the database.
+ */
+export interface ChatDocument extends Chat, Document {
     // TODO add docs
     addUser(user_id: Types.ObjectId): Promise<ChatDocument>;
     removeUser(user_id: Types.ObjectId): Promise<ChatDocument>;
     addMessage(content: string, timestamp: Date, author: Types.ObjectId);
 }
-
-/**
- * Interface that represents a Chat document, which is the internal representation
- * of a Chat object in the database.
- */
-export interface ChatDocument extends Chat, Document {}
 
 export const ChatSchema = new Schema<ChatDocument>({
     users: {
@@ -28,7 +30,7 @@ export const ChatSchema = new Schema<ChatDocument>({
         required: true,
     },
     messages: {
-        type: MessageSchema,
+        type: [MessageSchema],
         default: [],
     },
 });

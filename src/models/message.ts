@@ -4,12 +4,17 @@ import {Schema, SchemaTypes, Types} from 'mongoose';
  * Interface that represents a chat message.
  */
 export interface Message {
+    author: Types.ObjectId;
     content: string;
     timestamp: Date;
-    author: Types.ObjectId;
 }
 
 export const MessageSchema = new Schema<Message>({
+    author: {
+        type: SchemaTypes.ObjectId,
+        required: true,
+    },
+
     content: {
         type: SchemaTypes.String,
         required: true,
@@ -17,11 +22,6 @@ export const MessageSchema = new Schema<Message>({
 
     timestamp: {
         type: SchemaTypes.Date,
-        required: true,
-    },
-
-    author: {
-        type: SchemaTypes.ObjectId,
         required: true,
     },
 });

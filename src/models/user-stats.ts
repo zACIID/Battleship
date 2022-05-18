@@ -1,4 +1,4 @@
-import {Schema, SchemaTypes} from 'mongoose';
+import { Schema, SchemaTypes } from 'mongoose';
 
 /**
  * Interface that represent the stats of some user of the system.
