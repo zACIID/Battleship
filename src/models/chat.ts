@@ -67,4 +67,17 @@ export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
     return Promise.resolve(chatData);
 }
 
+/**
+ * 
+ * @param data contains a list of users objectId that can also be empty
+ * @returns the newly created ChatDocument's object
+ */
+export async function createChat(users: Types.ObjectId[]): Promise<ChatDocument> {
+    
+    let chat = new ChatModel({users});
+    return chat.save();
+
+}
+
+
 export const ChatModel: Model<ChatDocument> = mongoose.model('Chat', ChatSchema, 'chats');

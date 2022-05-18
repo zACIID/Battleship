@@ -2,9 +2,10 @@ import * as mongoose from 'mongoose';
 import { Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { RequestNotification, RequestTypes } from './notification';
+import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
 import { UserStats } from "./user-stats";
 import { Relationship, RelationshipSchema } from "./relationship";
+import { StatsSchema } from "./user-stats";
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -155,21 +156,13 @@ export const UserSchema = new Schema<UserDocument>({
         required: false,
     },
 
-    notifications: [
-        {
-            typeRequest: {
-                type: [SchemaTypes.String],
-                required: true,
-                enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
-            },
-            requester: {
-                type: Types.ObjectId,
-                required: true,
-            },
-        },
-    ],
+    notifications:{
+        type: [NotificationSchema],
+        default: []
+    },
 
     online: SchemaTypes.Boolean,
+    
 });
 
 UserSchema.methods.addNotification = async function (

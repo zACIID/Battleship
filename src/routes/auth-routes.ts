@@ -1,9 +1,8 @@
 import {Router, Request, Response, NextFunction} from 'express';
-import {UserModel, getUserByUsername, createUser, UserDocument} from '../models/user';
+import {getUserByUsername, createUser, UserDocument} from '../models/user';
 import passport from 'passport';
 import passportHTTP from 'passport-http';
 import jsonwebtoken from 'jsonwebtoken';
-import jwt from 'express-jwt';
 
 const router = Router();
 
@@ -36,24 +35,22 @@ passport.use(
 /**
  *  Login endpoint, check the authentication and generate the jwt
  */
-router.get(
-    '/auth/signin',
-    passport.authenticate('basic', {session: false}),
-    (req: Request, res: Response) => {
-        const tokenData = {
-            username: req.user.username,
-            roles: req.user.roles,
-            mail: req.user.mail,
-        };
+router.get('/auth/signin', passport.authenticate('basic', {session: false}), (req: Request, res: Response) => {
 
-        // Token generation with 1h duration
-        const signed_token = jsonwebtoken.sign(tokenData, process.env.JWT_SECRET, {
-            expiresIn: '1h',
-        });
+    const tokenData = {
+        username: req.user.username,
+        roles: req.user.roles,
+        mail: req.user.mail,
+    };
 
-        return res.status(200).json({error: false, errormessage: '', token: signed_token});
-    }
-);
+    // Token generation with 1h duration
+    const signed_token = jsonwebtoken.sign(tokenData, process.env.JWT_SECRET, {
+        expiresIn: '1h',
+    });
+
+    return res.status(200).json({error: false, errormessage: '', token: signed_token});
+
+});
 
 /**
  * Request must contain at least this information -> username: string, email: string, roles: string[], password: string

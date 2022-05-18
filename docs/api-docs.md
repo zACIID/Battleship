@@ -79,17 +79,10 @@
     - [Retrieve Match](#retrieve-match)
       - [Url Parameters](#url-parameters-11)
       - [Example Response Body](#example-response-body-15)
-    - [Update Match](#update-match)
-      - [Url Parameters](#url-parameters-12)
-      - [Example Request Body](#example-request-body-9)
-      - [Example Response Body](#example-response-body-16)
     - [Delete Match](#delete-match)
       - [Url Parameters](#url-parameters-13)
       - [Example Response Body](#example-response-body-17)
-    - [Retrieve Match Stats (TODO ha senso?)](#retrieve-match-stats-todo-ha-senso)
-      - [Url Parameters](#url-parameters-14)
-      - [Example Response Body](#example-response-body-18)
-    - [Update Match Stats (TODO ha senso?)](#update-match-stats-todo-ha-senso)
+    - [Update Match Stats](#update-match-stats)
       - [Url Parameters](#url-parameters-15)
       - [Example Request Body](#example-request-body-10)
       - [Example Response Body](#example-response-body-19)
@@ -299,7 +292,8 @@ TODO capire se mettere anche notifications, relationships, stats
     "username": "",
     "password": "",
     "email": "",
-    "roles": []
+    "roles": [],
+    "online": true if it's a plain user registration, false if a moderator is creating another moderator
 }
 ```
 
@@ -315,7 +309,8 @@ TODO capire se mettere anche notifications, relationships, stats
     "userId": "",
     "username": "",
     "email": "",
-    "roles": []
+    "roles": [],
+    "online": 
 
 }
 ```
@@ -892,8 +887,8 @@ Status Code: 204
 {
     "player1": "player1-id",
     "player2": "player2-id",
-    "playerChat": TODO,
-    "observerChat": TODO
+    "playerChat": "players-chat-id",
+    "observersChat": "observers-chat-id"
 }
 ```
 
@@ -947,54 +942,6 @@ Status Code: 200
 }
 ```
 
-### Update Match
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /matches/:matchId | PATCH | Update the match with the specified id |
-
-#### Url Parameters
-
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| matchId | string | Id of the match to update |
-
-#### Example Request Body
-
-```json
-{
-    // TODO serve questo endpoint?
-    //  dipende da come viene gestita la chat secondo me,
-    //  perché i player non si possono modificare e 
-    //  le stats hanno endpoint a parte
-}
-```
-
-#### Example Response Body
-
-##### Success
-
-Status Code: 200
-
-```json
-{
-    // All the updated fields
-}
-```
-
-##### Error
-
-- Status Codes: 404, 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600, // Unix seconds timestamp
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
-
 ### Delete Match  
 
 | Endpoint | Method | Description |
@@ -1030,44 +977,7 @@ Status Code: 204
 }
 ```
 
-### Retrieve Match Stats (TODO ha senso?)
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /matches/:matchId/stats | GET | Retrieve the statistics of the specified match |
-
-#### Url Parameters
-
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| matchId | string | Id of the match to retrieve the statistics of |
-
-#### Example Response Body
-
-##### Success
-
-Status Code: 200
-
-```json
-{
-    // Match stat object
-}
-```
-
-##### Error
-
-- Status Codes: 404, 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600, // Unix seconds timestamp
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
-
-### Update Match Stats (TODO ha senso?)
+### Update Match Stats
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
@@ -1085,7 +995,9 @@ Only the [MatchStats](#matchstats) fields that need to be updated
 
 ```json
 {
-    // field of the stats object that need to be updated
+    "winner": "id of the winner",
+    "totalShots": 16,
+    "shipsDestroyed": 8
 }
 ```
 
@@ -1097,7 +1009,7 @@ Status Code: 200
 
 ```json
 {
-    // All the updated stats field
+    // The entire updated object -> useful to show the endgame results
 }
 ```
 
