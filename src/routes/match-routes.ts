@@ -7,9 +7,14 @@ import {
     deleteMatch,
     updateMatchStats,
 } from '../models/match';
+<<<<<<< Updated upstream
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { UserDocument } from '../models/user';
+=======
+import {Types} from 'mongoose';
+import { authenticateToken } from './auth-routes';
+>>>>>>> Stashed changes
 
 const router = Router();
 
@@ -32,23 +37,6 @@ interface PatchRequest extends Request {
     body: PatchBody;
 }
 
-// TODO export
-export const authenticateToken = function (req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token == null) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.JWT_SECRET, (err: any, user: UserDocument) => {
-        console.log(err);
-
-        if (err) return res.sendStatus(403); // Unauthorized
-
-        req.user = user;
-
-        next();
-    });
-};
 
 /**
  *  /matches | POST | Create a new match

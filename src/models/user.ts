@@ -190,12 +190,16 @@ UserSchema.methods.removeNotification = async function (
     return this.save();
 };
 
+
+
 // TODO implement all of below considering the change done to UserSchema:
 //  relationships replaces friends and chats
 UserSchema.methods.addChat = async function (id: Types.ObjectId): Promise<UserDocument> {
-    if (this.chats.includes(id)) {
+    const data = isPresent.apply(this, id)
+    if (data.found) {
         await Promise.reject(new Error('User already part of this chat'));
     }
+    this.relationships.push()
     this.chats.push(id);
 
     return this.save();
@@ -263,9 +267,6 @@ UserSchema.methods.removeFriend = async function (
     friend_id: Types.ObjectId,
     auto_call?: boolean
 ): Promise<UserDocument> {
-    // TODO così non si scorrono gli indici, ma gli element degli array.
-    //  quello che si voleva fare era for (i=0; i<this.friend.length; i++) ??
-    //  se è così, cambiare anche nel resto del codice
     for (let idx in this.relationships) {
         if (this.friends[idx] === friend_id) {
             this.friends.splice(parseInt(idx), 1);
@@ -328,18 +329,36 @@ UserSchema.methods.isFriend = function (key: Types.ObjectId): boolean {
     return value;
 };
 
+UserSchema.methods.isPresent
+
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
+<<<<<<< Updated upstream
     return await UserModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('No user with that id'))
+=======
+    const userdata: UserDocument = await UserModel.findOne({_id}).catch((err: Error) =>
+        Promise.reject(new Error('Internal server error'))
+>>>>>>> Stashed changes
     );
+
+    return (!userdata)? Promise.reject(new Error('No user with that id')) 
+    : Promise.resolve(userdata)
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
+<<<<<<< Updated upstream
     return await UserModel.findOne({ username }).catch((err: Error) =>
         Promise.reject(new Error('No user with that username'))
+=======
+    const userdata: UserDocument = await UserModel.findOne({username}).catch((err: Error) =>
+        Promise.reject(new Error('Internal server error'))
+>>>>>>> Stashed changes
     );
+
+    return (!userdata)? Promise.reject(new Error('No user with that id')) 
+    : Promise.resolve(userdata)
 }
 
 export async function createUser(data): Promise<UserDocument> {
@@ -350,3 +369,25 @@ export async function createUser(data): Promise<UserDocument> {
 
     return Promise.reject(new Error('User already exists'));
 }
+
+function isPresent( _id: Types.ObjectId ) : {found: boolean, idx: number} {
+    for (var index in this.relationships) {
+        if (this.relationships[index].friendId === _id || this.relationships[index].chatId === _id) 
+            return {found: true, idx: parseInt(index)}
+    }
+    return {found: false, idx: -1}
+}
+
+export async function getLeaderboard() : Promise<UserDocument[]> {
+    return UserModel.find({}, { _id: 1, username: 1, elo: 1})
+    .sort({elo: -1}).limit(20).catch((err: Error) => 
+        Promise.reject(new Error("Sum internal error just occured"))
+    )
+}
+
+export async function deleteUser( _id: Types.ObjectId ) Promise<void> {
+    return 
+}
+
+
+

@@ -3,6 +3,7 @@ import { getUserByUsername, createUser, UserDocument } from '../models/user';
 import passport from 'passport';
 import passportHTTP from 'passport-http';
 import jsonwebtoken from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
 
@@ -11,6 +12,24 @@ declare module 'express' {
         user: UserDocument;
     }
 }
+
+
+export const authenticateToken = function (req: Request, res: Response, next: NextFunction) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.JWT_SECRET, (err: any, user: UserDocument) => {
+        console.log(err);
+
+        if (err) return res.sendStatus(403); // Unauthorized
+
+        req.user = user;
+
+        next();
+    });
+};
 
 /**
  *  Function provided to passport middleware which verifies user credentials
