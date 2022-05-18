@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {Router, Request, Response, NextFunction} from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import {
     getMatchById,
     MatchDocument,
@@ -8,8 +8,8 @@ import {
     updateMatchStats,
 } from '../models/match';
 import jwt from 'jsonwebtoken';
-import {Types} from 'mongoose';
-import {UserDocument} from '../models/user';
+import { Types } from 'mongoose';
+import { UserDocument } from '../models/user';
 
 const router = Router();
 
@@ -85,7 +85,7 @@ router.get('/matches/:matchId', authenticateToken, async (req: Request, res: Res
         });
     });
 
-    return res.status(200).json({match});
+    return res.status(200).json({ match });
 });
 
 /**
@@ -113,7 +113,7 @@ router.delete('/matches/:matchId', authenticateToken, async (req: Request, res: 
 router.patch('/matches/:matchId', authenticateToken, async (req: PatchRequest, res: Response) => {
     let matchId: Types.ObjectId = mongoose.Types.ObjectId(req.params.matchId);
 
-    const {winner, totalShots, shipsDestroyed} = req.body;
+    const { winner, totalShots, shipsDestroyed } = req.body;
 
     await updateMatchStats(matchId, winner, totalShots, shipsDestroyed).catch((err: Error) => {
         return res.status(404).json({

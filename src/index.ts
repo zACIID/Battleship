@@ -1,11 +1,11 @@
 import * as dotenv from 'dotenv';
 import * as http from 'http';
-import express, {Express, NextFunction} from 'express';
+import express, { Express, NextFunction } from 'express';
 import cors from 'cors';
 import * as io from 'socket.io';
 import * as mongoose from 'mongoose';
 
-dotenv.config({path: '../.env'});
+dotenv.config({ path: '../.env' });
 
 const app: Express = express();
 const DB_URI: string = process.env.DB_URI;
@@ -42,5 +42,5 @@ mongoose
 app.use(cors());
 
 /* Alternative to bodyparser which is deprecated */
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads

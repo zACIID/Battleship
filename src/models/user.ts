@@ -3,9 +3,9 @@ import { Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
-import { UserStats } from "./user-stats";
-import { Relationship, RelationshipSchema } from "./relationship";
-import { StatsSchema } from "./user-stats";
+import { UserStats } from './user-stats';
+import { Relationship, RelationshipSchema } from './relationship';
+import { StatsSchema } from './user-stats';
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -156,23 +156,22 @@ export const UserSchema = new Schema<UserDocument>({
         required: false,
     },
 
-    notifications:{
+    notifications: {
         type: [NotificationSchema],
-        default: []
+        default: [],
     },
 
     online: SchemaTypes.Boolean,
-    
 });
 
 UserSchema.methods.addNotification = async function (
     typeRequest: RequestTypes,
     requester: Types.ObjectId
 ): Promise<UserDocument> {
-    if (this.notifications.includes({requestType: typeRequest, requester}))
+    if (this.notifications.includes({ requestType: typeRequest, requester }))
         await Promise.reject(new Error('Notification already sent'));
 
-    this.notifications.push({requestType: typeRequest, requester});
+    this.notifications.push({ requestType: typeRequest, requester });
 
     return this.save();
 };
@@ -332,13 +331,13 @@ UserSchema.methods.isFriend = function (key: Types.ObjectId): boolean {
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
-    return await UserModel.findOne({_id}).catch((err: Error) =>
+    return await UserModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('No user with that id'))
     );
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
-    return await UserModel.findOne({username}).catch((err: Error) =>
+    return await UserModel.findOne({ username }).catch((err: Error) =>
         Promise.reject(new Error('No user with that username'))
     );
 }

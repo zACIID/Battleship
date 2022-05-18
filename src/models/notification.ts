@@ -1,4 +1,4 @@
-import {Schema, SchemaTypes, Types} from 'mongoose';
+import { Schema, SchemaTypes, Types } from 'mongoose';
 
 /**
  * Enumeration that defines all the possible notification types receivable by a user

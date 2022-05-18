@@ -1,4 +1,4 @@
-import { Schema, SchemaTypes, Types } from "mongoose";
+import { Schema, SchemaTypes, Types } from 'mongoose';
 
 /**
  * Interface that represent a stats sub-document found in a Match document.

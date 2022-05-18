@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
 
-import { Message, MessageSchema } from "./message";
+import { Message, MessageSchema } from './message';
 
 /**
  * Interface that represents a Chat between different users of the system.
@@ -55,12 +55,12 @@ ChatSchema.methods.addMessage = async function (
     timestamp: Date,
     author: Types.ObjectId
 ): Promise<ChatDocument> {
-    this.messages.push({content, timestamp, author});
+    this.messages.push({ content, timestamp, author });
     return this.save();
 };
 
 export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
-    const chatData = await ChatModel.findOne({_id}).catch((err: Error) =>
+    const chatData = await ChatModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('No chat with that id'))
     );
 
@@ -68,16 +68,13 @@ export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
 }
 
 /**
- * 
+ *
  * @param data contains a list of users objectId that can also be empty
  * @returns the newly created ChatDocument's object
  */
 export async function createChat(users: Types.ObjectId[]): Promise<ChatDocument> {
-    
-    let chat = new ChatModel({users});
+    let chat = new ChatModel({ users });
     return chat.save();
-
 }
-
 
 export const ChatModel: Model<ChatDocument> = mongoose.model('Chat', ChatSchema, 'chats');

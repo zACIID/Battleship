@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
-import {Document, Model, Schema, Types, SchemaTypes} from 'mongoose';
-import {ChatDocument, ChatModel, createChat} from './chat';
+import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
+import { ChatDocument, ChatModel, createChat } from './chat';
 
-import {MatchStats, MatchStatsSchema} from './match-stats';
+import { MatchStats, MatchStatsSchema } from './match-stats';
 
 export interface Match {
     player1: Types.ObjectId;
@@ -45,7 +45,7 @@ export const MatchSchema = new Schema<MatchDocument>({
 });
 
 export async function getMatchById(_id: Types.ObjectId): Promise<MatchDocument> {
-    const matchData = await MatchModel.findOne({_id}).catch((err: Error) =>
+    const matchData = await MatchModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('No match with that id'))
     );
 
@@ -71,7 +71,7 @@ export async function createMatch(
 }
 
 export async function deleteMatch(_id: Types.ObjectId): Promise<void> {
-    await MatchModel.deleteOne({_id}).catch((err: Error) =>
+    await MatchModel.deleteOne({ _id }).catch((err: Error) =>
         Promise.reject('An error occurred: ' + err.message)
     );
     return Promise.resolve();
@@ -85,8 +85,8 @@ export async function updateMatchStats(
 ): Promise<void> {
     let endTime: Date = new Date();
     let match = await MatchModel.updateOne(
-        {_id},
-        {winner, endTime, totalShots, shipsDestroyed}
+        { _id },
+        { winner, endTime, totalShots, shipsDestroyed }
     ).catch((err: Error) => {
         return Promise.reject(new Error('No match with that id'));
     });

@@ -1,4 +1,4 @@
-import { Schema, SchemaTypes, Types } from "mongoose";
+import { Schema, SchemaTypes, Types } from 'mongoose';
 
 /**
  * Interface that represents relationship information for some user.

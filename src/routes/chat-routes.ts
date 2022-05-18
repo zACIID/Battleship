@@ -1,11 +1,11 @@
-import {Router, Request, Response, NextFunction} from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
 const router = Router();
 
 // Retrieving schema from model
-import {ChatModel, ChatDocument, Message} from '../models/chat';
-import {UserModel, UserDocument} from '../models/user';
-import {MatchModel, MatchDocument} from '../models/match';
+import { ChatModel, ChatDocument, Message } from '../models/chat';
+import { UserModel, UserDocument } from '../models/user';
+import { MatchModel, MatchDocument } from '../models/match';
 
 /*
 Endpoints                               Method     Description
@@ -119,7 +119,7 @@ router.patch(
 
             found.messages.push(newMessage);
 
-            await ChatModel.updateOne({_id: found._id}, {$set: {messages: found.messages}});
+            await ChatModel.updateOne({ _id: found._id }, { $set: { messages: found.messages } });
         } catch (err) {
             //For logging purposes
             console.log(err);
