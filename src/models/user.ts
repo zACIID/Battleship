@@ -168,10 +168,10 @@ UserSchema.methods.addNotification = async function (
     typeRequest: NotificationTypes,
     requester: Types.ObjectId
 ): Promise<UserDocument> {
-    if (this.notifications.includes({ requestType: typeRequest, requester }))
+    if (this.notifications.includes({ type: typeRequest, sender: requester }))
         await Promise.reject(new Error('Notification already sent'));
 
-    this.notifications.push({ requestType: typeRequest, requester });
+    this.notifications.push({ type: typeRequest, sender: requester });
 
     return this.save();
 };
@@ -182,8 +182,8 @@ UserSchema.methods.removeNotification = async function (
 ): Promise<UserDocument> {
     for (const idx in this.notifications) {
         if (
-            this.notifications[idx].requestType === typeRequest &&
-            this.notifications[idx].requester === requester
+            this.notifications[idx].type === typeRequest &&
+            this.notifications[idx].sender === requester
         )
             this.notifications.splice(parseInt(idx), 1);
     }

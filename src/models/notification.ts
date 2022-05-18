@@ -12,20 +12,20 @@ export enum NotificationTypes {
  * Interface that represents a User notification
  */
 export interface Notification {
-    requestType: NotificationTypes;
-    requester: Types.ObjectId;
+    type: NotificationTypes;
+    sender: Types.ObjectId;
 }
 
 /**
  * A notification is strictly identified by the pair (type, requester)
  */
 export const NotificationSchema = new Schema<Notification>({
-    typeRequest: {
+    type: {
         type: [SchemaTypes.String],
         required: true,
         enum: [NotificationTypes.FriendRequest.valueOf(), NotificationTypes.MatchRequest.valueOf()],
     },
-    requester: {
+    sender: {
         type: Types.ObjectId,
         required: true,
     },
