@@ -18,10 +18,26 @@ export interface Chat {
  * document in the database.
  */
 export interface ChatDocument extends Chat, Document {
-    // TODO add docs
+
+    /**
+     * Adds the provided user_id into this instance of chat
+     * @param user_id ObjectId of the user to add
+     */
     addUser(user_id: Types.ObjectId): Promise<ChatDocument>;
+
+    /**
+     * Removes the provided user into this instance of chat
+     * @param user_id ObjectId of the user to add
+     */
     removeUser(user_id: Types.ObjectId): Promise<ChatDocument>;
-    addMessage(content: string, timestamp: Date, author: Types.ObjectId);
+
+    /**
+     * Adds the messages into the messages field of this chat
+     * @param content text of the new message
+     * @param timestamp date when message has been sent
+     * @param author ObjectId of the author of the message
+     */
+    addMessage(content: string, timestamp: Date, author: Types.ObjectId): Promise<ChatDocument>;
 }
 
 export const ChatSchema = new Schema<ChatDocument>({
@@ -63,9 +79,16 @@ export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
     const chatData = await ChatModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('No chat with that id'))
     );
-
     return Promise.resolve(chatData);
 }
+
+export async function deleteChat(_id: Types.ObjectId): Promise<void> {
+    await ChatModel.deleteOne({ _id }).catch((err: Error) =>
+        Promise.reject('An error occurred: ' + err.message)
+    );
+    return Promise.resolve();
+}
+
 
 /**
  *

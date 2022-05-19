@@ -7,14 +7,9 @@ import {
     deleteMatch,
     updateMatchStats,
 } from '../models/match';
-<<<<<<< Updated upstream
-import jwt from 'jsonwebtoken';
-import { Types } from 'mongoose';
-import { UserDocument } from '../models/user';
-=======
 import {Types} from 'mongoose';
 import { authenticateToken } from './auth-routes';
->>>>>>> Stashed changes
+
 
 const router = Router();
 
@@ -44,6 +39,7 @@ interface PatchRequest extends Request {
  *  If some errors occurred, response will contains an error 404
  */
 router.post('/matches', authenticateToken, async (req: PostRequest, res: Response) => {
+    
     let m: MatchDocument;
     try {
         m = await createMatch(req.body.player1, req.body.player2);
@@ -63,16 +59,22 @@ router.post('/matches', authenticateToken, async (req: PostRequest, res: Respons
  *  Otherwise an error 404
  */
 router.get('/matches/:matchId', authenticateToken, async (req: Request, res: Response) => {
+    
     let matchId: Types.ObjectId = mongoose.Types.ObjectId(req.params.matchId);
+    let match: MatchDocument;
 
-    let match = await getMatchById(matchId).catch((err: Error) => {
+    try{
+        match = await getMatchById(matchId);
+    }
+    catch(err){
         return res.status(404).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
+        
         });
-    });
-
+    }
+    
     return res.status(200).json({ match });
 });
 
@@ -81,6 +83,7 @@ router.get('/matches/:matchId', authenticateToken, async (req: Request, res: Res
  *   Returns an empty response if elimination went through, an error otherwise
  */
 router.delete('/matches/:matchId', authenticateToken, async (req: Request, res: Response) => {
+    
     let matchId: Types.ObjectId = mongoose.Types.ObjectId(req.params.matchId);
 
     await deleteMatch(matchId).catch((err: Error) => {

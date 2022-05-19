@@ -334,13 +334,10 @@ UserSchema.methods.isPresent
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
-<<<<<<< Updated upstream
-    return await UserModel.findOne({ _id }).catch((err: Error) =>
-        Promise.reject(new Error('No user with that id'))
-=======
+
     const userdata: UserDocument = await UserModel.findOne({_id}).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
->>>>>>> Stashed changes
+
     );
 
     return (!userdata)? Promise.reject(new Error('No user with that id')) 
@@ -348,13 +345,8 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
-<<<<<<< Updated upstream
-    return await UserModel.findOne({ username }).catch((err: Error) =>
-        Promise.reject(new Error('No user with that username'))
-=======
     const userdata: UserDocument = await UserModel.findOne({username}).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
->>>>>>> Stashed changes
     );
 
     return (!userdata)? Promise.reject(new Error('No user with that id')) 
