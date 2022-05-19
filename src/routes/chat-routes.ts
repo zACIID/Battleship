@@ -1,8 +1,7 @@
 import * as mongoose from 'mongoose';
-import { Router, Request, Response, NextFunction } from 'express';
-import { ChatModel, ChatDocument, getChatById, deleteChat, Chat } from '../models/chat';
+import { Router, Request, Response } from 'express';
+import { ChatDocument, getChatById, deleteChat, Chat } from '../models/chat';
 import { Message } from '../models/message'
-import { UserModel, UserDocument } from '../models/user';
 import { authenticateToken } from './auth-routes';
 import {Types} from 'mongoose';
 
