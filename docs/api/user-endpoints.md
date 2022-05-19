@@ -111,9 +111,9 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users | GET | Retrieve the user with the ids specified in the request body |
+| /users | GET | Retrieve the users with the ids specified in the request body |
 
-**TODO** se un id non è valido, si lancia un 404 o si ritornano solo gli user trovati? io dico 404
+se almeno un id non è valido, si lancia una Promise.reject e conseguente 404 
 
 #### Example Request Body
 

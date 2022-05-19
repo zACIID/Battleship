@@ -3,9 +3,9 @@ import { Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
-import { UserStats } from './user-stats';
-import { Relationship, RelationshipSchema } from './relationship';
-import { StatsSchema } from './user-stats';
+import { UserStats } from "./user-stats";
+import { Relationship, RelationshipSchema } from "./relationship";
+import { StatsSchema } from "./user-stats";
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -69,7 +69,7 @@ export interface UserDocument extends User, Document {
      *
      * @param role role to be set
      */
-    setRole(role: UserRoles): Promise<UserDocument>;
+    addRole(role: UserRoles): Promise<UserDocument>;
 
     /**
      * Removes the provided role from this instance.
@@ -156,22 +156,23 @@ export const UserSchema = new Schema<UserDocument>({
         required: false,
     },
 
-    notifications: {
+    notifications:{
         type: [NotificationSchema],
-        default: [],
+        default: []
     },
 
     online: SchemaTypes.Boolean,
+    
 });
 
 UserSchema.methods.addNotification = async function (
     typeRequest: RequestTypes,
     requester: Types.ObjectId
 ): Promise<UserDocument> {
-    if (this.notifications.includes({ type: typeRequest, sender: requester }))
+    if (this.notifications.includes({requestType: typeRequest, requester}))
         await Promise.reject(new Error('Notification already sent'));
 
-    this.notifications.push({ type: typeRequest, sender: requester });
+    this.notifications.push({requestType: typeRequest, requester});
 
     return this.save();
 };
@@ -182,8 +183,8 @@ UserSchema.methods.removeNotification = async function (
 ): Promise<UserDocument> {
     for (const idx in this.notifications) {
         if (
-            this.notifications[idx].type === typeRequest &&
-            this.notifications[idx].sender === requester
+            this.notifications[idx].requestType === typeRequest &&
+            this.notifications[idx].requester === requester
         )
             this.notifications.splice(parseInt(idx), 1);
     }
@@ -256,39 +257,12 @@ UserSchema.methods.addFriend = async function (
     } else return Promise.reject(new Error('this id is already in the array: ' + friend_id));
 };
 
-
-
-
-/* METHODS FOR ROLES MANIPULATION  */
 UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDocument> {
     for (const idx in this.roles) {
         if (this.roles[idx] === role.valueOf()) this.roles.splice(parseInt(idx), 1);
     }
     return this.save();
 };
-
-UserSchema.methods.hasRole = function (role: UserRoles): boolean {
-    let value = false;
-    this.roles.forEach((element: string) => {
-        if (element === role.valueOf()) value = true;
-    });
-
-    return value;
-};
-
-UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
-    if( !this.hasRole(role) ){
-        this.roles.push(role.valueOf());
-        return this.save();
-    }
-    return Promise.reject(new Error("Role already set"));
-};
-
-
-
-
-
-
 
 UserSchema.methods.removeFriend = async function (
     friend_id: Types.ObjectId,
@@ -325,7 +299,10 @@ UserSchema.methods.removeFriends = async function (friend_ids: [Types.ObjectId])
         : Promise.reject(new Error('Errors occurred: ' + failures));
 };
 
-
+UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
+    this.roles.push(role.valueOf());
+    return this.save();
+};
 
 UserSchema.methods.isModerator = function (): boolean {
     return this.hasRole(UserRoles.Moderator);
@@ -335,7 +312,14 @@ UserSchema.methods.isAdmin = function (): boolean {
     return this.hasRole(UserRoles.Admin);
 };
 
+UserSchema.methods.hasRole = function (role: UserRoles): boolean {
+    let value = false;
+    this.roles.forEach((element: string) => {
+        if (element === role.valueOf()) value = true;
+    });
 
+    return value;
+};
 
 UserSchema.methods.isFriend = function (key: Types.ObjectId): boolean {
     let value = false;
@@ -351,10 +335,8 @@ UserSchema.methods.isPresent
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
-
     const userdata: UserDocument = await UserModel.findOne({_id}).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
-
     );
 
     return (!userdata)? Promise.reject(new Error('No user with that id')) 
@@ -366,14 +348,17 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
         Promise.reject(new Error('Internal server error'))
     );
 
-    return (!userdata)? Promise.reject(new Error('No user with that id')) 
+    return (!userdata)? Promise.reject(new Error('No user with that username')) 
     : Promise.resolve(userdata)
 }
 
 export async function createUser(data): Promise<UserDocument> {
     getUserByUsername(data.username).catch((err) => {
-        const user = new UserModel(data);
-        return user.save();
+        if (err.message === "No user with that username") {
+            const user = new UserModel(data);
+            return user.save();
+        }
+        return Promise.reject(new Error(err.message))
     });
 
     return Promise.reject(new Error('User already exists'));
@@ -387,15 +372,76 @@ function isPresent( _id: Types.ObjectId ) : {found: boolean, idx: number} {
     return {found: false, idx: -1}
 }
 
+export async function getUsers( ids: Types.ObjectId[] ) : Promise<UserDocument[]> {
+    let users: UserDocument[]
+    try {
+        users = await UserModel.find({ _id: { $in: ids }})
+    }
+    catch(err) {
+        return Promise.reject(new Error("Sum internal error just occured"))
+    }
+    if (!users) return Promise.reject(new Error("None of the given ids are present in the db"))
+    return (users.length === ids.length)? Promise.resolve(users) : Promise.reject(users)
+}
+
 export async function getLeaderboard() : Promise<UserDocument[]> {
-    return UserModel.find({}, { _id: 1, username: 1, elo: 1})
-    .sort({elo: -1}).limit(20).catch((err: Error) => 
+    return UserModel.find({}, { _id: 1, username: 1, elo: 1 })
+    .sort({ elo: -1 }).limit(20).catch((err: Error) => 
         Promise.reject(new Error("Sum internal error just occured"))
     )
 }
 
-export async function deleteUser( _id: Types.ObjectId ) Promise<void> {
-    return 
+export async function deleteUser( _id: Types.ObjectId ) : Promise<void> {
+    const obj: { deletedCount?: number } = await UserModel.deleteOne({ _id })
+    .catch( (err) => Promise.reject(new Error("Sum internal error just occured")))
+    return (!obj.deletedCount)? Promise.reject(new Error('No user with that id')) : Promise.resolve()
+}
+
+export async function updateUserName( _id: Types.ObjectId, username: string) : Promise<void> {
+    await getUserByUsername(username).catch(async (err) => {
+        if (err.message === "No user with that username") {
+            const query = await UserModel.updateOne({ _id }, { username })
+            .catch((err) => Promise.reject(new Error("Sum internal error just occured"))) 
+            return (query.n === 0)? Promise.reject(new Error("No user with that id")) : Promise.resolve() 
+        }
+        return Promise.reject(new Error(err.message))
+    })
+    return Promise.reject(new Error("Username already exists brah"))
+}
+
+export async function updatePassword( _id: Types.ObjectId, password: string) : Promise<void> {
+    let user: UserDocument
+    try {
+        user = await getUserById(_id)
+        await user.setPassword(password)
+    }
+    catch(err) {
+       return Promise.reject(new Error(err.message)) 
+    }
+    return Promise.resolve()
+}
+
+export async function getUserStats( _id: Types.ObjectId ) : Promise<UserStats> {
+    let stat: UserDocument = await UserModel.findOne({ _id }, { stats: 1 })
+    .catch((err) => Promise.reject(new Error("Sum internal error just occured")))
+    return (!stat)? Promise.reject(new Error("No user with that id")) : Promise.resolve(stat.stats)
+}
+
+export async function updateUserStats( _id: Types.ObjectId, elo: number, result: boolean, shipsDestroyed: number, shots: number, hits: number) : Promise<UserDocument> {
+    let user: UserDocument
+    try {
+        user = await getUserById(_id)
+    }
+    catch(err) {
+        return Promise.reject(new Error(err.message)) 
+    }
+    if (user.stats.topElo < user.stats.elo + elo) user.stats.topElo = user.stats.elo + elo;
+    user.stats.elo += elo;
+    (result)? user.stats.wins ++ : user.stats.losses --;
+    user.stats.shipsDestroyed += shipsDestroyed;
+    user.stats.totalShots += shots;
+    user.stats.hits += hits
+    return user.save()
 }
 
 
