@@ -34,7 +34,7 @@ interface MessagePostRequest extends Request {
  */
 router.get('/chats/:chatId', authenticateToken, async (req: Request, res: Response) => {
     
-    let chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
+    const chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
 
     let chat: ChatDocument;
 
@@ -58,7 +58,7 @@ router.get('/chats/:chatId', authenticateToken, async (req: Request, res: Respon
  */
 router.delete('/chats/:chatId', authenticateToken, async (req: Request, res: Response) => {
    
-    let chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
+    const chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
 
     await deleteChat(chatId).catch((err: Error) => {
         return res.status(404).json({
@@ -76,7 +76,7 @@ router.delete('/chats/:chatId', authenticateToken, async (req: Request, res: Res
  */
 router.post('/chats/:chatId/users', authenticateToken, async (req: UserPostRequest, res: Response) => {
        
-    let chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
+    const chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
 
     let chat: ChatDocument;
 
@@ -107,7 +107,7 @@ router.delete('/chats/:chatId/users/:userId', authenticateToken, async (req: Req
     let chat: ChatDocument;
     try {
         chat = await getChatById(chatId);
-        chat.removeUser(req.body.userId);
+        chat.removeUser(userId);
 
     } catch(err) {
         return res.status(404).json({
@@ -128,7 +128,7 @@ router.delete('/chats/:chatId/users/:userId', authenticateToken, async (req: Req
  router.get('/chats/:chatId/messages', authenticateToken, async (req: Request, res: Response) => {
        
     const chatId: Types.ObjectId = mongoose.Types.ObjectId(req.params.chatId);
-    let chat: Chat;
+    let chat: ChatDocument;
     let chat_messages: Message[];
 
     try {

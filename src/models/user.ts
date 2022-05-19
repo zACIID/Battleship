@@ -69,7 +69,7 @@ export interface UserDocument extends User, Document {
      *
      * @param role role to be set
      */
-    addRole(role: UserRoles): Promise<UserDocument>;
+    setRole(role: UserRoles): Promise<UserDocument>;
 
     /**
      * Removes the provided role from this instance.
@@ -256,12 +256,39 @@ UserSchema.methods.addFriend = async function (
     } else return Promise.reject(new Error('this id is already in the array: ' + friend_id));
 };
 
+
+
+
+/* METHODS FOR ROLES MANIPULATION  */
 UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDocument> {
     for (const idx in this.roles) {
         if (this.roles[idx] === role.valueOf()) this.roles.splice(parseInt(idx), 1);
     }
     return this.save();
 };
+
+UserSchema.methods.hasRole = function (role: UserRoles): boolean {
+    let value = false;
+    this.roles.forEach((element: string) => {
+        if (element === role.valueOf()) value = true;
+    });
+
+    return value;
+};
+
+UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
+    if( !this.hasRole(role) ){
+        this.roles.push(role.valueOf());
+        return this.save();
+    }
+    return Promise.reject(new Error("Role already set"));
+};
+
+
+
+
+
+
 
 UserSchema.methods.removeFriend = async function (
     friend_id: Types.ObjectId,
@@ -298,10 +325,7 @@ UserSchema.methods.removeFriends = async function (friend_ids: [Types.ObjectId])
         : Promise.reject(new Error('Errors occurred: ' + failures));
 };
 
-UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
-    this.roles.push(role.valueOf());
-    return this.save();
-};
+
 
 UserSchema.methods.isModerator = function (): boolean {
     return this.hasRole(UserRoles.Moderator);
@@ -311,14 +335,7 @@ UserSchema.methods.isAdmin = function (): boolean {
     return this.hasRole(UserRoles.Admin);
 };
 
-UserSchema.methods.hasRole = function (role: UserRoles): boolean {
-    let value = false;
-    this.roles.forEach((element: string) => {
-        if (element === role.valueOf()) value = true;
-    });
 
-    return value;
-};
 
 UserSchema.methods.isFriend = function (key: Types.ObjectId): boolean {
     let value = false;
