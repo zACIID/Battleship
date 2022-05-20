@@ -136,7 +136,7 @@ export const UserSchema = new Schema<UserDocument>({
 
     stats: {
         type: StatsSchema,
-        default: () => ({})
+        default: () => ({}),
     },
 
     roles: {
@@ -163,7 +163,7 @@ export const UserSchema = new Schema<UserDocument>({
 
     online: {
         type: SchemaTypes.Boolean,
-        default: false
+        default: false,
     },
 });
 
@@ -395,7 +395,7 @@ export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
     try {
         users = await UserModel.find({ _id: { $in: ids } });
     } catch (err) {
-        return Promise.reject(new Error('Sum internal error just occured'));
+        return Promise.reject(new Error('Sum internal error just occurred'));
     }
     if (!users) return Promise.reject(new Error('None of the given ids are present in the db'));
     return users.length === ids.length ? Promise.resolve(users) : Promise.reject(users);
@@ -405,12 +405,12 @@ export async function getLeaderboard(): Promise<UserDocument[]> {
     return UserModel.find({}, { _id: 1, username: 1, elo: 1 })
         .sort({ elo: -1 })
         .limit(20)
-        .catch((err: Error) => Promise.reject(new Error('Sum internal error just occured')));
+        .catch((err: Error) => Promise.reject(new Error('Sum internal error just occurred')));
 }
 
 export async function deleteUser(_id: Types.ObjectId): Promise<void> {
     const obj: { deletedCount?: number } = await UserModel.deleteOne({ _id }).catch((err) =>
-        Promise.reject(new Error('Sum internal error just occured'))
+        Promise.reject(new Error('Sum internal error just occurred'))
     );
     return !obj.deletedCount
         ? Promise.reject(new Error('No user with that id'))
@@ -421,7 +421,7 @@ export async function updateUserName(_id: Types.ObjectId, username: string): Pro
     await getUserByUsername(username).catch(async (err) => {
         if (err.message === 'No user with that username') {
             const query = await UserModel.updateOne({ _id }, { username }).catch((err) =>
-                Promise.reject(new Error('Sum internal error just occured'))
+                Promise.reject(new Error('Sum internal error just occurred'))
             );
             return query.n === 0
                 ? Promise.reject(new Error('No user with that id'))
@@ -429,7 +429,7 @@ export async function updateUserName(_id: Types.ObjectId, username: string): Pro
         }
         return Promise.reject(new Error(err.message));
     });
-    return Promise.reject(new Error('Username already exists brah'));
+    return Promise.reject(new Error('Username already exists'));
 }
 
 export async function updatePassword(_id: Types.ObjectId, password: string): Promise<void> {
@@ -450,10 +450,18 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
     return !stat ? Promise.reject(new Error('No user with that id')) : Promise.resolve(stat.stats);
 }
 
+/**
+ * @param _id id of the user to update
+ * @param elo elo to add to the stats
+ * @param wasLatestMatchVictory true if the latest match was a victory, false otherwise
+ * @param shipsDestroyed number of ships destroyed to add to the stats
+ * @param shots number of shots to add to the stats
+ * @param hits number of hits to add to the stats
+ */
 export async function updateUserStats(
     _id: Types.ObjectId,
     elo: number,
-    result: boolean,
+    wasLatestMatchVictory: boolean,
     shipsDestroyed: number,
     shots: number,
     hits: number
@@ -464,12 +472,15 @@ export async function updateUserStats(
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
+
     if (user.stats.topElo < user.stats.elo + elo) user.stats.topElo = user.stats.elo + elo;
+
     user.stats.elo += elo;
-    result ? user.stats.wins++ : user.stats.losses--;
+    wasLatestMatchVictory ? user.stats.wins++ : user.stats.losses++;
     user.stats.shipsDestroyed += shipsDestroyed;
     user.stats.totalShots += shots;
     user.stats.hits += hits;
 
+    // save() è metodo di Model e non di Document
     return user.save();
 }

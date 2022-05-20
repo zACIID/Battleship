@@ -43,7 +43,7 @@ export const MatchSchema = new Schema<MatchDocument>({
 
     stats: {
         type: MatchStatsSchema,
-        default: () => ({})
+        default: () => ({}),
     },
 });
 

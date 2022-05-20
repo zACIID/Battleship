@@ -59,7 +59,7 @@ router.get(
     (req: Request, res: Response) => {
         const tokenData = {
             username: req.user.username,
-            roles: req.user.roles
+            roles: req.user.roles,
         };
 
         // Token generation with 1h duration
@@ -86,5 +86,5 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
         .setPassword(req.body.password)
         .catch((err: Error) => res.status(500).json({ error: true, errormessage: err.message }));
 
-    return res.status(200).json( u );
+    return res.status(200).json(u);
 });
