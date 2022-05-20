@@ -1,13 +1,23 @@
-
 import * as express from 'express';
-import { updatePassword, UserModel, updateUserName, getUsers, updateUserStats } from '../models/user';
-import {Router, Request, Response, NextFunction} from 'express';
+import {
+    updatePassword,
+    UserModel,
+    updateUserName,
+    getUsers,
+    updateUserStats,
+} from '../models/user';
+import { Router, Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
-import {getLeaderboard, UserDocument, getUserById, deleteUser, getUserStats} from '../models/user';
-import {UserStats} from '../models/user-stats';
+import {
+    getLeaderboard,
+    UserDocument,
+    getUserById,
+    deleteUser,
+    getUserStats,
+} from '../models/user';
+import { UserStats } from '../models/user-stats';
 import { authenticateToken } from './auth-routes';
 import * as mongoose from 'mongoose';
-
 
 interface PatchUsernameBody {
     username: string;
@@ -18,19 +28,19 @@ interface PatchPasswordBody {
 }
 
 interface GetUsersBody {
-    userIds: Types.ObjectId[]
+    userIds: Types.ObjectId[];
 }
 
 interface PatchStatsBody {
-    elo: number,
-    result: boolean, 
-    shipsDestroyed: number, 
-    hits: number, 
-    shots: number
+    elo: number;
+    result: boolean;
+    shipsDestroyed: number;
+    hits: number;
+    shots: number;
 }
 
 interface GetUsersRequest extends Request {
-    body: GetUsersBody
+    body: GetUsersBody;
 }
 
 interface PatchUsernameRequest extends Request {
@@ -46,141 +56,129 @@ interface PatchStatsRequest extends Request {
 }
 
 const router = Router();
-const userErr: string = 'No user with that identifier'
-const usersErr: string = "None of the given ids are present in the db"
+const userErr: string = 'No user with that identifier';
+const usersErr: string = 'None of the given ids are present in the db';
 
-router.get("/leaderboard", authenticateToken, async ( req: Request, res: Response ) => {
-    let leaderBoard: UserDocument[]
-    try {
-        leaderBoard = await getLeaderboard()
-    } catch(err) {
-        res.status(500).json({ 
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path
-        })
-    }
-
-    res.send(200).json({ leaderBoard })
-})
-
-
-router.get("/users/:userId", authenticateToken, async ( req: Request, res: Response ) => {
-    let user: UserDocument 
+router.get('/users/:userId', authenticateToken, async (req: Request, res: Response) => {
+    let user: UserDocument;
     const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
     try {
-        user = await getUserById( userId )
+        user = await getUserById(userId);
     } catch (err) {
-        const statusCode: number = (err.message === userErr)? 404 : 500
-        res.status(statusCode).json({ 
+        const statusCode: number = err.message === userErr ? 404 : 500;
+        res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
-            requestPath: req.path
-        })
+            requestPath: req.path,
+        });
     }
-    res.send(200).json({ user })
-})
+    res.send(200).json({ user });
+});
 
-router.patch("/users/:userId/username", authenticateToken, async ( req: PatchUsernameRequest, res: Response ) => {
-    const { username } = req.body
+router.patch(
+    '/users/:userId/username',
+    authenticateToken,
+    async (req: PatchUsernameRequest, res: Response) => {
+        const { username } = req.body;
+        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        await updateUserName(userId, username).catch((err) => {
+            const statusCode: number = err.message === userErr ? 404 : 500;
+            res.status(statusCode).json({
+                timestamp: 1651881600, // Unix seconds timestamp
+                errorMessage: 'some error message',
+                requestPath: 'error/request/path',
+            });
+        });
+        res.send(200).json({ username });
+    }
+);
+
+router.patch(
+    '/users/:userId/password',
+    authenticateToken,
+    async (req: PatchPasswordRequest, res: Response) => {
+        const { password } = req.body;
+        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        await updatePassword(userId, password).catch((err) => {
+            const statusCode: number = err.message === userErr ? 404 : 500;
+            res.status(statusCode).json({
+                timestamp: 1651881600, // Unix seconds timestamp
+                errorMessage: 'some error message',
+                requestPath: 'error/request/path',
+            });
+        });
+        res.send(200).json({ password });
+    }
+);
+
+router.delete('/users/:userId', authenticateToken, async (req: Request, res: Response) => {
     const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    await updateUserName( userId, username).catch((err) => {
-        const statusCode: number = (err.message === userErr)? 404 : 500
-        res.status(statusCode).json({ 
+    await deleteUser(userId).catch((err) => {
+        const statusCode: number = err.message === userErr ? 404 : 500;
+        res.status(statusCode).json({
             timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: "some error message",
-            requestPath: "error/request/path"
-        })
-    })
-    res.send(200).json({ username })
-})
+            errorMessage: 'some error message',
+            requestPath: 'error/request/path',
+        });
+    });
 
-router.patch("/users/:userId/password", authenticateToken, async ( req: PatchPasswordRequest, res: Response ) => {
-    const { password } = req.body
+    res.send(204).json({});
+});
+
+router.get('/users/:userId/stats', authenticateToken, async (req: Request, res: Response) => {
     const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    await updatePassword( userId, password).catch((err) => { 
-        const statusCode: number = (err.message === userErr)? 404 : 500
-        res.status(statusCode).json({ 
-            timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: "some error message",
-            requestPath: "error/request/path"
-        })
-    })
-    res.send(200).json({ password })
-})
-
-router.delete("/users/:userId", authenticateToken, async ( req: Request, res: Response ) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    await deleteUser( userId ).catch((err) => {
-        const statusCode: number = (err.message === userErr)? 404 : 500
-        res.status(statusCode).json({ 
-            timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: "some error message",
-            requestPath: "error/request/path"
-        })
-    })
-
-    res.send(204).json({  })
-})
-
-router.get("/users/:userId/stats", authenticateToken, async ( req: Request, res: Response ) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    let stats: UserStats
+    let stats: UserStats;
     try {
-        stats = await getUserStats( userId )
-    } catch(err) {
-        const statusCode: number = (err.message === userErr)? 404 : 500
-        res.status(statusCode).json({ 
+        stats = await getUserStats(userId);
+    } catch (err) {
+        const statusCode: number = err.message === userErr ? 404 : 500;
+        res.status(statusCode).json({
             timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: "some error message",
-            requestPath: "error/request/path"
-        })
+            errorMessage: 'some error message',
+            requestPath: 'error/request/path',
+        });
     }
-    res.send(200).json({ stats })
-})
+    res.send(200).json({ stats });
+});
 
-router.patch("/users/:userId/stats", authenticateToken, async ( req: PatchStatsRequest, res: Response ) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    const { elo, result, shipsDestroyed, shots, hits} = req.body;
-    await updateUserStats( userId, elo, result, shipsDestroyed, shots, hits ).catch((err) => {
-        const statusCode: number = (err.message === userErr)? 404 : 500
-        res.status(statusCode).json({ 
-            timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: "some error message",
-            requestPath: "error/request/path"
-        })
-    })
-    res.send(200).json({ elo, result, shipsDestroyed, shots, hits })
-})
+router.patch(
+    '/users/:userId/stats',
+    authenticateToken,
+    async (req: PatchStatsRequest, res: Response) => {
+        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const { elo, result, shipsDestroyed, shots, hits } = req.body;
+        await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits).catch((err) => {
+            const statusCode: number = err.message === userErr ? 404 : 500;
+            res.status(statusCode).json({
+                timestamp: 1651881600, // Unix seconds timestamp
+                errorMessage: 'some error message',
+                requestPath: 'error/request/path',
+            });
+        });
+        res.send(200).json({ elo, result, shipsDestroyed, shots, hits });
+    }
+);
 
-router.get("/users", authenticateToken, async ( req: GetUsersRequest, res:Response ) => {
-    const { userIds } = req.body
-    let users: UserDocument[]
+router.get('/users', authenticateToken, async (req: GetUsersRequest, res: Response) => {
+    const { userIds } = req.body;
+    let users: UserDocument[];
     try {
-        users = await getUsers( userIds )
-    }
-    catch(err) {
-        let statusCode: number = 404
-        if (err instanceof Error && err.message === usersErr) 
-            statusCode = 500
+        users = await getUsers(userIds);
+    } catch (err) {
+        let statusCode: number = 404;
+        if (err instanceof Error && err.message === usersErr) statusCode = 500;
         else {
             res.status(statusCode).json({
                 foundUsers: err,
-                errorMessage: "some error message",
-                requestPath: "error/request/path"
-            })
+                errorMessage: 'some error message',
+                requestPath: 'error/request/path',
+            });
         }
         res.status(statusCode).json({
             timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: "some error message",
-            requestPath: "error/request/path"
-        })
-        
+            errorMessage: 'some error message',
+            requestPath: 'error/request/path',
+        });
     }
-    res.send(200).json({ users })
-})
-
-
-
-
-
+    res.send(200).json({ users });
+});

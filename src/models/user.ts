@@ -3,9 +3,9 @@ import { Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
-import { UserStats } from "./user-stats";
-import { Relationship, RelationshipSchema } from "./relationship";
-import { StatsSchema } from "./user-stats";
+import { UserStats } from './user-stats';
+import { Relationship, RelationshipSchema } from './relationship';
+import { StatsSchema } from './user-stats';
 import { type } from 'os';
 import { ChatDocument, ChatModel, createChat } from './chat';
 
@@ -39,8 +39,6 @@ export interface User {
  * It exposes some useful methods to interact with the database object.
  */
 export interface UserDocument extends User, Document {
-    
-
     /**
      * Adds the provided role to this instance.
      * If the user already has the role, it is not added a second time.
@@ -93,7 +91,6 @@ export interface UserDocument extends User, Document {
      */
     validatePassword(pwd: string): Promise<boolean>;
 
-
     /**
      * Add a notification identified by type and requester
      * Return an error if an identical notification already exists
@@ -112,7 +109,7 @@ export interface UserDocument extends User, Document {
 
     /**
      * Add a relationship and automatically create a new chat object
-     * @param friendId new friend's id  
+     * @param friendId new friend's id
      * @param chat_id optional param in order to trigger the symmetric addition
      */
     addRelationship(friendId: Types.ObjectId, chat_id?: Types.ObjectId): Promise<UserDocument>;
@@ -123,7 +120,6 @@ export interface UserDocument extends User, Document {
      * @param stop trigger the symmetric deletion of the relationship
      */
     removeRelationship(friendId: Types.ObjectId, stop?: boolean): Promise<UserDocument>;
-
 }
 
 export const UserSchema = new Schema<UserDocument>({
@@ -165,23 +161,25 @@ export const UserSchema = new Schema<UserDocument>({
         required: false,
     },
 
-    notifications:{
+    notifications: {
         type: [NotificationSchema],
-        default: []
+        default: [],
     },
 
     online: SchemaTypes.Boolean,
-    
 });
-
-
 
 /* METHODS FOR NOTIFICATION MANIPULATION */
 
-UserSchema.methods.addNotification = async function ( typeRequest: RequestTypes, requester: Types.ObjectId ): Promise<UserDocument> {
-    
-    for(let idx in this.notifications){
-        if(this.notifications[idx].type === typeRequest && this.notifications[idx].sender === requester){
+UserSchema.methods.addNotification = async function (
+    typeRequest: RequestTypes,
+    requester: Types.ObjectId
+): Promise<UserDocument> {
+    for (let idx in this.notifications) {
+        if (
+            this.notifications[idx].type === typeRequest &&
+            this.notifications[idx].sender === requester
+        ) {
             return Promise.reject(new Error('Notification already sent'));
         }
     }
@@ -205,8 +203,6 @@ UserSchema.methods.removeNotification = async function (
     }
     return this.save();
 };
-
-
 
 /* METHODS FOR PASSWORD MANIPULATION AND VALIDATION */
 
@@ -236,8 +232,6 @@ UserSchema.methods.validatePassword = async function (pwd: string): Promise<bool
     return this.pwd_hash === hashedPw;
 };
 
-
-
 /* METHODS FOR ROLES MANIPULATION  */
 
 UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDocument> {
@@ -257,11 +251,11 @@ UserSchema.methods.hasRole = function (role: UserRoles): boolean {
 };
 
 UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
-    if( !this.hasRole(role) ){
+    if (!this.hasRole(role)) {
         this.roles.push(role.valueOf());
         return this.save();
     }
-    return Promise.reject(new Error("Role already set"));
+    return Promise.reject(new Error('Role already set'));
 };
 
 UserSchema.methods.isModerator = function (): boolean {
@@ -272,209 +266,210 @@ UserSchema.methods.isAdmin = function (): boolean {
     return this.hasRole(UserRoles.Admin);
 };
 
-
 /* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
 
-UserSchema.methods.addRelationship = async function (friendId: Types.ObjectId, chat_id?: Types.ObjectId): Promise<UserDocument> {
-
-    for(let idx in this.relationships){
-        if( this.relationships[idx].friendId === friendId ){
+UserSchema.methods.addRelationship = async function (
+    friendId: Types.ObjectId,
+    chat_id?: Types.ObjectId
+): Promise<UserDocument> {
+    for (let idx in this.relationships) {
+        if (this.relationships[idx].friendId === friendId) {
             return Promise.reject(new Error('Relationship already existent'));
         }
     }
 
     let toInsert: Relationship;
     toInsert.friendId = friendId;
-    
-    try{
-        
-        if(!chat_id){
+
+    try {
+        if (!chat_id) {
             let chat: ChatDocument;
             chat = await createChat([this._id, friendId]);
-            toInsert.chatId = chat._id
+            toInsert.chatId = chat._id;
             await symmetricAddRelationship(friendId, this._id, chat._id);
         }
- 
-    }
-    catch(err){
+    } catch (err) {
         return Promise.reject(new Error(err.message));
     }
-    
+
     this.relationships.push(toInsert);
 
     return this.save();
-    
 };
 
 /* Symmetrical addition of a friend relation */
-const symmetricAddRelationship = async function (user_id: Types.ObjectId, friend_id: Types.ObjectId, chat_id: Types.ObjectId): Promise<UserDocument>{
-    
+const symmetricAddRelationship = async function (
+    user_id: Types.ObjectId,
+    friend_id: Types.ObjectId,
+    chat_id: Types.ObjectId
+): Promise<UserDocument> {
     let user: UserDocument;
-    try{
+    try {
         user = await getUserById(user_id);
         return user.addRelationship(friend_id, chat_id);
-    }
-    catch(err){
+    } catch (err) {
         return Promise.reject(new Error(err.message));
     }
-    
-}
+};
 
-UserSchema.methods.removeRelationship = async function (friendId: Types.ObjectId, stop?: boolean): Promise<UserDocument> {
-
-    for(let idx in this.relationships){
-        if( this.relationships[idx].friendId === friendId ){
-
-            
-
+UserSchema.methods.removeRelationship = async function (
+    friendId: Types.ObjectId,
+    stop?: boolean
+): Promise<UserDocument> {
+    for (let idx in this.relationships) {
+        if (this.relationships[idx].friendId === friendId) {
             this.relationships.splice(parseInt(idx), 1);
 
-            if(!stop){
-                try{
+            if (!stop) {
+                try {
                     const chatId = this.relationships[idx].chatId;
                     await ChatModel.deleteOne({ chatId });
                     await symmetricRemoveRelationship(friendId, this._id);
-                }
-                catch(err){
-                    return  Promise.reject(new Error(err.message));
+                } catch (err) {
+                    return Promise.reject(new Error(err.message));
                 }
             }
         }
     }
 
     return this.save();
-    
 };
 
 /* Symmetrical deletion of a friend relation */
-const symmetricRemoveRelationship = async function (user_id: Types.ObjectId, friend_id: Types.ObjectId): Promise<UserDocument>{
-    
+const symmetricRemoveRelationship = async function (
+    user_id: Types.ObjectId,
+    friend_id: Types.ObjectId
+): Promise<UserDocument> {
     let user: UserDocument;
-    try{
+    try {
         user = await getUserById(user_id);
         return user.removeRelationship(friend_id, true);
-    }
-    catch(err){
+    } catch (err) {
         return Promise.reject(new Error(err.message));
     }
-    
-}
-
-
+};
 
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
 
-
-
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
-    const userdata: UserDocument = await UserModel.findOne({_id}).catch((err: Error) =>
+    const userdata: UserDocument = await UserModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
     );
 
-    return (!userdata)? Promise.reject(new Error('No user with that id')) 
-    : Promise.resolve(userdata)
+    return !userdata
+        ? Promise.reject(new Error('No user with that id'))
+        : Promise.resolve(userdata);
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
-    const userdata: UserDocument = await UserModel.findOne({username}).catch((err: Error) =>
+    const userdata: UserDocument = await UserModel.findOne({ username }).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
     );
 
-    return (!userdata)? Promise.reject(new Error('No user with that username')) 
-    : Promise.resolve(userdata)
+    return !userdata
+        ? Promise.reject(new Error('No user with that username'))
+        : Promise.resolve(userdata);
 }
 
 export async function createUser(data): Promise<UserDocument> {
     getUserByUsername(data.username).catch((err) => {
-        if (err.message === "No user with that username") {
+        if (err.message === 'No user with that username') {
             const user = new UserModel(data);
             return user.save();
         }
-        return Promise.reject(new Error(err.message))
+        return Promise.reject(new Error(err.message));
     });
 
     return Promise.reject(new Error('User already exists'));
 }
 
-function isPresent( _id: Types.ObjectId ) : {found: boolean, idx: number} {
+function isPresent(_id: Types.ObjectId): { found: boolean; idx: number } {
     for (var index in this.relationships) {
-        if (this.relationships[index].friendId === _id || this.relationships[index].chatId === _id) 
-            return {found: true, idx: parseInt(index)}
+        if (this.relationships[index].friendId === _id || this.relationships[index].chatId === _id)
+            return { found: true, idx: parseInt(index) };
     }
-    return {found: false, idx: -1}
+    return { found: false, idx: -1 };
 }
 
-export async function getUsers( ids: Types.ObjectId[] ) : Promise<UserDocument[]> {
-    let users: UserDocument[]
+export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
+    let users: UserDocument[];
     try {
-        users = await UserModel.find({ _id: { $in: ids }})
+        users = await UserModel.find({ _id: { $in: ids } });
+    } catch (err) {
+        return Promise.reject(new Error('Sum internal error just occured'));
     }
-    catch(err) {
-        return Promise.reject(new Error("Sum internal error just occured"))
-    }
-    if (!users) return Promise.reject(new Error("None of the given ids are present in the db"))
-    return (users.length === ids.length)? Promise.resolve(users) : Promise.reject(users)
+    if (!users) return Promise.reject(new Error('None of the given ids are present in the db'));
+    return users.length === ids.length ? Promise.resolve(users) : Promise.reject(users);
 }
 
-export async function getLeaderboard() : Promise<UserDocument[]> {
+export async function getLeaderboard(): Promise<UserDocument[]> {
     return UserModel.find({}, { _id: 1, username: 1, elo: 1 })
-    .sort({ elo: -1 }).limit(20).catch((err: Error) => 
-        Promise.reject(new Error("Sum internal error just occured"))
-    )
+        .sort({ elo: -1 })
+        .limit(20)
+        .catch((err: Error) => Promise.reject(new Error('Sum internal error just occured')));
 }
 
-export async function deleteUser( _id: Types.ObjectId ) : Promise<void> {
-    const obj: { deletedCount?: number } = await UserModel.deleteOne({ _id })
-    .catch( (err) => Promise.reject(new Error("Sum internal error just occured")))
-    return (!obj.deletedCount)? Promise.reject(new Error('No user with that id')) : Promise.resolve()
+export async function deleteUser(_id: Types.ObjectId): Promise<void> {
+    const obj: { deletedCount?: number } = await UserModel.deleteOne({ _id }).catch((err) =>
+        Promise.reject(new Error('Sum internal error just occured'))
+    );
+    return !obj.deletedCount
+        ? Promise.reject(new Error('No user with that id'))
+        : Promise.resolve();
 }
 
-export async function updateUserName( _id: Types.ObjectId, username: string) : Promise<void> {
+export async function updateUserName(_id: Types.ObjectId, username: string): Promise<void> {
     await getUserByUsername(username).catch(async (err) => {
-        if (err.message === "No user with that username") {
-            const query = await UserModel.updateOne({ _id }, { username })
-            .catch((err) => Promise.reject(new Error("Sum internal error just occured"))) 
-            return (query.n === 0)? Promise.reject(new Error("No user with that id")) : Promise.resolve() 
+        if (err.message === 'No user with that username') {
+            const query = await UserModel.updateOne({ _id }, { username }).catch((err) =>
+                Promise.reject(new Error('Sum internal error just occured'))
+            );
+            return query.n === 0
+                ? Promise.reject(new Error('No user with that id'))
+                : Promise.resolve();
         }
-        return Promise.reject(new Error(err.message))
-    })
-    return Promise.reject(new Error("Username already exists brah"))
+        return Promise.reject(new Error(err.message));
+    });
+    return Promise.reject(new Error('Username already exists brah'));
 }
 
-export async function updatePassword( _id: Types.ObjectId, password: string) : Promise<void> {
-    let user: UserDocument
+export async function updatePassword(_id: Types.ObjectId, password: string): Promise<void> {
+    let user: UserDocument;
     try {
-        user = await getUserById(_id)
-        await user.setPassword(password)
+        user = await getUserById(_id);
+        await user.setPassword(password);
+    } catch (err) {
+        return Promise.reject(new Error(err.message));
     }
-    catch(err) {
-       return Promise.reject(new Error(err.message)) 
-    }
-    return Promise.resolve()
+    return Promise.resolve();
 }
 
-export async function getUserStats( _id: Types.ObjectId ) : Promise<UserStats> {
-    let stat: UserDocument = await UserModel.findOne({ _id }, { stats: 1 })
-    .catch((err) => Promise.reject(new Error("Sum internal error just occured")))
-    return (!stat)? Promise.reject(new Error("No user with that id")) : Promise.resolve(stat.stats)
+export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
+    let stat: UserDocument = await UserModel.findOne({ _id }, { stats: 1 }).catch((err) =>
+        Promise.reject(new Error('Sum internal error just occured'))
+    );
+    return !stat ? Promise.reject(new Error('No user with that id')) : Promise.resolve(stat.stats);
 }
 
-export async function updateUserStats( _id: Types.ObjectId, elo: number, result: boolean, shipsDestroyed: number, shots: number, hits: number) : Promise<UserDocument> {
-    let user: UserDocument
+export async function updateUserStats(
+    _id: Types.ObjectId,
+    elo: number,
+    result: boolean,
+    shipsDestroyed: number,
+    shots: number,
+    hits: number
+): Promise<UserDocument> {
+    let user: UserDocument;
     try {
-        user = await getUserById(_id)
-    }
-    catch(err) {
-        return Promise.reject(new Error(err.message)) 
+        user = await getUserById(_id);
+    } catch (err) {
+        return Promise.reject(new Error(err.message));
     }
     if (user.stats.topElo < user.stats.elo + elo) user.stats.topElo = user.stats.elo + elo;
     user.stats.elo += elo;
-    (result)? user.stats.wins ++ : user.stats.losses --;
+    result ? user.stats.wins++ : user.stats.losses--;
     user.stats.shipsDestroyed += shipsDestroyed;
     user.stats.totalShots += shots;
-    user.stats.hits += hits
-    return user.save()
+    user.stats.hits += hits;
+    return user.save();
 }
-
-
-

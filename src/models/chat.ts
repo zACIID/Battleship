@@ -18,7 +18,6 @@ export interface Chat {
  * document in the database.
  */
 export interface ChatDocument extends Chat, Document {
-
     /**
      * Adds the provided user_id into this instance of chat
      * @param user_id ObjectId of the user to add
@@ -88,7 +87,6 @@ export async function deleteChat(_id: Types.ObjectId): Promise<void> {
     );
     return Promise.resolve();
 }
-
 
 /**
  *

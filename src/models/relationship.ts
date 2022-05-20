@@ -18,5 +18,3 @@ export const RelationshipSchema = new Schema<Relationship>({
         required: true,
     },
 });
-
-

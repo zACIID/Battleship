@@ -11,7 +11,7 @@ const app: Express = express();
 
 // If testing, set test db uri, else use the other
 const isTesting: boolean = Boolean(process.env.TEST).valueOf();
-const dbUri = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI
+const dbUri = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI;
 
 let ioServer: io.Server = null;
 
