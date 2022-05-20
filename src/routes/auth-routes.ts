@@ -68,7 +68,7 @@ router.get(
             expiresIn: '1h',
         });
 
-        return res.status(200).json({ error: false, errormessage: '', token: signed_token });
+        return res.status(200).json({ token: signed_token });
     }
 );
 
@@ -87,5 +87,5 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
         .setPassword(req.body.password)
         .catch((err: Error) => res.status(500).json({ error: true, errormessage: err.message }));
 
-    return res.status(200).json({ error: false, errormessage: '', id: u.username });
+    return res.status(200).json( u );
 });
