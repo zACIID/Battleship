@@ -41,7 +41,10 @@ export const MatchSchema = new Schema<MatchDocument>({
         required: true,
     },
 
-    stats: MatchStatsSchema,
+    stats: {
+        type: MatchStatsSchema,
+        default: () => ({})
+    },
 });
 
 export async function getMatchById(_id: Types.ObjectId): Promise<MatchDocument> {
@@ -94,4 +97,5 @@ export async function updateMatchStats(
     return Promise.resolve();
 }
 
-export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'matches');
+// Create "Matches" collection
+export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'Matches');

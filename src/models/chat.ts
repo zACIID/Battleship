@@ -90,7 +90,7 @@ export async function deleteChat(_id: Types.ObjectId): Promise<void> {
 
 /**
  *
- * @param data contains a list of users objectId that can also be empty
+ * @param users contains a list of users objectId that can also be empty
  * @returns the newly created ChatDocument's object
  */
 export async function createChat(users: Types.ObjectId[]): Promise<ChatDocument> {
@@ -98,4 +98,5 @@ export async function createChat(users: Types.ObjectId[]): Promise<ChatDocument>
     return chat.save();
 }
 
-export const ChatModel: Model<ChatDocument> = mongoose.model('Chat', ChatSchema, 'chats');
+// Create "Chats" collection
+export const ChatModel: Model<ChatDocument> = mongoose.model('Chat', ChatSchema, 'Chats');

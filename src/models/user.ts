@@ -142,7 +142,10 @@ export const UserSchema = new Schema<UserDocument>({
         default: [],
     },
 
-    stats: StatsSchema,
+    stats: {
+        type: StatsSchema,
+        default: () => ({})
+    },
 
     roles: {
         type: [SchemaTypes.String],
@@ -349,7 +352,8 @@ const symmetricRemoveRelationship = async function (
     }
 };
 
-export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
+// Create "users" collection
+export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'Users');
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
     const userdata: UserDocument = await UserModel.findOne({ _id }).catch((err: Error) =>
@@ -384,7 +388,7 @@ export async function createUser(data): Promise<UserDocument> {
 }
 
 function isPresent(_id: Types.ObjectId): { found: boolean; idx: number } {
-    for (var index in this.relationships) {
+    for (const index in this.relationships) {
         if (this.relationships[index].friendId === _id || this.relationships[index].chatId === _id)
             return { found: true, idx: parseInt(index) };
     }
