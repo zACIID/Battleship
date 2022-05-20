@@ -8,7 +8,10 @@ import * as mongoose from 'mongoose';
 dotenv.config({ path: '../.env' });
 
 const app: Express = express();
-const DB_URI: string = process.env.DB_URI;
+
+// If testing, set test db uri, else use the other
+const isTesting: boolean = Boolean(process.env.TEST).valueOf();
+const dbUri = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI
 
 let ioServer: io.Server = null;
 
@@ -17,7 +20,7 @@ console.log('demanding the sauce...');
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
 mongoose
-    .connect(DB_URI)
+    .connect(dbUri)
     .then(() => {
         console.log('Sauce received!');
 
