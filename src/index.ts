@@ -1,26 +1,28 @@
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 import * as http from 'http';
 import express, { Express, NextFunction } from 'express';
 import cors from 'cors';
 import * as io from 'socket.io';
-import * as mongoose from 'mongoose';
+import mongoose = require('mongoose');
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app: Express = express();
 
 // If testing, set test db uri, else use the other
-const isTesting: boolean = Boolean(process.env.TEST).valueOf();
+const isTesting: boolean = process.env.TEST === "true";
 const dbUri = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI;
 
 let ioServer: io.Server = null;
 
 /* Database Connection */
 console.log('demanding the sauce...');
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useUnifiedTopology', true);
 mongoose
-    .connect(dbUri)
+    .connect(dbUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
     .then(() => {
         console.log('Sauce received!');
 

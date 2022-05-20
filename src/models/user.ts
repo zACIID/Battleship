@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Model, Schema, SchemaTypes, Types } from 'mongoose';
+import { Document, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
@@ -181,6 +181,7 @@ UserSchema.methods.addNotification = async function (
             return Promise.reject(new Error('Notification already sent'));
         }
     }
+
     let toInsert: RequestNotification;
     toInsert.type = typeRequest;
     toInsert.sender = requester;
@@ -351,13 +352,13 @@ const symmetricRemoveRelationship = async function (
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'Users');
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
-    const userdata: UserDocument = await UserModel.findOne({ _id }).catch((err: Error) =>
+    const userDoc = await UserModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
     );
 
-    return !userdata
+    return !userDoc
         ? Promise.reject(new Error('No user with that id'))
-        : Promise.resolve(userdata);
+        : Promise.resolve(userDoc);
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
@@ -445,7 +446,7 @@ export async function updatePassword(_id: Types.ObjectId, password: string): Pro
 
 export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
     let stat: UserDocument = await UserModel.findOne({ _id }, { stats: 1 }).catch((err) =>
-        Promise.reject(new Error('Sum internal error just occured'))
+        Promise.reject(new Error('Sum internal error just occurred'))
     );
     return !stat ? Promise.reject(new Error('No user with that id')) : Promise.resolve(stat.stats);
 }
@@ -481,6 +482,5 @@ export async function updateUserStats(
     user.stats.totalShots += shots;
     user.stats.hits += hits;
 
-    // save() è metodo di Model e non di Document
-    return user.save();
+    return user.save()
 }
