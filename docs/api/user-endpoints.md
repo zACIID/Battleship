@@ -113,8 +113,6 @@
 | :------- | :----- | :---------- |
 | /users | GET | Retrieve the users with the ids specified in the request body |
 
-se almeno un id non è valido, si lancia una Promise.reject e conseguente 404 
-
 #### Example Request Body
 
 Object representing the ids of the users to retrieve
