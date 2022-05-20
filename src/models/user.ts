@@ -81,13 +81,33 @@ export interface UserDocument extends User, Document {
      */
     isFriend(key: Types.ObjectId): boolean;
 
-    // TODO add docs for these methods
+    /**
+     * Set a new password using bcrypt's hashing and salt generation functions
+     * @param pwd new password to set
+     */
     setPassword(pwd: string): Promise<UserDocument>;
 
+    /**
+     * Check the validity of the password with the one stored on the database
+     * @param pwd the password to check
+     */
     validatePassword(pwd: string): Promise<boolean>;
 
+
+    /**
+     * Add a notification identified by type and requester
+     * Return an error if an identical notification already exists
+     * @param type type of the incoming notification
+     * @param requester sender of the incoming notification
+     */
     addNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
 
+    /**
+     * Remove a notification identified by type and requester
+     * Returns an error if the notification doesn't exist
+     * @param type type of the notification to remove
+     * @param requester sender of the notification to remove
+     */
     removeNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
 
     /**
