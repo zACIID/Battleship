@@ -59,8 +59,7 @@ router.get(
     (req: Request, res: Response) => {
         const tokenData = {
             username: req.user.username,
-            roles: req.user.roles,
-            mail: req.user.mail,
+            roles: req.user.roles
         };
 
         // Token generation with 1h duration
@@ -73,7 +72,7 @@ router.get(
 );
 
 /**
- * Request must contain at least this information -> username: string, email: string, roles: string[], password: string
+ * Request must contain at least this information -> username: string, roles: string[], password: string
  */
 router.post('/auth/signup', async (req: Request, res: Response) => {
     let u: UserDocument;

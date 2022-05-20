@@ -24,7 +24,6 @@ export enum UserRoles {
  */
 export interface User {
     username: string;
-    mail: string;
     relationships: [Relationship];
     stats: UserStats;
     roles: string[];
@@ -130,13 +129,6 @@ export const UserSchema = new Schema<UserDocument>({
         index: true,
     },
 
-    mail: {
-        type: SchemaTypes.String,
-        required: true,
-        unique: true,
-        match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/,
-    },
-
     relationships: {
         type: [RelationshipSchema],
         default: [],
@@ -169,7 +161,10 @@ export const UserSchema = new Schema<UserDocument>({
         default: [],
     },
 
-    online: SchemaTypes.Boolean,
+    online: {
+        type: SchemaTypes.Boolean,
+        default: false
+    },
 });
 
 /* METHODS FOR NOTIFICATION MANIPULATION */
@@ -475,5 +470,6 @@ export async function updateUserStats(
     user.stats.shipsDestroyed += shipsDestroyed;
     user.stats.totalShots += shots;
     user.stats.hits += hits;
+
     return user.save();
 }

@@ -124,7 +124,6 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 {
     "username": "",
     "password": "",
-    "email": "",
     "roles": [],
     "online": true
 }
@@ -141,7 +140,6 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 {
     "userId": "",
     "username": "",
-    "email": "",
     "roles": [],
     "online": true
 }

@@ -46,7 +46,6 @@
 {
     "username": "",
     "password": "",
-    "email": "",
     "roles": [],    // containing "Moderator" by default
     "online": true
 }
@@ -64,7 +63,6 @@
 {
     "userId": "",
     "username": "",
-    "email": "",
     "roles": [], 
     "online": true
 }
