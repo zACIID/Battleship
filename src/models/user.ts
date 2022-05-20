@@ -6,6 +6,8 @@ import { NotificationSchema, RequestNotification, RequestTypes } from './notific
 import { UserStats } from "./user-stats";
 import { Relationship, RelationshipSchema } from "./relationship";
 import { StatsSchema } from "./user-stats";
+import { type } from 'os';
+import { ChatDocument, ChatModel, createChat } from './chat';
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -37,31 +39,7 @@ export interface User {
  * It exposes some useful methods to interact with the database object.
  */
 export interface UserDocument extends User, Document {
-    /**
-     * Adds the provided user id to this instance's friends list.
-     * If a user id is already in the friends list, it is not added.
-     *
-     * @param friend_id collection of user ids to add to the friends list
-     * @param auto_call flag, if true the function will call itself for the other object instance
-     */
-    addFriend(friend_id: Types.ObjectId, auto_call?: boolean): Promise<UserDocument>;
-
-    /**
-     * Removes the provided user ids from this instance's friends list.
-     * If a user id is already in the friends list, nothing happens.
-     *
-     * @param friend_ids collection of user ids to remove from the friends list
-     */
-    removeFriends(friend_ids: [Types.ObjectId]): Promise<UserDocument>;
-
-    /**
-     * Removes the provided user id from this instance's friends list.
-     * If a user id is already in the friends list, nothing happens.
-     *
-     * @param friend_id collection of user ids to remove from the friends list
-     * @param auto_call flag, if true the function will call itself for the other object instance
-     */
-    removeFriend(friend_id: Types.ObjectId, auto_call?: boolean): Promise<UserDocument>;
+    
 
     /**
      * Adds the provided role to this instance.
@@ -69,7 +47,7 @@ export interface UserDocument extends User, Document {
      *
      * @param role role to be set
      */
-    addRole(role: UserRoles): Promise<UserDocument>;
+    setRole(role: UserRoles): Promise<UserDocument>;
 
     /**
      * Removes the provided role from this instance.
@@ -112,9 +90,20 @@ export interface UserDocument extends User, Document {
 
     removeNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
 
-    addChat(_id: Types.ObjectId): Promise<UserDocument>;
+    /**
+     * Add a relationship and automatically create a new chat object
+     * @param friendId new friend's id  
+     * @param chat_id optional param in order to trigger the symmetric addition
+     */
+    addRelationship(friendId: Types.ObjectId, chat_id?: Types.ObjectId): Promise<UserDocument>;
 
-    removeChat(_id: Types.ObjectId): Promise<UserDocument>;
+    /**
+     * Remove a relationship from both users
+     * @param friendId friend's id to delete
+     * @param stop trigger the symmetric deletion of the relationship
+     */
+    removeRelationship(friendId: Types.ObjectId, stop?: boolean): Promise<UserDocument>;
+
 }
 
 export const UserSchema = new Schema<UserDocument>({
@@ -165,15 +154,17 @@ export const UserSchema = new Schema<UserDocument>({
     
 });
 
-UserSchema.methods.addNotification = async function (
-    typeRequest: RequestTypes,
-    requester: Types.ObjectId
-): Promise<UserDocument> {
-    if (this.notifications.includes({requestType: typeRequest, requester}))
-        await Promise.reject(new Error('Notification already sent'));
-
-    this.notifications.push({requestType: typeRequest, requester});
-
+UserSchema.methods.addNotification = async function ( typeRequest: RequestTypes, requester: Types.ObjectId ): Promise<UserDocument> {
+    
+    for(let idx in this.notifications){
+        if(this.notifications[idx].type === typeRequest && this.notifications[idx].sender === requester){
+            return Promise.reject(new Error('Notification already sent'));
+        }
+    }
+    let toInsert: RequestNotification;
+    toInsert.type = typeRequest;
+    toInsert.sender = requester;
+    this.notifications.push(toInsert);
     return this.save();
 };
 
@@ -181,37 +172,16 @@ UserSchema.methods.removeNotification = async function (
     typeRequest: RequestTypes,
     requester: Types.ObjectId
 ): Promise<UserDocument> {
-    for (const idx in this.notifications) {
+    for (let idx in this.notifications) {
         if (
-            this.notifications[idx].requestType === typeRequest &&
-            this.notifications[idx].requester === requester
+            this.notifications[idx].type === typeRequest &&
+            this.notifications[idx].sender === requester
         )
             this.notifications.splice(parseInt(idx), 1);
     }
     return this.save();
 };
 
-
-
-// TODO implement all of below considering the change done to UserSchema:
-//  relationships replaces friends and chats
-UserSchema.methods.addChat = async function (id: Types.ObjectId): Promise<UserDocument> {
-    const data = isPresent.apply(this, id)
-    if (data.found) {
-        await Promise.reject(new Error('User already part of this chat'));
-    }
-    this.relationships.push()
-    this.chats.push(id);
-
-    return this.save();
-};
-
-UserSchema.methods.removeChat = async function (id: Types.ObjectId): Promise<UserDocument> {
-    for (const idx in this.chats) {
-        if (this.chats[idx] === id) this.chats.splice(parseInt(idx), 1);
-    }
-    return this.save();
-};
 
 UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocument> {
     const salt = await bcrypt
@@ -239,77 +209,16 @@ UserSchema.methods.validatePassword = async function (pwd: string): Promise<bool
     return this.pwd_hash === hashedPw;
 };
 
-UserSchema.methods.addFriend = async function (
-    friend_id: Types.ObjectId,
-    auto_call?: boolean
-): Promise<UserDocument> {
-    if (!this.isFriend(friend_id)) {
-        this.friends.push(friend_id);
-        if (auto_call === undefined || auto_call) {
-            const user: UserDocument = await getUserById(friend_id).catch((err: Error) =>
-                Promise.reject(new Error(err.message))
-            );
-            await user
-                .addFriend(this._id, false)
-                .catch((err: Error) => Promise.reject(new Error(err.message)));
-        }
-        return this.save();
-    } else return Promise.reject(new Error('this id is already in the array: ' + friend_id));
-};
+
+
+
+/* METHODS FOR ROLES MANIPULATION  */
 
 UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDocument> {
     for (const idx in this.roles) {
         if (this.roles[idx] === role.valueOf()) this.roles.splice(parseInt(idx), 1);
     }
     return this.save();
-};
-
-UserSchema.methods.removeFriend = async function (
-    friend_id: Types.ObjectId,
-    auto_call?: boolean
-): Promise<UserDocument> {
-    for (let idx in this.relationships) {
-        if (this.friends[idx] === friend_id) {
-            this.friends.splice(parseInt(idx), 1);
-
-            if (auto_call === undefined || auto_call) {
-                const user: UserDocument = await getUserById(friend_id).catch((err: Error) =>
-                    Promise.reject(new Error(err.message))
-                );
-
-                await user
-                    .removeFriend(this._id, false)
-                    .catch((err: Error) => Promise.reject(new Error(err.message)));
-            }
-
-            return this.save();
-        }
-    }
-    return Promise.reject(new Error("There's no id equal to that" + friend_id));
-};
-
-UserSchema.methods.removeFriends = async function (friend_ids: [Types.ObjectId]): Promise<void> {
-    let id: Types.ObjectId;
-    const failures: string[] = new Array<string>();
-    for (id of friend_ids) {
-        await this.removeFriend(id).catch((err: Error) => failures.push(err.message));
-    }
-    return failures.length === 0
-        ? Promise.resolve()
-        : Promise.reject(new Error('Errors occurred: ' + failures));
-};
-
-UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
-    this.roles.push(role.valueOf());
-    return this.save();
-};
-
-UserSchema.methods.isModerator = function (): boolean {
-    return this.hasRole(UserRoles.Moderator);
-};
-
-UserSchema.methods.isAdmin = function (): boolean {
-    return this.hasRole(UserRoles.Admin);
 };
 
 UserSchema.methods.hasRole = function (role: UserRoles): boolean {
@@ -321,16 +230,107 @@ UserSchema.methods.hasRole = function (role: UserRoles): boolean {
     return value;
 };
 
-UserSchema.methods.isFriend = function (key: Types.ObjectId): boolean {
-    let value = false;
-    this.friends.forEach((element: Types.ObjectId) => {
-        if (element === key) value = true;
-    });
-
-    return value;
+UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
+    if( !this.hasRole(role) ){
+        this.roles.push(role.valueOf());
+        return this.save();
+    }
+    return Promise.reject(new Error("Role already set"));
 };
 
-UserSchema.methods.isPresent
+UserSchema.methods.isModerator = function (): boolean {
+    return this.hasRole(UserRoles.Moderator);
+};
+
+UserSchema.methods.isAdmin = function (): boolean {
+    return this.hasRole(UserRoles.Admin);
+};
+
+UserSchema.methods.addRelationship = async function (friendId: Types.ObjectId, chat_id?: Types.ObjectId): Promise<UserDocument> {
+
+    for(let idx in this.relationships){
+        if( this.relationships[idx].friendId === friendId ){
+            return Promise.reject(new Error('Relationship already existent'));
+        }
+    }
+
+    let toInsert: Relationship;
+    toInsert.friendId = friendId;
+    
+    try{
+        
+        if(!chat_id){
+            let chat: ChatDocument;
+            chat = await createChat([this._id, friendId]);
+            toInsert.chatId = chat._id
+            await symmetricAddRelationship(friendId, this._id, chat._id);
+        }
+ 
+    }
+    catch(err){
+        return Promise.reject(new Error(err.message));
+    }
+    
+    this.relationships.push(toInsert);
+
+    return this.save();
+    
+};
+
+const symmetricAddRelationship = async function (user_id: Types.ObjectId, friend_id: Types.ObjectId, chat_id: Types.ObjectId): Promise<UserDocument>{
+    
+    let user: UserDocument;
+    try{
+        user = await getUserById(user_id);
+        return user.addRelationship(friend_id, chat_id);
+    }
+    catch(err){
+        return Promise.reject(new Error(err.message));
+    }
+    
+}
+
+
+UserSchema.methods.removeRelationship = async function (friendId: Types.ObjectId, stop?: boolean): Promise<UserDocument> {
+
+    for(let idx in this.relationships){
+        if( this.relationships[idx].friendId === friendId ){
+
+            
+
+            this.relationships.splice(parseInt(idx), 1);
+
+            if(!stop){
+                try{
+                    const chatId = this.relationships[idx].chatId;
+                    await ChatModel.deleteOne({ chatId });
+                    await symmetricRemoveRelationship(friendId, this._id);
+                }
+                catch(err){
+                    return  Promise.reject(new Error(err.message));
+                }
+            }
+        }
+    }
+
+    return this.save();
+    
+};
+
+const symmetricRemoveRelationship = async function (user_id: Types.ObjectId, friend_id: Types.ObjectId): Promise<UserDocument>{
+    
+    let user: UserDocument;
+    try{
+        user = await getUserById(user_id);
+        return user.removeRelationship(friend_id, true);
+    }
+    catch(err){
+        return Promise.reject(new Error(err.message));
+    }
+    
+}
+
+
 
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
 

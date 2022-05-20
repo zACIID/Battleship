@@ -84,7 +84,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/relationships | POST | Add a relationship to the specified user |
+| /users/:userId/relationships | POST | Add a relationship to the specified user, chat will be automatically created |
 
 #### Url Parameters
 
@@ -99,7 +99,6 @@
 ```json
 {
     "friendId": "friend-id-1",
-    "chatId": "chat-with-friend-id"
 }
 ```
 
@@ -112,8 +111,7 @@
 
 ```json
 {
-    "friendId": "friend-id-1",
-    "chatId": "chat-with-friend-id"
+    "friendId": "friend-id-1"
 }
 ```
 
@@ -148,8 +146,7 @@
 
 ```json
 {
-    "friendId": "friend-id-1",
-    "chatId": "chat-with-friend-id"
+    "friendId": "friend-id-1"
 }
 ```
 
