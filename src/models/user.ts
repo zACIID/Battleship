@@ -174,6 +174,10 @@ export const UserSchema = new Schema<UserDocument>({
     
 });
 
+
+
+/* METHODS FOR NOTIFICATION MANIPULATION */
+
 UserSchema.methods.addNotification = async function ( typeRequest: RequestTypes, requester: Types.ObjectId ): Promise<UserDocument> {
     
     for(let idx in this.notifications){
@@ -203,6 +207,9 @@ UserSchema.methods.removeNotification = async function (
 };
 
 
+
+/* METHODS FOR PASSWORD MANIPULATION AND VALIDATION */
+
 UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocument> {
     const salt = await bcrypt
         .genSalt(10)
@@ -228,7 +235,6 @@ UserSchema.methods.validatePassword = async function (pwd: string): Promise<bool
 
     return this.pwd_hash === hashedPw;
 };
-
 
 
 
@@ -266,6 +272,9 @@ UserSchema.methods.isAdmin = function (): boolean {
     return this.hasRole(UserRoles.Admin);
 };
 
+
+/* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
+
 UserSchema.methods.addRelationship = async function (friendId: Types.ObjectId, chat_id?: Types.ObjectId): Promise<UserDocument> {
 
     for(let idx in this.relationships){
@@ -297,6 +306,7 @@ UserSchema.methods.addRelationship = async function (friendId: Types.ObjectId, c
     
 };
 
+/* Symmetrical addition of a friend relation */
 const symmetricAddRelationship = async function (user_id: Types.ObjectId, friend_id: Types.ObjectId, chat_id: Types.ObjectId): Promise<UserDocument>{
     
     let user: UserDocument;
@@ -309,7 +319,6 @@ const symmetricAddRelationship = async function (user_id: Types.ObjectId, friend
     }
     
 }
-
 
 UserSchema.methods.removeRelationship = async function (friendId: Types.ObjectId, stop?: boolean): Promise<UserDocument> {
 
@@ -337,6 +346,7 @@ UserSchema.methods.removeRelationship = async function (friendId: Types.ObjectId
     
 };
 
+/* Symmetrical deletion of a friend relation */
 const symmetricRemoveRelationship = async function (user_id: Types.ObjectId, friend_id: Types.ObjectId): Promise<UserDocument>{
     
     let user: UserDocument;
@@ -353,6 +363,8 @@ const symmetricRemoveRelationship = async function (user_id: Types.ObjectId, fri
 
 
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'users');
+
+
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
     const userdata: UserDocument = await UserModel.findOne({_id}).catch((err: Error) =>
