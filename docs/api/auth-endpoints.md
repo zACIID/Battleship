@@ -53,7 +53,6 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 | :-------- | :-------- |
 | username | string | Username credential |
 | password | string | Password credential |
-| roles | string[] | List of roles to assign to the user |
 | online | boolean | Status of the user right after registration. True if a normal user is registering, because after that he is automatically redirected to the home page, false in other cases such as a moderator creating another moderator account. |
 
 ### User
@@ -124,7 +123,6 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 {
     "username": "",
     "password": "",
-    "roles": [],
     "online": true
 }
 ```
@@ -140,7 +138,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 {
     "userId": "",
     "username": "",
-    "roles": [],
+    "roles": [ "Base" ],
     "online": true
 }
 ```
