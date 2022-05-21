@@ -98,7 +98,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 ##### Error
 
-- Status Code: 500
+- Status Code: 400, 500
 - [Error](#error) resource
 
 ```json
@@ -145,7 +145,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 ##### Error
 
-- Status Code: 500
+- Status Code: 400, 500
 - [Error](#error) resource
 
 ```json
