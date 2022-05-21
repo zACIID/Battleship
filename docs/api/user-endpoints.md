@@ -96,7 +96,7 @@
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Codes: 400, 404, 500
 - [Error](#error) resource
 
 ```json
@@ -161,7 +161,7 @@ Object representing the ids of the users to retrieve
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Codes: 400, 404, 500
 - [Error](#error) resource
 
 ```json
@@ -211,7 +211,7 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Codes: 400, 404, 500
 - [Error](#error) resource
 
 ```json
@@ -243,7 +243,7 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Codes: 400, 404, 500
 - [Error](#error) resource
 
 ```json
@@ -287,7 +287,7 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Codes: 400, 404, 500
 - [Error](#error) resource
 
 ```json
@@ -339,7 +339,7 @@ Only the [UserStats](#userstats) fields that need to be updated
 
 ##### Error
 
-- Status Codes: 404, 500
+- Status Codes: 400, 404, 500
 - [Error](#error) resource
 
 ```json
