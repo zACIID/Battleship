@@ -4,6 +4,7 @@ import passport from 'passport';
 import passportHTTP from 'passport-http';
 import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
+import LocalStrategy from 'passport-local' 
 
 export const router = Router();
 
@@ -20,7 +21,6 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
     if (token == null) return res.sendStatus(401);
 
     jwt.verify(token, process.env.JWT_SECRET, (err: any, user: UserDocument) => {
-        console.log(err);
 
         if (err) return res.sendStatus(403); // Unauthorized
 
@@ -33,31 +33,39 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
 /**
  *  Function provided to passport middleware which verifies user credentials
  */
-const basicAuth = async function (
+const myAuth = async function (
   username: string,
   password: string,
   done: Function
 ) {
-    let user: UserDocument = await getUserByUsername(username)
-        .catch((err: Error) =>
-               done({ statuscode: 500, error: true, errormessage: err })
+
+    let returnF: Function;
+    let user: UserDocument | void = await getUserByUsername(username)
+    .catch((err: Error) =>
+        returnF = done({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: "/auth/signin",
+        })
     );
 
-    if (await user.validatePassword(password)) {
-        return done(null, user);
+    if (user && await user.validatePassword(password)) {
+        returnF = done(null, user);
     }
-
-    return done(null, false);
+    else{
+        returnF = done(null, false);
+    }
+    return returnF;
 };
 
-passport.use(new passportHTTP.BasicStrategy(basicAuth));
+passport.use(new LocalStrategy({passReqToCallback: true}, myAuth));
 
 /**
  *  Login endpoint, check the authentication and generate the jwt
  */
 router.post(
     '/auth/signin',
-    passport.authenticate('basic', { session: false }),
+    passport.authenticate('local', { session: false }),
     (req: Request, res: Response) => {
         
         const tokenData = {
@@ -70,7 +78,7 @@ router.post(
             expiresIn: '1h',
         });
 
-        return res.status(201).json({ token: signed_token });
+        return res.status(200).json({ token: signed_token });
     }
 );
 
