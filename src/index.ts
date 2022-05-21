@@ -74,6 +74,14 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 
+// Allow cross-origin
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Methods", "*");
+    next();
+});
+
 /* Sanitize input to avoid NoSQL injections */
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 

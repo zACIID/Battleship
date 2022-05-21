@@ -34,31 +34,34 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
  *  Function provided to passport middleware which verifies user credentials
  */
 const myAuth = async function (
+  request: Response,
   username: string,
   password: string,
   done: Function
 ) {
 
-    let returnF: Function;
+    let authResults: Function;
     let user: UserDocument | void = await getUserByUsername(username)
-    .catch((err: Error) =>
-        returnF = done({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: "/auth/signin",
-        })
+    .catch((err: Error) => {
+        authResults = done({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: "/auth/signin",
+            }, null, null);
+        }
     );
 
     if (user && await user.validatePassword(password)) {
-        returnF = done(null, user);
+        authResults = done(null, user);
     }
     else{
-        returnF = done(null, false);
+        authResults = done(null, false);
     }
-    return returnF;
+
+    return authResults;
 };
 
-passport.use(new LocalStrategy({passReqToCallback: true}, myAuth));
+passport.use(new LocalStrategy({ passReqToCallback: true }, myAuth));
 
 /**
  *  Login endpoint, check the authentication and generate the jwt
@@ -67,6 +70,7 @@ router.post(
     '/auth/signin',
     passport.authenticate('local', { session: false }),
     (req: Request, res: Response) => {
+        // TODO Hint? https://stackoverflow.com/questions/47567943/passport-js-custom-error-for-unauthorized-and-bad-request
         
         const tokenData = {
             username: req.user.username,
