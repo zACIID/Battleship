@@ -55,7 +55,7 @@ interface PatchStatsRequest extends Request {
     body: PatchStatsBody;
 }
 
-const router = Router();
+export const router = Router();
 const userErr: string = 'No user with that identifier';
 const usersErr: string = 'None of the given ids are present in the db';
 

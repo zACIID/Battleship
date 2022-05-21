@@ -5,7 +5,7 @@ import passportHTTP from 'passport-http';
 import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 
-const router = Router();
+export const router = Router();
 
 declare module 'express' {
     export interface Request {

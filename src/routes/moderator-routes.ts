@@ -4,7 +4,7 @@ import { UserDocument, getUserById, createUser, deleteUser } from '../models/use
 import { authenticateToken } from './auth-routes';
 import { Types } from 'mongoose';
 
-const router = Router();
+export const router = Router();
 
 interface PostBody {
     user: UserDocument;

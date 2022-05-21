@@ -4,7 +4,7 @@ import { UserDocument, User, getUserById, UserRoles } from '../models/user';
 import { authenticateToken } from './auth-routes';
 import { Types } from 'mongoose';
 
-const router = Router();
+export const router = Router();
 
 interface RolePostBody {
     role: string;

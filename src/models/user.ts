@@ -143,7 +143,7 @@ export const UserSchema = new Schema<UserDocument>({
         type: [SchemaTypes.String],
         required: true,
         enum: [UserRoles.Base.valueOf(), UserRoles.Moderator.valueOf(), UserRoles.Admin.valueOf()],
-        default: UserRoles.Base.valueOf(),
+        default: [UserRoles.Base.valueOf()],
     },
 
     salt: {
@@ -356,9 +356,7 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
         Promise.reject(new Error('Internal server error'))
     );
 
-    return !userDoc
-        ? Promise.reject(new Error('No user with that id'))
-        : Promise.resolve(userDoc);
+    return !userDoc ? Promise.reject(new Error('No user with that id')) : Promise.resolve(userDoc);
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
@@ -482,5 +480,5 @@ export async function updateUserStats(
     user.stats.totalShots += shots;
     user.stats.hits += hits;
 
-    return user.save()
+    return user.save();
 }

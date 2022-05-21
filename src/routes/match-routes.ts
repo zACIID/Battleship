@@ -10,7 +10,7 @@ import {
 import { Types } from 'mongoose';
 import { authenticateToken } from './auth-routes';
 
-const router = Router();
+export const router = Router();
 
 interface PostBody {
     player1: Types.ObjectId;

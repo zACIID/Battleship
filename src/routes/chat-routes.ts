@@ -5,7 +5,7 @@ import { Message } from '../models/message';
 import { authenticateToken } from './auth-routes';
 import { Types } from 'mongoose';
 
-const router = Router();
+export const router = Router();
 
 interface UserPostBody {
     userId: Types.ObjectId;
@@ -162,5 +162,3 @@ router.post(
         return res.status(200).json(req.body);
     }
 );
-
-module.exports = router;

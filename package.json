@@ -1,5 +1,6 @@
 {
     "name": "battleships",
+    "main": "build/index.js",
     "version": "0.0.1",
     "author": "Unità Dei Mandrilli",
     "dependencies": {
@@ -7,6 +8,8 @@
         "bcrypt": "^5.0.1",
         "body-parser": "^1.20.0",
         "bufferutil": "^4.0.6",
+        "chalk": "^4.1.2",
+        "content-filter": "^1.1.2",
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "express": "^4.18.1",
@@ -25,6 +28,7 @@
         "@types/bcrypt": "^5.0.0",
         "@types/body-parser": "^1.19.0",
         "@types/chai": "^3.5.0",
+        "@types/chalk": "^2.2.0",
         "@types/dotenv": "^8.2.0",
         "@types/es6-promise": "^3.3.0",
         "@types/express": "^4.17.3",

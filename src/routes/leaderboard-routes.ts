@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { getLeaderboard, UserDocument } from '../models/user';
 import { authenticateToken } from './auth-routes';
 
-const router = Router();
+export const router = Router();
 
 router.get('/leaderboard', authenticateToken, async (req: Request, res: Response) => {
     let leaderBoard: UserDocument[];
