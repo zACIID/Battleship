@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
-import { UserDocument, getUserById, createUser, deleteUser } from '../models/user';
+import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user';
 import { authenticateToken } from './auth-routes';
 import { Types } from 'mongoose';
 
@@ -34,6 +34,7 @@ router.post('/moderators/:userId', authenticateToken, async (req: PostRequest, r
         moderator = await getUserById(userId);
         if (moderator.isModerator || moderator.isAdmin) {
             newMod = await createUser(req.body.user);
+            newMod.setRole(UserRoles["Moderator"]);
         } else
             res.status(403).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

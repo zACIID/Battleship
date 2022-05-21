@@ -59,6 +59,7 @@ router.post(
     '/auth/signin',
     passport.authenticate('basic', { session: false }),
     (req: Request, res: Response) => {
+        
         const tokenData = {
             username: req.user.username,
             roles: req.user.roles,
@@ -69,7 +70,7 @@ router.post(
             expiresIn: '1h',
         });
 
-        return res.status(200).json({ token: signed_token });
+        return res.status(201).json({ token: signed_token });
     }
 );
 
@@ -81,12 +82,25 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
     try {
         u = await createUser(req.body);
     } catch (err) {
-        return res.status(400).json({ error: true, errormessage: err.message });
+        if(err.message === "User already exists"){
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+        else{
+            return res.status(500).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
     }
 
     await u
         .setPassword(req.body.password)
         .catch((err: Error) => res.status(500).json({ error: true, errormessage: err.message }));
 
-    return res.status(200).json(u);
+    return res.status(201).json( {"userId": u._id, "username": u.username, "roles": u.roles, "online": u.online});
 });

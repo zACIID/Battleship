@@ -30,6 +30,7 @@ export interface User {
     salt: string;
     pwd_hash: string;
     notifications: RequestNotification[];
+    online: boolean;
 }
 
 /**
@@ -360,9 +361,9 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
-    const userdata: UserDocument = await UserModel.findOne({ username }).catch((err: Error) =>
-        Promise.reject(new Error('Internal server error'))
-    );
+    const userdata: UserDocument = await UserModel.findOne({ username }).catch((err: Error) => { 
+        return Promise.reject(new Error('Internal server error'))
+    });
 
     return !userdata
         ? Promise.reject(new Error('No user with that username'))
@@ -370,15 +371,13 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
 }
 
 export async function createUser(data): Promise<UserDocument> {
-    getUserByUsername(data.username).catch((err) => {
-        if (err.message === 'No user with that username') {
-            const user = new UserModel(data);
-            return user.save();
-        }
-        return Promise.reject(new Error(err.message));
+    
+    const u: UserDocument = new UserModel(data);
+    await u.save().catch((err) => {
+        return Promise.reject(new Error("User already exists"));
     });
+    return u;
 
-    return Promise.reject(new Error('User already exists'));
 }
 
 function isPresent(_id: Types.ObjectId): { found: boolean; idx: number } {
