@@ -67,7 +67,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId | GET | Retrieve the user with the specified id |
+| api/users/:userId | GET | Retrieve the user with the specified id |
 
 #### Url Parameters
 
@@ -111,7 +111,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users | GET | Retrieve the users with the ids specified in the request body |
+| api/users/action/getMultiple | POST | Retrieve the users with the ids specified in the request body |
 
 #### Example Request Body
 
@@ -176,7 +176,7 @@ Object representing the ids of the users to retrieve
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId | PATCH | Update the match with the specified id |
+| api/users/:userId | PATCH | Update the match with the specified id |
 
 #### Url Parameters
 
@@ -226,7 +226,7 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId | DELETE | Delete the user with the provided id |
+| api/users/:userId | DELETE | Delete the user with the provided id |
 
 #### Url Parameters
 
@@ -258,7 +258,7 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/stats | GET | Retrieve the statistics of the specified user |
+| api/users/:userId/stats | GET | Retrieve the statistics of the specified user |
 
 #### Url Parameters
 
@@ -302,7 +302,7 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/stats | PATCH | Update the statistics of the specified user |
+| api/users/:userId/stats | PATCH | Update the statistics of the specified user |
 
 #### Url Parameters
 

@@ -27,7 +27,7 @@ interface PatchPasswordBody {
     password: string;
 }
 
-interface GetUsersBody {
+interface GetMultipleUsersBody {
     userIds: Types.ObjectId[];
 }
 
@@ -39,8 +39,8 @@ interface PatchStatsBody {
     shots: number;
 }
 
-interface GetUsersRequest extends Request {
-    body: GetUsersBody;
+interface GetMultipleUsersRequest extends Request {
+    body: GetMultipleUsersBody;
 }
 
 interface PatchUsernameRequest extends Request {
@@ -85,8 +85,8 @@ router.patch(
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
                 timestamp: 1651881600, // Unix seconds timestamp
-                errorMessage: 'some error message',
-                requestPath: 'error/request/path',
+                errorMessage: err.message,
+                requestPath: req.path,
             });
         });
         res.send(200).json({ username });
@@ -103,8 +103,8 @@ router.patch(
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
                 timestamp: 1651881600, // Unix seconds timestamp
-                errorMessage: 'some error message',
-                requestPath: 'error/request/path',
+                errorMessage: err.message,
+                requestPath: req.path,
             });
         });
         res.send(200).json({ password });
@@ -117,8 +117,8 @@ router.delete('/users/:userId', authenticateToken, async (req: Request, res: Res
         const statusCode: number = err.message === userErr ? 404 : 500;
         res.status(statusCode).json({
             timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: 'some error message',
-            requestPath: 'error/request/path',
+            errorMessage: err.message,
+            requestPath: req.path,
         });
     });
 
@@ -134,8 +134,8 @@ router.get('/users/:userId/stats', authenticateToken, async (req: Request, res: 
         const statusCode: number = err.message === userErr ? 404 : 500;
         res.status(statusCode).json({
             timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: 'some error message',
-            requestPath: 'error/request/path',
+            errorMessage: err.message,
+            requestPath: req.path,
         });
     }
     res.send(200).json({ stats });
@@ -151,15 +151,15 @@ router.patch(
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
                 timestamp: 1651881600, // Unix seconds timestamp
-                errorMessage: 'some error message',
-                requestPath: 'error/request/path',
+                errorMessage: err.message,
+                requestPath: req.path,
             });
         });
         res.send(200).json({ elo, result, shipsDestroyed, shots, hits });
     }
 );
 
-router.get('/users', authenticateToken, async (req: GetUsersRequest, res: Response) => {
+router.post('/users/action/getMultiple', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
     const { userIds } = req.body;
     let users: UserDocument[];
     try {
@@ -170,14 +170,14 @@ router.get('/users', authenticateToken, async (req: GetUsersRequest, res: Respon
         else {
             res.status(statusCode).json({
                 foundUsers: err,
-                errorMessage: 'some error message',
-                requestPath: 'error/request/path',
+                errorMessage: err.message,
+                requestPath: req.path,
             });
         }
         res.status(statusCode).json({
             timestamp: 1651881600, // Unix seconds timestamp
-            errorMessage: 'some error message',
-            requestPath: 'error/request/path',
+            errorMessage: err.message,
+            requestPath: req.path,
         });
     }
     res.send(200).json({ users });

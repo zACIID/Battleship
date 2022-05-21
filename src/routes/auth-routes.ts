@@ -33,27 +33,29 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
 /**
  *  Function provided to passport middleware which verifies user credentials
  */
-passport.use(
-    new passportHTTP.BasicStrategy(async function (
-        username: string,
-        password: string,
-        done: Function
-    ) {
-        let user: UserDocument = await getUserByUsername(username).catch((err: Error) =>
-            done({ statuscode: 500, error: true, errormessage: err })
-        );
+const basicAuth = async function (
+  username: string,
+  password: string,
+  done: Function
+) {
+    let user: UserDocument = await getUserByUsername(username)
+        .catch((err: Error) =>
+               done({ statuscode: 500, error: true, errormessage: err })
+    );
 
-        if (await user.validatePassword(password)) {
-            return done(null, user);
-        }
-        return done(null, false);
-    })
-);
+    if (await user.validatePassword(password)) {
+        return done(null, user);
+    }
+
+    return done(null, false);
+};
+
+passport.use(new passportHTTP.BasicStrategy(basicAuth));
 
 /**
  *  Login endpoint, check the authentication and generate the jwt
  */
-router.get(
+router.post(
     '/auth/signin',
     passport.authenticate('basic', { session: false }),
     (req: Request, res: Response) => {

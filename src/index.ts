@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as http from 'http';
+import { inspect } from "util";
 
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
@@ -18,6 +19,7 @@ import { router as relationshipRouter } from './routes/relationship-routes';
 import { router as notificationRouter } from './routes/notification-routes';
 import { router as roleRouter } from './routes/role-routes';
 import { router as moderatorRouter } from './routes/moderator-routes';
+import bodyParser from "body-parser";
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -51,7 +53,10 @@ mongoose
 
         // Logging functionality to understand what requests arrive to the server
         server.addListener('request', (req: Request, res: Response) => {
-            console.log(chalk.magenta.bold(`Request received: ${req.url}`));
+            console.log(chalk.magenta.bold(`Request received: ${req.method} ${req.url}`));
+
+            // inspect replaces circular references in the json with [Circular]
+            console.log(chalk.yellow(inspect(req.body)));
         });
     })
     .catch((err) => {

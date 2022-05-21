@@ -71,7 +71,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /auth/signin | POST | User login |
+| api/auth/signin | POST | User login |
 
 #### Example Request Body
 
@@ -114,7 +114,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /auth/signup | POST | Add a new user in the database using request body data |
+| api/auth/signup | POST | Add a new user in the database using request body data |
 
 #### Example Request Body
 
