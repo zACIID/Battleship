@@ -4,6 +4,7 @@
 /dist
 /build
 /tmp
+/build
 /out-tsc
 /bazel-out
 
