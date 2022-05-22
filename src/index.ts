@@ -19,7 +19,6 @@ import { router as relationshipRouter } from './routes/relationship-routes';
 import { router as notificationRouter } from './routes/notification-routes';
 import { router as roleRouter } from './routes/role-routes';
 import { router as moderatorRouter } from './routes/moderator-routes';
-import bodyParser from "body-parser";
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 

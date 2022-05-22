@@ -33,35 +33,28 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
 /**
  *  Function provided to passport middleware which verifies user credentials
  */
-const myAuth = async function (
-  request: Response,
+const localAuth = async function (
   username: string,
   password: string,
   done: Function
 ) {
 
-    let authResults: Function;
     let user: UserDocument | void = await getUserByUsername(username)
     .catch((err: Error) => {
-        authResults = done({
-                timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
-                requestPath: "/auth/signin",
-            }, null, null);
-        }
-    );
+        return done(err);
+    });
 
     if (user && await user.validatePassword(password)) {
-        authResults = done(null, user);
+        return done(null, user);
     }
     else{
-        authResults = done(null, false);
+        return done(null, false);
     }
 
-    return authResults;
 };
 
-passport.use(new LocalStrategy({ passReqToCallback: true }, myAuth));
+passport.use(new LocalStrategy(localAuth));
+
 
 /**
  *  Login endpoint, check the authentication and generate the jwt
@@ -70,6 +63,8 @@ router.post(
     '/auth/signin',
     passport.authenticate('local', { session: false }),
     (req: Request, res: Response) => {
+
+        // Mi da errore -> Unknown authentication strategy
         // TODO Hint? https://stackoverflow.com/questions/47567943/passport-js-custom-error-for-unauthorized-and-bad-request
         
         const tokenData = {
