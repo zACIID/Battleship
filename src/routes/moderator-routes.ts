@@ -24,9 +24,9 @@ interface DeleteRequest extends Request {
 
 /**
  *    Check if the user is a moderator and create a new user using request body data
- *    /moderators/:userId   |   POST
+ *    /moderators/:userId/action/create   |   POST
  */
-router.post('/moderators/:userId', authenticateToken, async (req: PostRequest, res: Response) => {
+router.post('/moderators/:userId/action/create', authenticateToken, async (req: PostRequest, res: Response) => {
     let moderator: UserDocument;
     let newMod: UserDocument;
     const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
@@ -34,7 +34,7 @@ router.post('/moderators/:userId', authenticateToken, async (req: PostRequest, r
         moderator = await getUserById(userId);
         if (moderator.isModerator || moderator.isAdmin) {
             newMod = await createUser(req.body.user);
-            newMod.setRole(UserRoles["Moderator"]);
+            await newMod.setRole(UserRoles.Moderator);
         } else
             res.status(403).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -50,10 +50,10 @@ router.post('/moderators/:userId', authenticateToken, async (req: PostRequest, r
 
 /**
  *    Check if the user is a moderator and delete a user identified by the id found in the request body
- *    /moderators/:userId   |   DELETE
+ *    /moderators/:userId/action/remove   |   POST
  */
-router.delete(
-    '/moderators/:userId',
+router.post(
+    '/moderators/:userId/action/remove',
     authenticateToken,
     async (req: DeleteRequest, res: Response) => {
         let moderator: UserDocument;
@@ -65,7 +65,7 @@ router.delete(
             } else
                 res.status(403).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
-                    errorMessage: 'Unauthorized',
+                    errorMessage: `Unauthorized: user ${userId} is not a moderator`,
                     requestPath: req.path,
                 });
         } catch (err) {

@@ -9,10 +9,11 @@
   - [Endpoints](#endpoints)
     - [Create new moderator](#create-new-moderator)
       - [Url Parameters](#url-parameters)
-      - [Example Response Body](#example-response-body)
-    - [Ban user](#ban-user)
-      - [Url Parameters](#url-parameters-1)
       - [Example Request Body](#example-request-body)
+      - [Example Response Body](#example-response-body)
+    - [Ban User](#ban-user)
+      - [Url Parameters](#url-parameters-1)
+      - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-1)
 
 ## Resources
@@ -25,14 +26,13 @@
 | requestPath | string | Path of the request that lead to this error |
 | errorMsg | string | Error message |
 
-
 ## Endpoints
 
 ### Create new moderator
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /moderators/:userId   |  POST  | Check if the user is a moderator and create a new user using request body data  |
+| /moderators/:userId/action/create | POST | Check if the user is a moderator and create a new user using request body data |
 
 #### Url Parameters
 
@@ -53,11 +53,10 @@
 
 #### Example Response Body
 
-
 ##### Success
 
 - Status Code: 201
-- resource representing the user that has just been registered
+- resource representing the moderator that has just been registered
 
 ```json
 {
@@ -85,7 +84,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /moderators/:userId   | DELETE |  Check if the user is a moderator and delete a user identified by the id found in the request body  |
+| /moderators/:userId/action/remove | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
 
 #### Url Parameters
 
@@ -110,7 +109,6 @@
 - Status Code: 204
 - Empty response
 
-
 ##### Error
 
 - Status Codes: 403 (unauthorized) 404 (if user not found)
@@ -123,4 +121,3 @@
     "requestPath": "error/request/path"
 }
 ```
-
