@@ -15,20 +15,24 @@
     - [Retrieve Multiple Users](#retrieve-multiple-users)
       - [Example Request Body](#example-request-body)
       - [Example Response Body](#example-response-body-1)
-    - [Update User](#update-user)
+    - [Update Password](#update-password)
       - [Url Parameters](#url-parameters-1)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-2)
-    - [Delete User](#delete-user)
+    - [Update Username](#update-username)
       - [Url Parameters](#url-parameters-2)
+      - [Example Request Body](#example-request-body-2)
       - [Example Response Body](#example-response-body-3)
-    - [Retrieve User Stats](#retrieve-user-stats)
+    - [Delete User](#delete-user)
       - [Url Parameters](#url-parameters-3)
       - [Example Response Body](#example-response-body-4)
-    - [Update User Stats](#update-user-stats)
+    - [Retrieve User Stats](#retrieve-user-stats)
       - [Url Parameters](#url-parameters-4)
-      - [Example Request Body](#example-request-body-2)
       - [Example Response Body](#example-response-body-5)
+    - [Update User Stats](#update-user-stats)
+      - [Url Parameters](#url-parameters-5)
+      - [Example Request Body](#example-request-body-3)
+      - [Example Response Body](#example-response-body-6)
 
 ## Resources
 
@@ -172,11 +176,11 @@ Object representing the ids of the users to retrieve
 }
 ```
 
-### Update User
+### Update Password
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId | PATCH | Update the match with the specified id |
+| api/users/:userId/password | PATCH | Update the password of the user with the specified id |
 
 #### Url Parameters
 
@@ -186,11 +190,10 @@ Object representing the ids of the users to retrieve
 
 #### Example Request Body
 
-Only the [User](#user) fields that need to be updated, except *userId*
+Object containing the new password to set
 
 ```json
 {
-    "username": "new username",
     "password": "new password"
 }
 ```
@@ -199,13 +202,54 @@ Only the [User](#user) fields that need to be updated, except *userId*
 
 ##### Success
 
-- Status Code: 200
-- Only the [User](#user) fields that have been updated
+- Status Code: 204
+- Empty response
+
+##### Error
+
+- Status Codes: 400, 404, 500
+- [Error](#error) resource
 
 ```json
 {
-    "username": "new username",
-    "password": "new password"
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Update Username
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| api/users/:userId/username | PATCH | Update the username of the user with the specified id |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user to update |
+
+#### Example Request Body
+
+Object containing the new password to set
+
+```json
+{
+    "username": "new username"
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 204
+- Resource containing the updated username
+
+```json
+{
+    "username": "new username"
 }
 ```
 

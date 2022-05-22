@@ -17,7 +17,6 @@ import {
 } from '../models/user';
 import { UserStats } from '../models/user-stats';
 import { authenticateToken } from './auth-routes';
-import * as mongoose from 'mongoose';
 
 interface PatchUsernameBody {
     username: string;
@@ -61,7 +60,7 @@ const usersErr: string = 'None of the given ids are present in the db';
 
 router.get('/users/:userId', authenticateToken, async (req: Request, res: Response) => {
     let user: UserDocument;
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+    const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
     try {
         user = await getUserById(userId);
     } catch (err) {
@@ -80,7 +79,7 @@ router.patch(
     authenticateToken,
     async (req: PatchUsernameRequest, res: Response) => {
         const { username } = req.body;
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
         await updateUserName(userId, username).catch((err) => {
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
@@ -98,7 +97,7 @@ router.patch(
     authenticateToken,
     async (req: PatchPasswordRequest, res: Response) => {
         const { password } = req.body;
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
         await updatePassword(userId, password).catch((err) => {
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
@@ -107,12 +106,13 @@ router.patch(
                 requestPath: req.path,
             });
         });
-        res.send(200).json({ password });
+
+        res.sendStatus(204);
     }
 );
 
 router.delete('/users/:userId', authenticateToken, async (req: Request, res: Response) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+    const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
     await deleteUser(userId).catch((err) => {
         const statusCode: number = err.message === userErr ? 404 : 500;
         res.status(statusCode).json({
@@ -126,7 +126,7 @@ router.delete('/users/:userId', authenticateToken, async (req: Request, res: Res
 });
 
 router.get('/users/:userId/stats', authenticateToken, async (req: Request, res: Response) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+    const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
     let stats: UserStats;
     try {
         stats = await getUserStats(userId);
@@ -145,7 +145,7 @@ router.patch(
     '/users/:userId/stats',
     authenticateToken,
     async (req: PatchStatsRequest, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
         const { elo, result, shipsDestroyed, shots, hits } = req.body;
         await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits).catch((err) => {
             const statusCode: number = err.message === userErr ? 404 : 500;
