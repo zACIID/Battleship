@@ -67,6 +67,7 @@
 {
     "notifications": [
         {
+            "id": "notification-id",
             "type": "FriendRequest",
             "sender": "sender-id"
         }
@@ -121,6 +122,7 @@
 
 ```json
 {
+    "id": "notification-id",
     "type": "FriendRequest",
     "sender": "sender-id"
 }
@@ -143,13 +145,14 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/notifications | DELETE | Remove the notification from the specified user |
+| /users/:userId/notifications/:notificationId | DELETE | Remove the notification from the specified user |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
 | userId | string | Id of the user to remove the notification from |
+| notificationId | string | Id of the notification to remove |
 
 #### Example Request Body
 

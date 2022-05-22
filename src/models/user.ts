@@ -2,11 +2,10 @@ import * as mongoose from 'mongoose';
 import { Document, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { NotificationSchema, RequestNotification, RequestTypes } from './notification';
-import { UserStats } from './user-stats';
-import { Relationship, RelationshipSchema } from './relationship';
+import { RequestNotification, RequestNotificationDocument, RequestTypes, NotificationSchema, } from './notification';
+import { UserStats, UserStatsDocument } from './user-stats';
+import { Relationship, RelationshipDocument, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
-import { type } from 'os';
 import { ChatDocument, ChatModel, createChat } from './chat';
 
 /**
@@ -24,13 +23,13 @@ export enum UserRoles {
  */
 export interface User {
     username: string;
-    relationships: [Relationship];
-    stats: UserStats;
     roles: string[];
-    salt: string;
     pwd_hash: string;
-    notifications: RequestNotification[];
+    salt: string;
     online: boolean;
+    stats: UserStats;
+    relationships: Relationship[];
+    notifications: RequestNotification[];
 }
 
 /**
@@ -39,6 +38,22 @@ export interface User {
  * It exposes some useful methods to interact with the database object.
  */
 export interface UserDocument extends User, Document {
+
+    /**
+     * Stats sub-document
+     */
+    stats: UserStatsDocument
+
+    /**
+     * Array of relationship sub-documents
+     */
+    relationships: RelationshipDocument[]
+
+    /**
+     * Array of notification sub-documents
+     */
+    notifications: RequestNotificationDocument[]
+
     /**
      * Adds the provided role to this instance.
      * If the user already has the role, it is not added a second time.
@@ -100,12 +115,11 @@ export interface UserDocument extends User, Document {
     addNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
 
     /**
-     * Remove a notification identified by type and requester
+     * Remove a notification identified by its id
      * Returns an error if the notification doesn't exist
-     * @param type type of the notification to remove
-     * @param requester sender of the notification to remove
+     * @param notificationId type of the notification to remove
      */
-    removeNotification(type: RequestTypes, requester: Types.ObjectId): Promise<UserDocument>;
+    removeNotification(notificationId: Types.ObjectId): Promise<UserDocument>;
 
     /**
      * Add a relationship and automatically create a new chat object
@@ -183,24 +197,24 @@ UserSchema.methods.addNotification = async function (
         }
     }
 
-    let toInsert: RequestNotification;
+    // TODO si può fare anche se toInsert non è inizializzato?
+    let toInsert: RequestNotificationDocument;
     toInsert.type = typeRequest;
     toInsert.sender = requester;
     this.notifications.push(toInsert);
+
     return this.save();
 };
 
 UserSchema.methods.removeNotification = async function (
-    typeRequest: RequestTypes,
-    requester: Types.ObjectId
+    notificationId: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.notifications) {
-        if (
-            this.notifications[idx].type === typeRequest &&
-            this.notifications[idx].sender === requester
-        )
+        if (this.notifications[idx]._id === notificationId) {
             this.notifications.splice(parseInt(idx), 1);
+        }
     }
+
     return this.save();
 };
 
@@ -278,7 +292,8 @@ UserSchema.methods.addRelationship = async function (
         }
     }
 
-    let toInsert: Relationship;
+    // TODO funziona anche se toInsert non è inizializzato?
+    let toInsert: RelationshipDocument;
     toInsert.friendId = friendId;
 
     try {

@@ -1,4 +1,4 @@
-import { Schema, SchemaTypes } from 'mongoose';
+import { Document, Schema, SchemaTypes } from 'mongoose';
 
 /**
  * Interface that represent the stats of some user of the system.
@@ -11,6 +11,13 @@ export interface UserStats {
     shipsDestroyed: number;
     totalShots: number;
     hits: number;
+}
+
+/**
+ * Interface that represent a stats sub-document in the user document
+ */
+export interface UserStatsDocument extends UserStats, Document {
+
 }
 
 export const StatsSchema = new Schema<UserStats>({

@@ -17,7 +17,6 @@
       - [Example Response Body](#example-response-body-1)
     - [Remove User Role](#remove-user-role)
       - [Url Parameters](#url-parameters-2)
-      - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-2)
 
 ## Resources
@@ -128,23 +127,14 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/roles | DELETE | Remove a role from the specified user |
+| /users/:userId/roles/:role | DELETE | Remove a role from the specified user |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
 | userId | string | Id of the user to remove the role from |
-
-#### Example Request Body
-
-[Role](#role) resource representing the role to be removed
-
-```json
-{
-    "role": "Moderator"
-}
-```
+| role | string | Name of the role to remove |
 
 #### Example Response Body
 

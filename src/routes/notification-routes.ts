@@ -54,7 +54,7 @@ router.post(
 
         try {
             user = await getUserById(userId);
-            user.addNotification(type, req.body.sender);
+            await user.addNotification(type, req.body.sender);
         } catch (err) {
             return res.status(500).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -63,7 +63,12 @@ router.post(
             });
         }
 
-        return res.status(200).json({ type: type, sender: req.body.sender });
+        // TODO implement something that returns notification ID
+        return res.status(200).json({
+                                        id: "Not implemented",
+                                        type: type,
+                                        sender: req.body.sender
+        });
     }
 );
 
@@ -71,16 +76,16 @@ router.post(
  *   /users/:userId/notifications | DELETE | Remove the notification from the specified user
  */
 router.delete(
-    '/users/:userId/notifications',
+    '/users/:userId/notifications/:notificationId',
     authenticateToken,
     async (req: NotificationRequest, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-        const type: RequestTypes = RequestTypes[RequestTypes[req.body.type]];
+        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        const notificationId: string = req.params.notificationId;
         let user: UserDocument;
 
         try {
             user = await getUserById(userId);
-            user.removeNotification(type, req.body.sender);
+            await user.removeNotification(Types.ObjectId(notificationId));
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

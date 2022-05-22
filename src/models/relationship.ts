@@ -8,6 +8,13 @@ export interface Relationship {
     chatId: Types.ObjectId;
 }
 
+/**
+ * Interface that represents a relationship sub-document
+ */
+export interface RelationshipDocument extends Relationship, Document {
+
+}
+
 export const RelationshipSchema = new Schema<Relationship>({
     friendId: {
         type: SchemaTypes.ObjectId,

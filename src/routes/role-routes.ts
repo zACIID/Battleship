@@ -39,14 +39,20 @@ router.get('/users/:userId/roles', authenticateToken, async (req: Request, res: 
  *    /users/:userId/roles | POST | Add a role to the specified user
  *    Returns the new role or a 500 error
  */
-router.post('/users/:userId/roles', authenticateToken, async (req: RoleRequest, res: Response) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    let user: UserDocument;
-    const role: UserRoles = UserRoles[UserRoles[req.body.role]];
+router.post('/users/:userId/roles',
+            authenticateToken,
+            async (req: RoleRequest, res: Response) => {
+    const userIdParam: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+    const roleParam: string = req.body.role;
 
     try {
-        user = await getUserById(userId);
-        user.setRole(role);
+        const user: UserDocument = await getUserById(userIdParam);
+
+        // Dynamically extract UserRoles value based on roleParam
+        const role: UserRoles = UserRoles[roleParam as keyof typeof UserRoles];
+        await user.setRole(role);
+
+        return res.status(200).json(role);
     } catch (err) {
         return res.status(500).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
@@ -54,25 +60,25 @@ router.post('/users/:userId/roles', authenticateToken, async (req: RoleRequest, 
             requestPath: req.path,
         });
     }
-
-    return res.status(200).json(role);
 });
 
 /**
  *    /users/:userId/roles | DELETE | Remove a role from the specified user
- *    Returns an empty responde or a 404 error
+ *    Returns an empty response or a 404 error
  */
 router.delete(
-    '/users/:userId/roles',
+    '/users/:userId/roles/:role',
     authenticateToken,
     async (req: RoleRequest, res: Response) => {
         const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
-        let user: UserDocument;
-        const role: UserRoles = UserRoles[UserRoles[req.body.role]];
+        const roleParam: string = req.params.role;
 
         try {
-            user = await getUserById(userId);
-            user.removeRole(role);
+            const user: UserDocument = await getUserById(userId);
+
+            // Dynamically extract UserRoles value based on roleParam
+            const role: UserRoles = UserRoles[roleParam as keyof typeof UserRoles];
+            await user.removeRole(role);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -81,6 +87,6 @@ router.delete(
             });
         }
 
-        return res.status(200).json();
+        return res.status(204).json();
     }
 );

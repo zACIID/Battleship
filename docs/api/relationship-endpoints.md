@@ -16,7 +16,6 @@
       - [Example Response Body](#example-response-body-1)
     - [Remove User Relationship](#remove-user-relationship)
       - [Url Parameters](#url-parameters-2)
-      - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-2)
 
 ## Resources
@@ -132,23 +131,14 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/relationships | DELETE | Remove a social relationship from the specified user |
+| /users/:userId/relationships/:friendId | DELETE | Remove the social relationship with the specified friend from the specified user |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
 | userId | string | Id of the user to remove the relationship from |
-
-#### Example Request Body
-
-[Relationship](#relationship) resource representing the relationship to remove
-
-```json
-{
-    "friendId": "friend-id-1"
-}
-```
+| friendId | string | Id of friend whose relationship is to remove |
 
 #### Example Response Body
 

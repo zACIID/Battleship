@@ -1,4 +1,4 @@
-import { Schema, SchemaTypes, Types } from 'mongoose';
+import { Document, Schema, SchemaTypes, Types } from 'mongoose';
 
 /**
  * Enumeration that defines all the possible notification types receivable by a user
@@ -15,6 +15,14 @@ export interface RequestNotification {
     type: RequestTypes;
     sender: Types.ObjectId;
 }
+
+/**
+ * Interface that represents a notification sub-document
+ */
+export interface RequestNotificationDocument extends RequestNotification, Document {
+
+}
+
 
 /**
  * A notification is strictly identified by the pair (type, requester)
