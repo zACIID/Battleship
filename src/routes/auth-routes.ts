@@ -41,15 +41,16 @@ export const retrieveUserId = function(req: Request, res: Response, next: NextFu
     try{
         const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
         res.locals.userId = userId;
+        next();
     }
     catch(err){
-        res.status(404).json({
+        return res.status(404).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
-    next();
+    
 }
 
 
@@ -59,7 +60,7 @@ export const retrieveChatId = function(req: Request, res: Response, next: NextFu
         res.locals.chatId = chatId;
     }
     catch(err){
-        res.status(404).json({
+        return res.status(404).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
@@ -120,9 +121,6 @@ router.post(
     '/auth/signin',
     passport.authenticate('local', { session: false }),
     (req: Request, res: Response) => {
-
-        // Mi da errore -> Unknown authentication strategy
-        // TODO Hint? https://stackoverflow.com/questions/47567943/passport-js-custom-error-for-unauthorized-and-bad-request
         
         const tokenData = {
             username: req.user.username,
@@ -145,6 +143,8 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
     let u: UserDocument;
     try {
         u = await createUser(req.body);
+        await u.setPassword(req.body.password);
+        return res.status(201).json( {"userId": u._id, "username": u.username, "roles": u.roles, "online": u.online});
     } catch (err) {
         if(err.message === "User already exists"){
             return res.status(400).json({
@@ -161,10 +161,4 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
             });
         }
     }
-
-    await u
-        .setPassword(req.body.password)
-        .catch((err: Error) => res.status(500).json({ error: true, errormessage: err.message }));
-
-    return res.status(201).json( {"userId": u._id, "username": u.username, "roles": u.roles, "online": u.online});
 });

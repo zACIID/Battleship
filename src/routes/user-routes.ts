@@ -14,6 +14,7 @@ import {
 } from '../models/user';
 import { UserStats } from '../models/user-stats';
 import { authenticateToken, retrieveUserId } from './auth-routes';
+import { stat } from 'fs';
 
 interface PatchUsernameBody {
     username: string;
@@ -62,6 +63,13 @@ router.get('/users/:userId', authenticateToken, retrieveUserId, async (req: Requ
     try {
         
         user = await getUserById(userId);
+        return res.status(201).json({
+            "userId": user._id,
+            "username": user.username,
+            "roles":user.roles,
+            "online": user.online
+        });
+
     } catch (err) {
         const statusCode: number = err.message === userErr ? 404 : 500;
         return res.status(statusCode).json({
@@ -70,12 +78,8 @@ router.get('/users/:userId', authenticateToken, retrieveUserId, async (req: Requ
             requestPath: req.path,
         });
     }
-    return res.status(201).json({
-        "userId": user._id,
-        "username": user.username,
-        "roles":user.roles,
-        "online": user.online
-    });
+    
+    
 });
 
 router.patch(
@@ -84,15 +88,26 @@ router.patch(
     retrieveUserId, 
     async (req: PatchUsernameRequest, res: Response) => {
         const { username } = req.body;
+
         const userId: Types.ObjectId = res.locals.userId;
-        try{
-            await updateUserName(userId, username);
-            res.status(200).json( username );
-        }catch(err){
-            const statusCode: number = err.message === userErr ? 404 : 500;
-            res.status(statusCode).json({
+
+        if(username){
+            try{
+                await updateUserName(userId, username);
+                return res.status(200).json( {username} );
+            }catch(err){
+                const statusCode: number = err.message === userErr ? 404 : 500;
+                return res.status(statusCode).json({
+                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    errorMessage: err.message,
+                    requestPath: req.path,
+                });
+            }
+        }
+        else{
+            return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
+                errorMessage: "Wrong parameters",
                 requestPath: req.path,
             });
         }
@@ -106,15 +121,23 @@ router.patch(
     async (req: PatchPasswordRequest, res: Response) => {
         const { password } = req.body;
         const userId: Types.ObjectId = res.locals.userId;
-        
-        try{
-            await updatePassword(userId, password);
-            res.sendStatus(204);
-        }catch(err){
-            const statusCode: number = err.message === userErr ? 404 : 500;
-            res.status(statusCode).json({
+        if(password){
+            try{
+                await updatePassword(userId, password);
+                return res.sendStatus(204);
+            }catch(err){
+                const statusCode: number = err.message === userErr ? 404 : 500;
+                return res.status(statusCode).json({
+                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    errorMessage: err.message,
+                    requestPath: req.path,
+                });
+            }
+        }
+        else{
+            return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
+                errorMessage: "Wrong parameters",
                 requestPath: req.path,
             });
         }
@@ -124,16 +147,20 @@ router.patch(
 
 router.delete('/users/:userId', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
     const userId: Types.ObjectId = res.locals.userId;
-    await deleteUser(userId).catch((err) => {
+    
+    try{
+        await deleteUser(userId);
+        return res.status(204).json( );
+    }catch(err){
         const statusCode: number = err.message === userErr ? 404 : 500;
-        res.status(statusCode).json({
+        return res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
-    });
+    }
 
-    res.status(204).json({});
+    
 });
 
 router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
@@ -141,10 +168,10 @@ router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req
     let stats: UserStats;
     try {
         stats = await getUserStats(userId);
-        res.status(200).json({ stats });
+        return res.status(200).json({ stats });
     } catch (err) {
         const statusCode: number = err.message === userErr ? 404 : 500;
-        res.status(statusCode).json({
+        return res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,

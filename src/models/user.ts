@@ -224,18 +224,21 @@ UserSchema.methods.removeNotification = async function (
 /* METHODS FOR PASSWORD MANIPULATION AND VALIDATION */
 
 UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocument> {
-    this.salt = await bcrypt
+    
+    const salt: string = await bcrypt
         .genSalt(10)
         .catch((error) =>
             Promise.reject(new Error('Error with salt generation: ' + error.message))
         );
 
-    this.pwd_hash = await bcrypt
-        .hash(pwd, this.salt)
+    const pwd_hash = await bcrypt
+        .hash(pwd, salt)
         .catch((error) =>
             Promise.reject(new Error('Error with password encryption: ' + error.message))
         );
 
+    this.salt = salt;
+    this.pwd_hash = pwd_hash;
     return this.save();
 };
 
@@ -434,18 +437,14 @@ export async function deleteUser(_id: Types.ObjectId): Promise<void> {
 }
 
 export async function updateUserName(_id: Types.ObjectId, username: string): Promise<void> {
-    await getUserByUsername(username).catch(async (err) => {
-        if (err.message === 'No user with that username') {
-            const query = await UserModel.updateOne({ _id }, { username }).catch((err) =>
-                Promise.reject(new Error('Sum internal error just occurred'))
-            );
-            return query.n === 0
-                ? Promise.reject(new Error('No user with that id'))
-                : Promise.resolve();
-        }
-        return Promise.reject(new Error(err.message));
+
+    
+    await UserModel.updateOne({ _id }, { username }).catch((err) =>{
+        return Promise.reject(new Error(err.message))
     });
-    return Promise.reject(new Error('Username already exists'));
+            
+    return Promise.resolve();
+        
 }
 
 export async function updatePassword(_id: Types.ObjectId, password: string): Promise<void> {
