@@ -117,9 +117,10 @@ export interface UserDocument extends User, Document {
     /**
      * Remove a notification identified by its id
      * Returns an error if the notification doesn't exist
-     * @param notificationId type of the notification to remove
+     * @param type type of the notification to remove
+     * @param sender id of the user that generated the request
      */
-    removeNotification(notificationId: Types.ObjectId): Promise<UserDocument>;
+    removeNotification(type: RequestTypes, sender: Types.ObjectId): Promise<UserDocument>;
 
     /**
      * Add a relationship and automatically create a new chat object
@@ -173,7 +174,7 @@ export const UserSchema = new Schema<UserDocument>({
 
     notifications: {
         type: [NotificationSchema],
-        default: [],
+        _id: true
     },
 
     online: {
@@ -207,10 +208,12 @@ UserSchema.methods.addNotification = async function (
 };
 
 UserSchema.methods.removeNotification = async function (
-    notificationId: Types.ObjectId
+    type: string,
+    sender: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.notifications) {
-        if (this.notifications[idx]._id === notificationId) {
+        if (this.notifications[idx].type === type
+            && this.notifications[idx].sender === sender) {
             this.notifications.splice(parseInt(idx), 1);
         }
     }

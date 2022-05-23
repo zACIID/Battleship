@@ -17,7 +17,7 @@
       - [Example Response Body](#example-response-body-1)
     - [Remove Notification](#remove-notification)
       - [Url Parameters](#url-parameters-2)
-      - [Example Request Body](#example-request-body-1)
+      - [Query Parameters](#query-parameters-1)
       - [Example Response Body](#example-response-body-2)
 
 ## Resources
@@ -67,7 +67,6 @@
 {
     "notifications": [
         {
-            "id": "notification-id",
             "type": "FriendRequest",
             "sender": "sender-id"
         }
@@ -122,7 +121,6 @@
 
 ```json
 {
-    "id": "notification-id",
     "type": "FriendRequest",
     "sender": "sender-id"
 }
@@ -145,25 +143,20 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/notifications/:notificationId | DELETE | Remove the notification from the specified user |
+| /users/:userId/notifications | DELETE | Remove the notification from the specified user |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
 | userId | string | Id of the user to remove the notification from |
-| notificationId | string | Id of the notification to remove |
 
-#### Example Request Body
+#### Query Parameters
 
-[Notification](#notification) resource to remove from the user
-
-```json
-{
-    "type": "FriendRequest",
-    "sender": "sender-id"
-}
-```
+| Name | Data Type | Required | Description | Default | Constraints |
+| :--- | :-------- | :------- | :---------- | :------ | :---------- |
+| type | string | yes | Type that identifies the request | - | FriendRequest oppure MatchRequest |
+| sender | string | yes | Id of the sender that identifies the request | - | - |
 
 #### Example Response Body
 

@@ -177,12 +177,15 @@ router.patch(
     }
 );
 
-router.post('/users/action/getMultiple', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
-    
-    const { userIds } = req.body;
+router.post('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
     let users: UserDocument[];
     try {
-        users = await getUsers(userIds);
+        // If there is no "ids" query param, an exception is thrown and a 404 error is appropriate
+        const userIdsQParam: string[] = (req.query.ids as string).split(",");
+        const userObjIds: Types.ObjectId[] = userIdsQParam.map((uId) => {
+            return Types.ObjectId(uId);
+        })
+        users = await getUsers(userObjIds);
     } catch (err) {
         let statusCode: number = 404;
         if (err instanceof Error && err.message === usersErr) statusCode = 500;

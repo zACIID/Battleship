@@ -1,15 +1,15 @@
-import * as mongoose from 'mongoose';
-import { Router, Request, Response } from 'express';
-import { RequestTypes } from '../models/notification';
-import { UserDocument, getUserById } from '../models/user';
-import { authenticateToken, retrieveUserId } from './auth-routes';
-import { Types } from 'mongoose';
+import * as mongoose from "mongoose";
+import { Types } from "mongoose";
+import { Request, Response, Router } from "express";
+import { RequestTypes } from "../models/notification";
+import { getUserById, UserDocument } from "../models/user";
+import { authenticateToken, retrieveUserId } from "./auth-routes";
 
 export const router = Router();
 
 interface PostBody {
     type: string;
-    sender: Types.ObjectId;
+    sender: string;
 }
 
 interface NotificationRequest extends Request {
@@ -36,6 +36,7 @@ router.get(
                 requestPath: req.path,
             });
         }
+
         // TODO check la paginazione
         return res.status(200).json({ notifications: user.notifications, nextPage: '' });
     }
@@ -50,12 +51,22 @@ router.post(
     retrieveUserId,
     async (req: NotificationRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
-        const type: RequestTypes = RequestTypes[RequestTypes[req.body.type]];
         let user: UserDocument;
 
         try {
+            const typeBodyParam: string = req.body.type;
+            const senderBodyParam: string = req.body.sender;
+
+            const reqType: RequestTypes = RequestTypes[typeBodyParam as keyof typeof RequestTypes];
+            const senderObjId: Types.ObjectId = Types.ObjectId(senderBodyParam);
+
             user = await getUserById(userId);
-            await user.addNotification(type, req.body.sender);
+            await user.addNotification(reqType, senderObjId);
+
+            return res.status(200).json({
+                                            type: reqType.toString(),
+                                            sender: req.body.sender
+                                        });
         } catch (err) {
             return res.status(500).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -63,31 +74,30 @@ router.post(
                 requestPath: req.path,
             });
         }
-
-        // TODO implement something that returns notification ID
-        return res.status(200).json({
-            id: "Not implemented",
-            type: type,
-            sender: req.body.sender
-        });
     }
 );
 
 /**
  *   /users/:userId/notifications | DELETE | Remove the notification from the specified user
+ *   Query params: type, sender
  */
 router.delete(
-    '/users/:userId/notifications/:notificationId',
+    '/users/:userId/notifications',
     authenticateToken,
     retrieveUserId,
     async (req: NotificationRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId
-        const notificationId: string = req.params.notificationId;
         let user: UserDocument;
 
         try {
+            const typeQParam: string = req.params.type as string;
+            const senderQParam: string = req.params.sender as string;
+
+            const reqType: RequestTypes = RequestTypes[typeQParam as keyof typeof RequestTypes];
+            const senderObjId: Types.ObjectId = Types.ObjectId(senderQParam);
+
             user = await getUserById(userId);
-            await user.removeNotification(Types.ObjectId(notificationId));
+            await user.removeNotification(reqType, senderObjId);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

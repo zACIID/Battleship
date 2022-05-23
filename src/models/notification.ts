@@ -23,9 +23,8 @@ export interface RequestNotificationDocument extends RequestNotification, Docume
 
 }
 
-
 /**
- * A notification is strictly identified by the pair (type, requester)
+ * A notification is identified by the pair (type, requester)
  */
 export const NotificationSchema = new Schema<RequestNotification>({
     type: {
@@ -35,6 +34,6 @@ export const NotificationSchema = new Schema<RequestNotification>({
     },
     sender: {
         type: Types.ObjectId,
-        required: true,
+        required: true
     },
 });

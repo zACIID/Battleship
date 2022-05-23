@@ -13,6 +13,7 @@
       - [Url Parameters](#url-parameters)
       - [Example Response Body](#example-response-body)
     - [Retrieve Multiple Users](#retrieve-multiple-users)
+      - [Query Parameters](#query-parameters)
       - [Example Request Body](#example-request-body)
       - [Example Response Body](#example-response-body-1)
     - [Update Password](#update-password)
@@ -115,7 +116,13 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/action/getMultiple | POST | Retrieve the users with the ids specified in the request body |
+| api/users | GET | Retrieve the users with the ids specified in the request body |
+
+#### Query Parameters
+
+| Name | Data Type | Required | Description | Default | Constraints |
+| :--- | :-------- | :------- | :---------- | :------ | :---------- |
+| ids | string | yes | User ids to retrieve, separated by "," | - | Format is: {userId1},{userId2},...,{userIdn}. *Note that there are no spaces, just ","* |
 
 #### Example Request Body
 
