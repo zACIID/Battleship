@@ -85,17 +85,17 @@ router.patch(
     async (req: PatchUsernameRequest, res: Response) => {
         const { username } = req.body;
         const userId: Types.ObjectId = res.locals.userId;
-        await updateUserName(userId, username).catch((err) => {
+        try{
+            await updateUserName(userId, username);
+            res.status(200).json( username );
+        }catch(err){
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
-        });
-        
-        res.status(200).json( username );
-        
+        }
     }
 );
 
@@ -106,16 +106,19 @@ router.patch(
     async (req: PatchPasswordRequest, res: Response) => {
         const { password } = req.body;
         const userId: Types.ObjectId = res.locals.userId;
-        await updatePassword(userId, password).catch((err) => {
+        
+        try{
+            await updatePassword(userId, password);
+            res.sendStatus(204);
+        }catch(err){
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
-        });
+        }
 
-        res.sendStatus(204);
     }
 );
 
@@ -123,14 +126,14 @@ router.delete('/users/:userId', authenticateToken, retrieveUserId, async (req: R
     const userId: Types.ObjectId = res.locals.userId;
     await deleteUser(userId).catch((err) => {
         const statusCode: number = err.message === userErr ? 404 : 500;
-        return res.status(statusCode).json({
+        res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     });
 
-    return res.status(204).json({});
+    res.status(204).json({});
 });
 
 router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
@@ -138,15 +141,16 @@ router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req
     let stats: UserStats;
     try {
         stats = await getUserStats(userId);
+        res.status(200).json({ stats });
     } catch (err) {
         const statusCode: number = err.message === userErr ? 404 : 500;
-        return res.status(statusCode).json({
+        res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
-    return res.status(200).json({ stats });
+    
 });
 
 router.patch(
@@ -156,15 +160,20 @@ router.patch(
     async (req: PatchStatsRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
         const { elo, result, shipsDestroyed, shots, hits } = req.body;
-        await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits).catch((err) => {
+        
+        try{
+            await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits);
+            res.status(200).json({ elo, result, shipsDestroyed, shots, hits });
+        }
+        catch(err){
             const statusCode: number = err.message === userErr ? 404 : 500;
-            return res.status(statusCode).json({
+            res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
-        });
-        return res.status(200).json({ elo, result, shipsDestroyed, shots, hits });
+        }
+
     }
 );
 
@@ -178,18 +187,18 @@ router.post('/users/action/getMultiple', authenticateToken, async (req: GetMulti
         let statusCode: number = 404;
         if (err instanceof Error && err.message === usersErr) statusCode = 500;
         else {
-            return res.status(statusCode).json({
+            res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
-        return res.status(statusCode).json({
+        res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
     const results = users.map((x: UserDocument) => {return{userId: x._id, username: x.username, roles: x.roles, online: x.online}} )
-    return res.status(200).json({users: results});
+    res.status(200).json({users: results});
 });
