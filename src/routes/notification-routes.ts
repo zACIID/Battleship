@@ -1,9 +1,8 @@
-import * as mongoose from "mongoose";
 import { Types } from "mongoose";
 import { Request, Response, Router } from "express";
 import { RequestTypes } from "../models/notification";
 import { getUserById, UserDocument } from "../models/user";
-import { authenticateToken, retrieveUserId } from "./auth-routes";
+import { authenticateToken, retrieveUserId, retrieveId } from "./auth-routes";
 
 export const router = Router();
 
@@ -22,13 +21,14 @@ interface NotificationRequest extends Request {
 router.get(
     '/users/:userId/notifications',
     authenticateToken,
+    retrieveUserId,
     async (req: Request, res: Response) => {
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
 
-        let user: UserDocument;
 
         try {
-            user = await getUserById(userId);
+            const user: UserDocument = await getUserById(userId);
+            return res.status(200).json({ notifications: user.notifications });
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -37,8 +37,7 @@ router.get(
             });
         }
 
-        // TODO check la paginazione
-        return res.status(200).json({ notifications: user.notifications, nextPage: '' });
+        
     }
 );
 
@@ -51,24 +50,29 @@ router.post(
     retrieveUserId,
     async (req: NotificationRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
-        let user: UserDocument;
-
+        
         try {
-            const typeBodyParam: string = req.body.type;
-            const senderBodyParam: string = req.body.sender;
+            
+            const typeBodyParam: string = req.body.type as string;
+            const senderQParam: string = req.query.sender as string;
 
             const reqType: RequestTypes = RequestTypes[typeBodyParam as keyof typeof RequestTypes];
-            const senderObjId: Types.ObjectId = Types.ObjectId(senderBodyParam);
 
-            user = await getUserById(userId);
+            const user: UserDocument = await getUserById(userId);
+            const senderObjId: Types.ObjectId = retrieveId(senderQParam);
+            console.log(senderObjId);
+            const sender: UserDocument = await getUserById(senderObjId);
+            
             await user.addNotification(reqType, senderObjId);
 
-            return res.status(200).json({
-                                            type: reqType.toString(),
-                                            sender: req.body.sender
-                                        });
+            return res.status(201).json({
+                type: reqType.toString(),
+                sender: req.body.sender
+            });
+
         } catch (err) {
-            return res.status(500).json({
+            const status: number = err.message === 'No user with that id' ? 404 : 500;
+            return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
@@ -87,25 +91,30 @@ router.delete(
     retrieveUserId,
     async (req: NotificationRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId
-        let user: UserDocument;
+        
 
         try {
-            const typeQParam: string = req.params.type as string;
-            const senderQParam: string = req.params.sender as string;
+            const typeQParam: string = req.query.type as string;
+            const senderQParam: string = req.query.sender as string;
 
             const reqType: RequestTypes = RequestTypes[typeQParam as keyof typeof RequestTypes];
-            const senderObjId: Types.ObjectId = Types.ObjectId(senderQParam);
+            const senderObjId: Types.ObjectId = retrieveId(senderQParam);
 
-            user = await getUserById(userId);
+            const user: UserDocument = await getUserById(userId);
+            const sender: UserDocument = await getUserById(senderObjId);
             await user.removeNotification(reqType, senderObjId);
+
+            return res.status(204).json( );
+
         } catch (err) {
-            return res.status(404).json({
+            const status: number = err.message === 'No user with that id' ? 404 : 500;
+            return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
 
-        return res.status(204).json();
+        
     }
 );

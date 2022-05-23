@@ -125,7 +125,8 @@ router.get('/chats/:chatId/messages', authenticateToken, retrieveChatId, async (
     const chatId: Types.ObjectId = res.locals.chatId
     let chat: ChatDocument;
     let chat_messages: Message[];
-
+    const skip: number = req.query.skip ? parseInt( req.query.skip as string ) : 0 ;
+    const limit: number = req.query.limit ? parseInt( req.query.limit as string ) : 0 ;
     try {
         chat = await getChatById(chatId);
         chat_messages = chat.messages;
@@ -136,8 +137,8 @@ router.get('/chats/:chatId/messages', authenticateToken, retrieveChatId, async (
             requestPath: req.path,
         });
     }
-    // TODO cos'è nextpage e che ci devo passare
-    return res.status(200).json({ chat_messages, nextPage: '' });
+    const nextPage = `${req.path}?skip=${skip+limit}&limit=${limit}`;
+    return res.status(200).json({ chat_messages, nextPage: nextPage });
 });
 
 /**

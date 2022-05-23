@@ -54,10 +54,22 @@ export const retrieveUserId = function(req: Request, res: Response, next: NextFu
 }
 
 
+export const retrieveId = function(s_id: string){
+    try{
+        return Types.ObjectId(s_id);
+    }
+    catch(err){
+        throw new Error("No user with that id")
+    }
+}
+
+
+
 export const retrieveChatId = function(req: Request, res: Response, next: NextFunction){
     try{
         const chatId: Types.ObjectId = Types.ObjectId(req.params.chatId);
         res.locals.chatId = chatId;
+        next();
     }
     catch(err){
         return res.status(404).json({
@@ -66,7 +78,7 @@ export const retrieveChatId = function(req: Request, res: Response, next: NextFu
             requestPath: req.path,
         });
     }
-    next();
+    
 }
 
 
@@ -75,6 +87,7 @@ export const retrieveMatchId = function(req: Request, res: Response, next: NextF
     try{
         const matchId: Types.ObjectId = Types.ObjectId(req.params.matchId);
         res.locals.chatId = matchId;
+        next();
     }
     catch(err){
         res.status(404).json({
@@ -83,7 +96,7 @@ export const retrieveMatchId = function(req: Request, res: Response, next: NextF
             requestPath: req.path,
         });
     }
-    next();
+    
 }
 
 

@@ -52,7 +52,7 @@ export interface UserDocument extends User, Document {
     /**
      * Array of notification sub-documents
      */
-    notifications: RequestNotificationDocument[]
+    notifications: RequestNotification[]
 
     /**
      * Adds the provided role to this instance.
@@ -199,9 +199,8 @@ UserSchema.methods.addNotification = async function (
     }
 
     // TODO si può fare anche se toInsert non è inizializzato?
-    let toInsert: RequestNotificationDocument;
-    toInsert.type = typeRequest;
-    toInsert.sender = requester;
+    let toInsert: RequestNotification = {type: typeRequest, sender: requester};
+    
     this.notifications.push(toInsert);
 
     return this.save();
@@ -420,10 +419,11 @@ export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
     return users.length === ids.length ? Promise.resolve(users) : Promise.reject(users);
 }
 
-export async function getLeaderboard(): Promise<UserDocument[]> {
+export async function getLeaderboard(skip: number, limit: number): Promise<UserDocument[]> {
     return UserModel.find({}, { _id: 1, username: 1, elo: 1 })
         .sort({ elo: -1 })
-        .limit(20)
+        .skip(skip)
+        .limit(limit)
         .catch((err: Error) => Promise.reject(new Error('Sum internal error just occurred')));
 }
 

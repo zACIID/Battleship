@@ -53,15 +53,13 @@
 
 | Name | Data Type | Required | Description | Default | Constraints |
 | :--- | :-------- | :------- | :---------- | :------ | :---------- |
-| limit | Integer | No | Maximum number of notifications to be returned | 100 | limit <= 500 && limit >= 0 |
-| skip | Integer | No | Number of notifications to skip before starting to select users to send | 0 | skip >= 0 |
 
 #### Example Response Body
 
 ##### Success
 
 - Status Code: 200
-- Array of [Notification](#notification) resources that were sent to the specified user, of maximum length *limit*
+- Array of [Notification](#notification) resources that were sent to the specified user
 
 ```json
 {
@@ -71,8 +69,7 @@
             "sender": "sender-id"
         }
         ...
-    ],
-    "nextPage": "baseUrl/users/:userId/notifications?limit=500&skip=500"
+    ]
 }
 ```
 
