@@ -28,7 +28,7 @@ export interface RequestNotificationDocument extends RequestNotification, Docume
  */
 export const NotificationSchema = new Schema<RequestNotification>({
     type: {
-        type: [SchemaTypes.String],
+        type: SchemaTypes.String,
         required: true,
         enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
     },
