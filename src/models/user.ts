@@ -477,7 +477,7 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
 export async function updateUserStats(
     _id: Types.ObjectId,
     elo: number,
-    wasLatestMatchVictory: boolean,
+    result: boolean,
     shipsDestroyed: number,
     shots: number,
     hits: number
@@ -488,14 +488,20 @@ export async function updateUserStats(
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
+    console.log("Da model")
+    console.log("elo " + elo)
+    console.log("result " + result)
+    console.log("shipsDestroyed " + shipsDestroyed)
+    console.log("shots " + shots)
+    console.log("hits " + hits)
 
     if (user.stats.topElo < user.stats.elo + elo) user.stats.topElo = user.stats.elo + elo;
 
     user.stats.elo += elo;
-    wasLatestMatchVictory ? user.stats.wins++ : user.stats.losses++;
+    result ? user.stats.wins++ : user.stats.losses++;
     user.stats.shipsDestroyed += shipsDestroyed;
     user.stats.totalShots += shots;
-    user.stats.hits += hits;
+    user.stats.totalHits += hits;
 
     return user.save();
 }

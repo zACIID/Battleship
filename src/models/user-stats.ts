@@ -10,7 +10,7 @@ export interface UserStats {
     losses: number;
     shipsDestroyed: number;
     totalShots: number;
-    hits: number;
+    totalHits: number;
 }
 
 /**

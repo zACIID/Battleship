@@ -168,7 +168,15 @@ router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req
     let stats: UserStats;
     try {
         stats = await getUserStats(userId);
-        return res.status(200).json({ stats });
+        return res.status(200).json({ 
+            elo: stats.elo,
+            topElo: stats.topElo,
+            wins: stats.wins,
+            losses:stats.losses,
+            shipsDestroyed: stats.shipsDestroyed,
+            totalShots: stats.totalShots,
+            totalHits: stats.totalHits,
+        });
     } catch (err) {
         const statusCode: number = err.message === userErr ? 404 : 500;
         return res.status(statusCode).json({
@@ -187,14 +195,21 @@ router.patch(
     async (req: PatchStatsRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
         const { elo, result, shipsDestroyed, shots, hits } = req.body;
+        console.log("DA ROUTES")
+        console.log("elo " + elo)
+        console.log("result " + result)
+        console.log("shipsDestroyed " + shipsDestroyed)
+        console.log("shots " + shots)
+        console.log("hits " + hits)
         
         try{
             await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits);
-            res.status(200).json({ elo, result, shipsDestroyed, shots, hits });
+            return res.status(200).json({ elo, result, shipsDestroyed, shots, hits });
         }
         catch(err){
+            console.log("MESSAGGIO ERRORE   " + err.message)
             const statusCode: number = err.message === userErr ? 404 : 500;
-            res.status(statusCode).json({
+            return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
