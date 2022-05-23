@@ -8,7 +8,7 @@ import {
     updateMatchStats,
 } from '../models/match';
 import { Types } from 'mongoose';
-import { authenticateToken } from './auth-routes';
+import { authenticateToken, retrieveMatchId } from './auth-routes';
 
 export const router = Router();
 
@@ -55,8 +55,8 @@ router.post('/matches', authenticateToken, async (req: PostRequest, res: Respons
  *  Returns the response with the corresponding match object (if present on the db)
  *  Otherwise an error 404
  */
-router.get('/matches/:matchId', authenticateToken, async (req: Request, res: Response) => {
-    let matchId: Types.ObjectId = mongoose.Types.ObjectId(req.params.matchId);
+router.get('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: Request, res: Response) => {
+    let matchId: Types.ObjectId = res.locals.matchId;
     let match: MatchDocument;
 
     try {
@@ -76,8 +76,8 @@ router.get('/matches/:matchId', authenticateToken, async (req: Request, res: Res
  *   /matches/:matchId | DELETE | Delete the match with the provided id
  *   Returns an empty response if elimination went through, an error otherwise
  */
-router.delete('/matches/:matchId', authenticateToken, async (req: Request, res: Response) => {
-    let matchId: Types.ObjectId = mongoose.Types.ObjectId(req.params.matchId);
+router.delete('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: Request, res: Response) => {
+    let matchId: Types.ObjectId = res.locals.matchId;
 
     await deleteMatch(matchId).catch((err: Error) => {
         return res.status(404).json({
@@ -94,8 +94,8 @@ router.delete('/matches/:matchId', authenticateToken, async (req: Request, res: 
  *   /matches/:matchId/stats | PATCH | Update the statistics of the specified match
  *   Return the entire updated object or an error
  */
-router.patch('/matches/:matchId', authenticateToken, async (req: PatchRequest, res: Response) => {
-    let matchId: Types.ObjectId = mongoose.Types.ObjectId(req.params.matchId);
+router.patch('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: PatchRequest, res: Response) => {
+    let matchId: Types.ObjectId = res.locals.matchId;
 
     const { winner, totalShots, shipsDestroyed } = req.body;
 

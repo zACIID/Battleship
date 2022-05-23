@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user';
-import { authenticateToken } from './auth-routes';
+import { authenticateToken, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
 
 export const router = Router();
@@ -26,10 +26,10 @@ interface DeleteRequest extends Request {
  *    Check if the user is a moderator and create a new user using request body data
  *    /moderators/:userId/action/create   |   POST
  */
-router.post('/moderators/:userId/action/create', authenticateToken, async (req: PostRequest, res: Response) => {
+router.post('/moderators/:userId/action/create', authenticateToken, retrieveUserId, async (req: PostRequest, res: Response) => {
     let moderator: UserDocument;
     let newMod: UserDocument;
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+    const userId: Types.ObjectId = res.locals.userId;
     try {
         moderator = await getUserById(userId);
         if (moderator.isModerator || moderator.isAdmin) {
@@ -55,9 +55,10 @@ router.post('/moderators/:userId/action/create', authenticateToken, async (req: 
 router.post(
     '/moderators/:userId/action/remove',
     authenticateToken,
+    retrieveUserId,
     async (req: DeleteRequest, res: Response) => {
         let moderator: UserDocument;
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         try {
             moderator = await getUserById(userId);
             if (moderator.isModerator || moderator.isAdmin) {

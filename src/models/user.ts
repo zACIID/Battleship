@@ -221,14 +221,14 @@ UserSchema.methods.removeNotification = async function (
 /* METHODS FOR PASSWORD MANIPULATION AND VALIDATION */
 
 UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocument> {
-    const salt = await bcrypt
+    this.salt = await bcrypt
         .genSalt(10)
         .catch((error) =>
             Promise.reject(new Error('Error with salt generation: ' + error.message))
         );
 
     this.pwd_hash = await bcrypt
-        .hash(pwd, salt)
+        .hash(pwd, this.salt)
         .catch((error) =>
             Promise.reject(new Error('Error with password encryption: ' + error.message))
         );
@@ -450,6 +450,7 @@ export async function updatePassword(_id: Types.ObjectId, password: string): Pro
     try {
         user = await getUserById(_id);
         await user.setPassword(password);
+
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }

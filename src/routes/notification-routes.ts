@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import { RequestTypes } from '../models/notification';
 import { UserDocument, getUserById } from '../models/user';
-import { authenticateToken } from './auth-routes';
+import { authenticateToken, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
 
 export const router = Router();
@@ -47,8 +47,9 @@ router.get(
 router.post(
     '/users/:userId/notifications',
     authenticateToken,
+    retrieveUserId,
     async (req: NotificationRequest, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         const type: RequestTypes = RequestTypes[RequestTypes[req.body.type]];
         let user: UserDocument;
 
@@ -65,9 +66,9 @@ router.post(
 
         // TODO implement something that returns notification ID
         return res.status(200).json({
-                                        id: "Not implemented",
-                                        type: type,
-                                        sender: req.body.sender
+            id: "Not implemented",
+            type: type,
+            sender: req.body.sender
         });
     }
 );
@@ -78,8 +79,9 @@ router.post(
 router.delete(
     '/users/:userId/notifications/:notificationId',
     authenticateToken,
+    retrieveUserId,
     async (req: NotificationRequest, res: Response) => {
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId
         const notificationId: string = req.params.notificationId;
         let user: UserDocument;
 

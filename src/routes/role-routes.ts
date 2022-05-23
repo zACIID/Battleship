@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
-import { UserDocument, User, getUserById, UserRoles } from '../models/user';
-import { authenticateToken } from './auth-routes';
+import { UserDocument, getUserById, UserRoles } from '../models/user';
+import { authenticateToken, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
 
 export const router = Router();
@@ -18,8 +18,8 @@ interface RoleRequest extends Request {
  *   /users/:userId/roles | GET | Retrieve the roles of the specified user
  *   Returns the list of roles of the provided user, a 404 error if user is not found
  */
-router.get('/users/:userId/roles', authenticateToken, async (req: Request, res: Response) => {
-    const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+router.get('/users/:userId/roles', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
+    const userId: Types.ObjectId = res.locals.userId;
     let user: UserDocument;
 
     try {
@@ -41,8 +41,9 @@ router.get('/users/:userId/roles', authenticateToken, async (req: Request, res: 
  */
 router.post('/users/:userId/roles',
             authenticateToken,
+            retrieveUserId,
             async (req: RoleRequest, res: Response) => {
-    const userIdParam: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+    const userIdParam: Types.ObjectId = res.locals.userId;
     const roleParam: string = req.body.role;
 
     try {
@@ -69,8 +70,9 @@ router.post('/users/:userId/roles',
 router.delete(
     '/users/:userId/roles/:role',
     authenticateToken,
+    retrieveUserId,
     async (req: RoleRequest, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         const roleParam: string = req.params.role;
 
         try {

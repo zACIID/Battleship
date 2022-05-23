@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import { UserDocument, getUserById } from '../models/user';
-import { authenticateToken } from './auth-routes';
+import { authenticateToken, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
 
 export const router = Router();
@@ -20,8 +20,9 @@ interface RelationshipRequest extends Request {
 router.get(
     '/users/:userId/relationships',
     authenticateToken,
+    retrieveUserId,
     async (req: Request, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         let user: UserDocument;
 
         try {
@@ -44,8 +45,9 @@ router.get(
 router.post(
     '/users/:userId/relationships',
     authenticateToken,
+    retrieveUserId,
     async (req: RelationshipRequest, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         let user: UserDocument;
 
         try {
@@ -69,8 +71,9 @@ router.post(
 router.delete(
     '/users/:userId/relationships',
     authenticateToken,
+    retrieveUserId,
     async (req: RelationshipRequest, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         let user: UserDocument;
 
         try {

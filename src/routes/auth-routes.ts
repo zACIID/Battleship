@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { getUserByUsername, createUser, UserDocument } from '../models/user';
 import passport from 'passport';
-import passportHTTP from 'passport-http';
 import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import LocalStrategy from 'passport-local' 
+import LocalStrategy from 'passport-local'
+import { Types } from 'mongoose'; 
 
 export const router = Router();
 
@@ -22,13 +22,70 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
 
     jwt.verify(token, process.env.JWT_SECRET, (err: any, user: UserDocument) => {
 
-        if (err) return res.sendStatus(403); // Unauthorized
+        if (err) return res.status(403).json({
+            
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+            
+        }); 
 
         req.user = user;
 
         next();
     });
 };
+
+
+export const retrieveUserId = function(req: Request, res: Response, next: NextFunction){
+    try{
+        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        res.locals.userId = userId;
+    }
+    catch(err){
+        res.status(404).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
+    }
+    next();
+}
+
+
+export const retrieveChatId = function(req: Request, res: Response, next: NextFunction){
+    try{
+        const chatId: Types.ObjectId = Types.ObjectId(req.params.chatId);
+        res.locals.chatId = chatId;
+    }
+    catch(err){
+        res.status(404).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
+    }
+    next();
+}
+
+
+
+export const retrieveMatchId = function(req: Request, res: Response, next: NextFunction){
+    try{
+        const matchId: Types.ObjectId = Types.ObjectId(req.params.matchId);
+        res.locals.chatId = matchId;
+    }
+    catch(err){
+        res.status(404).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
+    }
+    next();
+}
+
+
 
 /**
  *  Function provided to passport middleware which verifies user credentials

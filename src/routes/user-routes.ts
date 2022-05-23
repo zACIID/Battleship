@@ -1,22 +1,19 @@
-import * as express from 'express';
 import {
     updatePassword,
-    UserModel,
     updateUserName,
     getUsers,
     updateUserStats,
 } from '../models/user';
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
 import {
-    getLeaderboard,
     UserDocument,
     getUserById,
     deleteUser,
     getUserStats,
 } from '../models/user';
 import { UserStats } from '../models/user-stats';
-import { authenticateToken } from './auth-routes';
+import { authenticateToken, retrieveUserId } from './auth-routes';
 
 interface PatchUsernameBody {
     username: string;
@@ -58,11 +55,12 @@ export const router = Router();
 const userErr: string = 'No user with that identifier';
 const usersErr: string = 'None of the given ids are present in the db';
 
-router.get('/users/:userId', authenticateToken, async (req: Request, res: Response) => {
+
+router.get('/users/:userId', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
     let user: UserDocument;
-    
+    const userId: Types.ObjectId = res.locals.userId;
     try {
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        
         user = await getUserById(userId);
     } catch (err) {
         const statusCode: number = err.message === userErr ? 404 : 500;
@@ -72,33 +70,42 @@ router.get('/users/:userId', authenticateToken, async (req: Request, res: Respon
             requestPath: req.path,
         });
     }
-    return res.status(200).json({ user });
+    return res.status(201).json({
+        "userId": user._id,
+        "username": user.username,
+        "roles":user.roles,
+        "online": user.online
+    });
 });
 
 router.patch(
     '/users/:userId/username',
     authenticateToken,
+    retrieveUserId, 
     async (req: PatchUsernameRequest, res: Response) => {
         const { username } = req.body;
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         await updateUserName(userId, username).catch((err) => {
             const statusCode: number = err.message === userErr ? 404 : 500;
-            return res.status(statusCode).json({
+            res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         });
-        return res.status(200).json({ username });
+        
+        res.status(200).json( username );
+        
     }
 );
 
 router.patch(
     '/users/:userId/password',
     authenticateToken,
+    retrieveUserId,
     async (req: PatchPasswordRequest, res: Response) => {
         const { password } = req.body;
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         await updatePassword(userId, password).catch((err) => {
             const statusCode: number = err.message === userErr ? 404 : 500;
             res.status(statusCode).json({
@@ -112,8 +119,8 @@ router.patch(
     }
 );
 
-router.delete('/users/:userId', authenticateToken, async (req: Request, res: Response) => {
-    const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+router.delete('/users/:userId', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
+    const userId: Types.ObjectId = res.locals.userId;
     await deleteUser(userId).catch((err) => {
         const statusCode: number = err.message === userErr ? 404 : 500;
         return res.status(statusCode).json({
@@ -126,8 +133,8 @@ router.delete('/users/:userId', authenticateToken, async (req: Request, res: Res
     return res.status(204).json({});
 });
 
-router.get('/users/:userId/stats', authenticateToken, async (req: Request, res: Response) => {
-    const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req: Request, res: Response) => {
+    const userId: Types.ObjectId = res.locals.userId;
     let stats: UserStats;
     try {
         stats = await getUserStats(userId);
@@ -145,8 +152,9 @@ router.get('/users/:userId/stats', authenticateToken, async (req: Request, res: 
 router.patch(
     '/users/:userId/stats',
     authenticateToken,
+    retrieveUserId,
     async (req: PatchStatsRequest, res: Response) => {
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = res.locals.userId;
         const { elo, result, shipsDestroyed, shots, hits } = req.body;
         await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits).catch((err) => {
             const statusCode: number = err.message === userErr ? 404 : 500;
@@ -161,7 +169,7 @@ router.patch(
 );
 
 router.post('/users/action/getMultiple', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
-    console.log(req.body);
+    
     const { userIds } = req.body;
     let users: UserDocument[];
     try {
@@ -182,5 +190,6 @@ router.post('/users/action/getMultiple', authenticateToken, async (req: GetMulti
             requestPath: req.path,
         });
     }
-    return res.status(200).json({ users });
+    const results = users.map((x: UserDocument) => {return{userId: x._id, username: x.username, roles: x.roles, online: x.online}} )
+    return res.status(200).json({users: results});
 });
