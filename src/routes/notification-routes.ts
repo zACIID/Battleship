@@ -23,7 +23,7 @@ router.get(
     '/users/:userId/notifications',
     authenticateToken,
     async (req: Request, res: Response) => {
-        const userId: Types.ObjectId = mongoose.Types.ObjectId(req.params.userId);
+        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
 
         let user: UserDocument;
 

@@ -177,7 +177,7 @@ router.patch(
     }
 );
 
-router.post('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
+router.get('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
     let users: UserDocument[];
     try {
         // If there is no "ids" query param, an exception is thrown and a 404 error is appropriate
@@ -185,23 +185,35 @@ router.post('/users', authenticateToken, async (req: GetMultipleUsersRequest, re
         const userObjIds: Types.ObjectId[] = userIdsQParam.map((uId) => {
             return Types.ObjectId(uId);
         })
+
         users = await getUsers(userObjIds);
+        const results = users.map((x: UserDocument) => {
+            return{
+                userId: x._id,
+                username: x.username,
+                roles: x.roles,
+                online: x.online
+            };
+        });
+
+        return res.status(200).json({users: results});
     } catch (err) {
         let statusCode: number = 404;
-        if (err instanceof Error && err.message === usersErr) statusCode = 500;
+        if (err instanceof Error && err.message === usersErr) {
+            statusCode = 500;
+        }
         else {
-            res.status(statusCode).json({
+            return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
-        res.status(statusCode).json({
+
+        return res.status(statusCode).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
-    const results = users.map((x: UserDocument) => {return{userId: x._id, username: x.username, roles: x.roles, online: x.online}} )
-    res.status(200).json({users: results});
 });
