@@ -49,7 +49,7 @@ router.get('/chats/:chatId', authenticateToken, retrieveChatId, async (req: Requ
 
 /**
  *   /chats/:chatId | DELETE | Delete the chat with the provided id
- *   Returns an empty responde or an error 404 if something went wrong
+ *   Returns an empty response or an error 404 if something went wrong
  */
 router.delete('/chats/:chatId', authenticateToken, retrieveChatId, async (req: Request, res: Response) => {
     const chatId: Types.ObjectId = res.locals.chatId
@@ -62,7 +62,7 @@ router.delete('/chats/:chatId', authenticateToken, retrieveChatId, async (req: R
         });
     });
 
-    return res.status(200).json();
+    return res.status(204).json();
 });
 
 /**
