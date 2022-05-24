@@ -20,10 +20,12 @@ interface GetMultipleUsersBody {
 
 interface PatchStatsBody {
     elo: number;
-    result: boolean;
+    topElo: number;
+    wins: number;
+    losses: number;
     shipsDestroyed: number;
-    hits: number;
-    shots: number;
+    totalHits: number;
+    totalShots: number;
 }
 
 interface GetMultipleUsersRequest extends Request {
@@ -188,17 +190,18 @@ router.put(
     retrieveUserId,
     async (req: PatchStatsRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
-        const { elo, result, shipsDestroyed, shots, hits } = req.body;
+        const { elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits } = req.body;
         console.log('DA ROUTES');
         console.log('elo ' + elo);
-        console.log('result ' + result);
+        console.log("topelo" + topElo)
+        console.log("wins + losses" + " :" + wins + " :" + losses)
         console.log('shipsDestroyed ' + shipsDestroyed);
-        console.log('shots ' + shots);
-        console.log('hits ' + hits);
+        console.log('shots ' + totalShots);
+        console.log('hits ' + totalHits);
 
         try {
-            await updateUserStats(userId, elo, result, shipsDestroyed, shots, hits);
-            return res.status(200).json({ elo, result, shipsDestroyed, shots, hits });
+            await updateUserStats(userId, elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits);
+            return res.status(200).json({ elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits });
         } catch (err) {
             console.log('MESSAGGIO ERRORE   ' + err.message);
             const statusCode: number = err.message === userErr ? 404 : 500;
