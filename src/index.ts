@@ -17,7 +17,6 @@ import { router as matchRouter } from './routes/match-routes';
 import { router as leaderboardRouter } from './routes/leaderboard-routes';
 import { router as relationshipRouter } from './routes/relationship-routes';
 import { router as notificationRouter } from './routes/notification-routes';
-import { router as roleRouter } from './routes/role-routes';
 import { router as moderatorRouter } from './routes/moderator-routes';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -92,7 +91,6 @@ app.use('/api', authRouter);
 app.use('/api', userRouter);
 app.use('/api', chatRouter);
 app.use('/api', matchRouter);
-app.use('/api', roleRouter);
 app.use('/api', notificationRouter);
 app.use('/api', relationshipRouter);
 app.use('/api', moderatorRouter);
