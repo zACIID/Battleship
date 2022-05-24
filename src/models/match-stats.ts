@@ -15,13 +15,15 @@ export interface MatchStats {
 export const MatchStatsSchema = new Schema<MatchStats>({
     winner: {
         type: SchemaTypes.ObjectId,
+        default: null
     },
     startTime: {
         type: SchemaTypes.Date,
-        required: true,
+        default: Date.now
     },
     endTime: {
         type: SchemaTypes.Date,
+        default: null
     },
     totalShots: {
         type: SchemaTypes.Number,

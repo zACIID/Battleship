@@ -83,7 +83,8 @@
 ##### Success
 
 - Status Code: 201
-- [Match](#match) resource representing the match that has just been created
+- [Match](#match) resource representing the match that has just been created.
+**Note:** that *winner* and *endTime* are `null` because they are not decided yet.
 
 ```json
 {
@@ -91,7 +92,14 @@
     "player1": "player1-id",
     "player2": "player2-id",
     "playersChat": "players-chat-id",
-    "observersChat": "observers-chat-id"
+    "observersChat": "observers-chat-id",
+    "stats": {
+        "winner": null,
+        "startTime": 1651881600,
+        "endTime": null,
+        "shipsDestroyed": 0,
+        "totalShots": 0
+    }
 }
 ```
 

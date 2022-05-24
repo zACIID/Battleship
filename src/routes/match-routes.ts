@@ -78,11 +78,11 @@ router.get(
 );
 
 /**
- *   /matches/:matchId/stats | PATCH | Update the statistics of the specified match
+ *   /matches/:matchId/stats | PUT | Update the statistics of the specified match
  *   Return the entire updated object or an error
  */
 router.put(
-    '/matches/:matchId',
+    '/matches/:matchId/stats',
     authenticateToken,
     retrieveMatchId,
     async (req: PatchRequest, res: Response) => {
