@@ -1,4 +1,4 @@
-import { Document, Schema, SchemaTypes } from 'mongoose';
+import { Schema, SchemaTypes, Types } from 'mongoose';
 
 /**
  * Interface that represent the stats of some user of the system.
@@ -16,7 +16,7 @@ export interface UserStats {
 /**
  * Interface that represent a stats sub-document in the user document
  */
-export interface UserStatsDocument extends UserStats, Document {
+export interface UserStatsSubDocument extends UserStats, Types.EmbeddedDocument {
 
 }
 

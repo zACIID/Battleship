@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
 
-import { Message, MessageSchema } from './message';
+import { Message, MessageSubDocument, MessageSchema } from './message';
 
 /**
  * Interface that represents a Chat between different users of the system.
@@ -18,6 +18,12 @@ export interface Chat {
  * document in the database.
  */
 export interface ChatDocument extends Chat, Document {
+
+    /**
+     * Array of Message sub-documents
+     */
+    messages: Types.DocumentArray<MessageSubDocument>;
+
     /**
      * Adds the provided user_id into this instance of chat
      * @param user_id ObjectId of the user to add
@@ -31,7 +37,7 @@ export interface ChatDocument extends Chat, Document {
     removeUser(user_id: Types.ObjectId): Promise<ChatDocument>;
 
     /**
-     * Adds the messages into the messages field of this chat
+     * Adds the messages into the "messages" field of this chat
      * @param content text of the new message
      * @param timestamp date when message has been sent
      * @param author ObjectId of the author of the message
@@ -75,9 +81,10 @@ ChatSchema.methods.addMessage = async function (
 };
 
 export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
-    const chatData = await ChatModel.findOne({ _id }).catch((err: Error) =>
+    const chatData = await ChatModel.findOne({ _id })
+      .catch((err: Error) =>
         Promise.reject(new Error('No chat with that id'))
-    );
+      );
 
     return Promise.resolve(chatData);
 }
@@ -90,12 +97,12 @@ export async function deleteChat(_id: Types.ObjectId): Promise<void> {
 }
 
 /**
- *
+ * Creates a chat with the provided users
  * @param users contains a list of users objectId that can also be empty
  * @returns the newly created ChatDocument's object
  */
 export async function createChat(users: Types.ObjectId[]): Promise<ChatDocument> {
-    let chat = new ChatModel({ users });
+    const chat = new ChatModel({ users });
     return chat.save();
 }
 

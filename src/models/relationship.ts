@@ -11,7 +11,7 @@ export interface Relationship {
 /**
  * Interface that represents a relationship sub-document
  */
-export interface RelationshipDocument extends Relationship, Document {
+export interface RelationshipSubDocument extends Relationship, Types.EmbeddedDocument {
 
 }
 

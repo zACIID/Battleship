@@ -2,9 +2,9 @@ import * as mongoose from 'mongoose';
 import { Document, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { RequestNotification, RequestNotificationDocument, RequestTypes, NotificationSchema, } from './notification';
-import { UserStats, UserStatsDocument } from './user-stats';
-import { Relationship, RelationshipDocument, RelationshipSchema } from './relationship';
+import { RequestNotification, RequestNotificationSubDocument, RequestTypes, NotificationSchema, } from './notification';
+import { UserStats, UserStatsSubDocument } from './user-stats';
+import { Relationship, RelationshipSubDocument, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
 import { ChatDocument, ChatModel, createChat } from './chat';
 
@@ -42,17 +42,17 @@ export interface UserDocument extends User, Document {
     /**
      * Stats sub-document
      */
-    stats: UserStatsDocument
+    stats: UserStatsSubDocument
 
     /**
      * Array of relationship sub-documents
      */
-    relationships: RelationshipDocument[]
+    relationships: Types.DocumentArray<RelationshipSubDocument>;
 
     /**
      * Array of notification sub-documents
      */
-    notifications: RequestNotification[]
+    notifications: Types.DocumentArray<RequestNotificationSubDocument>;
 
     /**
      * Adds the provided role to this instance.
@@ -173,8 +173,7 @@ export const UserSchema = new Schema<UserDocument>({
     },
 
     notifications: {
-        type: [NotificationSchema],
-        _id: true
+        type: [NotificationSchema]
     },
 
     online: {
@@ -186,21 +185,19 @@ export const UserSchema = new Schema<UserDocument>({
 /* METHODS FOR NOTIFICATION MANIPULATION */
 
 UserSchema.methods.addNotification = async function (
-    typeRequest: RequestTypes,
-    requester: Types.ObjectId
+    reqType: RequestTypes,
+    sender: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.notifications) {
         if (
-            this.notifications[idx].type === typeRequest &&
-            this.notifications[idx].sender === requester
+            this.notifications[idx].type === reqType &&
+            this.notifications[idx].sender === sender
         ) {
             return Promise.reject(new Error('Notification already sent'));
         }
     }
 
-    // TODO si può fare anche se toInsert non è inizializzato?
-    let toInsert: RequestNotification = {type: typeRequest, sender: requester};
-    
+    const toInsert: RequestNotification = {type: reqType, sender: sender};
     this.notifications.push(toInsert);
 
     return this.save();
@@ -298,7 +295,7 @@ UserSchema.methods.addRelationship = async function (
     }
 
     // TODO funziona anche se toInsert non è inizializzato?
-    let toInsert: RelationshipDocument;
+    let toInsert: RelationshipSubDocument;
     toInsert.friendId = friendId;
 
     try {
