@@ -16,13 +16,10 @@
     - [Retrieve Match](#retrieve-match)
       - [Url Parameters](#url-parameters)
       - [Example Response Body](#example-response-body-1)
-    - [Delete Match](#delete-match)
-      - [Url Parameters](#url-parameters-1)
-      - [Example Response Body](#example-response-body-2)
     - [Update Match Stats](#update-match-stats)
-      - [Url Parameters](#url-parameters-2)
+      - [Url Parameters](#url-parameters-1)
       - [Example Request Body](#example-request-body-1)
-      - [Example Response Body](#example-response-body-3)
+      - [Example Response Body](#example-response-body-2)
 
 ## Resources
 
@@ -146,38 +143,6 @@
     }
 }
 ```
-
-##### Error
-
-- Status Codes: 404, 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600,
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
-
-### Delete Match  
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /matches/:matchId | DELETE | Delete the match with the provided id |
-
-#### Url Parameters
-
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| matchId | string | Id of the match to delete |
-
-#### Example Response Body
-
-##### Success
-
-- Status Code: 204
-- Empty response
 
 ##### Error
 

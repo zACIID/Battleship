@@ -78,29 +78,6 @@ router.get(
 );
 
 /**
- *   /matches/:matchId | DELETE | Delete the match with the provided id
- *   Returns an empty response if elimination went through, an error otherwise
- */
-router.delete(
-    '/matches/:matchId',
-    authenticateToken,
-    retrieveMatchId,
-    async (req: Request, res: Response) => {
-        let matchId: Types.ObjectId = res.locals.matchId;
-
-        await deleteMatch(matchId).catch((err: Error) => {
-            return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
-                requestPath: req.path,
-            });
-        });
-
-        return res.status(200).json();
-    }
-);
-
-/**
  *   /matches/:matchId/stats | PATCH | Update the statistics of the specified match
  *   Return the entire updated object or an error
  */
