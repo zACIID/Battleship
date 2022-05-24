@@ -187,7 +187,7 @@ Object representing the ids of the users to retrieve
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/password | PATCH | Update the password of the user with the specified id |
+| api/users/:userId/password | PUT | Update the password of the user with the specified id |
 
 #### Url Parameters
 
@@ -229,7 +229,7 @@ Object containing the new password to set
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/username | PATCH | Update the username of the user with the specified id |
+| api/users/:userId/username | PUT | Update the username of the user with the specified id |
 
 #### Url Parameters
 
@@ -239,7 +239,7 @@ Object containing the new password to set
 
 #### Example Request Body
 
-Object containing the new password to set
+Object containing the new username to set
 
 ```json
 {
@@ -353,7 +353,7 @@ Object containing the new password to set
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/stats | PATCH | Update the statistics of the specified user |
+| api/users/:userId/stats | PUT | Update the statistics of the specified user |
 
 #### Url Parameters
 
@@ -363,13 +363,17 @@ Object containing the new password to set
 
 #### Example Request Body
 
-Only the [UserStats](#userstats) fields that need to be updated
+A full [UserStats](#userstats) resource that will replace the existing one
 
 ```json
 {
     "elo": 2500,
-    "hits": 4000,
-    "shipsDestroyed": 120
+    "topElo": 3000,
+    "wins": 189,
+    "losses": 121,
+    "shipsDestroyed": 1000,
+    "totalShots": 12463,
+    "totalHits": 6213
 }
 ```
 
@@ -378,13 +382,17 @@ Only the [UserStats](#userstats) fields that need to be updated
 ##### Success
 
 - Status Code: 200
-- Only the [UserStats](#userstats) fields that have been updated
+- The [UserStats](#userstats) resource that replaced the old one
 
 ```json
 {
     "elo": 2500,
-    "hits": 4000,
-    "shipsDestroyed": 120
+    "topElo": 3000,
+    "wins": 189,
+    "losses": 121,
+    "shipsDestroyed": 1000,
+    "totalShots": 12463,
+    "totalHits": 6213
 }
 ```
 

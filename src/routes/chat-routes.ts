@@ -1,4 +1,3 @@
-import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import { ChatDocument, getChatById, deleteChat } from '../models/chat';
 import { Message } from '../models/message';
@@ -155,7 +154,7 @@ router.post(
 
         try {
             chat = await getChatById(chatId);
-            chat.addMessage(req.body.content, req.body.timestamp, req.body.author);
+            await chat.addMessage(req.body.content, req.body.timestamp, req.body.author);
         } catch (err) {
             return res.status(500).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

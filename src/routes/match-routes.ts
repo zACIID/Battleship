@@ -94,7 +94,7 @@ router.delete('/matches/:matchId', authenticateToken, retrieveMatchId, async (re
  *   /matches/:matchId/stats | PATCH | Update the statistics of the specified match
  *   Return the entire updated object or an error
  */
-router.patch('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: PatchRequest, res: Response) => {
+router.put('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: PatchRequest, res: Response) => {
     let matchId: Types.ObjectId = res.locals.matchId;
 
     const { winner, totalShots, shipsDestroyed } = req.body;

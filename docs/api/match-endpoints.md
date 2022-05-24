@@ -196,7 +196,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/stats | PATCH | Update the statistics of the specified match |
+| /matches/:matchId/stats | PUT | Update the statistics of the specified match |
 
 #### Url Parameters
 
@@ -206,13 +206,15 @@
 
 #### Example Request Body
 
-Only the [MatchStats](#matchstats) fields that need to be updated
+A full [MatchStats](#matchstats) resource that will replace the old one.
 
 ```json
 {
-    "winner": "id of the winner",
-    "totalShots": 16,
-    "shipsDestroyed": 8
+    "winner": "winner-user-id",
+    "startTime": 1651881600,
+    "endTime": 1651881600,
+    "shipsDestroyed": 5,
+    "totalShots": 40
 }
 ```
 
@@ -221,13 +223,15 @@ Only the [MatchStats](#matchstats) fields that need to be updated
 ##### Success
 
 - Status Code: 200
-- Only the [MatchStats](#matchstats) fields that have been updated
+- The full [MatchStats](#matchstats) resource that replaced the old one
 
 ```json
 {
-    "winner": "id of the winner",
-    "totalShots": 16,
-    "shipsDestroyed": 8
+    "winner": "winner-user-id",
+    "startTime": 1651881600,
+    "endTime": 1651881600,
+    "shipsDestroyed": 5,
+    "totalShots": 40
 }
 ```
 

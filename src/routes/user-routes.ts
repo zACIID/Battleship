@@ -82,7 +82,7 @@ router.get('/users/:userId', authenticateToken, retrieveUserId, async (req: Requ
     
 });
 
-router.patch(
+router.put(
     '/users/:userId/username',
     authenticateToken,
     retrieveUserId, 
@@ -114,7 +114,7 @@ router.patch(
     }
 );
 
-router.patch(
+router.put(
     '/users/:userId/password',
     authenticateToken,
     retrieveUserId,
@@ -188,7 +188,7 @@ router.get('/users/:userId/stats', authenticateToken, retrieveUserId, async (req
     
 });
 
-router.patch(
+router.put(
     '/users/:userId/stats',
     authenticateToken,
     retrieveUserId,
