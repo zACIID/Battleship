@@ -28,41 +28,51 @@ interface MessagePostRequest extends Request {
  *   /chats/:chatId | GET | Retrieve the chat with the specified id
  *   Return the entire chat object or a 404 error if chat is not found
  */
-router.get('/chats/:chatId', authenticateToken, retrieveChatId, async (req: Request, res: Response) => {
-    const chatId: Types.ObjectId = res.locals.chatId;
+router.get(
+    '/chats/:chatId',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: Response) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
 
-    let chat: ChatDocument;
+        let chat: ChatDocument;
 
-    try {
-        chat = await getChatById(chatId);
-    } catch (err) {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
+        try {
+            chat = await getChatById(chatId);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+
+        return res.status(200).json({ chat });
     }
-
-    return res.status(200).json({ chat });
-});
+);
 
 /**
  *   /chats/:chatId | DELETE | Delete the chat with the provided id
  *   Returns an empty response or an error 404 if something went wrong
  */
-router.delete('/chats/:chatId', authenticateToken, retrieveChatId, async (req: Request, res: Response) => {
-    const chatId: Types.ObjectId = res.locals.chatId
+router.delete(
+    '/chats/:chatId',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: Response) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
 
-    await deleteChat(chatId).catch((err: Error) => {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
+        await deleteChat(chatId).catch((err: Error) => {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         });
-    });
 
-    return res.status(204).json();
-});
+        return res.status(204).json();
+    }
+);
 
 /**
  *   /chats/:chatId/users | POST | Add the user with the provided id (in the request body) to the specified chat |
@@ -72,7 +82,7 @@ router.post(
     authenticateToken,
     retrieveChatId,
     async (req: UserPostRequest, res: Response) => {
-        const chatId: Types.ObjectId = res.locals.chatId
+        const chatId: Types.ObjectId = res.locals.chatId;
 
         let chat: ChatDocument;
 
@@ -120,25 +130,30 @@ router.delete(
 /**
  *    /chats/:chatId/messages | GET | Retrieve the messages of the specified chat
  */
-router.get('/chats/:chatId/messages', authenticateToken, retrieveChatId, async (req: Request, res: Response) => {
-    const chatId: Types.ObjectId = res.locals.chatId
-    let chat: ChatDocument;
-    let chat_messages: Message[];
-    const skip: number = req.query.skip ? parseInt( req.query.skip as string ) : 0 ;
-    const limit: number = req.query.limit ? parseInt( req.query.limit as string ) : 0 ;
-    try {
-        chat = await getChatById(chatId);
-        chat_messages = chat.messages;
-    } catch (err) {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
+router.get(
+    '/chats/:chatId/messages',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: Response) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
+        let chat: ChatDocument;
+        let chat_messages: Message[];
+        const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
+        const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
+        try {
+            chat = await getChatById(chatId);
+            chat_messages = chat.messages;
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+        const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
+        return res.status(200).json({ chat_messages, nextPage: nextPage });
     }
-    const nextPage = `${req.path}?skip=${skip+limit}&limit=${limit}`;
-    return res.status(200).json({ chat_messages, nextPage: nextPage });
-});
+);
 
 /**
  *   /chats/:chatId/messages | POST | Add a message to the specified chat
@@ -147,7 +162,7 @@ router.get('/chats/:chatId/messages', authenticateToken, retrieveChatId, async (
 router.post(
     '/chats/:chatId/messages',
     authenticateToken,
-    retrieveChatId, 
+    retrieveChatId,
     async (req: MessagePostRequest, res: Response) => {
         const chatId: Types.ObjectId = res.locals.chatId;
         let chat: ChatDocument;

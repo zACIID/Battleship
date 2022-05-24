@@ -16,9 +16,7 @@ export interface UserStats {
 /**
  * Interface that represent a stats sub-document in the user document
  */
-export interface UserStatsSubDocument extends UserStats, Types.EmbeddedDocument {
-
-}
+export interface UserStatsSubDocument extends UserStats, Types.EmbeddedDocument {}
 
 export const StatsSchema = new Schema<UserStats>({
     elo: {

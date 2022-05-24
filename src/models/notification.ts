@@ -19,9 +19,9 @@ export interface RequestNotification {
 /**
  * Interface that represents a notification sub-document
  */
-export interface RequestNotificationSubDocument extends RequestNotification, Types.EmbeddedDocument {
-
-}
+export interface RequestNotificationSubDocument
+    extends RequestNotification,
+        Types.EmbeddedDocument {}
 
 /**
  * A notification is identified by the pair (type, requester)
@@ -34,6 +34,6 @@ export const NotificationSchema = new Schema<RequestNotification>({
     },
     sender: {
         type: Types.ObjectId,
-        required: true
+        required: true,
     },
 });

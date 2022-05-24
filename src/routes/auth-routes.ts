@@ -3,8 +3,8 @@ import { getUserByUsername, createUser, UserDocument } from '../models/user';
 import passport from 'passport';
 import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import LocalStrategy from 'passport-local'
-import { Types } from 'mongoose'; 
+import LocalStrategy from 'passport-local';
+import { Types } from 'mongoose';
 
 export const router = Router();
 
@@ -21,14 +21,12 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
     if (token == null) return res.sendStatus(401);
 
     jwt.verify(token, process.env.JWT_SECRET, (err: any, user: UserDocument) => {
-
-        if (err) return res.status(403).json({
-            
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-            
-        }); 
+        if (err)
+            return res.status(403).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
 
         req.user = user;
 
@@ -36,96 +34,72 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
     });
 };
 
-
-export const retrieveUserId = function(req: Request, res: Response, next: NextFunction){
-    try{
+export const retrieveUserId = function (req: Request, res: Response, next: NextFunction) {
+    try {
         const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
         res.locals.userId = userId;
         next();
-    }
-    catch(err){
+    } catch (err) {
         return res.status(404).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
-    
-}
+};
 
-
-export const retrieveId = function(s_id: string){
-    try{
+export const retrieveId = function (s_id: string) {
+    try {
         return Types.ObjectId(s_id);
+    } catch (err) {
+        throw new Error('No user with that id');
     }
-    catch(err){
-        throw new Error("No user with that id")
-    }
-}
+};
 
-
-
-export const retrieveChatId = function(req: Request, res: Response, next: NextFunction){
-    try{
+export const retrieveChatId = function (req: Request, res: Response, next: NextFunction) {
+    try {
         const chatId: Types.ObjectId = Types.ObjectId(req.params.chatId);
         res.locals.chatId = chatId;
         next();
-    }
-    catch(err){
+    } catch (err) {
         return res.status(404).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
-    
-}
+};
 
-
-
-export const retrieveMatchId = function(req: Request, res: Response, next: NextFunction){
-    try{
+export const retrieveMatchId = function (req: Request, res: Response, next: NextFunction) {
+    try {
         const matchId: Types.ObjectId = Types.ObjectId(req.params.matchId);
         res.locals.chatId = matchId;
         next();
-    }
-    catch(err){
+    } catch (err) {
         res.status(404).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
         });
     }
-    
-}
-
-
+};
 
 /**
  *  Function provided to passport middleware which verifies user credentials
  */
-const localAuth = async function (
-  username: string,
-  password: string,
-  done: Function
-) {
-
-    let user: UserDocument | void = await getUserByUsername(username)
-    .catch((err: Error) => {
+const localAuth = async function (username: string, password: string, done: Function) {
+    let user: UserDocument | void = await getUserByUsername(username).catch((err: Error) => {
         return done(err);
     });
 
-    if (user && await user.validatePassword(password)) {
+    if (user && (await user.validatePassword(password))) {
         return done(null, user);
-    }
-    else{
+    } else {
         return done(null, false);
     }
-
 };
 
 passport.use(new LocalStrategy(localAuth));
-
 
 /**
  *  Login endpoint, check the authentication and generate the jwt
@@ -134,7 +108,6 @@ router.post(
     '/auth/signin',
     passport.authenticate('local', { session: false }),
     (req: Request, res: Response) => {
-        
         const tokenData = {
             username: req.user.username,
             roles: req.user.roles,
@@ -157,16 +130,17 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
     try {
         u = await createUser(req.body);
         await u.setPassword(req.body.password);
-        return res.status(201).json( {"userId": u._id, "username": u.username, "roles": u.roles, "online": u.online});
+        return res
+            .status(201)
+            .json({ userId: u._id, username: u.username, roles: u.roles, online: u.online });
     } catch (err) {
-        if(err.message === "User already exists"){
+        if (err.message === 'User already exists') {
             return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
-        }
-        else{
+        } else {
             return res.status(500).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,

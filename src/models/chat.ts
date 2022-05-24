@@ -18,7 +18,6 @@ export interface Chat {
  * document in the database.
  */
 export interface ChatDocument extends Chat, Document {
-
     /**
      * Array of Message sub-documents
      */
@@ -81,10 +80,9 @@ ChatSchema.methods.addMessage = async function (
 };
 
 export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
-    const chatData = await ChatModel.findOne({ _id })
-      .catch((err: Error) =>
+    const chatData = await ChatModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('No chat with that id'))
-      );
+    );
 
     return Promise.resolve(chatData);
 }

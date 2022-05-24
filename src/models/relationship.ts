@@ -11,9 +11,7 @@ export interface Relationship {
 /**
  * Interface that represents a relationship sub-document
  */
-export interface RelationshipSubDocument extends Relationship, Types.EmbeddedDocument {
-
-}
+export interface RelationshipSubDocument extends Relationship, Types.EmbeddedDocument {}
 
 export const RelationshipSchema = new Schema<Relationship>({
     friendId: {

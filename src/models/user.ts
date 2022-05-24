@@ -2,7 +2,12 @@ import * as mongoose from 'mongoose';
 import { Document, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { RequestNotification, RequestNotificationSubDocument, RequestTypes, NotificationSchema, } from './notification';
+import {
+    RequestNotification,
+    RequestNotificationSubDocument,
+    RequestTypes,
+    NotificationSchema,
+} from './notification';
 import { UserStats, UserStatsSubDocument } from './user-stats';
 import { Relationship, RelationshipSubDocument, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
@@ -38,11 +43,10 @@ export interface User {
  * It exposes some useful methods to interact with the database object.
  */
 export interface UserDocument extends User, Document {
-
     /**
      * Stats sub-document
      */
-    stats: UserStatsSubDocument
+    stats: UserStatsSubDocument;
 
     /**
      * Array of relationship sub-documents
@@ -173,7 +177,7 @@ export const UserSchema = new Schema<UserDocument>({
     },
 
     notifications: {
-        type: [NotificationSchema]
+        type: [NotificationSchema],
     },
 
     online: {
@@ -181,7 +185,6 @@ export const UserSchema = new Schema<UserDocument>({
         default: false,
     },
 });
-
 
 /* METHODS FOR NOTIFICATION MANIPULATION */
 
@@ -191,14 +194,14 @@ UserSchema.methods.addNotification = async function (
 ): Promise<UserDocument> {
     for (let idx in this.notifications) {
         if (
-            this.notifications[idx].type === reqType &&
-            this.notifications[idx].sender === sender
+            this.notifications[idx].type.valueOf() === reqType.valueOf() &&
+            this.notifications[idx].sender.equals(sender)
         ) {
             return Promise.reject(new Error('Notification already sent'));
         }
     }
 
-    const toInsert: RequestNotification = {type: reqType, sender: sender};
+    const toInsert: RequestNotification = { type: reqType, sender: sender };
     this.notifications.push(toInsert);
 
     return this.save();
@@ -209,8 +212,12 @@ UserSchema.methods.removeNotification = async function (
     sender: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.notifications) {
-        if (this.notifications[idx].type === type && this.notifications[idx].sender === sender) {
+        if (
+            this.notifications[idx].type.valueOf() === type.valueOf() &&
+            this.notifications[idx].sender.equals(sender)
+        ) {
             this.notifications.splice(parseInt(idx), 1);
+
             return this.save();
         }
     }
@@ -218,11 +225,9 @@ UserSchema.methods.removeNotification = async function (
     return Promise.reject(new Error('Notification not found'));
 };
 
-
 /* METHODS FOR PASSWORD MANIPULATION AND VALIDATION */
 
 UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocument> {
-    
     const salt: string = await bcrypt
         .genSalt(10)
         .catch((error) =>
@@ -249,7 +254,6 @@ UserSchema.methods.validatePassword = async function (pwd: string): Promise<bool
 
     return this.pwd_hash === hashedPw;
 };
-
 
 /* METHODS FOR ROLES MANIPULATION  */
 
@@ -284,7 +288,6 @@ UserSchema.methods.isModerator = function (): boolean {
 UserSchema.methods.isAdmin = function (): boolean {
     return this.hasRole(UserRoles.Admin);
 };
-
 
 /* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
 
@@ -373,7 +376,6 @@ const symmetricRemoveRelationship = async function (
 // Create "users" collection
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'Users');
 
-
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
     const userDoc = await UserModel.findOne({ _id }).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
@@ -383,8 +385,8 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
-    const userdata: UserDocument = await UserModel.findOne({ username }).catch((err: Error) => { 
-        return Promise.reject(new Error('Internal server error'))
+    const userdata: UserDocument = await UserModel.findOne({ username }).catch((err: Error) => {
+        return Promise.reject(new Error('Internal server error'));
     });
 
     return !userdata
@@ -393,13 +395,11 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
 }
 
 export async function createUser(data): Promise<UserDocument> {
-    
     const u: UserDocument = new UserModel(data);
     await u.save().catch((err) => {
-        return Promise.reject(new Error("User already exists"));
+        return Promise.reject(new Error('User already exists'));
     });
     return u;
-
 }
 
 function isPresent(_id: Types.ObjectId): { found: boolean; idx: number } {
@@ -439,14 +439,11 @@ export async function deleteUser(_id: Types.ObjectId): Promise<void> {
 }
 
 export async function updateUserName(_id: Types.ObjectId, username: string): Promise<void> {
-
-    
-    await UserModel.updateOne({ _id }, { username }).catch((err) =>{
-        return Promise.reject(new Error(err.message))
+    await UserModel.updateOne({ _id }, { username }).catch((err) => {
+        return Promise.reject(new Error(err.message));
     });
-            
+
     return Promise.resolve();
-        
 }
 
 export async function updatePassword(_id: Types.ObjectId, password: string): Promise<void> {
@@ -454,7 +451,6 @@ export async function updatePassword(_id: Types.ObjectId, password: string): Pro
     try {
         user = await getUserById(_id);
         await user.setPassword(password);
-
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
@@ -490,12 +486,12 @@ export async function updateUserStats(
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
-    console.log("Da model")
-    console.log("elo " + elo)
-    console.log("result " + result)
-    console.log("shipsDestroyed " + shipsDestroyed)
-    console.log("shots " + shots)
-    console.log("hits " + hits)
+    console.log('Da model');
+    console.log('elo ' + elo);
+    console.log('result ' + result);
+    console.log('shipsDestroyed ' + shipsDestroyed);
+    console.log('shots ' + shots);
+    console.log('hits ' + hits);
 
     if (user.stats.topElo < user.stats.elo + elo) user.stats.topElo = user.stats.elo + elo;
 

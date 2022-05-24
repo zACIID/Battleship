@@ -55,57 +55,72 @@ router.post('/matches', authenticateToken, async (req: PostRequest, res: Respons
  *  Returns the response with the corresponding match object (if present on the db)
  *  Otherwise an error 404
  */
-router.get('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: Request, res: Response) => {
-    let matchId: Types.ObjectId = res.locals.matchId;
-    let match: MatchDocument;
+router.get(
+    '/matches/:matchId',
+    authenticateToken,
+    retrieveMatchId,
+    async (req: Request, res: Response) => {
+        let matchId: Types.ObjectId = res.locals.matchId;
+        let match: MatchDocument;
 
-    try {
-        match = await getMatchById(matchId);
-    } catch (err) {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
+        try {
+            match = await getMatchById(matchId);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+
+        return res.status(200).json({ match });
     }
-
-    return res.status(200).json({ match });
-});
+);
 
 /**
  *   /matches/:matchId | DELETE | Delete the match with the provided id
  *   Returns an empty response if elimination went through, an error otherwise
  */
-router.delete('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: Request, res: Response) => {
-    let matchId: Types.ObjectId = res.locals.matchId;
+router.delete(
+    '/matches/:matchId',
+    authenticateToken,
+    retrieveMatchId,
+    async (req: Request, res: Response) => {
+        let matchId: Types.ObjectId = res.locals.matchId;
 
-    await deleteMatch(matchId).catch((err: Error) => {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
+        await deleteMatch(matchId).catch((err: Error) => {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         });
-    });
 
-    return res.status(200).json();
-});
+        return res.status(200).json();
+    }
+);
 
 /**
  *   /matches/:matchId/stats | PATCH | Update the statistics of the specified match
  *   Return the entire updated object or an error
  */
-router.put('/matches/:matchId', authenticateToken, retrieveMatchId, async (req: PatchRequest, res: Response) => {
-    let matchId: Types.ObjectId = res.locals.matchId;
+router.put(
+    '/matches/:matchId',
+    authenticateToken,
+    retrieveMatchId,
+    async (req: PatchRequest, res: Response) => {
+        let matchId: Types.ObjectId = res.locals.matchId;
 
-    const { winner, totalShots, shipsDestroyed } = req.body;
+        const { winner, totalShots, shipsDestroyed } = req.body;
 
-    await updateMatchStats(matchId, winner, totalShots, shipsDestroyed).catch((err: Error) => {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
+        await updateMatchStats(matchId, winner, totalShots, shipsDestroyed).catch((err: Error) => {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         });
-    });
 
-    return res.status(200).json(req.body);
-});
+        return res.status(200).json(req.body);
+    }
+);
