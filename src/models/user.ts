@@ -182,6 +182,7 @@ export const UserSchema = new Schema<UserDocument>({
     },
 });
 
+
 /* METHODS FOR NOTIFICATION MANIPULATION */
 
 UserSchema.methods.addNotification = async function (
@@ -208,14 +209,15 @@ UserSchema.methods.removeNotification = async function (
     sender: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.notifications) {
-        if (this.notifications[idx].type === type
-            && this.notifications[idx].sender === sender) {
+        if (this.notifications[idx].type === type && this.notifications[idx].sender === sender) {
             this.notifications.splice(parseInt(idx), 1);
+            return this.save();
         }
     }
 
-    return this.save();
+    return Promise.reject(new Error('Notification not found'));
 };
+
 
 /* METHODS FOR PASSWORD MANIPULATION AND VALIDATION */
 
@@ -247,6 +249,7 @@ UserSchema.methods.validatePassword = async function (pwd: string): Promise<bool
 
     return this.pwd_hash === hashedPw;
 };
+
 
 /* METHODS FOR ROLES MANIPULATION  */
 
@@ -281,6 +284,7 @@ UserSchema.methods.isModerator = function (): boolean {
 UserSchema.methods.isAdmin = function (): boolean {
     return this.hasRole(UserRoles.Admin);
 };
+
 
 /* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
 
@@ -368,6 +372,7 @@ const symmetricRemoveRelationship = async function (
 
 // Create "users" collection
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'Users');
+
 
 export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
     const userDoc = await UserModel.findOne({ _id }).catch((err: Error) =>

@@ -15,6 +15,9 @@ interface NotificationRequest extends Request {
     body: PostBody;
 }
 
+
+
+const errorMessages = ['No user with that id', 'Notification not found'];
 /**
  *    /users/:userId/notifications | GET | Retrieve the notifications of the specified user
  */
@@ -60,7 +63,7 @@ router.post(
 
             const user: UserDocument = await getUserById(userId);
             const senderObjId: Types.ObjectId = retrieveId(senderQParam);
-            console.log(senderObjId);
+            
             const sender: UserDocument = await getUserById(senderObjId);
             
             await user.addNotification(reqType, senderObjId);
@@ -99,15 +102,16 @@ router.delete(
 
             const reqType: RequestTypes = RequestTypes[typeQParam as keyof typeof RequestTypes];
             const senderObjId: Types.ObjectId = retrieveId(senderQParam);
-
+            
             const user: UserDocument = await getUserById(userId);
             const sender: UserDocument = await getUserById(senderObjId);
+            
             await user.removeNotification(reqType, senderObjId);
 
             return res.status(204).json( );
 
         } catch (err) {
-            const status: number = err.message === 'No user with that id' ? 404 : 500;
+            const status: number = errorMessages.find((e) => e === err.message)  ? 404 : 500;
             return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,

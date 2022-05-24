@@ -13,7 +13,7 @@ import {
     getUserStats,
 } from '../models/user';
 import { UserStats } from '../models/user-stats';
-import { authenticateToken, retrieveUserId } from './auth-routes';
+import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 import { stat } from 'fs';
 
 interface PatchUsernameBody {
@@ -221,11 +221,12 @@ router.patch(
 
 router.get('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
     let users: UserDocument[];
+
     try {
-        // If there is no "ids" query param, an exception is thrown and a 404 error is appropriate
+        
         const userIdsQParam: string[] = (req.query.ids as string).split(",");
         const userObjIds: Types.ObjectId[] = userIdsQParam.map((uId) => {
-            return Types.ObjectId(uId);
+            return retrieveId(uId);
         })
 
         users = await getUsers(userObjIds);
@@ -239,6 +240,7 @@ router.get('/users', authenticateToken, async (req: GetMultipleUsersRequest, res
         });
 
         return res.status(200).json({users: results});
+        
     } catch (err) {
         let statusCode: number = 404;
         if (err instanceof Error && err.message === usersErr) {
