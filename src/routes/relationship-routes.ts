@@ -1,13 +1,15 @@
+import { Message } from './../models/message';
+import { Relationship } from './../models/relationship';
 import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import { UserDocument, getUserById } from '../models/user';
-import { authenticateToken, retrieveUserId } from './auth-routes';
+import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 import { Types } from 'mongoose';
 
 export const router = Router();
 
 interface PostBody {
-    friendId: Types.ObjectId;
+    friendId: string;
 }
 
 interface RelationshipRequest extends Request {
@@ -27,6 +29,8 @@ router.get(
 
         try {
             user = await getUserById(userId);
+            console.log(user);
+            return res.status(200).json({relationships: user.relationships});
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -35,7 +39,7 @@ router.get(
             });
         }
 
-        return res.status(200).json(user.relationships);
+        
     }
 );
 
@@ -48,20 +52,30 @@ router.post(
     retrieveUserId,
     async (req: RelationshipRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
-        let user: UserDocument;
+        
 
         try {
-            user = await getUserById(userId);
-            await user.addRelationship(req.body.friendId);
+
+            // Check if users exist
+            let user: UserDocument = await getUserById(userId);
+            const correctFriendId = retrieveId(req.body.friendId);
+            await getUserById(correctFriendId);
+
+            user = await user.addRelationship(correctFriendId);
+            const rel: Relationship = user.relationships[user.relationships.length - 1];
+            return res.status(201).json(rel);
+
         } catch (err) {
-            return res.status(500).json({
+
+            const status = err.message === "No user with that id" ? 404 : 500;
+            return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
 
-        return res.status(200).json(req.body.friendId);
+        
     }
 );
 
@@ -85,6 +99,7 @@ router.delete(
             await user.removeRelationship(friendObjId);
 
             return res.status(204).json();
+
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

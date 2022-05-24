@@ -302,8 +302,7 @@ UserSchema.methods.addRelationship = async function (
     }
 
     // TODO funziona anche se toInsert non è inizializzato?
-    let toInsert: RelationshipSubDocument;
-    toInsert.friendId = friendId;
+    let toInsert: Relationship = {friendId: friendId, chatId: undefined};
 
     try {
         if (!chat_id) {
@@ -316,8 +315,13 @@ UserSchema.methods.addRelationship = async function (
         return Promise.reject(new Error(err.message));
     }
 
-    this.relationships.push(toInsert);
-
+    if(toInsert.chatId != undefined){
+        this.relationships.push(toInsert);
+    }
+    else{
+        this.relationships.push({friendId: toInsert.friendId, chatId: undefined})
+    }
+    
     return this.save();
 };
 

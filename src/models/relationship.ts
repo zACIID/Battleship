@@ -5,7 +5,7 @@ import { Schema, SchemaTypes, Types } from 'mongoose';
  */
 export interface Relationship {
     friendId: Types.ObjectId;
-    chatId: Types.ObjectId;
+    chatId?: Types.ObjectId;
 }
 
 /**
@@ -19,7 +19,6 @@ export const RelationshipSchema = new Schema<Relationship>({
         required: true,
     },
     chatId: {
-        type: SchemaTypes.ObjectId,
-        required: true,
+        type: SchemaTypes.ObjectId
     },
 });
