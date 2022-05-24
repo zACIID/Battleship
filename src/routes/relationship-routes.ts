@@ -69,16 +69,22 @@ router.post(
  *   /users/:userId/relationships | DELETE | Remove a social relationship from the specified user
  */
 router.delete(
-    '/users/:userId/relationships',
+    '/users/:userId/relationships/:friendId',
     authenticateToken,
     retrieveUserId,
     async (req: RelationshipRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
+        const friendId: string = req.params.friendId;
+
         let user: UserDocument;
 
         try {
             user = await getUserById(userId);
-            await user.removeRelationship(req.body.friendId);
+
+            const friendObjId: Types.ObjectId = Types.ObjectId(friendId);
+            await user.removeRelationship(friendObjId);
+
+            return res.status(204).json();
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -86,7 +92,5 @@ router.delete(
                 requestPath: req.path,
             });
         }
-
-        return res.status(200).json();
     }
 );

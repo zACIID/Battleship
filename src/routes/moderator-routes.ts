@@ -24,19 +24,22 @@ interface DeleteRequest extends Request {
 
 /**
  *    Check if the user is a moderator and create a new user using request body data
- *    /moderators/:userId/action/create   |   POST
+ *    /moderators/:userId/additions   |   POST
  */
-router.post('/moderators/:userId/action/create', authenticateToken, retrieveUserId, async (req: PostRequest, res: Response) => {
-    let moderator: UserDocument;
-    let newMod: UserDocument;
+router.post('/moderators/:userId/additions',
+            authenticateToken,
+            retrieveUserId,
+            async (req: PostRequest, res: Response) => {
     const userId: Types.ObjectId = res.locals.userId;
     try {
-        moderator = await getUserById(userId);
-        if (moderator.isModerator || moderator.isAdmin) {
-            newMod = await createUser(req.body.user);
+        const moderator: UserDocument = await getUserById(userId);
+        if (moderator.isModerator() || moderator.isAdmin()) {
+            const newMod: UserDocument = await createUser(req.body.user);
             await newMod.setRole(UserRoles.Moderator);
+
+            return res.status(200).json(newMod);
         } else
-            res.status(403).json({
+            return res.status(403).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: 'Unauthorized',
                 requestPath: req.path,
@@ -44,16 +47,14 @@ router.post('/moderators/:userId/action/create', authenticateToken, retrieveUser
     } catch (err) {
         return res.status(500).json({ error: true, errormessage: err.message });
     }
-
-    return res.status(200).json(newMod);
 });
 
 /**
  *    Check if the user is a moderator and delete a user identified by the id found in the request body
- *    /moderators/:userId/action/remove   |   POST
+ *    /moderators/:userId/bans   |   POST
  */
 router.post(
-    '/moderators/:userId/action/remove',
+    '/moderators/:userId/bans',
     authenticateToken,
     retrieveUserId,
     async (req: DeleteRequest, res: Response) => {

@@ -110,7 +110,8 @@
 
 ```json
 {
-    "friendId": "friend-id-1"
+    "friendId": "friend-id-1",
+    "chatId": "chat-id-1"
 }
 ```
 

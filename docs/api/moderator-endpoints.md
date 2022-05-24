@@ -32,7 +32,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /moderators/:userId/action/create | POST | Check if the user is a moderator and create a new user using request body data |
+| /moderators/:userId/additions | POST | Check if the user is a moderator and create a new user using request body data |
 
 #### Url Parameters
 
@@ -46,7 +46,6 @@
 {
     "username": "",
     "password": "",
-    "roles": [],    // containing "Moderator" by default
     "online": true
 }
 ```
@@ -84,7 +83,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /moderators/:userId/action/remove | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
+| /moderators/:userId/bans | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
 
 #### Url Parameters
 
@@ -98,7 +97,7 @@
 
 ```json
 {
-    "userId": ""
+    "userId": "user-id-1"
 }
 ```
 
