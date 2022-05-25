@@ -1,10 +1,8 @@
-import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import {
     getMatchById,
     MatchDocument,
     createMatch,
-    deleteMatch,
     updateMatchStats,
 } from '../models/match';
 import { Types } from 'mongoose';
