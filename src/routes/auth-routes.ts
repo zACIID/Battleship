@@ -52,7 +52,7 @@ export const retrieveId = function (s_id: string) {
     try {
         return Types.ObjectId(s_id);
     } catch (err) {
-        throw new Error('No user with that id');
+        throw new Error('No user with that identifier');
     }
 };
 

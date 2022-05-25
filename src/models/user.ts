@@ -345,10 +345,11 @@ UserSchema.methods.removeRelationship = async function (
     friendId: Types.ObjectId,
     stop?: boolean
 ): Promise<UserDocument> {
+    let found: boolean = false;
     for (let idx in this.relationships) {
         if (this.relationships[idx].friendId === friendId) {
             this.relationships.splice(parseInt(idx), 1);
-
+            found = true;
             if (!stop) {
                 try {
                     const chatId = this.relationships[idx].chatId;
@@ -360,8 +361,10 @@ UserSchema.methods.removeRelationship = async function (
             }
         }
     }
-
-    return this.save();
+    if (found){
+        return this.save();
+    }
+    else return Promise.reject(new Error('Relationship not found'));
 };
 
 /* Symmetrical deletion of a friend relation */

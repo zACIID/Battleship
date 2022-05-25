@@ -15,7 +15,7 @@ interface NotificationRequest extends Request {
     body: PostBody;
 }
 
-const errorMessages: string[] = ['No user with that id', 'Notification not found'];
+const errorMessages: string[] = ['No user with that identifier', 'Notification not found', 'Notification already sent'];
 /**
  *    /users/:userId/notifications | GET | Retrieve the notifications of the specified user
  */
@@ -58,8 +58,6 @@ router.post(
             const user: UserDocument = await getUserById(userId);
             const senderObjId: Types.ObjectId = retrieveId(senderQParam);
 
-            console.log(`11 Notified User Id: ${userId}`);
-            console.log(`11 Sender User Id: ${senderObjId}`);
 
             // Check if sender exists
             await getUserById(senderObjId);
@@ -71,8 +69,7 @@ router.post(
                 sender: req.body.sender,
             });
         } catch (err) {
-            let status: number = err.message === 'No user with that id' ? 404 : 500;
-            status = err.message === 'Notification already sent' ? 400 : status;
+            let status: number = errorMessages.find((e) => e === err.message) ? 404 : 500;
 
             return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
