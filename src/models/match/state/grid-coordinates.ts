@@ -11,17 +11,29 @@ export interface GridCoordinates {
 /**
  * Interface that defines a grid coordinates sub-document
  */
-export interface GridCoordinatesSubDocument extends GridCoordinates, Types.EmbeddedDocument {
-
-}
+export interface GridCoordinatesSubDocument extends GridCoordinates, Types.EmbeddedDocument {}
 
 export const GridCoordinatesSchema = new Schema<GridCoordinatesSubDocument>({
     row: {
         type: SchemaTypes.Number,
-        required: "row coordinate required"
+        required: 'row coordinate required',
     },
     column: {
         type: SchemaTypes.Number,
-        required: "column coordinate required"
+        required: 'column coordinate required',
+    },
+});
+
+/**
+ * Grid is 10x10, which means that both row and column are a number in the closed interval [0, 9]
+ */
+GridCoordinatesSchema.pre('save', function (this: GridCoordinatesSubDocument, next: Function) {
+    const isRowOk: boolean = 0 <= this.row && this.row <= 9;
+    const isColOk: boolean = 0 <= this.column && this.column <= 9;
+
+    if (!(isRowOk && isColOk)) {
+        throw new Error('Coordinates are out of bounds');
     }
-})
+
+    next();
+});

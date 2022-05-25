@@ -8,6 +8,10 @@
     - [Error](#error)
     - [MatchInfo](#matchinfo)
     - [Match](#match)
+    - [PlayerState](#playerstate)
+    - [BattleshipGrid](#battleshipgrid)
+    - [Ship](#ship)
+    - [GridCoordinates](#gridcoordinates)
     - [MatchStats](#matchstats)
   - [Endpoints](#endpoints)
     - [Create Match](#create-match)
@@ -20,6 +24,14 @@
       - [Url Parameters](#url-parameters-1)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-2)
+    - [Update Player Grid](#update-player-grid)
+      - [Url Parameters](#url-parameters-2)
+      - [Example Request Body](#example-request-body-2)
+      - [Example Response Body](#example-response-body-3)
+    - [Fire Shot](#fire-shot)
+      - [Url Parameters](#url-parameters-3)
+      - [Example Request Body](#example-request-body-3)
+      - [Example Response Body](#example-response-body-4)
 
 ## Resources
 
@@ -43,11 +55,39 @@
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
 | matchId | string | Id of the match |
-| player1 | string | Id of player #1 of the match |
-| player2 | string | Id of player #2 of the match |
+| player1 | [PlayerState](#playerstate) | Resource representing the game state of player #1 |
+| player2 | [PlayerState](#playerstate) | Resource representing the game state of player #2 |
 | playersChat | string | Id of the players chat |
 | observersChat | string | Id of the observers chat |
 | stats | [MatchStats](#matchstats) | Stats of the match |
+
+### PlayerState
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| playerId | string | Id of the player that this resource refers to |
+| grid | [BattleshipGrid](#battleshipgrid) | Resource representing the player's grid |
+
+### BattleshipGrid
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| ships | [Ship](#ship)[] | Array of ship resources that represents the ships placed by the player on his grid |
+| shots | [GridCoordinates](#gridcoordinates) | Array of coordinates that represents the shots received by the player on his grid |
+
+### Ship
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| coordinates | [GridCoordinates](#gridcoordinates)[] | Array of coordinates that represent the grid cells where the ship has been placed. To the i-th coordinate corresponds the i-th cell occupied by the ship, starting from its beginning |
+| type | string | Type of the ship. Can be either *Destroyer*, *Cruiser*, *Battleship* or *Carrier* |
+
+### GridCoordinates
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| row | number | Row number in the closed interval [0, 9] |
+| cols | number | Column number in the closed interval [0, 9] |
 
 ### MatchStats
 
@@ -89,8 +129,20 @@
 ```json
 {
     "matchId": "match-id",
-    "player1": "player1-id",
-    "player2": "player2-id",
+    "player1": {
+        "playerId": "player-1-id",
+        "grid": {
+            "ships": [],
+            "shots": []
+        }
+    },
+    "player2": {
+        "playerId": "player-2-id",
+        "grid": {
+            "ships": [],
+            "shots": []
+        }
+    },
     "playersChat": "players-chat-id",
     "observersChat": "observers-chat-id",
     "stats": {
@@ -126,7 +178,7 @@
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the match to retrieve |
+| matchId | string | Id of the match to retrieve |
 
 #### Example Response Body
 
@@ -175,7 +227,7 @@
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the match to update the statistics of |
+| matchId | string | Id of the match to update the statistics of |
 
 #### Example Request Body
 
@@ -205,6 +257,130 @@ A full [MatchStats](#matchstats) resource that will replace the old one.
     "endTime": 1651881600,
     "shipsDestroyed": 5,
     "totalShots": 40
+}
+```
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Update Player Grid
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId/players/:playerId/grid | PUT | Update the grid of the specified player of the match |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| matchId | string | Id of the match to update the grid of |
+| playerId | string | Id of the player to update the grid of |
+
+#### Example Request Body
+
+A full [BattleshipGrid](#battleshipgrid) resource that will replace the old one.
+
+```json
+{
+    "ships": [
+        {
+            "coordinates": [
+                {"row": 0, "col": 1},
+                {"row": 0, "col": 2},
+            ],
+            "type": "Destroyer"
+        },
+        ...
+    ],
+    "shots": [
+        {"row": 0, "col": 1}
+    ]
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 200
+- The full [MatchStats](#matchstats) resource that replaced the old one
+
+```json
+{
+    "ships": [
+        {
+            "coordinates": [
+                {"row": 0, "col": 1},
+                {"row": 0, "col": 2},
+            ],
+            "type": "Destroyer"
+        },
+        ...
+    ],
+    "shots": [
+        {"row": 0, "col": 1}
+    ]
+}
+```
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Fire Shot
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /matches/:matchId/players/:playerId/shotsFired | POST | Add a shot made by the specified player |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| matchId | string | Id of the match to update the grid of |
+| playerId | string | Id of the player to update the grid of |
+
+#### Example Request Body
+
+A [GridCoordinates](#gridcoordinates) resource representing the coordinates of the shot
+
+```json
+{
+    "row": 0,
+    "col": 1
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 201
+- The [GridCoordinates](#gridcoordinates) resource representing the shot that was just fired
+
+```json
+{
+    "row": 0,
+    "col": 1
 }
 ```
 
