@@ -1,12 +1,21 @@
+import { PlainButtonModule } from './../../shared/plain-button-module/plain-button.module';
+import { InputFieldModule } from './../../shared/input-field-module/input-field.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LoginScreenComponent } from './login-screen/login-screen.component';
+import { RegistrationScreenComponent } from './registration-screen/registration-screen.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    LoginScreenComponent,
+    RegistrationScreenComponent
+  ],
   imports: [
-    CommonModule
+    CommonModule,
+    InputFieldModule,
+    PlainButtonModule
   ]
 })
 export class AuthenticationModule { }

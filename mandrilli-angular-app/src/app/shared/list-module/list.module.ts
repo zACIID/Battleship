@@ -1,3 +1,4 @@
+import { PlainButtonModule } from './../plain-button-module/plain-button.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ListComponent } from './list/list.component';
@@ -13,7 +14,8 @@ import { OptionalButtonComponent } from './optional-button/optional-button.compo
     OptionalButtonComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PlainButtonModule
   ]
 })
-export class ListModuleModule { }
+export class ListModule { }

@@ -1,3 +1,4 @@
+import { PlainButtonModule } from './../plain-button-module/plain-button.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BackButtonComponent } from './back-button/back-button.component';
@@ -9,7 +10,8 @@ import { BackButtonComponent } from './back-button/back-button.component';
     BackButtonComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PlainButtonModule
   ]
 })
-export class BackButtonModuleModule { }
+export class BackButtonModule { }

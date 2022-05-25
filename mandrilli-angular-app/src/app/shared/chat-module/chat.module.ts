@@ -13,4 +13,4 @@ import { MessageComponent } from './message/message.component';
     CommonModule
   ]
 })
-export class ChatModuleModule { }
+export class ChatModule { }

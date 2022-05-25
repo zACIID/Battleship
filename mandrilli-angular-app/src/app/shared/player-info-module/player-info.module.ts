@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PlayerInfoComponent } from './player-info/player-info.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    PlayerInfoComponent
+  ],
   imports: [
     CommonModule
   ]
 })
-export class PlayerInfoModuleModule { }
+export class PlayerInfoModule { }
