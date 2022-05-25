@@ -30,7 +30,7 @@ router.get(
         try {
             user = await getUserById(userId);
             console.log(user);
-            return res.status(200).json({relationships: user.relationships});
+            return res.status(200).json({ relationships: user.relationships });
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -38,8 +38,6 @@ router.get(
                 requestPath: req.path,
             });
         }
-
-        
     }
 );
 
@@ -52,28 +50,24 @@ router.post(
     retrieveUserId,
     async (req: RelationshipRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
-        
+
         try {
             let user: UserDocument = await getUserById(userId);
-            
+
             const correctFriendId = retrieveId(req.body.friendId);
             await getUserById(correctFriendId);
-            
+
             user = await user.addRelationship(correctFriendId);
             const rel: Relationship = user.relationships[user.relationships.length - 1];
             return res.status(201).json(rel);
-
         } catch (err) {
-
-            const status = err.message === "No user with that identifier" ? 404 : 500;
+            const status = err.message === 'No user with that identifier' ? 404 : 500;
             return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
-
-        
     }
 );
 
@@ -97,7 +91,6 @@ router.delete(
             await user.removeRelationship(friendObjId);
 
             return res.status(204).json();
-
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

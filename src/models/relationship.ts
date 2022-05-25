@@ -19,6 +19,6 @@ export const RelationshipSchema = new Schema<Relationship>({
         required: true,
     },
     chatId: {
-        type: SchemaTypes.ObjectId
+        type: SchemaTypes.ObjectId,
     },
 });

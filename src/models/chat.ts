@@ -47,7 +47,7 @@ export interface ChatDocument extends Chat, Document {
 export const ChatSchema = new Schema<ChatDocument>({
     users: {
         type: [SchemaTypes.ObjectId],
-        default: []
+        default: [],
     },
     messages: {
         type: [MessageSchema],

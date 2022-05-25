@@ -265,9 +265,8 @@ UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDo
 };
 
 UserSchema.methods.hasRole = function (role: UserRoles): boolean {
-
-    for(let idx in this.roles){
-        if(this.roles[idx] == role.valueOf()){
+    for (let idx in this.roles) {
+        if (this.roles[idx] == role.valueOf()) {
             return true;
         }
     }
@@ -303,7 +302,7 @@ UserSchema.methods.addRelationship = async function (
     }
 
     // TODO funziona anche se toInsert non è inizializzato?
-    let toInsert: Relationship = {friendId: friendId, chatId: undefined};
+    let toInsert: Relationship = { friendId: friendId, chatId: undefined };
 
     try {
         if (!chat_id) {
@@ -316,13 +315,12 @@ UserSchema.methods.addRelationship = async function (
         return Promise.reject(new Error(err.message));
     }
 
-    if(toInsert.chatId != undefined){
+    if (toInsert.chatId != undefined) {
         this.relationships.push(toInsert);
+    } else {
+        this.relationships.push({ friendId: toInsert.friendId, chatId: undefined });
     }
-    else{
-        this.relationships.push({friendId: toInsert.friendId, chatId: undefined})
-    }
-    
+
     return this.save();
 };
 
@@ -361,10 +359,9 @@ UserSchema.methods.removeRelationship = async function (
             }
         }
     }
-    if (found){
+    if (found) {
         return this.save();
-    }
-    else return Promise.reject(new Error('Relationship not found'));
+    } else return Promise.reject(new Error('Relationship not found'));
 };
 
 /* Symmetrical deletion of a friend relation */
@@ -389,7 +386,9 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
         Promise.reject(new Error('Internal server error'))
     );
 
-    return !userDoc ? Promise.reject(new Error('No user with that identifier')) : Promise.resolve(userDoc);
+    return !userDoc
+        ? Promise.reject(new Error('No user with that identifier'))
+        : Promise.resolve(userDoc);
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
@@ -409,7 +408,6 @@ export async function createUser(data): Promise<UserDocument> {
     });
     return u;
 }
-
 
 export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
     let users: UserDocument[];
@@ -462,7 +460,9 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
     let stat: UserDocument = await UserModel.findOne({ _id }, { stats: 1 }).catch((err) =>
         Promise.reject(new Error('Sum internal error just occurred'))
     );
-    return !stat ? Promise.reject(new Error('No user with that identifier')) : Promise.resolve(stat.stats);
+    return !stat
+        ? Promise.reject(new Error('No user with that identifier'))
+        : Promise.resolve(stat.stats);
 }
 
 /**
@@ -490,7 +490,7 @@ export async function updateUserStats(
         return Promise.reject(new Error(err.message));
     }
 
-    user.stats.topElo = topElo
+    user.stats.topElo = topElo;
     user.stats.elo = elo;
     user.stats.wins = wins;
     user.stats.losses = losses;
