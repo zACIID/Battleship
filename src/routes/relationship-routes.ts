@@ -52,22 +52,20 @@ router.post(
     retrieveUserId,
     async (req: RelationshipRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
-        
-
+        console.log("Controllo se l'iduser è apposto" + (userId instanceof Types.ObjectId))
         try {
-
-            // Check if users exist
             let user: UserDocument = await getUserById(userId);
+            console.log("non è colpa di getUserById")
             const correctFriendId = retrieveId(req.body.friendId);
             await getUserById(correctFriendId);
-
+            console.log("non è colpa di getUserById del friend")
             user = await user.addRelationship(correctFriendId);
             const rel: Relationship = user.relationships[user.relationships.length - 1];
             return res.status(201).json(rel);
 
         } catch (err) {
 
-            const status = err.message === "No user with that id" ? 404 : 500;
+            const status = err.message === "No user with that identifier" ? 404 : 500;
             return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,

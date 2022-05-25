@@ -15,7 +15,7 @@ interface NotificationRequest extends Request {
     body: PostBody;
 }
 
-const errorMessages = ['No user with that id', 'Notification not found'];
+const errorMessages: string[] = ['No user with that id', 'Notification not found'];
 /**
  *    /users/:userId/notifications | GET | Retrieve the notifications of the specified user
  */

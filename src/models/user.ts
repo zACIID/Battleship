@@ -385,7 +385,7 @@ export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
         Promise.reject(new Error('Internal server error'))
     );
 
-    return !userDoc ? Promise.reject(new Error('No user with that id')) : Promise.resolve(userDoc);
+    return !userDoc ? Promise.reject(new Error('No user with that identifier')) : Promise.resolve(userDoc);
 }
 
 export async function getUserByUsername(username: string): Promise<UserDocument> {
@@ -394,7 +394,7 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
     });
 
     return !userdata
-        ? Promise.reject(new Error('No user with that username'))
+        ? Promise.reject(new Error('No user with that identifier'))
         : Promise.resolve(userdata);
 }
 
@@ -406,13 +406,6 @@ export async function createUser(data): Promise<UserDocument> {
     return u;
 }
 
-function isPresent(_id: Types.ObjectId): { found: boolean; idx: number } {
-    for (const index in this.relationships) {
-        if (this.relationships[index].friendId === _id || this.relationships[index].chatId === _id)
-            return { found: true, idx: parseInt(index) };
-    }
-    return { found: false, idx: -1 };
-}
 
 export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
     let users: UserDocument[];
@@ -438,7 +431,7 @@ export async function deleteUser(_id: Types.ObjectId): Promise<void> {
         Promise.reject(new Error('Sum internal error just occurred'))
     );
     return !obj.deletedCount
-        ? Promise.reject(new Error('No user with that id'))
+        ? Promise.reject(new Error('No user with that identifier'))
         : Promise.resolve();
 }
 
@@ -465,7 +458,7 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
     let stat: UserDocument = await UserModel.findOne({ _id }, { stats: 1 }).catch((err) =>
         Promise.reject(new Error('Sum internal error just occurred'))
     );
-    return !stat ? Promise.reject(new Error('No user with that id')) : Promise.resolve(stat.stats);
+    return !stat ? Promise.reject(new Error('No user with that identifier')) : Promise.resolve(stat.stats);
 }
 
 /**
