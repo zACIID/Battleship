@@ -1,4 +1,3 @@
-import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
 import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user';
 import { authenticateToken, retrieveUserId } from './auth-routes';
@@ -34,19 +33,32 @@ router.post(
         const userId: Types.ObjectId = res.locals.userId;
         try {
             const moderator: UserDocument = await getUserById(userId);
+            
             if (moderator.isModerator() || moderator.isAdmin()) {
-                const newMod: UserDocument = await createUser(req.body.user);
+                
+                const newMod: UserDocument = await createUser(req.body);
                 await newMod.setRole(UserRoles.Moderator);
 
-                return res.status(200).json(newMod);
+                return res.status(201).json({
+                    userId: newMod._id,
+                    username: newMod.username,
+                    roles: newMod.roles, 
+                    online: newMod.online
+                });
+
             } else
                 return res.status(403).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
-                    errorMessage: 'Unauthorized',
+                    errorMessage: `Unauthorized: user ${userId} is not a moderator`,
                     requestPath: req.path,
                 });
         } catch (err) {
-            return res.status(500).json({ error: true, errormessage: err.message });
+            const status: number = err.message === "No user with that id" ? 404 : 500;
+            return res.status(status).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         }
     }
 );
@@ -60,22 +72,33 @@ router.post(
     authenticateToken,
     retrieveUserId,
     async (req: DeleteRequest, res: Response) => {
-        let moderator: UserDocument;
+
         const userId: Types.ObjectId = res.locals.userId;
+
         try {
-            moderator = await getUserById(userId);
-            if (moderator.isModerator || moderator.isAdmin) {
+            const moderator: UserDocument = await getUserById(userId);
+
+            if (moderator.isModerator() || moderator.isAdmin()) {
+
                 await deleteUser(req.body.userId);
+                return res.status(204).json();
+
             } else
+
                 res.status(403).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
                     errorMessage: `Unauthorized: user ${userId} is not a moderator`,
                     requestPath: req.path,
                 });
+
         } catch (err) {
-            return res.status(404).json({ error: true, errormessage: err.message });
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         }
 
-        return res.status(200).json();
+        
     }
 );

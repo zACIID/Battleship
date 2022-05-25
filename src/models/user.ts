@@ -265,12 +265,13 @@ UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDo
 };
 
 UserSchema.methods.hasRole = function (role: UserRoles): boolean {
-    let value = false;
-    this.roles.forEach((element: string) => {
-        if (element === role.valueOf()) value = true;
-    });
 
-    return value;
+    for(let idx in this.roles){
+        if(this.roles[idx] == role.valueOf()){
+            return true;
+        }
+    }
+    return false;
 };
 
 UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocument> {
@@ -419,7 +420,7 @@ export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
 }
 
 export async function getLeaderboard(skip: number, limit: number): Promise<UserDocument[]> {
-    return UserModel.find({}, { _id: 1, username: 1, elo: 1 })
+    return UserModel.find({}, { _id: 1, username: 1, 'stats.elo': 1 })
         .sort({ elo: -1 })
         .skip(skip)
         .limit(limit)

@@ -5,16 +5,28 @@ import { authenticateToken } from './auth-routes';
 export const router = Router();
 
 router.get('/leaderboard', authenticateToken, async (req: Request, res: Response) => {
-    let leaderBoard: UserDocument[];
-    const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    
+    let skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
     const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
-
+    
     try {
-        leaderBoard = await getLeaderboard(skip, limit);
-        const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
-        return res.send(200).json({ leaderBoard, nextPage: nextPage });
+        if(skip > 50 || limit > 50 || skip < 0 || limit < 0){
+            throw new Error("Invalid query parameters");
+        }
+        else{
+            const leaderBoard: UserDocument[] = await getLeaderboard(skip, limit);
+            const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
+
+            const parsedLead = leaderBoard.map((x: UserDocument) => {
+                return {_id: x._id, username: x.username, elo: x.stats.elo};
+            })
+
+            return res.status(200).json({ leaderboard: parsedLead, nextPage: nextPage });
+        }
+        
     } catch (err) {
-        return res.status(500).json({
+        const status: number = err.message === "Invalid query parameters" ? 400 : 500; 
+        return res.status(status).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
             requestPath: req.path,
