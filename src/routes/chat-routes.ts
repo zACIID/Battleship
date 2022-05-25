@@ -46,8 +46,11 @@ router.get(
                 requestPath: req.path,
             });
         }
-
-        return res.status(200).json({ chat });
+        return res.status(200).json({
+            chatId: chat._id,
+            users: chat.users,
+            messages: chat.messages,
+        });
     }
 );
 
@@ -137,12 +140,12 @@ router.get(
     async (req: Request, res: Response) => {
         const chatId: Types.ObjectId = res.locals.chatId;
         let chat: ChatDocument;
-        let chat_messages: Message[];
+        let messages: Message[];
         const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
         const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
         try {
             chat = await getChatById(chatId);
-            chat_messages = chat.messages;
+            messages = chat.messages;
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -151,7 +154,7 @@ router.get(
             });
         }
         const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
-        return res.status(200).json({ chat_messages, nextPage: nextPage });
+        return res.status(200).json({ messages, nextPage: nextPage });
     }
 );
 
