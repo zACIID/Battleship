@@ -4,7 +4,7 @@ import {
     MatchDocument,
     createMatch,
     updateMatchStats,
-} from '../models/match';
+} from '../models/match/match';
 import { Types } from 'mongoose';
 import { authenticateToken, retrieveMatchId } from './auth-routes';
 
