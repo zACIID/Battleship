@@ -6,10 +6,9 @@ import {
     MatchDocument,
     createMatch,
     updateMatchStats,
-    MatchModel,
-} from '../models/match/match';
+    MatchModel
+} from "../models/match/match";
 import { authenticateToken, retrieveMatchId, retrieveUserId } from './auth-routes';
-import { Ship } from '../models/match/state/ship';
 import { GridCoordinates } from '../models/match/state/grid-coordinates';
 import { BattleshipGrid } from '../models/match/state/battleship-grid';
 import { Shot } from '../models/match/state/shot';
@@ -44,9 +43,17 @@ router.post(
     authenticateToken,
     async (req: CreateMatchRequest, res: MatchEndpointResponse) => {
         try {
-            const m: MatchDocument = await createMatch(req.body.player1, req.body.player2);
+            const match: MatchDocument = await createMatch(req.body.player1, req.body.player2);
+            const toSend = {
+                matchId: match._id,
+                player1: match.player1,
+                player2: match.player2,
+                playersChat: match.playersChat,
+                observersChat: match.observersChat,
+                stats: match.stats
+            };
 
-            return res.status(201).json(m);
+            return res.status(201).json(toSend);
         } catch (err) {
             return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -70,8 +77,16 @@ router.get(
         try {
             let matchId: Types.ObjectId = res.locals.matchId;
             const match: MatchDocument = await getMatchById(matchId);
+            const toSend = {
+                matchId: match._id,
+                player1: match.player1,
+                player2: match.player2,
+                playersChat: match.playersChat,
+                observersChat: match.observersChat,
+                stats: match.stats
+            };
 
-            return res.status(200).json({ match });
+            return res.status(200).json(toSend);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -84,8 +99,8 @@ router.get(
 
 interface UpdateStatsBody {
     winner: Types.ObjectId;
-    totalShots: Number;
-    shipsDestroyed: Number;
+    totalShots: number;
+    shipsDestroyed: number;
 }
 
 interface UpdateStatsRequest extends Request {
@@ -109,7 +124,7 @@ router.put(
 
             return res.status(200).json(req.body);
         } catch (err) {
-            return res.status(404).json({
+            return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
@@ -140,11 +155,7 @@ router.put(
 
             const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
             if (match === null) {
-                return res.status(404).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
-                    errorMessage: `Match with id ${matchId}not found`,
-                    requestPath: req.path,
-                });
+                throw new Error(`Match with id '${matchId}' not found`);
             }
 
             await match.updatePlayerGrid(playerId, req.body);
@@ -191,7 +202,7 @@ router.post(
                     requestPath: req.path,
                 });
             }
-
+            
             await match.registerShot(shot);
 
             return res.status(200).json(req.body);

@@ -147,10 +147,13 @@ const areCoordinatesConsecutive = function (ship: ShipSubDocument): boolean {
     let prevValue: number = toCheckForConsecutiveness[0];
     return toCheckForConsecutiveness.every((value, index) => {
         if (index !== 0) {
-            const isConsecutive: boolean = value === prevValue - 1;
+            const isConsecutive: boolean = value === prevValue + 1;
             prevValue = value;
 
             return isConsecutive;
+        }
+        else {
+            return true // skip first cell (index === 0)
         }
     });
 };

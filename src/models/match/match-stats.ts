@@ -12,6 +12,9 @@ export interface MatchStats {
     shipsDestroyed: number;
 }
 
+export interface MatchStatsSubDocument extends MatchStats, Types.EmbeddedDocument {
+}
+
 export const MatchStatsSchema = new Schema<MatchStats>({
     winner: {
         type: SchemaTypes.ObjectId,
@@ -19,7 +22,7 @@ export const MatchStatsSchema = new Schema<MatchStats>({
     },
     startTime: {
         type: SchemaTypes.Date,
-        default: Date.now,
+        default: () => new Date(),
     },
     endTime: {
         type: SchemaTypes.Date,
@@ -33,4 +36,4 @@ export const MatchStatsSchema = new Schema<MatchStats>({
         type: SchemaTypes.Number,
         default: 0,
     },
-});
+}, {_id: false});

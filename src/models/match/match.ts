@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
 import { ChatDocument, ChatModel, createChat } from '../chat';
 
-import { MatchStats, MatchStatsSchema } from './match-stats';
+import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from "./match-stats";
 import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/player-state';
 import { BattleshipGrid, BattleshipGridSubDocument } from './state/battleship-grid';
 import { Shot } from './state/shot';
@@ -24,6 +24,7 @@ export interface Match {
 export interface MatchDocument extends Match, Document {
     player1: PlayerStateSubDocument;
     player2: PlayerStateSubDocument;
+    stats: MatchStatsSubDocument;
 
     updatePlayerGrid(playerId: Types.ObjectId, grid: BattleshipGrid): Promise<MatchDocument>;
     registerShot(shot: Shot): Promise<MatchDocument>;
@@ -31,12 +32,12 @@ export interface MatchDocument extends Match, Document {
 
 export const MatchSchema = new Schema<MatchDocument>({
     player1: {
-        type: [PlayerStateSchema],
+        type: PlayerStateSchema,
         required: true,
     },
 
     player2: {
-        type: [PlayerStateSchema],
+        type: PlayerStateSchema,
         required: true,
     },
 
@@ -61,10 +62,15 @@ MatchSchema.methods.updatePlayerGrid = function (
     playerId: Types.ObjectId,
     grid: BattleshipGrid
 ): Promise<MatchDocument> {
-    const gridPath: string = playerId.equals(this.player1.playerId)
+    if (!playerId.equals(this.player1.playerId)
+      && !playerId.equals(this.player2.playerId)) {
+        throw new Error(`Player '${playerId}' is not part of this match`)
+    }
+
+    const gridPath = playerId.equals(this.player1.playerId)
         ? 'player1.grid'
         : 'player2.grid';
-    this.player1.set(gridPath, grid);
+    this.set(gridPath, grid);
 
     return this.save();
 };
@@ -119,18 +125,26 @@ export async function deleteMatch(matchId: Types.ObjectId): Promise<void> {
 export async function updateMatchStats(
     matchId: Types.ObjectId,
     winner: Types.ObjectId,
-    totalShots: Number,
-    shipsDestroyed: Number
-): Promise<void> {
-    const endTime: Date = new Date();
-    await MatchModel.updateOne(
-        { _id: matchId },
-        { winner, endTime, totalShots, shipsDestroyed }
+    totalShots: number,
+    shipsDestroyed: number
+): Promise<MatchDocument> {
+    const match: MatchDocument = await MatchModel.findOne(
+        { _id: matchId }
     ).catch((err: Error) => {
         return Promise.reject(new Error('No match with that id'));
     });
 
-    return Promise.resolve();
+    const now: Date = new Date();
+    const updatedStats: MatchStats = {
+        winner: winner,
+        startTime: match.stats.startTime,
+        endTime: now,
+        totalShots: totalShots,
+        shipsDestroyed: shipsDestroyed
+    };
+    match.set("stats", updatedStats);
+
+    return match.save();
 }
 
 // Create "Matches" collection

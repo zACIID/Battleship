@@ -1,10 +1,10 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { getUserByUsername, createUser, UserDocument } from '../models/user';
-import passport from 'passport';
-import jsonwebtoken from 'jsonwebtoken';
-import jwt from 'jsonwebtoken';
-import LocalStrategy from 'passport-local';
-import { Types } from 'mongoose';
+import { NextFunction, Request, Response, Router } from "express";
+import { createUser, getUserByUsername, UserDocument } from "../models/user";
+import passport from "passport";
+import jsonwebtoken from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import LocalStrategy from "passport-local";
+import { Types } from "mongoose";
 
 export const router = Router();
 
@@ -72,8 +72,7 @@ export const retrieveChatId = function (req: Request, res: Response, next: NextF
 
 export const retrieveMatchId = function (req: Request, res: Response, next: NextFunction) {
     try {
-        const matchId: Types.ObjectId = Types.ObjectId(req.params.matchId);
-        res.locals.matchId = matchId;
+        res.locals.matchId = Types.ObjectId(req.params.matchId);
 
         next();
     } catch (err) {
