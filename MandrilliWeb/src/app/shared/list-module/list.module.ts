@@ -16,6 +16,9 @@ import { OptionalButtonComponent } from './optional-button/optional-button.compo
   imports: [
     CommonModule,
     PlainButtonModule
+  ],
+  exports:[
+    ListComponent
   ]
 })
 export class ListModule { }
