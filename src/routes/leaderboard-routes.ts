@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { getLeaderboard, UserDocument } from '../models/user';
+import { getLeaderboard, UserDocument } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
 
 export const router = Router();

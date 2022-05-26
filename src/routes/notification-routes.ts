@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { Request, Response, Router } from 'express';
-import { RequestTypes } from '../models/notification';
-import { getUserById, UserDocument } from '../models/user';
+import { RequestTypes } from '../models/user/notification';
+import { getUserById, UserDocument } from '../models/user/user';
 import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 
 export const router = Router();

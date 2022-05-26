@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user';
+import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user/user';
 import { authenticateToken, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
 

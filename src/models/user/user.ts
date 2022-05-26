@@ -11,7 +11,7 @@ import {
 import { UserStats, UserStatsSubDocument } from './user-stats';
 import { Relationship, RelationshipSubDocument, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
-import { ChatDocument, ChatModel, createChat } from './chat';
+import { ChatDocument, ChatModel, createChat } from '../chat/chat';
 
 /**
  * Enumeration that defines all the possible roles that can be

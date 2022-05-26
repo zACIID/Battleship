@@ -1,8 +1,8 @@
-import { Message } from './../models/message';
-import { Relationship } from './../models/relationship';
+import { Message } from '../models/chat/message';
+import { Relationship } from '../models/user/relationship';
 import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
-import { UserDocument, getUserById } from '../models/user';
+import { UserDocument, getUserById } from '../models/user/user';
 import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 import { Types } from 'mongoose';
 

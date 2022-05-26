@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { ChatDocument, getChatById, deleteChat } from '../models/chat';
-import { Message } from '../models/message';
+import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
+import { Message } from '../models/chat/message';
 import { authenticateToken, retrieveChatId, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
 

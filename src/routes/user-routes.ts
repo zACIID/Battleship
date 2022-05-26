@@ -1,8 +1,8 @@
-import { updatePassword, updateUserName, getUsers, updateUserStats } from '../models/user';
+import { updatePassword, updateUserName, getUsers, updateUserStats } from '../models/user/user';
 import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { UserDocument, getUserById, deleteUser, getUserStats } from '../models/user';
-import { UserStats } from '../models/user-stats';
+import { UserDocument, getUserById, deleteUser, getUserStats } from '../models/user/user';
+import { UserStats } from '../models/user/user-stats';
 import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 import { stat } from 'fs';
 

@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
-import { ChatDocument, ChatModel, createChat } from '../chat';
+import { ChatDocument, ChatModel, createChat } from '../chat/chat';
 
 import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from "./match-stats";
 import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/player-state';
