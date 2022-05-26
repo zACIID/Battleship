@@ -9,7 +9,7 @@ router.get('/leaderboard', authenticateToken, async (req: Request, res: Response
     const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
 
     try {
-        if (skip > 50 || limit > 50 || skip < 0 || limit < 0) {
+        if (limit > 50 || skip < 0 || limit < 0) {
             throw new Error('Invalid query parameters');
         } else {
             const leaderBoard: UserDocument[] = await getLeaderboard(skip, limit);
