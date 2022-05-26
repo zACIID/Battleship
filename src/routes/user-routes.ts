@@ -6,6 +6,14 @@ import { UserStats } from '../models/user-stats';
 import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 import { stat } from 'fs';
 
+interface UserEndpointLocals {
+    userId: Types.ObjectId;
+}
+
+interface UserEndpointResponse extends Response {
+    locals: UserEndpointLocals
+}
+
 interface PatchUsernameBody {
     username: string;
 }
@@ -52,7 +60,7 @@ router.get(
     '/users/:userId',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: UserEndpointResponse) => {
         let user: UserDocument;
         const userId: Types.ObjectId = res.locals.userId;
         try {
@@ -78,7 +86,7 @@ router.put(
     '/users/:userId/username',
     authenticateToken,
     retrieveUserId,
-    async (req: PatchUsernameRequest, res: Response) => {
+    async (req: PatchUsernameRequest, res: UserEndpointResponse) => {
         const { username } = req.body;
 
         const userId: Types.ObjectId = res.locals.userId;
@@ -109,7 +117,7 @@ router.put(
     '/users/:userId/password',
     authenticateToken,
     retrieveUserId,
-    async (req: PatchPasswordRequest, res: Response) => {
+    async (req: PatchPasswordRequest, res: UserEndpointResponse) => {
         const { password } = req.body;
         const userId: Types.ObjectId = res.locals.userId;
         if (password) {
@@ -138,7 +146,7 @@ router.delete(
     '/users/:userId',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
 
         try {
@@ -159,7 +167,7 @@ router.get(
     '/users/:userId/stats',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
         let stats: UserStats;
         try {
@@ -188,7 +196,7 @@ router.put(
     '/users/:userId/stats',
     authenticateToken,
     retrieveUserId,
-    async (req: PatchStatsRequest, res: Response) => {
+    async (req: PatchStatsRequest, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
         const { elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits } = req.body;
         console.log('DA ROUTES');
@@ -225,7 +233,7 @@ router.put(
     }
 );
 
-router.get('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: Response) => {
+router.get('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: UserEndpointResponse) => {
     let users: UserDocument[];
 
     try {

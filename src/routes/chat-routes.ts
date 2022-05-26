@@ -6,22 +6,21 @@ import { Types } from 'mongoose';
 
 export const router = Router();
 
+interface ChatEndpointLocals {
+    chatId: Types.ObjectId;
+    userId: Types.ObjectId;
+}
+
+interface ChatEndpointResponse extends Response {
+    locals: ChatEndpointLocals;
+}
+
 interface UserPostBody {
     userId: Types.ObjectId;
 }
 
 interface UserPostRequest extends Request {
     body: UserPostBody;
-}
-
-interface MessagePostBody {
-    author: Types.ObjectId;
-    content: string;
-    timestamp: Date;
-}
-
-interface MessagePostRequest extends Request {
-    body: MessagePostBody;
 }
 
 /**
@@ -32,7 +31,7 @@ router.get(
     '/chats/:chatId',
     authenticateToken,
     retrieveChatId,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
 
         let chat: ChatDocument;
@@ -62,7 +61,7 @@ router.delete(
     '/chats/:chatId',
     authenticateToken,
     retrieveChatId,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
 
         await deleteChat(chatId).catch((err: Error) => {
@@ -84,14 +83,14 @@ router.post(
     '/chats/:chatId/users',
     authenticateToken,
     retrieveChatId,
-    async (req: UserPostRequest, res: Response) => {
+    async (req: UserPostRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
 
         let chat: ChatDocument;
 
         try {
             chat = await getChatById(chatId);
-            chat.addUser(req.body.userId);
+            await chat.addUser(req.body.userId);
         } catch (err) {
             return res.status(500).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -112,13 +111,13 @@ router.delete(
     authenticateToken,
     retrieveChatId,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: Request, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
         const userId: Types.ObjectId = res.locals.userId;
         let chat: ChatDocument;
         try {
             chat = await getChatById(chatId);
-            chat.removeUser(userId);
+            await chat.removeUser(userId);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -130,6 +129,16 @@ router.delete(
     }
 );
 
+interface MessagePostBody {
+    author: Types.ObjectId;
+    content: string;
+    timestamp: Date;
+}
+
+interface MessagePostRequest extends Request {
+    body: MessagePostBody;
+}
+
 /**
  *    /chats/:chatId/messages | GET | Retrieve the messages of the specified chat
  */
@@ -137,15 +146,17 @@ router.get(
     '/chats/:chatId/messages',
     authenticateToken,
     retrieveChatId,
-    async (req: Request, res: Response) => {
-        const chatId: Types.ObjectId = res.locals.chatId;
-        let chat: ChatDocument;
-        let messages: Message[];
-        const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
-        const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
+    async (req: Request, res: ChatEndpointResponse) => {
         try {
-            chat = await getChatById(chatId);
-            messages = chat.messages;
+            const chatId: Types.ObjectId = res.locals.chatId;
+            const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
+            const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
+
+            const chat: ChatDocument = await getChatById(chatId);
+            const messages: Message[] = chat.messages;
+
+            const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
+            return res.status(200).json({ messages, nextPage: nextPage });
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -153,8 +164,6 @@ router.get(
                 requestPath: req.path,
             });
         }
-        const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
-        return res.status(200).json({ messages, nextPage: nextPage });
     }
 );
 
@@ -166,13 +175,14 @@ router.post(
     '/chats/:chatId/messages',
     authenticateToken,
     retrieveChatId,
-    async (req: MessagePostRequest, res: Response) => {
-        const chatId: Types.ObjectId = res.locals.chatId;
-        let chat: ChatDocument;
-
+    async (req: MessagePostRequest, res: ChatEndpointResponse) => {
         try {
-            chat = await getChatById(chatId);
+            const chatId: Types.ObjectId = res.locals.chatId;
+            const chat: ChatDocument = await getChatById(chatId);
+
             await chat.addMessage(req.body.content, req.body.timestamp, req.body.author);
+
+            return res.status(200).json(req.body);
         } catch (err) {
             return res.status(500).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -180,7 +190,5 @@ router.post(
                 requestPath: req.path,
             });
         }
-
-        return res.status(200).json(req.body);
     }
 );
