@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import { PreloadAllModules } from '@angular/router';
 
 
 /*   Definition of the different routes for the application, implementation with lazy-loading module
