@@ -277,14 +277,14 @@ A full [MatchStats](#matchstats) resource that will replace the old one.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/players/:playerId/grid | PUT | Update the grid of the specified player of the match |
+| /matches/:matchId/players/:userId/grid | PUT | Update the grid of the specified player of the match |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
 | matchId | string | Id of the match to update the grid of |
-| playerId | string | Id of the player to update the grid of |
+| userId | string | Id of the player to update the grid of |
 
 #### Example Request Body
 
@@ -350,14 +350,14 @@ A full [BattleshipGrid](#battleshipgrid) resource that will replace the old one.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/players/:playerId/shotsFired | POST | Add a shot made by the specified player |
+| /matches/:matchId/players/:userId/shotsFired | POST | Add a shot made by the specified player |
 
 #### Url Parameters
 
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| matchId | string | Id of the match to update the grid of |
-| playerId | string | Id of the player to update the grid of |
+| Name    | Data Type | Description |
+|:--------| :-------- | :---------- |
+| matchId | string | Id of the match to fire the shot in |
+| userId  | string | Id of the player that fires the shot |
 
 #### Example Request Body
 
