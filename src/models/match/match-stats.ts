@@ -12,28 +12,30 @@ export interface MatchStats {
     shipsDestroyed: number;
 }
 
-export interface MatchStatsSubDocument extends MatchStats, Types.EmbeddedDocument {
-}
+export interface MatchStatsSubDocument extends MatchStats, Types.EmbeddedDocument {}
 
-export const MatchStatsSchema = new Schema<MatchStats>({
-    winner: {
-        type: SchemaTypes.ObjectId,
-        default: null,
+export const MatchStatsSchema = new Schema<MatchStats>(
+    {
+        winner: {
+            type: SchemaTypes.ObjectId,
+            default: null,
+        },
+        startTime: {
+            type: SchemaTypes.Date,
+            default: () => new Date(),
+        },
+        endTime: {
+            type: SchemaTypes.Date,
+            default: null,
+        },
+        totalShots: {
+            type: SchemaTypes.Number,
+            default: 0,
+        },
+        shipsDestroyed: {
+            type: SchemaTypes.Number,
+            default: 0,
+        },
     },
-    startTime: {
-        type: SchemaTypes.Date,
-        default: () => new Date(),
-    },
-    endTime: {
-        type: SchemaTypes.Date,
-        default: null,
-    },
-    totalShots: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-    shipsDestroyed: {
-        type: SchemaTypes.Number,
-        default: 0,
-    },
-}, {_id: false});
+    { _id: false }
+);

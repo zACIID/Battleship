@@ -6,8 +6,8 @@ import {
     MatchDocument,
     createMatch,
     updateMatchStats,
-    MatchModel
-} from "../models/match/match";
+    MatchModel,
+} from '../models/match/match';
 import { authenticateToken, retrieveMatchId, retrieveUserId } from './auth-routes';
 import { GridCoordinates } from '../models/match/state/grid-coordinates';
 import { BattleshipGrid } from '../models/match/state/battleship-grid';
@@ -50,7 +50,7 @@ router.post(
                 player2: match.player2,
                 playersChat: match.playersChat,
                 observersChat: match.observersChat,
-                stats: match.stats
+                stats: match.stats,
             };
 
             return res.status(201).json(toSend);
@@ -83,7 +83,7 @@ router.get(
                 player2: match.player2,
                 playersChat: match.playersChat,
                 observersChat: match.observersChat,
-                stats: match.stats
+                stats: match.stats,
             };
 
             return res.status(200).json(toSend);
@@ -202,7 +202,7 @@ router.post(
                     requestPath: req.path,
                 });
             }
-            
+
             await match.registerShot(shot);
 
             return res.status(200).json(req.body);

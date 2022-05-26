@@ -11,7 +11,7 @@ interface UserEndpointLocals {
 }
 
 interface UserEndpointResponse extends Response {
-    locals: UserEndpointLocals
+    locals: UserEndpointLocals;
 }
 
 interface PatchUsernameBody {
@@ -233,42 +233,46 @@ router.put(
     }
 );
 
-router.get('/users', authenticateToken, async (req: GetMultipleUsersRequest, res: UserEndpointResponse) => {
-    let users: UserDocument[];
+router.get(
+    '/users',
+    authenticateToken,
+    async (req: GetMultipleUsersRequest, res: UserEndpointResponse) => {
+        let users: UserDocument[];
 
-    try {
-        const userIdsQParam: string[] = (req.query.ids as string).split(',');
-        const userObjIds: Types.ObjectId[] = userIdsQParam.map((uId) => {
-            return retrieveId(uId);
-        });
+        try {
+            const userIdsQParam: string[] = (req.query.ids as string).split(',');
+            const userObjIds: Types.ObjectId[] = userIdsQParam.map((uId) => {
+                return retrieveId(uId);
+            });
 
-        users = await getUsers(userObjIds);
-        const results = users.map((x: UserDocument) => {
-            return {
-                userId: x._id,
-                username: x.username,
-                roles: x.roles,
-                online: x.online,
-            };
-        });
+            users = await getUsers(userObjIds);
+            const results = users.map((x: UserDocument) => {
+                return {
+                    userId: x._id,
+                    username: x.username,
+                    roles: x.roles,
+                    online: x.online,
+                };
+            });
 
-        return res.status(200).json({ users: results });
-    } catch (err) {
-        let statusCode: number = 404;
-        if (err instanceof Error && err.message === usersErr) {
-            statusCode = 500;
-        } else {
+            return res.status(200).json({ users: results });
+        } catch (err) {
+            let statusCode: number = 404;
+            if (err instanceof Error && err.message === usersErr) {
+                statusCode = 500;
+            } else {
+                return res.status(statusCode).json({
+                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    errorMessage: err.message,
+                    requestPath: req.path,
+                });
+            }
+
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
-
-        return res.status(statusCode).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
     }
-});
+);

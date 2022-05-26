@@ -14,14 +14,15 @@ export interface QueueEntry {
 export interface QueueEntrySubDocument extends QueueEntry, Types.EmbeddedDocument {}
 
 export const QueueEntrySchema = new Schema<QueueEntrySubDocument>(
-  {
-      userId: {
-          type: SchemaTypes.ObjectId,
-          required: [true, "User id is required"]
-      },
-      elo: {
-          type: SchemaTypes.Number,
-          required: [true, "Elo is required"]
-      }
-  }, { _id: false }
+    {
+        userId: {
+            type: SchemaTypes.ObjectId,
+            required: [true, 'User id is required'],
+        },
+        elo: {
+            type: SchemaTypes.Number,
+            required: [true, 'Elo is required'],
+        },
+    },
+    { _id: false }
 );

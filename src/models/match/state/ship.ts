@@ -151,9 +151,8 @@ const areCoordinatesConsecutive = function (ship: ShipSubDocument): boolean {
             prevValue = value;
 
             return isConsecutive;
-        }
-        else {
-            return true // skip first cell (index === 0)
+        } else {
+            return true; // skip first cell (index === 0)
         }
     });
 };

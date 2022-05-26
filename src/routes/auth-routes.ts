@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { createUser, getUserByUsername, UserDocument } from "../models/user/user";
-import passport from "passport";
-import jsonwebtoken from "jsonwebtoken";
-import jwt from "jsonwebtoken";
-import LocalStrategy from "passport-local";
-import { Types } from "mongoose";
+import { NextFunction, Request, Response, Router } from 'express';
+import { createUser, getUserByUsername, UserDocument } from '../models/user/user';
+import passport from 'passport';
+import jsonwebtoken from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import LocalStrategy from 'passport-local';
+import { Types } from 'mongoose';
 
 export const router = Router();
 

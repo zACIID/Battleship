@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
 import { ChatDocument, ChatModel, createChat } from '../chat/chat';
 
-import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from "./match-stats";
+import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from './match-stats';
 import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/player-state';
 import { BattleshipGrid, BattleshipGridSubDocument } from './state/battleship-grid';
 import { Shot } from './state/shot';
@@ -62,14 +62,11 @@ MatchSchema.methods.updatePlayerGrid = function (
     playerId: Types.ObjectId,
     grid: BattleshipGrid
 ): Promise<MatchDocument> {
-    if (!playerId.equals(this.player1.playerId)
-      && !playerId.equals(this.player2.playerId)) {
-        throw new Error(`Player '${playerId}' is not part of this match`)
+    if (!playerId.equals(this.player1.playerId) && !playerId.equals(this.player2.playerId)) {
+        throw new Error(`Player '${playerId}' is not part of this match`);
     }
 
-    const gridPath = playerId.equals(this.player1.playerId)
-        ? 'player1.grid'
-        : 'player2.grid';
+    const gridPath = playerId.equals(this.player1.playerId) ? 'player1.grid' : 'player2.grid';
     this.set(gridPath, grid);
 
     return this.save();
@@ -128,9 +125,7 @@ export async function updateMatchStats(
     totalShots: number,
     shipsDestroyed: number
 ): Promise<MatchDocument> {
-    const match: MatchDocument = await MatchModel.findOne(
-        { _id: matchId }
-    ).catch((err: Error) => {
+    const match: MatchDocument = await MatchModel.findOne({ _id: matchId }).catch((err: Error) => {
         return Promise.reject(new Error('No match with that id'));
     });
 
@@ -140,9 +135,9 @@ export async function updateMatchStats(
         startTime: match.stats.startTime,
         endTime: now,
         totalShots: totalShots,
-        shipsDestroyed: shipsDestroyed
+        shipsDestroyed: shipsDestroyed,
     };
-    match.set("stats", updatedStats);
+    match.set('stats', updatedStats);
 
     return match.save();
 }
