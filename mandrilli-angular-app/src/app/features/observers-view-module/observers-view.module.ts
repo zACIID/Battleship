@@ -1,3 +1,4 @@
+import { ObserversRoutingModule } from './observers-routing.module';
 import { BoardModule } from './../../shared/board-module/board.module';
 import { ChatModule } from './../../shared/chat-module/chat.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
@@ -17,7 +18,8 @@ import { ObserversScreenComponent } from './observers-screen/observers-screen.co
     BattleshiplogoModule,
     BackButtonModule,
     ChatModule,
-    BoardModule
+    BoardModule,
+    ObserversRoutingModule
   ]
 })
 export class ObserversViewModule { }

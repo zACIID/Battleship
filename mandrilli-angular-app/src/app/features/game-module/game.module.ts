@@ -1,3 +1,4 @@
+import { GameRoutingModule } from './game-routing.module';
 import { BattleshiplogoModule } from './../../shared/battleship-logo-module/battleshiplogo.module';
 import { PlayerInfoModule } from './../../shared/player-info-module/player-info.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
@@ -25,7 +26,8 @@ import { PlayerBoardComponent } from './player-board/player-board.component';
     BoardModule,
     BackButtonModule,
     PlayerInfoModule,
-    BattleshiplogoModule
+    BattleshiplogoModule,
+    GameRoutingModule
   ]
 })
 export class GameModule { }

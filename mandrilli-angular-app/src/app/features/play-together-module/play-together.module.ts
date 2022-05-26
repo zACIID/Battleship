@@ -1,3 +1,4 @@
+import { PlayTogetherRoutingModule } from './play-together-routing.module';
 import { FriendListModule } from './../../shared/friend-list-module/friend-list.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
 import { NgModule } from '@angular/core';
@@ -13,7 +14,8 @@ import { PlayTogetherScreenComponent } from './play-together-screen/play-togethe
   imports: [
     CommonModule,
     BackButtonModule,
-    FriendListModule
+    FriendListModule,
+    PlayTogetherRoutingModule
   ]
 })
 export class PlayTogetherModule { }

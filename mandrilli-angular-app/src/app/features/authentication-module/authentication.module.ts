@@ -1,3 +1,4 @@
+import { AuthenticationRoutingModule } from './game-routing.module';
 import { PlainButtonModule } from './../../shared/plain-button-module/plain-button.module';
 import { InputFieldModule } from './../../shared/input-field-module/input-field.module';
 import { NgModule } from '@angular/core';
@@ -15,7 +16,8 @@ import { RegistrationScreenComponent } from './registration-screen/registration-
   imports: [
     CommonModule,
     InputFieldModule,
-    PlainButtonModule
+    PlainButtonModule,
+    AuthenticationRoutingModule
   ]
 })
 export class AuthenticationModule { }

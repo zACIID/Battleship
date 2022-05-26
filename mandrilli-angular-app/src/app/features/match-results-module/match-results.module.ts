@@ -1,3 +1,4 @@
+import { MatchResultsRoutingModule } from './match-results-routing.module';
 import { BattleshiplogoModule } from './../../shared/battleship-logo-module/battleshiplogo.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
 import { StatsModule } from './../../shared/stats-module/stats.module';
@@ -17,7 +18,8 @@ import { MatchResultScreenComponent } from './match-result-screen/match-result-s
     PlayerInfoModule,
     StatsModule,
     BackButtonModule,
-    BattleshiplogoModule
+    BattleshiplogoModule,
+    MatchResultsRoutingModule
   ]
 })
 export class MatchResultsModule { }

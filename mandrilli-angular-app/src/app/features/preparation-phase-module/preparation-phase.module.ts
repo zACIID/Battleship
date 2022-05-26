@@ -1,3 +1,4 @@
+import { PreparationPhaseRoutingModule } from './preparation-phase-routing.module';
 import { ChatModule } from './../../shared/chat-module/chat.module';
 import { PlayerInfoModule } from './../../shared/player-info-module/player-info.module';
 import { BoardModule } from './../../shared/board-module/board.module';
@@ -23,7 +24,8 @@ import { BattleButtonComponent } from './battle-button/battle-button.component';
     BattleshiplogoModule,
     BoardModule,
     PlayerInfoModule,
-    ChatModule
+    ChatModule,
+    PreparationPhaseRoutingModule
   ]
 })
 export class PreparationPhaseModule { }

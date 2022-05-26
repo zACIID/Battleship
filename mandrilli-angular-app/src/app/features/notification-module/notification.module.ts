@@ -1,3 +1,4 @@
+import { NotificationRoutingModule } from './notification-routing.module';
 import { ListModule } from './../../shared/list-module/list.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
@@ -15,7 +16,8 @@ import { NotificationScreenComponent } from './notification-screen/notification-
     CommonModule,
     BackButtonModule,
     MatchHistoryModule,
-    ListModule
+    ListModule,
+    NotificationRoutingModule
   ]
 })
 export class NotificationModule { }

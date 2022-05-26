@@ -1,3 +1,4 @@
+import { HomepageRoutingModule } from './homepage-routing.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { PlainButtonComponent } from './../../shared/plain-button-module/plain-button/plain-button.component';
 import { NgModule } from '@angular/core';
@@ -19,7 +20,8 @@ import { ProfileButtonComponent } from './profile-button/profile-button.componen
   imports: [
     CommonModule,
     PlainButtonComponent,
-    MatchHistoryModule
+    MatchHistoryModule,
+    HomepageRoutingModule
   ]
 })
 export class HomepageModule { }

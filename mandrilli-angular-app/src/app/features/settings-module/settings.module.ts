@@ -1,3 +1,4 @@
+import { SettingsRoutingModule } from './relationship-routing.module';
 import { InputFieldModule } from './../../shared/input-field-module/input-field.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
@@ -12,18 +13,17 @@ import { DeleteProfileButtonComponent } from './delete-profile-button/delete-pro
 
 @NgModule({
   declarations: [
-    
-  
     SettingScreenComponent,
-             DarkModeSwitchComponent,
-             LogoutButtonComponent,
-             DeleteProfileButtonComponent
+    DarkModeSwitchComponent,
+    LogoutButtonComponent,
+    DeleteProfileButtonComponent
   ],
   imports: [
     CommonModule,
     BackButtonModule,
     MatchHistoryModule,
-    InputFieldModule
+    InputFieldModule,
+    SettingsRoutingModule
   ]
 })
 export class SettingsModule { }

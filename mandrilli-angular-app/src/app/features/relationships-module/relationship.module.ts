@@ -1,3 +1,4 @@
+import { RelationshipRoutingModule } from './relationship-routing.module';
 import { ChatModule } from './../../shared/chat-module/chat.module';
 import { FriendListModule } from './../../shared/friend-list-module/friend-list.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
@@ -15,7 +16,8 @@ import { FriendListScreenComponent } from './friend-list-screen/friend-list-scre
     CommonModule,
     BackButtonModule,
     FriendListModule,
-    ChatModule
+    ChatModule,
+    RelationshipRoutingModule
   ]
 })
 export class RelationshipModule { }
