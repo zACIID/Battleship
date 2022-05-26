@@ -93,15 +93,15 @@ export async function getMatchById(matchId: Types.ObjectId): Promise<MatchDocume
 }
 
 export async function createMatch(
-    player1: Types.ObjectId,
-    player2: Types.ObjectId
+    playerId1: Types.ObjectId,
+    playerId2: Types.ObjectId
 ): Promise<MatchDocument> {
-    const playersChat: ChatDocument = await createChat([player1, player2]);
+    const playersChat: ChatDocument = await createChat([playerId1, playerId2]);
     const observersChat: ChatDocument = await createChat([]);
 
     const match = new MatchModel({
-        player1: player1,
-        player2: player2,
+        player1: { playerId: playerId1 },
+        player2: { playerId: playerId2 },
         playersChat: playersChat._id,
         observersChat: observersChat._id,
     });

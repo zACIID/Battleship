@@ -139,9 +139,17 @@ router.put(
             const playerId: Types.ObjectId = res.locals.userId;
 
             const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
+            if (match === null) {
+                return res.status(404).json({
+                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    errorMessage: `Match with id ${matchId}not found`,
+                    requestPath: req.path,
+                });
+            }
+
             await match.updatePlayerGrid(playerId, req.body);
 
-            return res.send(200).json(req.body);
+            return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -162,7 +170,7 @@ interface FireShotRequest extends Request {
  * /matches/:matchId/players/:userId/shotsFired   POST   Add a shot made by the specified player
  */
 router.post(
-    '/matches/:matchId/players/:userId/grid',
+    '/matches/:matchId/players/:userId/shotsFired',
     authenticateToken,
     retrieveMatchId,
     retrieveUserId,
@@ -176,9 +184,17 @@ router.post(
             };
 
             const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
+            if (match === null) {
+                return res.status(404).json({
+                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    errorMessage: `Match with id ${matchId}not found`,
+                    requestPath: req.path,
+                });
+            }
+
             await match.registerShot(shot);
 
-            return res.send(200).json(req.body);
+            return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
