@@ -120,7 +120,11 @@ router.put(
             throw new Error("Not implemented");
         }
         catch (err) {
-
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         }
     }
 );
@@ -134,7 +138,7 @@ interface FireShotRequest extends Request {
 /**
  * /matches/:matchId/players/:playerId/shotsFired   POST   Add a shot made by the specified player
  */
-router.put(
+router.post(
     '/matches/:matchId/players/:playerId/grid',
     authenticateToken,
     retrieveMatchId,
@@ -144,7 +148,11 @@ router.put(
             throw new Error("Not implemented");
         }
         catch (err) {
-
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         }
     }
 );
