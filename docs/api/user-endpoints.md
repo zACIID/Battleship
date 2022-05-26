@@ -72,7 +72,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId | GET | Retrieve the user with the specified id |
+| /api/users/:userId | GET | Retrieve the user with the specified id |
 
 #### Url Parameters
 
@@ -116,7 +116,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users | GET | Retrieve the users with the ids specified in the request body |
+| /api/users | GET | Retrieve the users with the ids specified in the request body |
 
 #### Query Parameters
 
@@ -187,7 +187,7 @@ Object representing the ids of the users to retrieve
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/password | PUT | Update the password of the user with the specified id |
+| /api/users/:userId/password | PUT | Update the password of the user with the specified id |
 
 #### Url Parameters
 
@@ -229,7 +229,7 @@ Object containing the new password to set
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/username | PUT | Update the username of the user with the specified id |
+| /api/users/:userId/username | PUT | Update the username of the user with the specified id |
 
 #### Url Parameters
 
@@ -277,7 +277,7 @@ Object containing the new username to set
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId | DELETE | Delete the user with the provided id |
+| /api/users/:userId | DELETE | Delete the user with the provided id |
 
 #### Url Parameters
 
@@ -309,7 +309,7 @@ Object containing the new username to set
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/stats | GET | Retrieve the statistics of the specified user |
+| /api/users/:userId/stats | GET | Retrieve the statistics of the specified user |
 
 #### Url Parameters
 
@@ -353,7 +353,7 @@ Object containing the new username to set
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| api/users/:userId/stats | PUT | Update the statistics of the specified user |
+| /api/users/:userId/stats | PUT | Update the statistics of the specified user |
 
 #### Url Parameters
 

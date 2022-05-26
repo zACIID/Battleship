@@ -105,7 +105,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches | POST | Create a new match |
+| /api/matches | POST | Create a new match |
 
 #### Example Request Body
 
@@ -172,7 +172,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId | GET | Retrieve the match with the specified id |
+| /api/matches/:matchId | GET | Retrieve the match with the specified id |
 
 #### Url Parameters
 
@@ -221,7 +221,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/stats | PUT | Update the statistics of the specified match |
+| /api/matches/:matchId/stats | PUT | Update the statistics of the specified match |
 
 #### Url Parameters
 
@@ -277,7 +277,7 @@ A full [MatchStats](#matchstats) resource that will replace the old one.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/players/:userId/grid | PUT | Update the grid of the specified player of the match |
+| /api/matches/:matchId/players/:userId/grid | PUT | Update the grid of the specified player of the match |
 
 #### Url Parameters
 
@@ -350,7 +350,7 @@ A full [BattleshipGrid](#battleshipgrid) resource that will replace the old one.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/players/:userId/shotsFired | POST | Add a shot made by the specified player |
+| /api/matches/:matchId/players/:userId/shotsFired | POST | Add a shot made by the specified player |
 
 #### Url Parameters
 

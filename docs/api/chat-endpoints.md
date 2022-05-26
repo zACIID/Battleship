@@ -63,7 +63,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId | GET | Retrieve the chat with the specified id |
+| /api/chats/:chatId | GET | Retrieve the chat with the specified id |
 
 #### Url Parameters
 
@@ -112,7 +112,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId | DELETE | Delete the chat with the provided id |
+| /api/chats/:chatId | DELETE | Delete the chat with the provided id |
 
 #### Url Parameters
 
@@ -144,7 +144,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId/users | POST | Add the user with the provided id (in the request body) to the specified chat |
+| /api/chats/:chatId/users | POST | Add the user with the provided id (in the request body) to the specified chat |
 
 #### Url Parameters
 
@@ -192,7 +192,7 @@ Resource representing the id of the user to add to the chat
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId/users/:userId | DELETE | Remove the user with the specified id from the specified chat |
+| /api/chats/:chatId/users/:userId | DELETE | Remove the user with the specified id from the specified chat |
 
 #### Url Parameters
 
@@ -225,7 +225,7 @@ Resource representing the id of the user to add to the chat
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId/messages | GET | Retrieve the messages of the specified chat |
+| /api/chats/:chatId/messages | GET | Retrieve the messages of the specified chat |
 
 #### Url Parameters
 
@@ -278,7 +278,7 @@ Resource representing the id of the user to add to the chat
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /chats/:chatId/messages | POST | Add a message to the specified chat |
+| /api/chats/:chatId/messages | POST | Add a message to the specified chat |
 
 #### Url Parameters
 

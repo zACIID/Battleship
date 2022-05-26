@@ -39,7 +39,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/relationships | GET | Retrieve the relationships of the specified user |
+| /api/users/:userId/relationships | GET | Retrieve the relationships of the specified user |
 
 #### Url Parameters
 
@@ -83,7 +83,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/relationships | POST | Add a relationship to the specified user, chat will be automatically created |
+| /api/users/:userId/relationships | POST | Add a relationship to the specified user, chat will be automatically created |
 
 #### Url Parameters
 
@@ -132,7 +132,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/relationships/:friendId | DELETE | Remove the social relationship with the specified friend from the specified user |
+| /api/users/:userId/relationships/:friendId | DELETE | Remove the social relationship with the specified friend from the specified user |
 
 #### Url Parameters
 

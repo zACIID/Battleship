@@ -36,7 +36,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /leaderboard | GET | Retrieve part of the leaderboard, which is ordered by elo |
+| /api/leaderboard | GET | Retrieve part of the leaderboard, which is ordered by elo |
 
 #### Query Parameters
 
