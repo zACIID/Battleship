@@ -40,4 +40,4 @@ Our application can be divided into several different modules:
 ## Graphical partition
 
 In order to know what's should be the correct graphic re-partition of our appliation in modules and components we can consult the
-sketches in [here](../docs/Partitioned%20Graphical%20Interfaces)
+sketches in [docs/Partitioned Graphical Interfaces](../docs/Partitioned%20Graphical%20Interfaces)
