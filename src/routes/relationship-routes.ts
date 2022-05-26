@@ -59,9 +59,13 @@ router.post(
 
             user = await user.addRelationship(correctFriendId);
             const rel: Relationship = user.relationships[user.relationships.length - 1];
-            return res.status(201).json(rel);
+
+            return res.status(201).json({
+                friendId: rel.friendId,
+                chatId: rel.chatId,
+            });
         } catch (err) {
-            const status = err.message === 'No user with that identifier' ? 404 : 500;
+            const status = err.message === 'No user with that identifier' ? 404 : 400;
             return res.status(status).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
