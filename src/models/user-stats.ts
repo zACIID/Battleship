@@ -18,7 +18,7 @@ export interface UserStats {
  */
 export interface UserStatsSubDocument extends UserStats, Types.EmbeddedDocument {}
 
-export const StatsSchema = new Schema<UserStats>({
+export const StatsSchema = new Schema<UserStatsSubDocument>({
     elo: {
         type: SchemaTypes.Number,
         default: 0,
@@ -48,4 +48,4 @@ export const StatsSchema = new Schema<UserStats>({
         type: SchemaTypes.Number,
         default: 0,
     },
-});
+}, { _id: false });

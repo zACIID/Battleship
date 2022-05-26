@@ -116,7 +116,8 @@ router.put(
     retrieveMatchId,
     async (req: UpdateGridRequest, res: Response) => {
         try {
-            xx
+            // TODO
+            throw new Error("Not implemented");
         }
         catch (err) {
 
@@ -139,7 +140,8 @@ router.put(
     retrieveMatchId,
     async (req: FireShotRequest, res: Response) => {
         try {
-            xx
+            // TODO
+            throw new Error("Not implemented");
         }
         catch (err) {
 

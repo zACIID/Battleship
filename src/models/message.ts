@@ -15,7 +15,7 @@ export interface Message {
  */
 export interface MessageSubDocument extends Message, Types.EmbeddedDocument {}
 
-export const MessageSchema = new Schema<Message>({
+export const MessageSchema = new Schema<MessageSubDocument>({
     author: {
         type: SchemaTypes.ObjectId,
         required: true,
@@ -31,4 +31,4 @@ export const MessageSchema = new Schema<Message>({
         required: true,
         default: Date.now,
     },
-});
+}, { _id: false });

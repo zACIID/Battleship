@@ -73,7 +73,7 @@
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
 | ships | [Ship](#ship)[] | Array of ship resources that represents the ships placed by the player on his grid |
-| shots | [GridCoordinates](#gridcoordinates) | Array of coordinates that represents the shots received by the player on his grid |
+| shotsReceived | [GridCoordinates](#gridcoordinates) | Array of coordinates that represents the shots received by the player on his grid |
 
 ### Ship
 
@@ -87,7 +87,7 @@
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
 | row | number | Row number in the closed interval [0, 9] |
-| cols | number | Column number in the closed interval [0, 9] |
+| col | number | Column number in the closed interval [0, 9] |
 
 ### MatchStats
 
@@ -296,13 +296,13 @@ A full [BattleshipGrid](#battleshipgrid) resource that will replace the old one.
         {
             "coordinates": [
                 {"row": 0, "col": 1},
-                {"row": 0, "col": 2},
+                {"row": 0, "col": 2}
             ],
             "type": "Destroyer"
         },
         ...
     ],
-    "shots": [
+    "shotsReceived": [
         {"row": 0, "col": 1}
     ]
 }
@@ -321,13 +321,13 @@ A full [BattleshipGrid](#battleshipgrid) resource that will replace the old one.
         {
             "coordinates": [
                 {"row": 0, "col": 1},
-                {"row": 0, "col": 2},
+                {"row": 0, "col": 2}
             ],
             "type": "Destroyer"
         },
         ...
     ],
-    "shots": [
+    "shotsReceived": [
         {"row": 0, "col": 1}
     ]
 }

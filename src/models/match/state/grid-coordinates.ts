@@ -5,7 +5,16 @@ import { Schema, SchemaTypes, Types } from 'mongoose';
  */
 export interface GridCoordinates {
     row: number;
-    column: number;
+    col: number;
+}
+
+/**
+ * Returns true if the two provided coordinates are equal, false otherwise
+ * @param a
+ * @param b
+ */
+export const areCoordinatesEqual = (a: GridCoordinates, b: GridCoordinates): boolean => {
+    return a.row === b.row && a.col === b.col;
 }
 
 /**
@@ -18,18 +27,18 @@ export const GridCoordinatesSchema = new Schema<GridCoordinatesSubDocument>({
         type: SchemaTypes.Number,
         required: 'row coordinate required',
     },
-    column: {
+    col: {
         type: SchemaTypes.Number,
         required: 'column coordinate required',
     },
-});
+}, { _id: false });
 
 /**
  * Grid is 10x10, which means that both row and column are a number in the closed interval [0, 9]
  */
 GridCoordinatesSchema.pre('save', function (this: GridCoordinatesSubDocument, next: Function) {
     const isRowOk: boolean = 0 <= this.row && this.row <= 9;
-    const isColOk: boolean = 0 <= this.column && this.column <= 9;
+    const isColOk: boolean = 0 <= this.col && this.col <= 9;
 
     if (!(isRowOk && isColOk)) {
         throw new Error('Coordinates are out of bounds');

@@ -36,4 +36,4 @@ export const PlayerStateSchema = new Schema<PlayerStateSubDocument>({
         type: BattleshipGridSchema,
         default: () => ({}),
     },
-});
+}, { _id: false });

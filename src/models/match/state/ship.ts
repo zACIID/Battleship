@@ -74,7 +74,7 @@ export const ShipSchema = new Schema<ShipSubDocument>({
         enum: ShipTypes,
         required: [true, 'Ship type is required'],
     },
-});
+}, { _id: false });
 
 /* Coordinates are valid if they are:
  * 1. referring to the correct number of cells, depending on ship type;
@@ -124,7 +124,7 @@ const areCoordinatesAllSameRow = function (ship: ShipSubDocument): boolean {
 
 const areCoordinatesAllSameCol = function (ship: ShipSubDocument): boolean {
     const cols: Array<number> = ship.coordinates.map((c: GridCoordinates) => {
-        return c.column;
+        return c.col;
     });
 
     return cols.every((value) => value === cols[0]);
@@ -136,7 +136,7 @@ const areCoordinatesConsecutive = function (ship: ShipSubDocument): boolean {
     const sameRow: boolean = areCoordinatesAllSameRow(ship);
     let toCheckForConsecutiveness: Array<number> = null;
     if (sameRow) {
-        toCheckForConsecutiveness = ship.coordinates.map((c) => c.column);
+        toCheckForConsecutiveness = ship.coordinates.map((c) => c.col);
     } else {
         toCheckForConsecutiveness = ship.coordinates.map((c) => c.row);
     }

@@ -26,7 +26,7 @@ export interface RequestNotificationSubDocument
 /**
  * A notification is identified by the pair (type, requester)
  */
-export const NotificationSchema = new Schema<RequestNotification>({
+export const NotificationSchema = new Schema<RequestNotificationSubDocument>({
     type: {
         type: SchemaTypes.String,
         required: true,
@@ -36,4 +36,4 @@ export const NotificationSchema = new Schema<RequestNotification>({
         type: Types.ObjectId,
         required: true,
     },
-});
+}, { _id: false });
