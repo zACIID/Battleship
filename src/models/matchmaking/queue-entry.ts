@@ -6,6 +6,7 @@ import { Document, Schema, SchemaTypes, Types } from 'mongoose';
 export interface QueueEntry {
     userId: Types.ObjectId;
     elo: number;
+    queuedSince: Date
 }
 
 /**
@@ -23,6 +24,10 @@ export const QueueEntrySchema = new Schema<QueueEntrySubDocument>(
             type: SchemaTypes.Number,
             required: [true, 'Elo is required'],
         },
+        queuedSince: {
+            type: SchemaTypes.Date,
+            default: () => new Date()
+        }
     },
     { _id: false }
 );

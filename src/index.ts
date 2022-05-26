@@ -18,6 +18,8 @@ import { router as leaderboardRouter } from './routes/leaderboard-routes';
 import { router as relationshipRouter } from './routes/relationship-routes';
 import { router as notificationRouter } from './routes/notification-routes';
 import { router as moderatorRouter } from './routes/moderator-routes';
+import { router as matchmakingRouter } from './routes/matchmaking-routes';
+
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -95,3 +97,4 @@ app.use('/api', notificationRouter);
 app.use('/api', relationshipRouter);
 app.use('/api', moderatorRouter);
 app.use('/api', leaderboardRouter);
+app.use('/api', matchmakingRouter);
