@@ -15,23 +15,26 @@ export interface GridCoordinates {
  */
 export const areCoordinatesEqual = (a: GridCoordinates, b: GridCoordinates): boolean => {
     return a.row === b.row && a.col === b.col;
-}
+};
 
 /**
  * Interface that defines a grid coordinates sub-document
  */
 export interface GridCoordinatesSubDocument extends GridCoordinates, Types.EmbeddedDocument {}
 
-export const GridCoordinatesSchema = new Schema<GridCoordinatesSubDocument>({
-    row: {
-        type: SchemaTypes.Number,
-        required: 'row coordinate required',
+export const GridCoordinatesSchema = new Schema<GridCoordinatesSubDocument>(
+    {
+        row: {
+            type: SchemaTypes.Number,
+            required: 'row coordinate required',
+        },
+        col: {
+            type: SchemaTypes.Number,
+            required: 'column coordinate required',
+        },
     },
-    col: {
-        type: SchemaTypes.Number,
-        required: 'column coordinate required',
-    },
-}, { _id: false });
+    { _id: false }
+);
 
 /**
  * Grid is 10x10, which means that both row and column are a number in the closed interval [0, 9]

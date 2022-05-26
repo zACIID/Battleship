@@ -15,20 +15,23 @@ export interface Message {
  */
 export interface MessageSubDocument extends Message, Types.EmbeddedDocument {}
 
-export const MessageSchema = new Schema<MessageSubDocument>({
-    author: {
-        type: SchemaTypes.ObjectId,
-        required: true,
-    },
+export const MessageSchema = new Schema<MessageSubDocument>(
+    {
+        author: {
+            type: SchemaTypes.ObjectId,
+            required: true,
+        },
 
-    content: {
-        type: SchemaTypes.String,
-        required: true,
-    },
+        content: {
+            type: SchemaTypes.String,
+            required: true,
+        },
 
-    timestamp: {
-        type: SchemaTypes.Date,
-        required: true,
-        default: Date.now,
+        timestamp: {
+            type: SchemaTypes.Date,
+            required: true,
+            default: Date.now,
+        },
     },
-}, { _id: false });
+    { _id: false }
+);

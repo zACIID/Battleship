@@ -261,6 +261,7 @@ UserSchema.methods.removeRole = async function (role: UserRoles): Promise<UserDo
     for (const idx in this.roles) {
         if (this.roles[idx] === role.valueOf()) this.roles.splice(parseInt(idx), 1);
     }
+
     return this.save();
 };
 
@@ -270,6 +271,7 @@ UserSchema.methods.hasRole = function (role: UserRoles): boolean {
             return true;
         }
     }
+
     return false;
 };
 
@@ -293,7 +295,7 @@ UserSchema.methods.isAdmin = function (): boolean {
 
 UserSchema.methods.addRelationship = async function (
     friendId: Types.ObjectId,
-    chat_id?: Types.ObjectId
+    chatId?: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.relationships) {
         if (this.relationships[idx].friendId === friendId) {
@@ -301,11 +303,10 @@ UserSchema.methods.addRelationship = async function (
         }
     }
 
-    // TODO funziona anche se toInsert non è inizializzato?
-    let toInsert: Relationship = { friendId: friendId, chatId: undefined };
+    let toInsert: Relationship = { friendId: friendId, chatId: null };
 
     try {
-        if (!chat_id) {
+        if (!chatId) {
             let chat: ChatDocument;
             chat = await createChat([this._id, friendId]);
             toInsert.chatId = chat._id;
@@ -315,10 +316,10 @@ UserSchema.methods.addRelationship = async function (
         return Promise.reject(new Error(err.message));
     }
 
-    if (toInsert.chatId != undefined) {
+    if (toInsert.chatId !== null) {
         this.relationships.push(toInsert);
     } else {
-        this.relationships.push({ friendId: toInsert.friendId, chatId: undefined });
+        this.relationships.push({ friendId: toInsert.friendId, chatId: null });
     }
 
     return this.save();
@@ -345,7 +346,7 @@ UserSchema.methods.removeRelationship = async function (
 ): Promise<UserDocument> {
     let found: boolean = false;
     for (let idx in this.relationships) {
-        if (this.relationships[idx].friendId === friendId) {
+        if (this.relationships[idx].friendId.equals(friendId)) {
             this.relationships.splice(parseInt(idx), 1);
             found = true;
             if (!stop) {

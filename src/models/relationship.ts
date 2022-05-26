@@ -13,12 +13,15 @@ export interface Relationship {
  */
 export interface RelationshipSubDocument extends Relationship, Types.EmbeddedDocument {}
 
-export const RelationshipSchema = new Schema<RelationshipSubDocument>({
-    friendId: {
-        type: SchemaTypes.ObjectId,
-        required: true,
+export const RelationshipSchema = new Schema<RelationshipSubDocument>(
+    {
+        friendId: {
+            type: SchemaTypes.ObjectId,
+            required: true,
+        },
+        chatId: {
+            type: SchemaTypes.ObjectId,
+        },
     },
-    chatId: {
-        type: SchemaTypes.ObjectId,
-    },
-}, { _id: false });
+    { _id: false }
+);

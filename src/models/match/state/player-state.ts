@@ -27,13 +27,16 @@ export interface PlayerStateSubDocument extends PlayerState, Types.EmbeddedDocum
     grid: BattleshipGridSubDocument;
 }
 
-export const PlayerStateSchema = new Schema<PlayerStateSubDocument>({
-    playerId: {
-        type: SchemaTypes.ObjectId,
-        required: 'Player id is required',
+export const PlayerStateSchema = new Schema<PlayerStateSubDocument>(
+    {
+        playerId: {
+            type: SchemaTypes.ObjectId,
+            required: 'Player id is required',
+        },
+        grid: {
+            type: BattleshipGridSchema,
+            default: () => ({}),
+        },
     },
-    grid: {
-        type: BattleshipGridSchema,
-        default: () => ({}),
-    },
-}, { _id: false });
+    { _id: false }
+);

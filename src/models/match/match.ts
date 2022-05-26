@@ -4,6 +4,8 @@ import { ChatDocument, ChatModel, createChat } from '../chat';
 
 import { MatchStats, MatchStatsSchema } from './match-stats';
 import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/player-state';
+import { BattleshipGrid, BattleshipGridSubDocument } from './state/battleship-grid';
+import { Shot } from './state/shot';
 
 export interface Match {
     player1: PlayerState;
@@ -22,6 +24,9 @@ export interface Match {
 export interface MatchDocument extends Match, Document {
     player1: PlayerStateSubDocument;
     player2: PlayerStateSubDocument;
+
+    updatePlayerGrid(playerId: Types.ObjectId, grid: BattleshipGrid): Promise<MatchDocument>;
+    registerShot(shot: Shot): Promise<MatchDocument>;
 }
 
 export const MatchSchema = new Schema<MatchDocument>({
@@ -50,6 +55,34 @@ export const MatchSchema = new Schema<MatchDocument>({
         default: () => ({}),
     },
 });
+
+MatchSchema.methods.updatePlayerGrid = function (
+    this: MatchDocument,
+    playerId: Types.ObjectId,
+    grid: BattleshipGrid
+): Promise<MatchDocument> {
+    const gridPath: string = playerId.equals(this.player1.playerId)
+        ? 'player1.grid'
+        : 'player2.grid';
+    this.player1.set(gridPath, grid);
+
+    return this.save();
+};
+
+MatchSchema.methods.registerShot = function (
+    this: MatchDocument,
+    shot: Shot
+): Promise<MatchDocument> {
+    // The receiving player is the opposite to the one that fires the shot
+    const receivingPlayer: PlayerStateSubDocument = shot.playerId.equals(this.player1.playerId)
+        ? this.player2
+        : this.player1;
+    const receivingGrid: BattleshipGridSubDocument = receivingPlayer.grid;
+
+    receivingGrid.shotsReceived.push(shot.coordinates);
+
+    return this.save();
+};
 
 export async function getMatchById(matchId: Types.ObjectId): Promise<MatchDocument> {
     const matchData = await MatchModel.findOne({ _id: matchId }).catch((err: Error) =>

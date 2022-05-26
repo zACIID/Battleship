@@ -64,17 +64,20 @@ export interface ShipSubDocument extends Ship, Types.EmbeddedDocument {
     coordinates: GridCoordinatesSubDocument[];
 }
 
-export const ShipSchema = new Schema<ShipSubDocument>({
-    coordinates: {
-        type: [GridCoordinatesSchema],
-        required: [true, 'Ship coordinates are required'],
+export const ShipSchema = new Schema<ShipSubDocument>(
+    {
+        coordinates: {
+            type: [GridCoordinatesSchema],
+            required: [true, 'Ship coordinates are required'],
+        },
+        type: {
+            type: SchemaTypes.String,
+            enum: ShipTypes,
+            required: [true, 'Ship type is required'],
+        },
     },
-    type: {
-        type: SchemaTypes.String,
-        enum: ShipTypes,
-        required: [true, 'Ship type is required'],
-    },
-}, { _id: false });
+    { _id: false }
+);
 
 /* Coordinates are valid if they are:
  * 1. referring to the correct number of cells, depending on ship type;

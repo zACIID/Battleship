@@ -26,14 +26,17 @@ export interface RequestNotificationSubDocument
 /**
  * A notification is identified by the pair (type, requester)
  */
-export const NotificationSchema = new Schema<RequestNotificationSubDocument>({
-    type: {
-        type: SchemaTypes.String,
-        required: true,
-        enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
+export const NotificationSchema = new Schema<RequestNotificationSubDocument>(
+    {
+        type: {
+            type: SchemaTypes.String,
+            required: true,
+            enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
+        },
+        sender: {
+            type: Types.ObjectId,
+            required: true,
+        },
     },
-    sender: {
-        type: Types.ObjectId,
-        required: true,
-    },
-}, { _id: false });
+    { _id: false }
+);

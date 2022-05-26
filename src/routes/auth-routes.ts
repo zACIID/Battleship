@@ -73,7 +73,8 @@ export const retrieveChatId = function (req: Request, res: Response, next: NextF
 export const retrieveMatchId = function (req: Request, res: Response, next: NextFunction) {
     try {
         const matchId: Types.ObjectId = Types.ObjectId(req.params.matchId);
-        res.locals.chatId = matchId;
+        res.locals.matchId = matchId;
+
         next();
     } catch (err) {
         res.status(404).json({
