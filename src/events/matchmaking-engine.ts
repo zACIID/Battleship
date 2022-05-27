@@ -5,8 +5,8 @@ import { MatchmakingQueueModel, QueueEntry } from '../models/matchmaking/queue-e
 import * as match from '../models/match/match';
 import {
     MatchFoundEmitter,
-    MatchFoundNotificationData,
-} from './socket-io/emitters/match-found-emitter';
+    MatchData,
+} from './socket-io/emitters/match-found';
 
 /**
  * Class that represents a matchmaking engine, whose purpose is to arrange game
@@ -201,7 +201,7 @@ export class MatchmakingEngine {
             player1.userId,
             player2.userId
         );
-        const notificationData: MatchFoundNotificationData = {
+        const notificationData: MatchData = {
             matchId: createdMatch._id,
         };
 

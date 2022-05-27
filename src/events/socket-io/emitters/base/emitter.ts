@@ -3,8 +3,9 @@ import { Schema, Types } from 'mongoose';
 
 /**
  * Abstract class that wraps Socket.io emitter functionality
+ * for server-emitted events
  */
-export abstract class SocketIoEmitter {
+export abstract class Emitter {
     public readonly ioServer: Server;
     public readonly eventName: string;
 

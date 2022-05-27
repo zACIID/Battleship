@@ -11,6 +11,11 @@ import filter = require('content-filter');
 import chalk from 'chalk';
 
 import { MatchmakingEngine } from './events/matchmaking-engine';
+import { ChatJoinedListener } from "./events/socket-io/client-listeners/chat-joined";
+import { MatchJoinedListener } from "./events/socket-io/client-listeners/match-joined";
+import { ServerJoinedListener } from "./events/socket-io/client-listeners/server-joined";
+import { MatchRequestAcceptedListener } from "./events/socket-io/client-listeners/match-request-accepted";
+import { FriendRequestAcceptedListener } from "./events/socket-io/client-listeners/friend-request-accepted";
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -77,8 +82,51 @@ export const API_BASE_URL: string = process.env.API_BASE_URL;
 
 /* Socket.io server setup */
 export const ioServer: io.Server = new io.Server(httpServer);
+
+interface ChatJoinData {
+    chatId: string;
+}
+
+interface MatchJoinData {
+    matchId: string;
+}
+
 ioServer.on('connection', function (client) {
-    console.log(chalk.blue('Socket.io client connected'));
+    console.log(chalk.green(`Socket.io client ${client.id} connected`));
+
+    client.on('disconnect', function() {
+        console.log(chalk.redBright(`Socket.io client ${client.id} disconnected`));
+    })
+
+    /* Join listeners are being setup for each client.
+     * They are important to make clients join specific rooms
+     * so that the server can send events specifically to them.
+     * This improves efficiency on both server and client side.
+     */
+
+    /**
+     * A client joins its private room, so that the server has a way
+     * to send request specifically to him
+     */
+    const serverJoined: ServerJoinedListener = new ServerJoinedListener(client);
+    serverJoined.listen();
+
+    // A client joins/leaves a specific chat room
+    const chatJoined: ChatJoinedListener = new ChatJoinedListener(client);
+    chatJoined.listen();
+
+    // A client joins/leaves a specific match room
+    const matchJoined: MatchJoinedListener = new MatchJoinedListener(client);
+    matchJoined.listen();
+
+    /* Other listeners for client events */
+    // A client accepts a match request
+    const matchReqAccepted: MatchRequestAcceptedListener = new MatchRequestAcceptedListener(client);
+    matchReqAccepted.listen();
+
+    // A client accepts a friend request
+    const friendReqAccepted: FriendRequestAcceptedListener = new FriendRequestAcceptedListener(client);
+    friendReqAccepted.listen();
 });
 
 /* Start the matchmaking engine and tell him to try to look
