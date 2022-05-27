@@ -12,6 +12,9 @@ import { StatBlockComponent } from './stat-block/stat-block.component';
   ],
   imports: [
     CommonModule
+  ],
+  exports: [
+    StatsGridComponent
   ]
 })
 export class StatsModule { }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-stat-block',
+  selector: 'stat-block',
   templateUrl: './stat-block.component.html',
   styleUrls: ['./stat-block.component.css']
 })

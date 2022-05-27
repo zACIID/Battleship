@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-stats-grid',
+  selector: 'stats-grid',
   templateUrl: './stats-grid.component.html',
   styleUrls: ['./stats-grid.component.css']
 })

@@ -4,7 +4,6 @@
     overflow: hidden
 }
 
-
 *::-webkit-scrollbar {
     width: 10px;
   }
@@ -38,3 +37,6 @@
 
 .pointer {cursor: pointer;}
 
+.max-height{
+  height: 100%
+}
