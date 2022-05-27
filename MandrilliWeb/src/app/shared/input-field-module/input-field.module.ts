@@ -10,6 +10,9 @@ import { InputFieldComponent } from './input-field/input-field.component';
   ],
   imports: [
     CommonModule
+  ],
+  exports: [
+    InputFieldComponent
   ]
 })
 export class InputFieldModule { }
