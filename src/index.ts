@@ -11,11 +11,11 @@ import filter = require('content-filter');
 import chalk from 'chalk';
 
 import { MatchmakingEngine } from './events/matchmaking-engine';
-import { ChatJoinedListener } from "./events/socket-io/client-listeners/chat-joined";
-import { MatchJoinedListener } from "./events/socket-io/client-listeners/match-joined";
-import { ServerJoinedListener } from "./events/socket-io/client-listeners/server-joined";
-import { MatchRequestAcceptedListener } from "./events/socket-io/client-listeners/match-request-accepted";
-import { FriendRequestAcceptedListener } from "./events/socket-io/client-listeners/friend-request-accepted";
+import { ChatJoinedListener } from './events/socket-io/client-listeners/chat-joined';
+import { MatchJoinedListener } from './events/socket-io/client-listeners/match-joined';
+import { ServerJoinedListener } from './events/socket-io/client-listeners/server-joined';
+import { MatchRequestAcceptedListener } from './events/socket-io/client-listeners/match-request-accepted';
+import { FriendRequestAcceptedListener } from './events/socket-io/client-listeners/friend-request-accepted';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -94,9 +94,9 @@ interface MatchJoinData {
 ioServer.on('connection', function (client) {
     console.log(chalk.green(`Socket.io client ${client.id} connected`));
 
-    client.on('disconnect', function() {
+    client.on('disconnect', function () {
         console.log(chalk.redBright(`Socket.io client ${client.id} disconnected`));
-    })
+    });
 
     /* Join listeners are being setup for each client.
      * They are important to make clients join specific rooms
@@ -125,7 +125,9 @@ ioServer.on('connection', function (client) {
     matchReqAccepted.listen();
 
     // A client accepts a friend request
-    const friendReqAccepted: FriendRequestAcceptedListener = new FriendRequestAcceptedListener(client);
+    const friendReqAccepted: FriendRequestAcceptedListener = new FriendRequestAcceptedListener(
+        client
+    );
     friendReqAccepted.listen();
 });
 

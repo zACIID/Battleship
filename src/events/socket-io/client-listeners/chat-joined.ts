@@ -1,5 +1,5 @@
-import { Socket } from "socket.io";
-import { ClientListener } from "./base/client-listener";
+import { Socket } from 'socket.io';
+import { ClientListener } from './base/client-listener';
 
 interface ChatJoinData {
     chatId: string;
@@ -13,7 +13,7 @@ interface ChatJoinData {
  */
 export class ChatJoinedListener extends ClientListener {
     constructor(client: Socket) {
-        super(client, "chat-joined");
+        super(client, 'chat-joined');
     }
 
     listen() {
@@ -22,7 +22,7 @@ export class ChatJoinedListener extends ClientListener {
 
             this.client.on('chat-left', (joinData: ChatJoinData) => {
                 this.client.leave(joinData.chatId);
-            })
+            });
         });
     }
 }

@@ -1,5 +1,5 @@
-import { Socket } from "socket.io";
-import { ClientListener } from "./base/client-listener";
+import { Socket } from 'socket.io';
+import { ClientListener } from './base/client-listener';
 
 interface ServerJoinData {
     userId: string;
@@ -14,11 +14,11 @@ interface ServerJoinData {
  */
 export class ServerJoinedListener extends ClientListener {
     constructor(client: Socket) {
-        super(client, "server-joined");
+        super(client, 'server-joined');
     }
 
     listen() {
-        super.listen(function(joinData: ServerJoinData) {
+        super.listen(function (joinData: ServerJoinData) {
             this.client.join(joinData.userId);
         });
     }

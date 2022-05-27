@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
-import { RoomEmitter } from "./base/room-emitter";
+import { RoomEmitter } from './base/room-emitter';
 
 export interface FriendOnlineData {
     friendId: Types.ObjectId;
@@ -13,7 +13,6 @@ export interface FriendOnlineData {
  * Such event should be listened to by every logged user.
  */
 export class FriendOnlineEmitter extends RoomEmitter {
-
     /**
      * @param ioServer Socket.io server instance
      * @param userId id of the user that has to be notified

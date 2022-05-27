@@ -1,6 +1,5 @@
 import { Socket } from 'socket.io';
 
-
 /**
  * Abstract class that wraps functionality used to listen
  * to client-emitted Socket.io events

@@ -1,6 +1,6 @@
-import { Server } from "socket.io";
+import { Server } from 'socket.io';
 
-import { Emitter } from "./emitter";
+import { Emitter } from './emitter';
 
 /**
  * Abstract class that wraps Socket.io emitter functionality

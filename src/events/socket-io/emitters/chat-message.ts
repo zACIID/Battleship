@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
-import { RoomEmitter } from "./base/room-emitter";
-import { Message } from "../../../models/chat/message";
+import { RoomEmitter } from './base/room-emitter';
+import { Message } from '../../../models/chat/message';
 
 /**
  * Class that wraps socket.io functionality to generate a "chat-message" event
@@ -11,7 +11,6 @@ import { Message } from "../../../models/chat/message";
  * in order to retrieve any new messages sent.
  */
 export class ChatMessageEmitter extends RoomEmitter {
-
     /**
      * @param ioServer Socket.io server instance
      * @param chatId id of the chat whose users have to be notified

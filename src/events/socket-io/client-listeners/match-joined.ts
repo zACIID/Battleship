@@ -1,5 +1,5 @@
-import { Socket } from "socket.io";
-import { ClientListener } from "./base/client-listener";
+import { Socket } from 'socket.io';
+import { ClientListener } from './base/client-listener';
 
 interface MatchJoinData {
     matchId: string;
@@ -13,7 +13,7 @@ interface MatchJoinData {
  */
 export class MatchJoinedListener extends ClientListener {
     constructor(client: Socket) {
-        super(client, "match-joined");
+        super(client, 'match-joined');
     }
 
     listen() {
@@ -22,7 +22,7 @@ export class MatchJoinedListener extends ClientListener {
 
             this.client.on('match-left', (joinData: MatchJoinData) => {
                 this.client.leave(joinData.matchId);
-            })
+            });
         });
     }
 }

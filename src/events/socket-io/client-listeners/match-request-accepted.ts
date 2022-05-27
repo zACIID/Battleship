@@ -1,7 +1,7 @@
-import { Socket } from "socket.io";
+import { Socket } from 'socket.io';
 
-import { ClientListener } from "./base/client-listener";
-import { RequestNotification } from "../../../models/user/notification";
+import { ClientListener } from './base/client-listener';
+import { RequestNotification } from '../../../models/user/notification';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -11,14 +11,14 @@ import { RequestNotification } from "../../../models/user/notification";
  */
 export class MatchRequestAcceptedListener extends ClientListener {
     constructor(client: Socket) {
-        super(client, "match-request-accepted");
+        super(client, 'match-request-accepted');
     }
 
     listen() {
         super.listen((requestData: RequestNotification) => {
             // TODO creare match e notificare che match
             //  è stato creato (funzione createMatchAndNotify??)
-            xxx
+            xxx;
         });
     }
 }
