@@ -10,6 +10,9 @@ import { PlayerInfoComponent } from './player-info/player-info.component';
   ],
   imports: [
     CommonModule
+  ],
+  exports: [
+    PlayerInfoComponent
   ]
 })
 export class PlayerInfoModule { }

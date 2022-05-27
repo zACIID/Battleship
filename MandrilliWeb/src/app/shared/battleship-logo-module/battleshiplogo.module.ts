@@ -12,6 +12,7 @@ import { IconComponent } from './icon/icon.component';
   ],
   imports: [
     CommonModule
-  ]
+  ],
+  exports: [LogoComponent, IconComponent]
 })
 export class BattleshiplogoModule { }
