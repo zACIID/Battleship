@@ -39,3 +39,14 @@ Our application can be divided into several different modules:
 
 In order to know what's should be the correct graphic re-partition of our appliation in modules and components we can consult the
 sketches in [docs/Partitioned Graphical Interfaces](../docs/Partitioned%20Graphical%20Interfaces)
+
+
+
+## Icons 
+
+In these websites you have a list of all the icons you can import in a component: 
+ * [FortAwesome/free-regular-svg-icons](https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome/free-regular-svg-icons)
+
+ * [FortAwesome/free-solid-svg-icons](https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome/free-solid-svg-icons)
+
+ * [FortAwesome/free-brands-svg-icons](https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome/free-brands-svg-icons)

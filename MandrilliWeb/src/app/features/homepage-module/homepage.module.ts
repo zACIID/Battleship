@@ -7,7 +7,7 @@ import { FeatureButtonComponent } from './feature-button/feature-button.componen
 import { GameButtonComponent } from './game-button/game-button.component';
 import { ProfileButtonComponent } from './profile-button/profile-button.component';
 import { PlainButtonModule } from 'src/app/shared/plain-button-module/plain-button.module';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 
 
 @NgModule({
@@ -21,7 +21,8 @@ import { PlainButtonModule } from 'src/app/shared/plain-button-module/plain-butt
     CommonModule,
     PlainButtonModule,
     MatchHistoryModule,
-    HomepageRoutingModule
+    HomepageRoutingModule,
+    FontAwesomeModule
   ]
 })
 export class HomepageModule { }
