@@ -1,17 +1,38 @@
 import { Router, Request, Response } from 'express';
-import { getLeaderboard, UserDocument } from '../models/user/user';
-import { authenticateToken } from './auth-routes';
+import { Schema, Types } from "mongoose";
+
+import { authenticateToken, retrieveUserId } from "./auth-routes";
+import { MatchmakingQueueModel, QueueEntry, QueueEntryDocument } from "../models/matchmaking/queue-entry";
+import { getUserById, UserDocument } from "../models/user/user";
 
 export const router = Router();
 
 
+interface EnqueueRequestBody {
+    userId: Types.ObjectId;
+}
+
+interface EnqueueRequest extends Request {
+    body: EnqueueRequestBody;
+}
+
+/**
+ * /api/matchmaking/queue   POST   Add a player to the matchmaking queue
+ */
 router.post('/matchmaking/queue',
             authenticateToken,
-            async (req: Request, res: Response) => {
+            async (req: EnqueueRequest, res: Response) => {
     try {
-        throw new Error("Not Implemented");
+        const playerToQueue: UserDocument = await getUserById(req.body.userId);
+        const queueEntry: QueueEntry = {
+            userId: playerToQueue._id,
+            elo: playerToQueue.stats.elo,
+            queuedSince: new Date(),
+        };
+        const queueDoc: QueueEntryDocument = new MatchmakingQueueModel(queueEntry);
+        await queueDoc.save();
 
-        return res.status(200).json();
+        return res.status(201).json(req.body);
     }
     catch (err) {
         return res.status(400).json({
@@ -22,12 +43,26 @@ router.post('/matchmaking/queue',
     }
 });
 
+interface RemoveFromQueueRequestLocals {
+    userId: Types.ObjectId;
+}
 
-router.delete('/matchmaking/queue', authenticateToken, async (req: Request, res: Response) => {
+interface RemoveFromQueueRequest extends Request {
+    locals: RemoveFromQueueRequestLocals;
+}
+
+/**
+ * /api/matchmaking/queue/:userId  DELETE  Remove the user with the specified id from the matchmaking queue
+ */
+router.delete('/matchmaking/queue/:userId',
+              authenticateToken,
+              retrieveUserId,
+              async (req: RemoveFromQueueRequest, res: Response) => {
     try {
-        throw new Error("Not Implemented");
+        const userToUnQueue: Types.ObjectId = req.locals.userId;
+        await MatchmakingQueueModel.deleteOne({ userId: userToUnQueue });
 
-        return res.status(200).json();
+        return res.status(204);
     }
     catch (err) {
         return res.status(400).json({

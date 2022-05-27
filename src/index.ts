@@ -19,18 +19,17 @@ import { router as relationshipRouter } from './routes/relationship-routes';
 import { router as notificationRouter } from './routes/notification-routes';
 import { router as moderatorRouter } from './routes/moderator-routes';
 import { router as matchmakingRouter } from './routes/matchmaking-routes';
+import { MatchmakingEngine } from "./events/matchmaking-engine";
 
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const app: Express = express();
+export const app: Express = express();
 
 // If testing, set test db uri, else use the other
 const isTesting: boolean = process.env.TEST === 'true';
 const dbUri: string = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI;
 const serverPort: number = parseInt(process.env.PORT, 10);
-
-let ioServer: io.Server = null;
 
 /* Database Connection */
 console.log('demanding the sauce...');
@@ -41,30 +40,25 @@ mongoose
     })
     .then(() => {
         console.log('Sauce received!');
-
-        const server: http.Server = http.createServer(app);
-
-        ioServer = new io.Server(server);
-        ioServer.on('connection', function (client) {
-            console.log('Socket.io client connected');
-        });
-
-        server.listen(serverPort, () => console.log(`HTTP Server started on port ${serverPort}`));
-
-        // Logging functionality to understand what requests arrive to the server
-        server.addListener('request', (req: Request, res: Response) => {
-            console.log(chalk.magenta.bold(`Request received: ${req.method} ${req.url}`));
-
-            // inspect replaces circular references in the json with [Circular]
-            console.log(chalk.yellow(inspect(req.body)));
-        });
     })
     .catch((err) => {
-        console.log('Error Occurred during initialization');
+        console.log('Error Occurred during Mongoose Connection');
         console.log(err);
     });
 
-/* Creation of JWT middleware */
+const httpServer: http.Server = http.createServer(app);
+
+httpServer.listen(serverPort, () => console.log(`HTTP Server started on port ${serverPort}`));
+
+// Logging functionality to understand what requests arrive to the server
+httpServer.addListener('request', (req: Request) => {
+    console.log(chalk.magenta.bold(`Request received: ${req.method} ${req.url}`));
+
+    // inspect replaces circular references in the json with [Circular]
+    console.log(chalk.yellow(inspect(req.body)));
+});
+
+/* Creation of JWT middleware TODO remove? */
 //var auth = jwt( {secret: process.env.JWT_SECRET} );
 
 /* Allows server to respond to a particular request that asks which request options it accepts */
@@ -89,12 +83,26 @@ app.use(function (req, res, next) {
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
 /* Register endpoints */
-app.use('/api', authRouter);
-app.use('/api', userRouter);
-app.use('/api', chatRouter);
-app.use('/api', matchRouter);
-app.use('/api', notificationRouter);
-app.use('/api', relationshipRouter);
-app.use('/api', moderatorRouter);
-app.use('/api', leaderboardRouter);
-app.use('/api', matchmakingRouter);
+export const API_BASE_URL: string = process.env.API_BASE_URL;
+app.use(API_BASE_URL, authRouter);
+app.use(API_BASE_URL, userRouter);
+app.use(API_BASE_URL, chatRouter);
+app.use(API_BASE_URL, matchRouter);
+app.use(API_BASE_URL, notificationRouter);
+app.use(API_BASE_URL, relationshipRouter);
+app.use(API_BASE_URL, moderatorRouter);
+app.use(API_BASE_URL, leaderboardRouter);
+app.use(API_BASE_URL, matchmakingRouter);
+
+/* Socket.io server setup */
+export const ioServer: io.Server = new io.Server(httpServer);
+ioServer.on('connection', function (client) {
+    console.log('Socket.io client connected');
+});
+
+/* Start the matchmaking engine and tell him to try to look
+ * for match arrangements every 5 seconds
+ */
+const queuePollingTimeMs: number = 5000
+const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
+matchmakingEngine.start();

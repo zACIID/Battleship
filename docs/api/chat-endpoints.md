@@ -166,7 +166,7 @@ Resource representing the id of the user to add to the chat
 
 ##### Success
 
-- Status Code: 200
+- Status Code: 201
 - Resource representing the id of the user that was just added
 
 ```json

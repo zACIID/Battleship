@@ -12,6 +12,7 @@ import { authenticateToken, retrieveMatchId, retrieveUserId } from './auth-route
 import { GridCoordinates } from '../models/match/state/grid-coordinates';
 import { BattleshipGrid } from '../models/match/state/battleship-grid';
 import { Shot } from '../models/match/state/shot';
+import { MatchFoundEmitter } from "../events/socket-io/emitters/match-found-emitter";
 
 export const router = Router();
 

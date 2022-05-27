@@ -327,14 +327,14 @@ UserSchema.methods.addRelationship = async function (
 
 /* Symmetrical addition of a friend relation */
 const symmetricAddRelationship = async function (
-    user_id: Types.ObjectId,
-    friend_id: Types.ObjectId,
-    chat_id: Types.ObjectId
+    userId: Types.ObjectId,
+    friendId: Types.ObjectId,
+    chatId: Types.ObjectId
 ): Promise<UserDocument> {
     let user: UserDocument;
     try {
-        user = await getUserById(user_id);
-        return user.addRelationship(friend_id, chat_id);
+        user = await getUserById(userId);
+        return user.addRelationship(friendId, chatId);
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
@@ -367,13 +367,13 @@ UserSchema.methods.removeRelationship = async function (
 
 /* Symmetrical deletion of a friend relation */
 const symmetricRemoveRelationship = async function (
-    user_id: Types.ObjectId,
-    friend_id: Types.ObjectId
+    userId: Types.ObjectId,
+    friendId: Types.ObjectId
 ): Promise<UserDocument> {
     let user: UserDocument;
     try {
-        user = await getUserById(user_id);
-        return user.removeRelationship(friend_id, true);
+        user = await getUserById(userId);
+        return user.removeRelationship(friendId, true);
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
@@ -382,8 +382,8 @@ const symmetricRemoveRelationship = async function (
 // Create "users" collection
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'Users');
 
-export async function getUserById(_id: Types.ObjectId): Promise<UserDocument> {
-    const userDoc = await UserModel.findOne({ _id }).catch((err: Error) =>
+export async function getUserById(userId: Types.ObjectId): Promise<UserDocument> {
+    const userDoc = await UserModel.findOne({ _id: userId }).catch((err: Error) =>
         Promise.reject(new Error('Internal server error'))
     );
 
@@ -467,7 +467,7 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
 }
 
 /**
- * @param _id id of the user to update
+ * @param userId id of the user to update
  * @param elo elo to add to the stats
  * @param wasLatestMatchVictory true if the latest match was a victory, false otherwise
  * @param shipsDestroyed number of ships destroyed to add to the stats
@@ -475,7 +475,7 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
  * @param hits number of hits to add to the stats
  */
 export async function updateUserStats(
-    _id: Types.ObjectId,
+    userId: Types.ObjectId,
     elo: number,
     topElo: number,
     wins: number,
@@ -486,7 +486,7 @@ export async function updateUserStats(
 ): Promise<UserDocument> {
     let user: UserDocument;
     try {
-        user = await getUserById(_id);
+        user = await getUserById(userId);
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }

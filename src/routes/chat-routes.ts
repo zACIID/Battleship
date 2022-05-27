@@ -147,7 +147,7 @@ interface MessagePostRequest extends Request {
 }
 
 /**
- *    /chats/:chatId/messages | GET | Retrieve the messages of the specified chat
+ *  /chats/:chatId/messages | GET | Retrieve the messages of the specified chat
  */
 router.get(
     '/chats/:chatId/messages',
