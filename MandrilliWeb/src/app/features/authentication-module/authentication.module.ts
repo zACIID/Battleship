@@ -1,5 +1,6 @@
-import { AuthenticationRoutingModule } from './game-routing.module';
-import { PlainButtonModule } from './../../shared/plain-button-module/plain-button.module';
+import { BattleshiplogoModule } from './../../shared/battleship-logo-module/battleshiplogo.module';
+import { AuthenticationRoutingModule } from './authentication-routing.module';
+import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
 import { InputFieldModule } from './../../shared/input-field-module/input-field.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -16,8 +17,9 @@ import { RegistrationScreenComponent } from './registration-screen/registration-
   imports: [
     CommonModule,
     InputFieldModule,
-    PlainButtonModule,
-    AuthenticationRoutingModule
+    BackButtonModule,
+    AuthenticationRoutingModule,
+    BattleshiplogoModule
   ]
 })
 export class AuthenticationModule { }
