@@ -41,6 +41,11 @@ In order to know what's should be the correct graphic re-partition of our applia
 sketches in [docs/Partitioned Graphical Interfaces](../docs/Partitioned%20Graphical%20Interfaces)
 
 
+## Graphical implementation
+
+For graphic implementation we use an alternative to the vanilla bootstrap framework called Bulma.
+It's a framework that provides CSS classes to help you style your HTML code.
+Link: [Bulma](https://bulma.io/documentation/)
 
 ## Icons 
 
