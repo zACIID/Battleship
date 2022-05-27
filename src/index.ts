@@ -3,22 +3,13 @@ import * as path from 'path';
 import * as http from 'http';
 import { inspect } from 'util';
 
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request } from 'express';
 import cors from 'cors';
 import * as io from 'socket.io';
 import mongoose = require('mongoose');
 import filter = require('content-filter');
 import chalk from 'chalk';
 
-import { router as authRouter } from './routes/auth-routes';
-import { router as userRouter } from './routes/user-routes';
-import { router as chatRouter } from './routes/chat-routes';
-import { router as matchRouter } from './routes/match-routes';
-import { router as leaderboardRouter } from './routes/leaderboard-routes';
-import { router as relationshipRouter } from './routes/relationship-routes';
-import { router as notificationRouter } from './routes/notification-routes';
-import { router as moderatorRouter } from './routes/moderator-routes';
-import { router as matchmakingRouter } from './routes/matchmaking-routes';
 import { MatchmakingEngine } from "./events/matchmaking-engine";
 
 
@@ -82,22 +73,13 @@ app.use(function (req, res, next) {
 /* Sanitize input to avoid NoSQL injections */
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
-/* Register endpoints */
+/* Endpoints base url */
 export const API_BASE_URL: string = process.env.API_BASE_URL;
-app.use(API_BASE_URL, authRouter);
-app.use(API_BASE_URL, userRouter);
-app.use(API_BASE_URL, chatRouter);
-app.use(API_BASE_URL, matchRouter);
-app.use(API_BASE_URL, notificationRouter);
-app.use(API_BASE_URL, relationshipRouter);
-app.use(API_BASE_URL, moderatorRouter);
-app.use(API_BASE_URL, leaderboardRouter);
-app.use(API_BASE_URL, matchmakingRouter);
 
 /* Socket.io server setup */
 export const ioServer: io.Server = new io.Server(httpServer);
 ioServer.on('connection', function (client) {
-    console.log('Socket.io client connected');
+    console.log(chalk.blue('Socket.io client connected'));
 });
 
 /* Start the matchmaking engine and tell him to try to look

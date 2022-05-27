@@ -1,7 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user/user';
-import { authenticateToken, retrieveUserId } from './auth-routes';
+import { authenticateToken } from './auth-routes';
+import { retrieveUserId } from "./utils/param-checking";
 import { Types } from 'mongoose';
+import { API_BASE_URL, app } from "../index";
+
 
 export const router = Router();
 
@@ -93,3 +96,6 @@ router.post(
         }
     }
 );
+
+// Register endpoints
+app.use(API_BASE_URL, router);

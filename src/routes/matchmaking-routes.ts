@@ -1,12 +1,14 @@
 import { Router, Request, Response } from 'express';
-import { Schema, Types } from "mongoose";
+import { Types } from "mongoose";
 
-import { authenticateToken, retrieveUserId } from "./auth-routes";
+import { authenticateToken } from "./auth-routes";
+import { retrieveUserId } from "./utils/param-checking";
 import { MatchmakingQueueModel, QueueEntry, QueueEntryDocument } from "../models/matchmaking/queue-entry";
 import { getUserById, UserDocument } from "../models/user/user";
+import { API_BASE_URL, app } from "../index";
+
 
 export const router = Router();
-
 
 interface EnqueueRequestBody {
     userId: Types.ObjectId;
@@ -72,3 +74,6 @@ router.delete('/matchmaking/queue/:userId',
         });
     }
 });
+
+// Register endpoints
+app.use(API_BASE_URL, router);

@@ -1,10 +1,12 @@
-import { Message } from '../models/chat/message';
-import { Relationship } from '../models/user/relationship';
-import * as mongoose from 'mongoose';
 import { Router, Request, Response } from 'express';
-import { UserDocument, getUserById } from '../models/user/user';
-import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
 import { Types } from 'mongoose';
+
+import { Relationship } from '../models/user/relationship';
+import { UserDocument, getUserById } from '../models/user/user';
+import { authenticateToken } from './auth-routes';
+import { retrieveUserId, retrieveId } from "./utils/param-checking";
+import { API_BASE_URL, app } from "../index";
+
 
 export const router = Router();
 
@@ -104,3 +106,6 @@ router.delete(
         }
     }
 );
+
+// Register endpoints
+app.use(API_BASE_URL, router);

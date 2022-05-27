@@ -1,9 +1,12 @@
 import { Router, Request, Response } from 'express';
+import { Types } from 'mongoose';
+
 import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
 import { Message } from '../models/chat/message';
-import { authenticateToken, retrieveChatId, retrieveId, retrieveUserId } from './auth-routes';
-import { Types } from 'mongoose';
-import { skipLimitChecker } from './auth-routes';
+import { authenticateToken } from './auth-routes';
+import { skipLimitChecker, retrieveChatId, retrieveId, retrieveUserId } from './utils/param-checking';
+import { API_BASE_URL, app } from "../index";
+
 
 export const router = Router();
 
@@ -203,3 +206,6 @@ router.post(
         }
     }
 );
+
+// Register endpoints
+app.use(API_BASE_URL, router);

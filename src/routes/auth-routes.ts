@@ -1,13 +1,16 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { createUser, getUserByUsername, UserDocument } from '../models/user/user';
 import passport from 'passport';
 import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
-import { Types } from 'mongoose';
+
+import { createUser, getUserByUsername, UserDocument } from '../models/user/user';
+import { API_BASE_URL, app } from "../index";
+
 
 export const router = Router();
 
+// TODO cos'è?
 declare module 'express' {
     export interface Request {
         user: UserDocument;
@@ -32,73 +35,6 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
 
         next();
     });
-};
-
-export const skipLimitChecker = function (req: Request, res: Response, next: NextFunction) {
-    const regexp: RegExp = /[a-zA-Z]/
-    const skip: string = req.params.skip || "0"
-    const limit: string = req.params.limit || "0"
-    if (regexp.test(skip) || regexp.test(limit)){
-        return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: "wrong skip or limit",
-            requestPath: req.path,
-        })
-    } 
-    res.locals.skip = skip
-    res.locals.limit = limit
-    next()
-}
-
-
-export const retrieveUserId = function (req: Request, res: Response, next: NextFunction) {
-    try {
-        const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
-        res.locals.userId = userId;
-        next();
-    } catch (err) {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
-    }
-};
-
-export const retrieveId = function (s_id: string) {
-    try {
-        return Types.ObjectId(s_id);
-    } catch (err) {
-        throw new Error('No user with that identifier');
-    }
-};
-
-export const retrieveChatId = function (req: Request, res: Response, next: NextFunction) {
-    try {
-        const chatId: Types.ObjectId = Types.ObjectId(req.params.chatId);
-        res.locals.chatId = chatId;
-        next();
-    } catch (err) {
-        return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
-    }
-};
-
-export const retrieveMatchId = function (req: Request, res: Response, next: NextFunction) {
-    try {
-        res.locals.matchId = Types.ObjectId(req.params.matchId);
-
-        next();
-    } catch (err) {
-        res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
-    }
 };
 
 /**
@@ -166,3 +102,6 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
         }
     }
 });
+
+// Register endpoints
+app.use(API_BASE_URL, router);

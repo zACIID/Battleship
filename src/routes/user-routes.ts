@@ -1,10 +1,11 @@
-import { updatePassword, updateUserName, getUsers, updateUserStats } from '../models/user/user';
-import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { UserDocument, getUserById, deleteUser, getUserStats } from '../models/user/user';
+import { Router, Request, Response } from 'express';
+
+import * as usr from '../models/user/user';
 import { UserStats } from '../models/user/user-stats';
-import { authenticateToken, retrieveUserId, retrieveId } from './auth-routes';
-import { stat } from 'fs';
+import { authenticateToken } from './auth-routes';
+import { retrieveUserId, retrieveId } from "./utils/param-checking";
+import { API_BASE_URL, app } from "../index";
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
@@ -61,10 +62,10 @@ router.get(
     authenticateToken,
     retrieveUserId,
     async (req: Request, res: UserEndpointResponse) => {
-        let user: UserDocument;
+        let user: usr.UserDocument;
         const userId: Types.ObjectId = res.locals.userId;
         try {
-            user = await getUserById(userId);
+            user = await usr.getUserById(userId);
             return res.status(201).json({
                 userId: user._id,
                 username: user.username,
@@ -93,7 +94,7 @@ router.put(
 
         if (username) {
             try {
-                await updateUserName(userId, username);
+                await usr.updateUserName(userId, username);
                 return res.status(200).json({ username });
             } catch (err) {
                 const statusCode: number = err.message === userErr ? 404 : 500;
@@ -122,7 +123,7 @@ router.put(
         const userId: Types.ObjectId = res.locals.userId;
         if (password) {
             try {
-                await updatePassword(userId, password);
+                await usr.updatePassword(userId, password);
                 return res.sendStatus(204);
             } catch (err) {
                 const statusCode: number = err.message === userErr ? 404 : 500;
@@ -150,7 +151,7 @@ router.delete(
         const userId: Types.ObjectId = res.locals.userId;
 
         try {
-            await deleteUser(userId);
+            await usr.deleteUser(userId);
             return res.status(204).json();
         } catch (err) {
             const statusCode: number = err.message === userErr ? 404 : 500;
@@ -171,7 +172,7 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
         let stats: UserStats;
         try {
-            stats = await getUserStats(userId);
+            stats = await usr.getUserStats(userId);
             return res.status(200).json({
                 elo: stats.elo,
                 topElo: stats.topElo,
@@ -208,7 +209,7 @@ router.put(
         console.log('hits ' + totalHits);
 
         try {
-            await updateUserStats(
+            await usr.updateUserStats(
                 userId,
                 elo,
                 topElo,
@@ -237,7 +238,7 @@ router.get(
     '/users',
     authenticateToken,
     async (req: GetMultipleUsersRequest, res: UserEndpointResponse) => {
-        let users: UserDocument[];
+        let users: usr.UserDocument[];
 
         try {
             const userIdsQParam: string[] = (req.query.ids as string).split(',');
@@ -245,8 +246,8 @@ router.get(
                 return retrieveId(uId);
             });
 
-            users = await getUsers(userObjIds);
-            const results = users.map((x: UserDocument) => {
+            users = await usr.getUsers(userObjIds);
+            const results = users.map((x: usr.UserDocument) => {
                 return {
                     userId: x._id,
                     username: x.username,
@@ -276,3 +277,6 @@ router.get(
         }
     }
 );
+
+// Register endpoints
+app.use(API_BASE_URL, router);
