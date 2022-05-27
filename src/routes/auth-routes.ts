@@ -34,6 +34,35 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
     });
 };
 
+export const skipLimitChecker = function (req: Request, res: Response, next: NextFunction) {
+    const regexp: RegExp = /[a-zA-Z]/
+    const skip: string = req.params.skip || "0"
+    const limit: string = req.params.limit || "0"
+    if (regexp.test(skip) || regexp.test(limit)){
+        return res.status(400).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: "wrong skip or limit",
+            requestPath: req.path,
+        })
+    } 
+    res.locals.skip = skip
+    res.locals.limit = limit
+    next()
+}
+
+/*
+console.log("START MIDDELWARE")
+    console.log("req.params.skip")
+    console.log(req.params.skip)
+    console.log("req.params.limit")
+    console.log(req.params.limit)
+    console.log("limit:")
+    console.log(limit)
+    console.log("skip")
+    console.log(skip)
+    console.log("END MIDDELWARE")
+*/
+
 export const retrieveUserId = function (req: Request, res: Response, next: NextFunction) {
     try {
         const userId: Types.ObjectId = Types.ObjectId(req.params.userId);

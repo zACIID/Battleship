@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
+import { getUserById } from '../user/user';
 
 import { Message, MessageSubDocument, MessageSchema } from './message';
 
@@ -57,10 +58,13 @@ export const ChatSchema = new Schema<ChatDocument>({
 
 ChatSchema.methods.addUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
     if (!this.users.includes(user_id)) {
+        getUserById(user_id).catch((err) => Promise.reject(err))
+        console.log("non è colpa della getbyid")
+        console.log("usrId: " + user_id)
         this.users.push(user_id);
-
         return this.save();
-    } else return Promise.reject(new Error('this id is already in the array: ' + user_id));
+    } 
+    else return Promise.reject(new Error('this id is already in the array: ' + user_id));
 };
 
 ChatSchema.methods.removeUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
@@ -75,16 +79,21 @@ ChatSchema.methods.addMessage = async function (
     timestamp: Date,
     author: Types.ObjectId
 ): Promise<ChatDocument> {
+    console.log("author")
+    console.log(author)
+    console.log("content")
+    console.log(content)
     this.messages.push({ content, timestamp, author });
     return this.save();
 };
 
 export async function getChatById(_id: Types.ObjectId): Promise<ChatDocument> {
     const chatData = await ChatModel.findOne({ _id }).catch((err: Error) =>
-        Promise.reject(new Error('No chat with that id'))
+        Promise.reject(new Error('Internal server error Bro'))
     );
-
-    return Promise.resolve(chatData);
+    return !chatData
+        ? Promise.reject(new Error('No chat with that identifier'))
+        : Promise.resolve(chatData);
 }
 
 export async function deleteChat(_id: Types.ObjectId): Promise<void> {

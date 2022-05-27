@@ -1,14 +1,17 @@
 import { Router, Request, Response } from 'express';
 import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
 import { Message } from '../models/chat/message';
-import { authenticateToken, retrieveChatId, retrieveUserId } from './auth-routes';
+import { authenticateToken, retrieveChatId, retrieveId, retrieveUserId } from './auth-routes';
 import { Types } from 'mongoose';
+import { skipLimitChecker } from './auth-routes';
 
 export const router = Router();
 
 interface ChatEndpointLocals {
     chatId: Types.ObjectId;
     userId: Types.ObjectId;
+    skip: string;
+    limit: string;
 }
 
 interface ChatEndpointResponse extends Response {
@@ -19,9 +22,12 @@ interface UserPostBody {
     userId: Types.ObjectId;
 }
 
+
 interface UserPostRequest extends Request {
     body: UserPostBody;
 }
+
+const userErr: string = 'No user with that identifier';
 
 /**
  *   /chats/:chatId | GET | Retrieve the chat with the specified id
@@ -85,20 +91,26 @@ router.post(
     retrieveChatId,
     async (req: UserPostRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
-
+        const userId: Types.ObjectId = retrieveId(req.body.userId + "")
         let chat: ChatDocument;
-
+        console.log("userId")
+        console.log(userId)
         try {
+            console.log("provo chatId")
             chat = await getChatById(chatId);
-            await chat.addUser(req.body.userId);
+            console.log("getChat giusta")
+            console.log("provo userId")
+            await chat.addUser(userId);
+            console.log("addUser giusta")
         } catch (err) {
-            return res.status(500).json({
+            const code: number = (err.message === userErr)? 400 : 500
+            return res.status(code).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
         }
-        return res.status(200).json(req.body.userId);
+        return res.status(201).json({ userId: req.body.userId });
     }
 );
 
@@ -145,13 +157,17 @@ interface MessagePostRequest extends Request {
 router.get(
     '/chats/:chatId/messages',
     authenticateToken,
+    skipLimitChecker,
     retrieveChatId,
     async (req: Request, res: ChatEndpointResponse) => {
         try {
             const chatId: Types.ObjectId = res.locals.chatId;
-            const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
-            const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;
-
+            const skip: number = parseInt(res.locals.skip as string);
+            const limit: number = parseInt(res.locals.limit as string);
+            console.log("limit:")
+            console.log(limit)
+            console.log("skip")
+            console.log(skip)
             const chat: ChatDocument = await getChatById(chatId);
             const messages: Message[] = chat.messages;
 
