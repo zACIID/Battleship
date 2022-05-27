@@ -50,18 +50,6 @@ export const skipLimitChecker = function (req: Request, res: Response, next: Nex
     next()
 }
 
-/*
-console.log("START MIDDELWARE")
-    console.log("req.params.skip")
-    console.log(req.params.skip)
-    console.log("req.params.limit")
-    console.log(req.params.limit)
-    console.log("limit:")
-    console.log(limit)
-    console.log("skip")
-    console.log(skip)
-    console.log("END MIDDELWARE")
-*/
 
 export const retrieveUserId = function (req: Request, res: Response, next: NextFunction) {
     try {

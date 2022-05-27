@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
-import { getUserById } from '../user/user';
+import { UserDocument, getUserById } from '../user/user';
 
 import { Message, MessageSubDocument, MessageSchema } from './message';
 
@@ -58,9 +58,6 @@ export const ChatSchema = new Schema<ChatDocument>({
 
 ChatSchema.methods.addUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
     if (!this.users.includes(user_id)) {
-        getUserById(user_id).catch((err) => Promise.reject(err))
-        console.log("non è colpa della getbyid")
-        console.log("usrId: " + user_id)
         this.users.push(user_id);
         return this.save();
     } 
@@ -68,10 +65,15 @@ ChatSchema.methods.addUser = async function (user_id: Types.ObjectId): Promise<C
 };
 
 ChatSchema.methods.removeUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
+    let user: UserDocument;
     for (const idx in this.users) {
-        if (this.users[idx] === user_id) this.users.splice(parseInt(idx), 1);
+        if (this.users[idx] === user_id) {
+            console.log("user detectato")
+            this.users.splice(parseInt(idx), 1);
+            return this.save()
+        }
     }
-    return this.save();
+    return Promise.reject(new Error("No user with that identifier"));
 };
 
 ChatSchema.methods.addMessage = async function (

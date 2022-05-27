@@ -19,7 +19,7 @@ interface ChatEndpointResponse extends Response {
 }
 
 interface UserPostBody {
-    userId: Types.ObjectId;
+    userId: string;
 }
 
 
@@ -91,19 +91,14 @@ router.post(
     retrieveChatId,
     async (req: UserPostRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
-        const userId: Types.ObjectId = retrieveId(req.body.userId + "")
+        let userId: Types.ObjectId 
         let chat: ChatDocument;
-        console.log("userId")
-        console.log(userId)
         try {
-            console.log("provo chatId")
+            userId = retrieveId(req.body.userId)
             chat = await getChatById(chatId);
-            console.log("getChat giusta")
-            console.log("provo userId")
             await chat.addUser(userId);
-            console.log("addUser giusta")
         } catch (err) {
-            const code: number = (err.message === userErr)? 400 : 500
+            const code: number = (err.message === userErr)? 404 : 400
             return res.status(code).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
@@ -137,7 +132,7 @@ router.delete(
                 requestPath: req.path,
             });
         }
-        return res.status(200).json();
+        return res.status(204).json({ });
     }
 );
 
