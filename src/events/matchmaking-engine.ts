@@ -1,10 +1,12 @@
-import { mquery, Schema, Types } from "mongoose";
-import { Server } from "socket.io";
+import { mquery, Schema, Types } from 'mongoose';
+import { Server } from 'socket.io';
 
-import { MatchmakingQueueModel, QueueEntry } from "../models/matchmaking/queue-entry";
-import * as match from "../models/match/match";
-import { MatchFoundEmitter, MatchFoundNotificationData } from "./socket-io/emitters/match-found-emitter";
-
+import { MatchmakingQueueModel, QueueEntry } from '../models/matchmaking/queue-entry';
+import * as match from '../models/match/match';
+import {
+    MatchFoundEmitter,
+    MatchFoundNotificationData,
+} from './socket-io/emitters/match-found-emitter';
 
 /**
  * Class that represents a matchmaking engine, whose purpose is to arrange game
@@ -43,10 +45,10 @@ export class MatchmakingEngine {
      * @param queuePollingTime Time in milliseconds that passes between each run of the
      *  matchmaking engine.
      */
-    public constructor(sIoServer: Server, queuePollingTime: number = 5000, ) {
+    public constructor(sIoServer: Server, queuePollingTime: number = 5000) {
         this._intervalId = null;
         this._pollingTime = queuePollingTime;
-        this._sIoServer = sIoServer
+        this._sIoServer = sIoServer;
     }
 
     /**
@@ -56,7 +58,7 @@ export class MatchmakingEngine {
      */
     public start(): void {
         if (this._intervalId !== null) {
-            throw new Error("Engine is already running!");
+            throw new Error('Engine is already running!');
         }
 
         this._intervalId = setTimeout(this.arrangeMatches, this._pollingTime);
@@ -72,8 +74,9 @@ export class MatchmakingEngine {
         // Queued players, ordered by most recent
         // This way, the one that has been queuing for the longest time has the priority,
         // because, being the last in the queue, will be popped first
-        const queuedPlayers: QueueEntry[] = await MatchmakingQueueModel
-          .find({}).sort({ queuedSince: 1 });
+        const queuedPlayers: QueueEntry[] = await MatchmakingQueueModel.find({}).sort({
+            queuedSince: 1,
+        });
 
         // Until there are at least 2 players in the queue,
         // keep trying to arrange matches
@@ -96,7 +99,10 @@ export class MatchmakingEngine {
      * @returns the opponent for the specified player, if found, else null
      */
     private findOpponent(player: QueueEntry, matchmakingQueue: QueueEntry[]): QueueEntry {
-        const potentialOpponents: QueueEntry[] = this.getPotentialOpponents(player, matchmakingQueue);
+        const potentialOpponents: QueueEntry[] = this.getPotentialOpponents(
+            player,
+            matchmakingQueue
+        );
 
         if (potentialOpponents.length === 0) {
             return null;
@@ -107,11 +113,9 @@ export class MatchmakingEngine {
         potentialOpponents.sort((a: QueueEntry, b: QueueEntry) => {
             if (a.queuedSince < b.queuedSince) {
                 return 1;
-            }
-            else if (a.queuedSince > b.queuedSince) {
+            } else if (a.queuedSince > b.queuedSince) {
                 return -1;
-            }
-            else {
+            } else {
                 return 0;
             }
         });
@@ -129,7 +133,10 @@ export class MatchmakingEngine {
      * @param matchmakingQueue all the other players in-queue
      * @private
      */
-    private getPotentialOpponents(player: QueueEntry, matchmakingQueue: QueueEntry[]): QueueEntry[] {
+    private getPotentialOpponents(
+        player: QueueEntry,
+        matchmakingQueue: QueueEntry[]
+    ): QueueEntry[] {
         const potentialOpponents: QueueEntry[] = matchmakingQueue.filter((entry) => {
             return MatchmakingEngine.arePlayersMatchable(player, entry);
         });
@@ -190,15 +197,24 @@ export class MatchmakingEngine {
      * @private
      */
     private async arrangeMatch(player1: QueueEntry, player2: QueueEntry): Promise<void> {
-        const createdMatch: match.MatchDocument = await match.createMatch(player1.userId, player2.userId);
+        const createdMatch: match.MatchDocument = await match.createMatch(
+            player1.userId,
+            player2.userId
+        );
         const notificationData: MatchFoundNotificationData = {
-            matchId: createdMatch._id
+            matchId: createdMatch._id,
         };
 
-        const player1Notifier: MatchFoundEmitter = new MatchFoundEmitter(this._sIoServer, player1.userId);
+        const player1Notifier: MatchFoundEmitter = new MatchFoundEmitter(
+            this._sIoServer,
+            player1.userId
+        );
         player1Notifier.emit(notificationData);
 
-        const player2Notifier: MatchFoundEmitter = new MatchFoundEmitter(this._sIoServer, player2.userId);
+        const player2Notifier: MatchFoundEmitter = new MatchFoundEmitter(
+            this._sIoServer,
+            player2.userId
+        );
         player2Notifier.emit(notificationData);
     }
 
@@ -207,7 +223,7 @@ export class MatchmakingEngine {
      */
     public stop(): void {
         if (this._intervalId === null) {
-            throw new Error("Engine is already stopped!");
+            throw new Error('Engine is already stopped!');
         }
 
         clearInterval(this._intervalId);

@@ -4,9 +4,13 @@ import { Types } from 'mongoose';
 import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
 import { Message } from '../models/chat/message';
 import { authenticateToken } from './auth-routes';
-import { skipLimitChecker, retrieveChatId, retrieveId, retrieveUserId } from './utils/param-checking';
-import { API_BASE_URL, app } from "../index";
-
+import {
+    skipLimitChecker,
+    retrieveChatId,
+    retrieveId,
+    retrieveUserId,
+} from './utils/param-checking';
+import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -24,7 +28,6 @@ interface ChatEndpointResponse extends Response {
 interface UserPostBody {
     userId: string;
 }
-
 
 interface UserPostRequest extends Request {
     body: UserPostBody;
@@ -94,14 +97,14 @@ router.post(
     retrieveChatId,
     async (req: UserPostRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
-        let userId: Types.ObjectId 
+        let userId: Types.ObjectId;
         let chat: ChatDocument;
         try {
-            userId = retrieveId(req.body.userId)
+            userId = retrieveId(req.body.userId);
             chat = await getChatById(chatId);
             await chat.addUser(userId);
         } catch (err) {
-            const code: number = (err.message === userErr)? 404 : 400
+            const code: number = err.message === userErr ? 404 : 400;
             return res.status(code).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
@@ -135,7 +138,7 @@ router.delete(
                 requestPath: req.path,
             });
         }
-        return res.status(204).json({ });
+        return res.status(204).json({});
     }
 );
 
@@ -162,10 +165,10 @@ router.get(
             const chatId: Types.ObjectId = res.locals.chatId;
             const skip: number = parseInt(res.locals.skip as string);
             const limit: number = parseInt(res.locals.limit as string);
-            console.log("limit:")
-            console.log(limit)
-            console.log("skip")
-            console.log(skip)
+            console.log('limit:');
+            console.log(limit);
+            console.log('skip');
+            console.log(skip);
             const chat: ChatDocument = await getChatById(chatId);
             const messages: Message[] = chat.messages;
 

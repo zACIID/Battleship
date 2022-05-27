@@ -1,22 +1,21 @@
-import { NextFunction, Request, Response } from "express";
-import { Types } from "mongoose";
+import { NextFunction, Request, Response } from 'express';
+import { Types } from 'mongoose';
 
 export const skipLimitChecker = function (req: Request, res: Response, next: NextFunction) {
-    const regexp: RegExp = /[a-zA-Z]/
-    const skip: string = req.params.skip || "0"
-    const limit: string = req.params.limit || "0"
-    if (regexp.test(skip) || regexp.test(limit)){
+    const regexp: RegExp = /[a-zA-Z]/;
+    const skip: string = req.params.skip || '0';
+    const limit: string = req.params.limit || '0';
+    if (regexp.test(skip) || regexp.test(limit)) {
         return res.status(400).json({
-                                        timestamp: Math.floor(new Date().getTime() / 1000),
-                                        errorMessage: "wrong skip or limit",
-                                        requestPath: req.path,
-                                    })
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: 'wrong skip or limit',
+            requestPath: req.path,
+        });
     }
-    res.locals.skip = skip
-    res.locals.limit = limit
-    next()
-}
-
+    res.locals.skip = skip;
+    res.locals.limit = limit;
+    next();
+};
 
 export const retrieveUserId = function (req: Request, res: Response, next: NextFunction) {
     try {
@@ -25,10 +24,10 @@ export const retrieveUserId = function (req: Request, res: Response, next: NextF
         next();
     } catch (err) {
         return res.status(404).json({
-                                        timestamp: Math.floor(new Date().getTime() / 1000),
-                                        errorMessage: err.message,
-                                        requestPath: req.path,
-                                    });
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
     }
 };
 
@@ -47,10 +46,10 @@ export const retrieveChatId = function (req: Request, res: Response, next: NextF
         next();
     } catch (err) {
         return res.status(404).json({
-                                        timestamp: Math.floor(new Date().getTime() / 1000),
-                                        errorMessage: err.message,
-                                        requestPath: req.path,
-                                    });
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
     }
 };
 
@@ -61,9 +60,9 @@ export const retrieveMatchId = function (req: Request, res: Response, next: Next
         next();
     } catch (err) {
         res.status(404).json({
-                                 timestamp: Math.floor(new Date().getTime() / 1000),
-                                 errorMessage: err.message,
-                                 requestPath: req.path,
-                             });
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
     }
 };

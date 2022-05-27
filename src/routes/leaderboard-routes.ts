@@ -2,8 +2,7 @@ import { Router, Request, Response } from 'express';
 
 import { getLeaderboard, UserDocument } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
-import { API_BASE_URL, app } from "../index";
-
+import { API_BASE_URL, app } from '../index';
 
 const router: Router = Router();
 

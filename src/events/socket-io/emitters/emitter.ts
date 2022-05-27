@@ -1,6 +1,5 @@
-import { Server } from "socket.io";
-import { Schema, Types } from "mongoose";
-
+import { Server } from 'socket.io';
+import { Schema, Types } from 'mongoose';
 
 /**
  * Abstract class that wraps Socket.io emitter functionality

@@ -1,12 +1,15 @@
 import { Router, Request, Response } from 'express';
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
-import { authenticateToken } from "./auth-routes";
-import { retrieveUserId } from "./utils/param-checking";
-import { MatchmakingQueueModel, QueueEntry, QueueEntryDocument } from "../models/matchmaking/queue-entry";
-import { getUserById, UserDocument } from "../models/user/user";
-import { API_BASE_URL, app } from "../index";
-
+import { authenticateToken } from './auth-routes';
+import { retrieveUserId } from './utils/param-checking';
+import {
+    MatchmakingQueueModel,
+    QueueEntry,
+    QueueEntryDocument,
+} from '../models/matchmaking/queue-entry';
+import { getUserById, UserDocument } from '../models/user/user';
+import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -21,9 +24,7 @@ interface EnqueueRequest extends Request {
 /**
  * /api/matchmaking/queue   POST   Add a player to the matchmaking queue
  */
-router.post('/matchmaking/queue',
-            authenticateToken,
-            async (req: EnqueueRequest, res: Response) => {
+router.post('/matchmaking/queue', authenticateToken, async (req: EnqueueRequest, res: Response) => {
     try {
         const playerToQueue: UserDocument = await getUserById(req.body.userId);
         const queueEntry: QueueEntry = {
@@ -35,8 +36,7 @@ router.post('/matchmaking/queue',
         await queueDoc.save();
 
         return res.status(201).json(req.body);
-    }
-    catch (err) {
+    } catch (err) {
         return res.status(400).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
             errorMessage: err.message,
@@ -56,24 +56,25 @@ interface RemoveFromQueueRequest extends Request {
 /**
  * /api/matchmaking/queue/:userId  DELETE  Remove the user with the specified id from the matchmaking queue
  */
-router.delete('/matchmaking/queue/:userId',
-              authenticateToken,
-              retrieveUserId,
-              async (req: RemoveFromQueueRequest, res: Response) => {
-    try {
-        const userToUnQueue: Types.ObjectId = req.locals.userId;
-        await MatchmakingQueueModel.deleteOne({ userId: userToUnQueue });
+router.delete(
+    '/matchmaking/queue/:userId',
+    authenticateToken,
+    retrieveUserId,
+    async (req: RemoveFromQueueRequest, res: Response) => {
+        try {
+            const userToUnQueue: Types.ObjectId = req.locals.userId;
+            await MatchmakingQueueModel.deleteOne({ userId: userToUnQueue });
 
-        return res.status(204);
+            return res.status(204);
+        } catch (err) {
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
     }
-    catch (err) {
-        return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: err.message,
-            requestPath: req.path,
-        });
-    }
-});
+);
 
 // Register endpoints
 app.use(API_BASE_URL, router);

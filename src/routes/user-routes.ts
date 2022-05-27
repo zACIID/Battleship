@@ -4,8 +4,8 @@ import { Router, Request, Response } from 'express';
 import * as usr from '../models/user/user';
 import { UserStats } from '../models/user/user-stats';
 import { authenticateToken } from './auth-routes';
-import { retrieveUserId, retrieveId } from "./utils/param-checking";
-import { API_BASE_URL, app } from "../index";
+import { retrieveUserId, retrieveId } from './utils/param-checking';
+import { API_BASE_URL, app } from '../index';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;

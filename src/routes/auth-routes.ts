@@ -5,8 +5,7 @@ import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
 
 import { createUser, getUserByUsername, UserDocument } from '../models/user/user';
-import { API_BASE_URL, app } from "../index";
-
+import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 

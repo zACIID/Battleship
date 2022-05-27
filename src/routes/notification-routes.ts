@@ -4,8 +4,8 @@ import { Request, Response, Router } from 'express';
 import { RequestTypes } from '../models/user/notification';
 import { getUserById, UserDocument } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
-import { retrieveUserId, retrieveId } from "./utils/param-checking";
-import { API_BASE_URL, app } from "../index";
+import { retrieveUserId, retrieveId } from './utils/param-checking';
+import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 

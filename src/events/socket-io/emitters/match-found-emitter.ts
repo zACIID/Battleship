@@ -1,10 +1,10 @@
-import { Types } from "mongoose";
-import { Server } from "socket.io";
+import { Types } from 'mongoose';
+import { Server } from 'socket.io';
 
-import { SocketIoEmitter } from "./emitter";
+import { SocketIoEmitter } from './emitter';
 
 export interface MatchFoundNotificationData {
-    matchId: Types.ObjectId
+    matchId: Types.ObjectId;
 }
 
 /**
@@ -17,7 +17,6 @@ export class MatchFoundEmitter extends SocketIoEmitter {
 
         super(ioServer, eventName);
     }
-
 
     emit(data: MatchFoundNotificationData): void {
         super.emit(data);

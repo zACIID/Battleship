@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
-import { retrieveUserId } from "./utils/param-checking";
+import { retrieveUserId } from './utils/param-checking';
 import { Types } from 'mongoose';
-import { API_BASE_URL, app } from "../index";
-
+import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 

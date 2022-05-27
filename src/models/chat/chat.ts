@@ -60,20 +60,19 @@ ChatSchema.methods.addUser = async function (user_id: Types.ObjectId): Promise<C
     if (!this.users.includes(user_id)) {
         this.users.push(user_id);
         return this.save();
-    } 
-    else return Promise.reject(new Error('this id is already in the array: ' + user_id));
+    } else return Promise.reject(new Error('this id is already in the array: ' + user_id));
 };
 
 ChatSchema.methods.removeUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
     let user: UserDocument;
     for (const idx in this.users) {
         if (this.users[idx] === user_id) {
-            console.log("user detectato")
+            console.log('user detectato');
             this.users.splice(parseInt(idx), 1);
-            return this.save()
+            return this.save();
         }
     }
-    return Promise.reject(new Error("No user with that identifier"));
+    return Promise.reject(new Error('No user with that identifier'));
 };
 
 ChatSchema.methods.addMessage = async function (
@@ -81,10 +80,10 @@ ChatSchema.methods.addMessage = async function (
     timestamp: Date,
     author: Types.ObjectId
 ): Promise<ChatDocument> {
-    console.log("author")
-    console.log(author)
-    console.log("content")
-    console.log(content)
+    console.log('author');
+    console.log(author);
+    console.log('content');
+    console.log(content);
     this.messages.push({ content, timestamp, author });
     return this.save();
 };

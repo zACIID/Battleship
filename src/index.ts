@@ -10,8 +10,7 @@ import mongoose = require('mongoose');
 import filter = require('content-filter');
 import chalk from 'chalk';
 
-import { MatchmakingEngine } from "./events/matchmaking-engine";
-
+import { MatchmakingEngine } from './events/matchmaking-engine';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -85,6 +84,6 @@ ioServer.on('connection', function (client) {
 /* Start the matchmaking engine and tell him to try to look
  * for match arrangements every 5 seconds
  */
-const queuePollingTimeMs: number = 5000
+const queuePollingTimeMs: number = 5000;
 const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 matchmakingEngine.start();
