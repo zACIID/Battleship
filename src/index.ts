@@ -138,5 +138,7 @@ registerRoutes(app);
  * for match arrangements every 5 seconds
  */
 const queuePollingTimeMs: number = 5000;
+
+// TODO commented to see if there was any concurrency issue, remove TODO later
 //const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 //matchmakingEngine.start();
