@@ -18,7 +18,8 @@ export class MatchRequestAcceptedListener extends ClientListener {
         super.listen((requestData: RequestNotification) => {
             // TODO creare match e notificare che match
             //  è stato creato (funzione createMatchAndNotify??)
-            xxx;
+            ;
+            uei piers
         });
     }
 }

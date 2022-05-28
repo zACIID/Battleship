@@ -15,7 +15,8 @@ export class PlayerReadyListener extends ClientListener {
     listen() {
         super.listen(() => {
             // TODO settare PlayerState su MatchDocument a ready e notificare opponent
-            xxx;
+           ;
         });
+        PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPIEERRRRS
     }
 }

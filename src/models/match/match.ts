@@ -89,10 +89,12 @@ MatchSchema.methods.registerShot = function (
 
 export async function getMatchById(matchId: Types.ObjectId): Promise<MatchDocument> {
     const matchData = await MatchModel.findOne({ _id: matchId }).catch((err: Error) =>
-        Promise.reject(new Error('No match with that id'))
+        Promise.reject(new Error('Internal server error'))
     );
 
-    return Promise.resolve(matchData);
+    return (!matchData)
+    ? Promise.reject(new Error("No match with that identifier")) 
+    : Promise.resolve(matchData);
 }
 
 export async function createMatch(
@@ -113,10 +115,12 @@ export async function createMatch(
 }
 
 export async function deleteMatch(matchId: Types.ObjectId): Promise<void> {
-    await MatchModel.deleteOne({ _id: matchId }).catch((err: Error) =>
+    const obj: { deletedCount?: number } = await MatchModel.deleteOne({ _id: matchId }).catch((err: Error) =>
         Promise.reject('An error occurred: ' + err.message)
     );
-    return Promise.resolve();
+    return !obj.deletedCount
+    ? Promise.reject(new Error('No match with that identifier'))
+    : Promise.resolve();
 }
 
 export async function updateMatchStats(

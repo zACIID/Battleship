@@ -17,7 +17,8 @@ export class FriendRequestAcceptedListener extends ClientListener {
     listen() {
         super.listen((requestData: RequestNotification) => {
             // TODO se Friend, allora notificare che amico è online
-            xxx;
+            ;
+            uei more
         });
     }
 }
