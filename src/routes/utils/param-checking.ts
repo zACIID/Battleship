@@ -3,17 +3,18 @@ import { Types } from 'mongoose';
 
 export const skipLimitChecker = function (req: Request, res: Response, next: NextFunction) {
     const regexp: RegExp = /[a-zA-Z]/;
-    const skip: string = req.params.skip || '0';
-    const limit: string = req.params.limit || '0';
+    const skip: string = req.query.skip as string || '0';
+    const limit: string = req.query.limit as string || '0';
     if (regexp.test(skip) || regexp.test(limit)) {
         return res.status(400).json({
             timestamp: Math.floor(new Date().getTime() / 1000),
-            errorMessage: 'wrong skip or limit',
+            errorMessage: 'Wrong skip or limit',
             requestPath: req.path,
         });
     }
     res.locals.skip = skip;
     res.locals.limit = limit;
+
     next();
 };
 

@@ -25,16 +25,16 @@ export interface ChatDocument extends Chat, Document {
     messages: Types.DocumentArray<MessageSubDocument>;
 
     /**
-     * Adds the provided user_id into this instance of chat
-     * @param user_id ObjectId of the user to add
+     * Adds the provided userId into this instance of chat
+     * @param userId ObjectId of the user to add
      */
-    addUser(user_id: Types.ObjectId): Promise<ChatDocument>;
+    addUser(userId: Types.ObjectId): Promise<ChatDocument>;
 
     /**
      * Removes the provided user into this instance of chat
-     * @param user_id ObjectId of the user to add
+     * @param userId ObjectId of the user to add
      */
-    removeUser(user_id: Types.ObjectId): Promise<ChatDocument>;
+    removeUser(userId: Types.ObjectId): Promise<ChatDocument>;
 
     /**
      * Adds the messages into the "messages" field of this chat
@@ -56,18 +56,17 @@ export const ChatSchema = new Schema<ChatDocument>({
     },
 });
 
-ChatSchema.methods.addUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
-    if (!this.users.includes(user_id)) {
-        this.users.push(user_id);
+ChatSchema.methods.addUser = async function (userId: Types.ObjectId): Promise<ChatDocument> {
+    if (!this.users.includes(userId)) {
+        this.users.push(userId);
         return this.save();
-    } else return Promise.reject(new Error('this id is already in the array: ' + user_id));
+    } else return Promise.reject(new Error('this id is already in the array: ' + userId));
 };
 
-ChatSchema.methods.removeUser = async function (user_id: Types.ObjectId): Promise<ChatDocument> {
+ChatSchema.methods.removeUser = async function (userId: Types.ObjectId): Promise<ChatDocument> {
     let user: UserDocument;
     for (const idx in this.users) {
-        if (this.users[idx] === user_id) {
-            console.log('user detectato');
+        if (this.users[idx].equals(userId)) {
             this.users.splice(parseInt(idx), 1);
             return this.save();
         }

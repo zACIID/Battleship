@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
 
 import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
-import { Message } from '../models/chat/message';
+import { Message, MessageSubDocument } from "../models/chat/message";
 import { authenticateToken } from './auth-routes';
 import {
     skipLimitChecker,
@@ -32,6 +32,12 @@ interface UserPostRequest extends Request {
     body: UserPostBody;
 }
 
+interface ResponseMessage {
+    author: string,
+    content: string,
+    timestamp: number
+}
+
 const userErr: string = 'No user with that identifier';
 
 /**
@@ -56,10 +62,17 @@ router.get(
                 requestPath: req.path,
             });
         }
+
         return res.status(200).json({
             chatId: chat._id,
             users: chat.users,
-            messages: chat.messages,
+            messages: chat.messages.map((m: MessageSubDocument): ResponseMessage => {
+                return {
+                    author: m.author.toString(),
+                    content: m.content,
+                    timestamp: m.timestamp.getTime() / 1000
+                }
+            }),
         });
     }
 );
@@ -152,7 +165,8 @@ interface MessagePostRequest extends Request {
 }
 
 /**
- *  /chats/:chatId/messages | GET | Retrieve the messages of the specified chat
+ *  /chats/:chatId/messages?skip=&limit= | GET | Retrieve the messages of the specified chat
+ *  Query params: skip, limit
  */
 router.get(
     '/chats/:chatId/messages',
@@ -162,22 +176,52 @@ router.get(
     async (req: Request, res: ChatEndpointResponse) => {
         try {
             const chatId: Types.ObjectId = res.locals.chatId;
-            const skip: number = parseInt(res.locals.skip as string);
-            const limit: number = parseInt(res.locals.limit as string);
 
-            // TODO debug
-            console.log('limit:');
-            console.log(limit);
-            console.log('skip');
-            console.log(skip);
+            // Res.locals assigns '0' string if skip
+            // and limit params are not passed to the request
+            const skip: number = parseInt(res.locals.skip);
+            let limit: number = parseInt(res.locals.limit);
+
+            // Set default value for limit
+            if (limit === 0) {
+                limit = 50;
+            }
 
             const chat: ChatDocument = await getChatById(chatId);
+            const resMessages: ResponseMessage[] =
+              chat.messages.map((m: MessageSubDocument) => {
+                  return {
+                      author: m.author.toString(),
+                      content: m.content,
+                      timestamp: m.timestamp.getTime() / 1000
+                  }
+              });
 
-            // TODO non vengono skippati e limitati
-            const messages: Message[] = chat.messages;
+            // Apply pagination params
+            const paginatedMessages: ResponseMessage[] =
+              resMessages.slice(skip, skip+limit);
+
+            // Sort messages by most recent timestamp (bigger = first)
+            paginatedMessages.sort((a: ResponseMessage, b: ResponseMessage) => {
+                const timeA = new Date(a.timestamp);
+                const timeB = new Date(b.timestamp);
+
+                if (timeA < timeB) {
+                    return 1;
+                }
+                else if (timeA > timeB) {
+                    return -1;
+                }
+                else {
+                    return 0;
+                }
+            });
 
             const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
-            return res.status(200).json({ messages, nextPage: nextPage });
+            return res.status(200).json({
+                messages: paginatedMessages,
+                nextPage: nextPage
+            });
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
