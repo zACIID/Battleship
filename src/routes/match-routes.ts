@@ -99,9 +99,10 @@ router.get(
 );
 
 interface UpdateStatsBody {
-    winner: Types.ObjectId;
+    winner: string;
     totalShots: number;
     shipsDestroyed: number;
+    endTime: number
 }
 
 interface UpdateStatsRequest extends Request {
@@ -109,19 +110,19 @@ interface UpdateStatsRequest extends Request {
 }
 
 /**
- *   /matches/:matchId/stats | PUT | Update the statistics of the specified match
- *   Return the entire updated object or an error
+ *   /matches/:matchId/stats | PATCH | Update the statistics of the specified match
+ *   Return the updated fields or an error
  */
-router.put(
+router.patch(
     '/matches/:matchId/stats',
     authenticateToken,
     retrieveMatchId,
     async (req: UpdateStatsRequest, res: MatchEndpointResponse) => {
         try {
             const matchId: Types.ObjectId = res.locals.matchId;
-            const { winner, totalShots, shipsDestroyed } = req.body;
+            const { winner, totalShots, shipsDestroyed, endTime } = req.body;
 
-            await updateMatchStats(matchId, winner, totalShots, shipsDestroyed);
+            await updateMatchStats(matchId, Types.ObjectId(winner), totalShots, shipsDestroyed, endTime);
 
             return res.status(200).json(req.body);
         } catch (err) {

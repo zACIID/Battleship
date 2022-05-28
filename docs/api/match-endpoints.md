@@ -221,7 +221,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/matches/:matchId/stats | PUT | Update the statistics of the specified match |
+| /api/matches/:matchId/stats | PATCH | Update the statistics of the specified match |
 
 #### Url Parameters
 
@@ -231,12 +231,11 @@
 
 #### Example Request Body
 
-A full [MatchStats](#matchstats) resource that will replace the old one.
+A [MatchStats](#matchstats) resource, without the startTime field, that will replace the old one.
 
 ```json
 {
     "winner": "winner-user-id",
-    "startTime": 1651881600,
     "endTime": 1651881600,
     "shipsDestroyed": 5,
     "totalShots": 40
@@ -248,12 +247,11 @@ A full [MatchStats](#matchstats) resource that will replace the old one.
 ##### Success
 
 - Status Code: 200
-- The full [MatchStats](#matchstats) resource that replaced the old one
+- The [MatchStats](#matchstats) resource, without the startTime field, that replaced the old one
 
 ```json
 {
     "winner": "winner-user-id",
-    "startTime": 1651881600,
     "endTime": 1651881600,
     "shipsDestroyed": 5,
     "totalShots": 40

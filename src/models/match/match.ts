@@ -123,21 +123,28 @@ export async function deleteMatch(matchId: Types.ObjectId): Promise<void> {
     : Promise.resolve();
 }
 
+/**
+ * @param matchId id of the match to update
+ * @param winner id of the user that won the match
+ * @param totalShots total number of shots fired in the match
+ * @param shipsDestroyed total number of ships destroyed in the match
+ * @param endTime match ending time in unix seconds
+ */
 export async function updateMatchStats(
     matchId: Types.ObjectId,
     winner: Types.ObjectId,
     totalShots: number,
-    shipsDestroyed: number
+    shipsDestroyed: number,
+    endTime: number
 ): Promise<MatchDocument> {
     const match: MatchDocument = await MatchModel.findOne({ _id: matchId }).catch((err: Error) => {
         return Promise.reject(new Error('No match with that id'));
     });
 
-    const now: Date = new Date();
     const updatedStats: MatchStats = {
         winner: winner,
         startTime: match.stats.startTime,
-        endTime: now,
+        endTime: new Date(endTime * 1000),
         totalShots: totalShots,
         shipsDestroyed: shipsDestroyed,
     };
