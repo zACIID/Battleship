@@ -105,10 +105,8 @@ ioServer.on('connection', async function (client) {
      * This improves efficiency on both server and client side.
      */
 
-    /**
-     * A client joins its private room, so that the server has a way
-     * to send request specifically to him
-     */
+    // A client joins its private room, so that the server has a way//
+    // to send request specifically to him
     const serverJoined: ServerJoinedListener = new ServerJoinedListener(client);
     serverJoined.listen();
 
@@ -121,6 +119,7 @@ ioServer.on('connection', async function (client) {
     matchJoined.listen();
 
     /* Other listeners for client events */
+
     // A client accepts a match request
     const matchReqAccepted: MatchRequestAcceptedListener =
       new MatchRequestAcceptedListener(client, ioServer);
