@@ -16,7 +16,7 @@ export class MatchJoinedListener extends ClientListener {
         super(client, 'match-joined');
     }
 
-    listen() {
+    public listen() {
         super.listen((joinData: MatchJoinData) => {
             this.client.join(joinData.matchId);
 

@@ -5,7 +5,7 @@ import { Schema, Types } from 'mongoose';
  * Abstract class that wraps Socket.io emitter functionality
  * for server-emitted events
  */
-export abstract class Emitter {
+export abstract class Emitter<T> {
     public readonly ioServer: Server;
     public readonly eventName: string;
 
@@ -14,7 +14,7 @@ export abstract class Emitter {
         this.eventName = eventName;
     }
 
-    public emit(data: any) {
+    public emit(data: T) {
         this.ioServer.emit(this.eventName, data);
     }
 }

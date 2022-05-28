@@ -1,5 +1,8 @@
-import { Socket } from 'socket.io';
-import { ClientListener } from './base/client-listener';
+import { Server, Socket } from "socket.io";
+
+import { ClientListenerNotifier } from "./base/client-listener-notifier";
+import { FriendOnlineData, FriendOnlineEmitter } from "../emitters/friend-online";
+import { OpponentReadyEmitter } from "../emitters/opponent-ready";
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -7,15 +10,23 @@ import { ClientListener } from './base/client-listener';
  * Such event happens when a player has ended his positioning phase.
  * The other player is then notified of this occurrence.
  */
-export class PlayerReadyListener extends ClientListener {
-    constructor(client: Socket) {
-        super(client, 'player-ready');
+export class PlayerReadyListener extends ClientListenerNotifier<Object, Object> {
+    constructor(client: Socket, ioServer: Server) {
+        super(client, 'player-ready', ioServer);
     }
 
-    listen() {
+    public listen() {
         super.listen(() => {
-            // TODO settare PlayerState su MatchDocument a ready e notificare opponent
-            xxx;
+            const emitterProvider = (eventData: AcceptedFriendRequestData): OpponentReadyEmitter => {
+                return new FriendOnlineEmitter(this.ioServer, eventData.userToNotify);
+            }
+            const emitDataProvider = (eventData: AcceptedFriendRequestData): FriendOnlineData => {
+                return {
+                    friendId: eventData.friendId
+                }
+            };
+
+            super.listenAndEmit(emitterProvider, emitDataProvider);
         });
     }
 }

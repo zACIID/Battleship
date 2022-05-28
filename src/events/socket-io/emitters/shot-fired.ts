@@ -8,7 +8,7 @@ import { Shot } from '../../../models/match/state/shot';
  * Class that wraps socket.io functionality to generate a "shot-fired" event.
  * Such event should be listened to by all the players and spectators of a given match.
  */
-export class ShotFiredEmitter extends RoomEmitter {
+export class ShotFiredEmitter extends RoomEmitter<Shot> {
     /**
      * @param ioServer Socket.io server instance
      * @param matchId id of the match whose players and spectators have to be notified
@@ -17,10 +17,5 @@ export class ShotFiredEmitter extends RoomEmitter {
         const eventName: string = 'shot-fired';
 
         super(ioServer, eventName, matchId.toString());
-    }
-
-    emit(shot: Shot): void {
-        // What is sent here is not important, it could be anything
-        super.emit(shot);
     }
 }

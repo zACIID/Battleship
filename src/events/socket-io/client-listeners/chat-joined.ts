@@ -16,7 +16,7 @@ export class ChatJoinedListener extends ClientListener {
         super(client, 'chat-joined');
     }
 
-    listen() {
+    public listen() {
         super.listen((joinData: ChatJoinData) => {
             this.client.join(joinData.chatId);
 

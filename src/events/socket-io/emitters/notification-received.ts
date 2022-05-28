@@ -9,7 +9,7 @@ import { RequestNotification } from '../../../models/user/notification';
  * for a specific user.
  * Such event should be listened to by every logged user.
  */
-export class NotificationReceivedEmitter extends RoomEmitter {
+export class NotificationReceivedEmitter extends RoomEmitter<RequestNotification> {
     /**
      * @param ioServer Socket.io server instance
      * @param userId id of the user that has to be notified
@@ -18,9 +18,5 @@ export class NotificationReceivedEmitter extends RoomEmitter {
         const eventName: string = 'notification-received';
 
         super(ioServer, eventName, userId.toString());
-    }
-
-    emit(notificationData: RequestNotification): void {
-        super.emit(notificationData);
     }
 }

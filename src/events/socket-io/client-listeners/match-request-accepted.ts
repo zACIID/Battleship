@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io';
+import { Server, Socket } from "socket.io";
 
 import { ClientListener } from './base/client-listener';
 import { RequestNotification } from '../../../models/user/notification';
@@ -10,11 +10,13 @@ import { RequestNotification } from '../../../models/user/notification';
  * The match is created between the two users, who are then notified.
  */
 export class MatchRequestAcceptedListener extends ClientListener {
-    constructor(client: Socket) {
+
+
+    constructor(client: Socket, ioServer: Server) {
         super(client, 'match-request-accepted');
     }
 
-    listen() {
+    public listen() {
         super.listen((requestData: RequestNotification) => {
             // TODO creare match e notificare che match
             //  è stato creato (funzione createMatchAndNotify??)

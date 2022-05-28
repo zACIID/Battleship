@@ -10,7 +10,7 @@ import { Message } from '../../../models/chat/message';
  * All the users currently on the chat should be listening for this event,
  * in order to retrieve any new messages sent.
  */
-export class ChatMessageEmitter extends RoomEmitter {
+export class ChatMessageEmitter extends RoomEmitter<Message> {
     /**
      * @param ioServer Socket.io server instance
      * @param chatId id of the chat whose users have to be notified
@@ -19,9 +19,5 @@ export class ChatMessageEmitter extends RoomEmitter {
         const eventName: string = `chat-message`;
 
         super(ioServer, eventName, chatId.toString());
-    }
-
-    emit(message: Message): void {
-        super.emit(message);
     }
 }

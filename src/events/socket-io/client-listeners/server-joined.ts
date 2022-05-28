@@ -17,7 +17,7 @@ export class ServerJoinedListener extends ClientListener {
         super(client, 'server-joined');
     }
 
-    listen() {
+    public listen() {
         super.listen(function (joinData: ServerJoinData) {
             this.client.join(joinData.userId);
         });

@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
  * Abstract class that wraps functionality used to listen
  * to client-emitted Socket.io events
  */
-export abstract class ClientListener {
+export abstract class ClientListener<T> {
     public readonly client: Socket;
     public readonly eventName: string;
 
@@ -13,8 +13,8 @@ export abstract class ClientListener {
         this.eventName = eventName;
     }
 
-    public listen(callback: (...args: any[]) => void): void {
-        this.client.on(this.eventName, callback);
+    protected listen(onEvent: (eventData: T) => void): void {
+        this.client.on(this.eventName, onEvent);
     }
 
     public unListen(): void {

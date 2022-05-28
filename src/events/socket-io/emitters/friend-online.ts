@@ -12,7 +12,7 @@ export interface FriendOnlineData {
  * for a specific user.
  * Such event should be listened to by every logged user.
  */
-export class FriendOnlineEmitter extends RoomEmitter {
+export class FriendOnlineEmitter extends RoomEmitter<FriendOnlineData> {
     /**
      * @param ioServer Socket.io server instance
      * @param userId id of the user that has to be notified
@@ -21,9 +21,5 @@ export class FriendOnlineEmitter extends RoomEmitter {
         const eventName: string = 'friend-online';
 
         super(ioServer, eventName, userId.toString());
-    }
-
-    emit(friendOnlineData: FriendOnlineData): void {
-        super.emit(friendOnlineData);
     }
 }

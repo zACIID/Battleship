@@ -8,7 +8,7 @@ import { RoomEmitter } from './base/room-emitter';
  * for a specific player.
  * Such event should be listened to by a player that is looking to join a match.
  */
-export class PositioningCompletedEmitter extends RoomEmitter {
+export class PositioningCompletedEmitter extends RoomEmitter<Object> {
     /**
      * @param ioServer Socket.io server instance
      * @param matchId id of the match whose players and spectators have to be notified
@@ -21,6 +21,8 @@ export class PositioningCompletedEmitter extends RoomEmitter {
 
     emit(): void {
         // What is sent here is not important, it could be anything
-        super.emit('positioning completed');
+        super.emit({
+            message: 'positioning completed'
+        });
     }
 }

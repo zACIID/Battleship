@@ -13,7 +13,7 @@ export interface MatchData {
  * Such event should be listened to by a player that is looking to join a match,
  * either because he queued for a casual one or because he sent some match requests.
  */
-export class MatchFoundEmitter extends RoomEmitter {
+export class MatchFoundEmitter extends RoomEmitter<MatchData> {
     /**
      * @param ioServer Socket.io server instance
      * @param playerId id of the user that has to be notified
@@ -22,9 +22,5 @@ export class MatchFoundEmitter extends RoomEmitter {
         const eventName: string = 'match-found';
 
         super(ioServer, eventName, playerId.toString());
-    }
-
-    emit(matchData: MatchData): void {
-        super.emit(matchData);
     }
 }

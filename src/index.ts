@@ -125,9 +125,8 @@ ioServer.on('connection', function (client) {
     matchReqAccepted.listen();
 
     // A client accepts a friend request
-    const friendReqAccepted: FriendRequestAcceptedListener = new FriendRequestAcceptedListener(
-        client
-    );
+    const friendReqAccepted: FriendRequestAcceptedListener =
+      new FriendRequestAcceptedListener(client, ioServer);
     friendReqAccepted.listen();
 });
 

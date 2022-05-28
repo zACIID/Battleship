@@ -1,6 +1,13 @@
-import { Socket } from 'socket.io';
-import { ClientListener } from './base/client-listener';
-import { RequestNotification } from '../../../models/user/notification';
+import { Server, Socket } from "socket.io";
+import { Types } from "mongoose";
+
+import { ClientListenerNotifier } from "./base/client-listener-notifier";
+import { FriendOnlineData, FriendOnlineEmitter } from "../emitters/friend-online";
+
+interface AcceptedFriendRequestData {
+    userToNotify: Types.ObjectId;
+    friendId: Types.ObjectId;
+}
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -9,15 +16,26 @@ import { RequestNotification } from '../../../models/user/notification';
  * The user that sent the request is then notified that his new friend
  * is online and has done so.
  */
-export class FriendRequestAcceptedListener extends ClientListener {
-    constructor(client: Socket) {
-        super(client, 'friend-request-accepted');
+export class FriendRequestAcceptedListener extends ClientListenerNotifier<AcceptedFriendRequestData, FriendOnlineData> {
+
+    /**
+     * @param client that raised the event
+     * @param ioServer server instance used to send notifications to the client
+     */
+    constructor(client: Socket, ioServer: Server) {
+        super(client, 'friend-request-accepted', ioServer);
     }
 
-    listen() {
-        super.listen((requestData: RequestNotification) => {
-            // TODO se Friend, allora notificare che amico è online
-            xxx;
-        });
+    public listen() {
+        const emitterProvider = (eventData: AcceptedFriendRequestData): FriendOnlineEmitter => {
+            return new FriendOnlineEmitter(this.ioServer, eventData.userToNotify);
+        }
+        const emitDataProvider = (eventData: AcceptedFriendRequestData): FriendOnlineData => {
+            return {
+                friendId: eventData.friendId
+            }
+        };
+
+        super.listenAndEmit(emitterProvider, emitDataProvider);
     }
 }

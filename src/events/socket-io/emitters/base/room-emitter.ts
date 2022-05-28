@@ -6,11 +6,11 @@ import { Emitter } from './emitter';
  * Abstract class that wraps Socket.io emitter functionality
  * for server-emitted events to a specific set of clients.
  */
-export class RoomEmitter extends Emitter {
+export class RoomEmitter<T> extends Emitter<T> {
     /**
      * Name of the room that this instance emits to
      */
-    roomName: string;
+    public readonly roomName: string;
 
     constructor(ioServer: Server, eventName: string, roomName: string) {
         super(ioServer, eventName);
@@ -22,7 +22,7 @@ export class RoomEmitter extends Emitter {
      * Emit data only on the room specified at initialization
      * @param data
      */
-    emit(data: any) {
+    public emit(data: T) {
         this.ioServer.to(this.roomName).emit(this.eventName, data);
     }
 }

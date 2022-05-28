@@ -8,7 +8,7 @@ import { RoomEmitter } from './base/room-emitter';
  * Such event should be listened by each of the 2 players in a match, so they
  * can be notified when their opponent is ready.
  */
-export class OpponentReadyEmitter extends RoomEmitter {
+export class OpponentReadyEmitter extends RoomEmitter<Object> {
     /**
      * @param ioServer Socket.io server instance
      * @param playerId id of the user that has to be notified
@@ -21,6 +21,8 @@ export class OpponentReadyEmitter extends RoomEmitter {
 
     emit(): void {
         // What is sent here is not really important
-        super.emit('opponent is ready');
+        super.emit({
+            message: "Opponent is ready"
+        });
     }
 }
