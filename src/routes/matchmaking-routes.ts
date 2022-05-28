@@ -31,6 +31,7 @@ router.post('/matchmaking/queue', authenticateToken, async (req: EnqueueRequest,
             elo: playerToQueue.stats.elo,
             queuedSince: new Date(),
         };
+
         const queueDoc: QueueEntryDocument = new MatchmakingQueueModel(queueEntry);
         await queueDoc.save();
 
@@ -61,12 +62,20 @@ router.delete(
     retrieveUserId,
     async (req: RemoveFromQueueRequest, res: Response) => {
         try {
-            const userToUnQueue: Types.ObjectId = req.locals.userId;
+            const userToUnQueue: Types.ObjectId = res.locals.userId;
+            const entry: QueueEntryDocument =
+              await MatchmakingQueueModel.findOne({ userId: userToUnQueue });
+
+            // TODO non capisco perché non me lo trovi
+            if (entry === null) {
+                throw new Error("User not found in queue");
+            }
+
             await MatchmakingQueueModel.deleteOne({ userId: userToUnQueue });
 
-            return res.status(204);
+            return res.status(204).json();
         } catch (err) {
-            return res.status(400).json({
+            return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,

@@ -22,6 +22,7 @@ export const retrieveUserId = function (req: Request, res: Response, next: NextF
     try {
         const userId: Types.ObjectId = Types.ObjectId(req.params.userId);
         res.locals.userId = userId;
+
         next();
     } catch (err) {
         return res.status(404).json({

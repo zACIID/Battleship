@@ -22,7 +22,8 @@ export const QueueEntrySchema = new Schema<QueueEntryDocument>(
         userId: {
             type: SchemaTypes.ObjectId,
             required: [true, 'User id is required'],
-            unique: true,
+            index: true,
+            unique: true
         },
         elo: {
             type: SchemaTypes.Number,
@@ -32,8 +33,7 @@ export const QueueEntrySchema = new Schema<QueueEntryDocument>(
             type: SchemaTypes.Date,
             default: () => new Date(),
         },
-    },
-    { _id: false }
+    }
 );
 
 // A MatchmakingQueue is a collection of QueueEntry documents
