@@ -9,7 +9,7 @@ import { Emitter } from "../../emitters/base/emitter";
  * them by emitting data.
  * @param K
  */
-export abstract class ClientListenerNotifier<K, T> extends ClientListener<K> {
+export abstract class ClientListenerNotifier<L, N> extends ClientListener<L> {
     public readonly ioServer: Server;
 
     protected constructor(ioClient: Socket, eventName: string, ioServer: Server) {
@@ -26,11 +26,11 @@ export abstract class ClientListenerNotifier<K, T> extends ClientListener<K> {
      * @param emitDataProvider function invoked to build the data to emit
      * @protected
      */
-    protected listenAndEmit(emitterProvider: (eventData: K) => Emitter<T>,
-                            emitDataProvider: (eventData: K) => T): void {
-        super.listen((eventData: K) => {
-            const emitter: Emitter<T> = emitterProvider(eventData);
-            const emitData: T = emitDataProvider(eventData);
+    protected async listenAndEmit(emitterProvider: (eventData: L) => Promise<Emitter<N>>,
+                            emitDataProvider: (eventData: L) => Promise<N>): Promise<void> {
+        super.listen(async (eventData: L) => {
+            const emitter: Emitter<N> = await emitterProvider(eventData);
+            const emitData: N = await emitDataProvider(eventData);
 
             emitter.emit(emitData);
         });

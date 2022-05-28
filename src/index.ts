@@ -91,7 +91,7 @@ interface MatchJoinData {
     matchId: string;
 }
 
-ioServer.on('connection', function (client) {
+ioServer.on('connection', async function (client) {
     console.log(chalk.green(`Socket.io client ${client.id} connected`));
 
     client.on('disconnect', function () {
@@ -121,13 +121,14 @@ ioServer.on('connection', function (client) {
 
     /* Other listeners for client events */
     // A client accepts a match request
-    const matchReqAccepted: MatchRequestAcceptedListener = new MatchRequestAcceptedListener(client);
-    matchReqAccepted.listen();
+    const matchReqAccepted: MatchRequestAcceptedListener =
+      new MatchRequestAcceptedListener(client, ioServer);
+    await matchReqAccepted.listen();
 
     // A client accepts a friend request
     const friendReqAccepted: FriendRequestAcceptedListener =
       new FriendRequestAcceptedListener(client, ioServer);
-    friendReqAccepted.listen();
+    await friendReqAccepted.listen();
 });
 
 /* Start the matchmaking engine and tell him to try to look

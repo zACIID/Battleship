@@ -13,7 +13,7 @@ export abstract class ClientListener<T> {
         this.eventName = eventName;
     }
 
-    protected listen(onEvent: (eventData: T) => void): void {
+    protected listen(onEvent: (eventData: T) => Promise<void>): void {
         this.client.on(this.eventName, onEvent);
     }
 

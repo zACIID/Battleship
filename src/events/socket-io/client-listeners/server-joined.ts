@@ -12,14 +12,14 @@ interface ServerJoinData {
  * userId that the login has been made with.
  * This allows the server to send events to specific users.
  */
-export class ServerJoinedListener extends ClientListener {
+export class ServerJoinedListener extends ClientListener<ServerJoinData> {
     constructor(client: Socket) {
         super(client, 'server-joined');
     }
 
     public listen() {
-        super.listen(function (joinData: ServerJoinData) {
-            this.client.join(joinData.userId);
+        super.listen( (joinData: ServerJoinData): Promise<void> => {
+            return Promise.resolve(this.client.join(joinData.userId));
         });
     }
 }

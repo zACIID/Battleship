@@ -11,18 +11,20 @@ interface ChatJoinData {
  * Such event allows the client to join and leave a Socket.io room for some
  * specific chat, so that he can listen only to messages of such chat.
  */
-export class ChatJoinedListener extends ClientListener {
+export class ChatJoinedListener extends ClientListener<ChatJoinData> {
     constructor(client: Socket) {
         super(client, 'chat-joined');
     }
 
     public listen() {
-        super.listen((joinData: ChatJoinData) => {
+        super.listen((joinData: ChatJoinData): Promise<void> => {
             this.client.join(joinData.chatId);
 
             this.client.on('chat-left', (joinData: ChatJoinData) => {
                 this.client.leave(joinData.chatId);
             });
+
+            return Promise.resolve();
         });
     }
 }

@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 
 import { ClientListenerNotifier } from "./base/client-listener-notifier";
 import { FriendOnlineData, FriendOnlineEmitter } from "../emitters/friend-online";
+import * as process from "process";
 
 interface AcceptedFriendRequestData {
     userToNotify: Types.ObjectId;
@@ -26,16 +27,16 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<Accept
         super(client, 'friend-request-accepted', ioServer);
     }
 
-    public listen() {
-        const emitterProvider = (eventData: AcceptedFriendRequestData): FriendOnlineEmitter => {
-            return new FriendOnlineEmitter(this.ioServer, eventData.userToNotify);
+    public listen(): Promise<void> {
+        const emitterProvider = (eventData: AcceptedFriendRequestData): Promise<FriendOnlineEmitter> => {
+            return Promise.resolve(new FriendOnlineEmitter(this.ioServer, eventData.userToNotify));
         }
-        const emitDataProvider = (eventData: AcceptedFriendRequestData): FriendOnlineData => {
-            return {
+        const emitDataProvider = (eventData: AcceptedFriendRequestData): Promise<FriendOnlineData> => {
+            return Promise.resolve({
                 friendId: eventData.friendId
-            }
+            });
         };
 
-        super.listenAndEmit(emitterProvider, emitDataProvider);
+        return super.listenAndEmit(emitterProvider, emitDataProvider);
     }
 }
