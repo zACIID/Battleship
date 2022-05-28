@@ -82,14 +82,12 @@ router.delete(
     '/users/:userId/relationships/:friendId',
     authenticateToken,
     retrieveUserId,
-    async (req: RelationshipRequest, res: Response) => {
-        const userId: Types.ObjectId = res.locals.userId;
-        const friendId: string = req.params.friendId;
-
-        let user: UserDocument;
-
+    async (req: Request, res: Response) => {
         try {
-            user = await getUserById(userId);
+            const userId: Types.ObjectId = res.locals.userId;
+            const friendId: string = req.params.friendId;
+
+            const user: UserDocument = await getUserById(userId);
 
             const friendObjId: Types.ObjectId = Types.ObjectId(friendId);
             await user.removeRelationship(friendObjId);

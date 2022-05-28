@@ -136,9 +136,9 @@ export interface UserDocument extends User, Document {
     /**
      * Remove a relationship from both users
      * @param friendId friend's id to delete
-     * @param stop trigger the symmetric deletion of the relationship
+     * @param removeSymmetric trigger the symmetric deletion of the relationship
      */
-    removeRelationship(friendId: Types.ObjectId, stop?: boolean): Promise<UserDocument>;
+    removeRelationship(friendId: Types.ObjectId, removeSymmetric?: boolean): Promise<UserDocument>;
 }
 
 export const UserSchema = new Schema<UserDocument>({
@@ -298,7 +298,7 @@ UserSchema.methods.addRelationship = async function (
     chatId?: Types.ObjectId
 ): Promise<UserDocument> {
     for (let idx in this.relationships) {
-        if (this.relationships[idx].friendId === friendId) {
+        if (this.relationships[idx].friendId.equals(friendId)) {
             return Promise.reject(new Error('Relationship already existent'));
         }
     }
@@ -342,17 +342,20 @@ const symmetricAddRelationship = async function (
 
 UserSchema.methods.removeRelationship = async function (
     friendId: Types.ObjectId,
-    stop?: boolean
+    removeSymmetric?: boolean
 ): Promise<UserDocument> {
     let found: boolean = false;
     for (let idx in this.relationships) {
         if (this.relationships[idx].friendId.equals(friendId)) {
+            const chatIdToRemove: Types.ObjectId = this.relationships[idx].chatId;
             this.relationships.splice(parseInt(idx), 1);
+
             found = true;
-            if (!stop) {
+
+            if (!removeSymmetric) {
                 try {
-                    const chatId = this.relationships[idx].chatId;
-                    await ChatModel.deleteOne({ chatId });
+                    await ChatModel.deleteOne({ _id: chatIdToRemove });
+
                     await symmetricRemoveRelationship(friendId, this._id);
                 } catch (err) {
                     return Promise.reject(new Error(err.message));
@@ -379,13 +382,12 @@ const symmetricRemoveRelationship = async function (
     }
 };
 
-// Create "users" collection
+// Create "Users" collection
 export const UserModel: Model<UserDocument> = mongoose.model('User', UserSchema, 'Users');
 
 export async function getUserById(userId: Types.ObjectId): Promise<UserDocument> {
-    const userDoc = await UserModel.findOne({ _id: userId }).catch((err: Error) =>
-        Promise.reject(new Error('Internal server error'))
-    );
+    const userDoc = await UserModel.findOne({ _id: userId })
+      .catch((err: Error) => Promise.reject(err));
 
     return !userDoc
         ? Promise.reject(new Error('No user with that identifier'))
