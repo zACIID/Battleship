@@ -13,7 +13,6 @@ import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
 import { GridCoordinates } from '../models/match/state/grid-coordinates';
 import { BattleshipGrid } from '../models/match/state/battleship-grid';
 import { Shot } from '../models/match/state/shot';
-import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -218,5 +217,3 @@ router.post(
     }
 );
 
-// Register endpoints
-app.use(API_BASE_URL, router);

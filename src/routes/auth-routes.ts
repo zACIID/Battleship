@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
 
 import { createUser, getUserByUsername, UserDocument } from '../models/user/user';
-import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -102,5 +101,3 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
     }
 });
 
-// Register endpoints
-app.use(API_BASE_URL, router);

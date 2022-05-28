@@ -10,7 +10,6 @@ import {
     retrieveId,
     retrieveUserId,
 } from './utils/param-checking';
-import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -210,5 +209,3 @@ router.post(
     }
 );
 
-// Register endpoints
-app.use(API_BASE_URL, router);

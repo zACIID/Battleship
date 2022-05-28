@@ -9,7 +9,6 @@ import {
     QueueEntryDocument,
 } from '../models/matchmaking/queue-entry';
 import { getUserById, UserDocument } from '../models/user/user';
-import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -76,5 +75,3 @@ router.delete(
     }
 );
 
-// Register endpoints
-app.use(API_BASE_URL, router);

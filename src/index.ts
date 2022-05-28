@@ -16,6 +16,7 @@ import { MatchJoinedListener } from './events/socket-io/client-listeners/match-j
 import { ServerJoinedListener } from './events/socket-io/client-listeners/server-joined';
 import { MatchRequestAcceptedListener } from './events/socket-io/client-listeners/match-request-accepted';
 import { FriendRequestAcceptedListener } from './events/socket-io/client-listeners/friend-request-accepted';
+import { registerRoutes } from "./routes/utils/register-routes";
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -130,6 +131,9 @@ ioServer.on('connection', async function (client) {
       new FriendRequestAcceptedListener(client, ioServer);
     await friendReqAccepted.listen();
 });
+
+/* Register express routes */
+registerRoutes(app);
 
 /* Start the matchmaking engine and tell him to try to look
  * for match arrangements every 5 seconds

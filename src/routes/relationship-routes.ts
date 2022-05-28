@@ -5,7 +5,6 @@ import { Relationship } from '../models/user/relationship';
 import { UserDocument, getUserById } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
-import { API_BASE_URL, app } from '../index';
 
 export const router = Router();
 
@@ -106,5 +105,3 @@ router.delete(
     }
 );
 
-// Register endpoints
-app.use(API_BASE_URL, router);

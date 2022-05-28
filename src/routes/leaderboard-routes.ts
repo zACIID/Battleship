@@ -2,9 +2,8 @@ import { Router, Request, Response } from 'express';
 
 import { getLeaderboard, UserDocument } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
-import { API_BASE_URL, app } from '../index';
 
-const router: Router = Router();
+export const router: Router = Router();
 
 router.get('/leaderboard', authenticateToken, async (req: Request, res: Response) => {
     try {
@@ -33,5 +32,3 @@ router.get('/leaderboard', authenticateToken, async (req: Request, res: Response
     }
 });
 
-// Register endpoints
-app.use(API_BASE_URL, router);
