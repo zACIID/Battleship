@@ -142,9 +142,9 @@ router.delete(
 );
 
 interface MessagePostBody {
-    author: Types.ObjectId;
+    author: string;
     content: string;
-    timestamp: Date;
+    timestamp: number;
 }
 
 interface MessagePostRequest extends Request {
@@ -164,11 +164,16 @@ router.get(
             const chatId: Types.ObjectId = res.locals.chatId;
             const skip: number = parseInt(res.locals.skip as string);
             const limit: number = parseInt(res.locals.limit as string);
+
+            // TODO debug
             console.log('limit:');
             console.log(limit);
             console.log('skip');
             console.log(skip);
+
             const chat: ChatDocument = await getChatById(chatId);
+
+            // TODO non vengono skippati e limitati
             const messages: Message[] = chat.messages;
 
             const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
@@ -195,12 +200,13 @@ router.post(
         try {
             const chatId: Types.ObjectId = res.locals.chatId;
             const chat: ChatDocument = await getChatById(chatId);
+            const { author, timestamp, content } = req.body
 
-            await chat.addMessage(req.body.content, req.body.timestamp, req.body.author);
+            await chat.addMessage(content, new Date(timestamp * 1000), Types.ObjectId(author));
 
-            return res.status(200).json(req.body);
+            return res.status(201).json(req.body);
         } catch (err) {
-            return res.status(500).json({
+            return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
