@@ -1,85 +1,261 @@
-import {Router, Request, Response, NextFunction} from 'express';
+import { Router, Request, Response } from 'express';
+import { Types } from 'mongoose';
 
-const router = Router();
+import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
+import { Message, MessageSubDocument } from "../models/chat/message";
+import { authenticateToken } from './auth-routes';
+import {
+    skipLimitChecker,
+    retrieveChatId,
+    retrieveId,
+    retrieveUserId,
+} from './utils/param-checking';
 
-// Retrieving schema from model
-import {ChatModel, ChatDocument, Message} from '../models/chat';
-import {UserModel, UserDocument} from '../models/user';
-import {MatchModel, MatchDocument} from '../models/match';
+export const router = Router();
 
-interface CustomRequest extends Request {
-  user_id: string;
+interface ChatEndpointLocals {
+    chatId: Types.ObjectId;
+    userId: Types.ObjectId;
+    skip: string;
+    limit: string;
 }
 
-function integrityCheck(request: CustomRequest, response: Response): Response {
-  // Check if user is logged
-  if (!request.user_id) {
-    return response.status(401).send('Not authenticated');
-  }
+interface ChatEndpointResponse extends Response {
+    locals: ChatEndpointLocals;
 }
 
-router.get('/chats', async (req: CustomRequest, res: Response, next: NextFunction) => {
-  integrityCheck(req, res);
+interface UserPostBody {
+    userId: string;
+}
 
-  // Retrieve userId from the parameters of the request
-  const user: string = req.params.userId;
+interface UserPostRequest extends Request {
+    body: UserPostBody;
+}
 
-  try {
-    // Find all the existing chat where an user is found inside the "users" list
-    const found: UserDocument = await UserModel.findById(user).exec();
-    res.json(found.chats);
-  } catch (err) {
-    console.log(err);
-    next(err);
-  }
-});
+interface ResponseMessage {
+    author: string,
+    content: string,
+    timestamp: number
+}
 
+const userErr: string = 'No user with that identifier';
+
+/**
+ *   /chats/:chatId | GET | Retrieve the chat with the specified id
+ *   Return the entire chat object or a 404 error if chat is not found
+ */
 router.get(
-  '/chats/:chatId/messages',
-  async (req: CustomRequest, res: Response, next: NextFunction) => {
-    integrityCheck(req, res);
+    '/chats/:chatId',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
 
-    // Retrieve chatId from the parameters of the request
-    const chat: string = req.params.chatId;
+        let chat: ChatDocument;
 
-    try {
-      // Find all the existing chat where an user is found inside the "users" list
-      const found: ChatDocument = await ChatModel.findById(chat).exec();
+        try {
+            chat = await getChatById(chatId);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
 
-      res.json(found.messages);
-    } catch (err) {
-      console.log(err);
-      next(err);
+        return res.status(200).json({
+            chatId: chat._id,
+            users: chat.users,
+            messages: chat.messages.map((m: MessageSubDocument): ResponseMessage => {
+                return {
+                    author: m.author.toString(),
+                    content: m.content,
+                    timestamp: m.timestamp.getTime() / 1000
+                }
+            }),
+        });
     }
-  }
 );
 
+/**
+ *   /chats/:chatId | DELETE | Delete the chat with the provided id
+ *   Returns an empty response or an error 404 if something went wrong
+ */
+router.delete(
+    '/chats/:chatId',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
+
+        await deleteChat(chatId).catch((err: Error) => {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        });
+
+        return res.status(204).json();
+    }
+);
+
+/**
+ *   /chats/:chatId/users | POST | Add the user with the provided id (in the request body) to the specified chat |
+ */
 router.post(
-  '/chats/:chatId/messages',
-  async (req: CustomRequest, res: Response, next: NextFunction) => {
-    integrityCheck(req, res);
-
-    // Retrieve userId from the parameters of the request
-    const chat: string = req.params.chatId;
-
-    try {
-      const found: ChatDocument = await ChatModel.findById(chat).exec();
-
-      const newMessage: Message = {
-        content: req.body.content,
-        timestamp: new Date(),
-        author: req.body.user_id,
-      };
-
-      found.messages.push(newMessage);
-
-      await ChatModel.updateOne({_id: found._id}, {$set: {messages: found.messages}});
-    } catch (err) {
-      //For logging purposes
-      console.log(err);
-      next(err);
+    '/chats/:chatId/users',
+    authenticateToken,
+    retrieveChatId,
+    async (req: UserPostRequest, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
+        let userId: Types.ObjectId;
+        let chat: ChatDocument;
+        try {
+            userId = retrieveId(req.body.userId);
+            chat = await getChatById(chatId);
+            await chat.addUser(userId);
+        } catch (err) {
+            const code: number = err.message === userErr ? 404 : 400;
+            return res.status(code).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+        return res.status(201).json({ userId: req.body.userId });
     }
-  }
 );
 
-module.exports = router;
+/**
+ *   /chats/:chatId/users/:userId | DELETE | Remove the user with the specified id from the specified chat
+ *   Returns an empty response or a 404 error
+ */
+router.delete(
+    '/chats/:chatId/users/:userId',
+    authenticateToken,
+    retrieveChatId,
+    retrieveUserId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
+        const userId: Types.ObjectId = res.locals.userId;
+        let chat: ChatDocument;
+        try {
+            chat = await getChatById(chatId);
+            await chat.removeUser(userId);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+        return res.status(204).json({});
+    }
+);
+
+interface MessagePostBody {
+    author: string;
+    content: string;
+    timestamp: number;
+}
+
+interface MessagePostRequest extends Request {
+    body: MessagePostBody;
+}
+
+/**
+ *  /chats/:chatId/messages?skip=&limit= | GET | Retrieve the messages of the specified chat
+ *  Query params: skip, limit
+ */
+router.get(
+    '/chats/:chatId/messages',
+    authenticateToken,
+    skipLimitChecker,
+    retrieveChatId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        try {
+            const chatId: Types.ObjectId = res.locals.chatId;
+
+            // Res.locals assigns '0' string if skip
+            // and limit params are not passed to the request
+            const skip: number = parseInt(res.locals.skip);
+            let limit: number = parseInt(res.locals.limit);
+
+            // Set default value for limit
+            if (limit === 0) {
+                limit = 50;
+            }
+
+            const chat: ChatDocument = await getChatById(chatId);
+            const resMessages: ResponseMessage[] =
+              chat.messages.map((m: MessageSubDocument) => {
+                  return {
+                      author: m.author.toString(),
+                      content: m.content,
+                      timestamp: m.timestamp.getTime() / 1000
+                  }
+              });
+
+            // Apply pagination params
+            const paginatedMessages: ResponseMessage[] =
+              resMessages.slice(skip, skip+limit);
+
+            // Sort messages by most recent timestamp (bigger = first)
+            paginatedMessages.sort((a: ResponseMessage, b: ResponseMessage) => {
+                const timeA = new Date(a.timestamp);
+                const timeB = new Date(b.timestamp);
+
+                if (timeA < timeB) {
+                    return 1;
+                }
+                else if (timeA > timeB) {
+                    return -1;
+                }
+                else {
+                    return 0;
+                }
+            });
+
+            const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
+            return res.status(200).json({
+                messages: paginatedMessages,
+                nextPage: nextPage
+            });
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
+
+/**
+ *   /chats/:chatId/messages | POST | Add a message to the specified chat
+ *   Returns the new message or an error 500
+ */
+router.post(
+    '/chats/:chatId/messages',
+    authenticateToken,
+    retrieveChatId,
+    async (req: MessagePostRequest, res: ChatEndpointResponse) => {
+        try {
+            const chatId: Types.ObjectId = res.locals.chatId;
+            const chat: ChatDocument = await getChatById(chatId);
+            const { author, timestamp, content } = req.body
+
+            await chat.addMessage(content, new Date(timestamp * 1000), Types.ObjectId(author));
+
+            return res.status(201).json(req.body);
+        } catch (err) {
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
+
