@@ -1,6 +1,6 @@
 {
   "name": "battleships",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "version": "0.0.1",
   "author": "Unità Dei Mandrilli",
   "dependencies": {
@@ -51,7 +51,7 @@
   "scripts": {
     "test": "mocha",
     "compile": "tsc",
-    "start": "node build/index.js",
+    "start": "node dist/index.js",
     "dev": "tsc --watch",
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --ext .ts . --fix",
