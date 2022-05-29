@@ -1,7 +1,7 @@
 import { Schema, SchemaTypes, Types } from 'mongoose';
 
 /**
- * Enumeration that defines all the possible notification types receivable by a user
+ * Enumeration that defines all the possible notification model receivable by a user
  */
 export enum RequestTypes {
     FriendRequest = 'FriendRequest',

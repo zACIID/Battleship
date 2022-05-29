@@ -4,7 +4,7 @@ import { Emitter } from './emitter';
 
 /**
  * Abstract class that wraps Socket.io emitter functionality
- * for server-emitted socket-io-events to a specific set of clients.
+ * for server-emitted events to a specific set of clients.
  */
 export class RoomEmitter<T> extends Emitter<T> {
     /**

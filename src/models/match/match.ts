@@ -19,7 +19,7 @@ export interface Match {
 
 /**
  * Interface that represents a Match document.
- * Such document represents a match between two players and the two types
+ * Such document represents a match between two players and the two model
  * of chatroom that such match supports.
  */
 export interface MatchDocument extends Match, Document {
