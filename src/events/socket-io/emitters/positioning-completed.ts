@@ -7,7 +7,7 @@ import { GenericMessage } from './base/generic-message';
 /**
  * Class that wraps socket.io functionality to generate a "positioning-completed" event
  * for a specific player.
- * Such event should be listened to by a player that is looking to join a match.
+ * Such event should be listened to by all the players and spectators of a given match.
  */
 export class PositioningCompletedEmitter extends RoomEmitter<GenericMessage> {
     /**

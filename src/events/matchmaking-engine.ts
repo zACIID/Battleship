@@ -1,9 +1,8 @@
-import { mquery, Schema, Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { MatchmakingQueueModel, QueueEntry } from '../models/matchmaking/queue-entry';
 import * as match from '../models/match/match';
-import { MatchFoundEmitter, MatchData } from './socket-io/emitters/match-found';
+import { MatchData, MatchFoundEmitter } from './socket-io/emitters/match-found';
 
 /**
  * Class that represents a matchmaking engine, whose purpose is to arrange game
@@ -134,11 +133,9 @@ export class MatchmakingEngine {
         player: QueueEntry,
         matchmakingQueue: QueueEntry[]
     ): QueueEntry[] {
-        const potentialOpponents: QueueEntry[] = matchmakingQueue.filter((entry) => {
+        return matchmakingQueue.filter((entry) => {
             return MatchmakingEngine.arePlayersMatchable(player, entry);
         });
-
-        return potentialOpponents;
     }
 
     /**

@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 
 /**
  * Abstract class that wraps functionality used to listen
- * to client-emitted Socket.io events
+ * to client-emitted Socket.io socket-io-events
  */
 export abstract class ClientListener<T> {
     public readonly client: Socket;

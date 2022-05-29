@@ -10,7 +10,7 @@ interface ServerJoinData {
  * to a 'server-joined' client event.
  * Such event creates a room for the client based on the
  * userId that the login has been made with.
- * This allows the server to send events to specific users.
+ * This allows the server to send socket-io-events to specific users.
  */
 export class ServerJoinedListener extends ClientListener<ServerJoinData> {
     constructor(client: Socket) {

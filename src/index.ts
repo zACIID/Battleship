@@ -93,7 +93,7 @@ ioServer.on('connection', async function (client) {
 
     /* Join listeners are being setup for each client.
      * They are important to make clients join specific rooms
-     * so that the server can send events specifically to them.
+     * so that the server can send socket-io-events specifically to them.
      * This improves efficiency on both server and client side.
      */
 
@@ -110,7 +110,7 @@ ioServer.on('connection', async function (client) {
     const matchJoined: MatchJoinedListener = new MatchJoinedListener(client);
     matchJoined.listen();
 
-    /* Other listeners for client events */
+    /* Other listeners for client socket-io-events */
 
     // A client accepts a match request
     const matchReqAccepted: MatchRequestAcceptedListener = new MatchRequestAcceptedListener(

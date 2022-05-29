@@ -5,6 +5,8 @@ import { RequestTypes } from '../models/user/notification';
 import { getUserById, UserDocument } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
+import { NotificationReceivedEmitter } from '../events/socket-io/emitters/notification-received';
+import { ioServer } from '../index';
 
 export const router = Router();
 
@@ -69,10 +71,16 @@ router.post(
 
             await user.addNotification(reqType, senderObjId);
 
-            return res.status(201).json({
-                type: reqType.toString(),
-                sender: req.body.sender,
-            });
+            // Notify the user of the new notification
+            const notifier = new NotificationReceivedEmitter(ioServer, userId);
+
+            const notificationData = {
+                sender: senderObjId.toString(),
+                type: reqType.valueOf()
+            };
+            notifier.emit(notificationData);
+
+            return res.status(201).json(notificationData);
         } catch (err) {
             let status: number = errorMessages.find((e) => e === err.message) ? 404 : 500;
 

@@ -5,7 +5,7 @@ import { Emitter } from '../../emitters/base/emitter';
 
 /**
  * Abstract class that wraps functionality used to listen
- * to client-emitted Socket.io events and respond to
+ * to client-emitted Socket.io socket-io-events and respond to
  * them by emitting data.
  * @param K
  */

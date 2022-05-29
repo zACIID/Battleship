@@ -2,7 +2,23 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-import { Message } from '../../../models/chat/message';
+
+interface Message {
+    /**
+     * Id of the user that sent the message
+     */
+    author: string;
+
+    /**
+     * Timestamp in unix seconds
+     */
+    timestamp: number;
+
+    /**
+     * Content of the message
+     */
+    content: string;
+}
 
 /**
  * Class that wraps socket.io functionality to generate a "chat-message" event

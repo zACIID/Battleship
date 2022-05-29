@@ -14,10 +14,12 @@ import { GridCoordinates } from '../models/match/state/grid-coordinates';
 import { BattleshipGrid } from '../models/match/state/battleship-grid';
 import { PlayerStateSubDocument } from '../models/match/state/player-state';
 import { Shot } from '../models/match/state/shot';
-import { OpponentStateChangedEmitter } from '../events/socket-io/emitters/opponent-state-changed';
-import { PositioningCompletedEmitter } from '../events/socket-io/emitters/postioning-completed';
+import { PlayerStateChangedEmitter } from '../events/socket-io/emitters/player-state-changed';
+import { PositioningCompletedEmitter } from '../events/socket-io/emitters/positioning-completed';
 import { Emitter } from '../events/socket-io/emitters/base/emitter';
 import { ioServer } from '../index';
+import { ShotFiredEmitter } from '../events/socket-io/emitters/shot-fired';
+import { PlayerShipsUpdatedEmitter } from '../events/socket-io/emitters/player-ships-updated';
 
 export const router = Router();
 
@@ -173,6 +175,21 @@ router.put(
 
             await match.updatePlayerGrid(playerId, req.body);
 
+            // Need to prepare the data so that it can be emitted
+            const shipsToEmit = req.body.ships.map((s) => {
+                return {
+                    type: s.type.valueOf(),
+                    coordinates: s.coordinates
+                };
+            });
+
+            // Notify of the update players and spectators of the match
+            const notifier = new PlayerShipsUpdatedEmitter(ioServer, matchId);
+            notifier.emit({
+                ships: shipsToEmit,
+                playerId: playerId.toString()
+            });
+
             return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
@@ -213,6 +230,13 @@ router.post(
             }
 
             await match.registerShot(shot);
+
+            // Notify all players/spectators about the shot
+            const notifier: ShotFiredEmitter = new ShotFiredEmitter(ioServer, matchId);
+            notifier.emit({
+                coordinates: req.body,
+                playerId: shootingPlayerId.toString()
+            });
 
             return res.status(200).json(req.body);
         } catch (err) {
@@ -290,6 +314,28 @@ const setReadyState = async (match: MatchDocument, playerId: Types.ObjectId, isR
     await match.save();
 }
 
+/**
+ * Notify the players if both are ready that the positioning phase is completed,
+ * else notify just the opponent if only one player is ready
+ *
+ * @param match match that the two players are in
+ * @param playerId id of the player that changed his ready state
+ * @param newState value of the ready state set by the player
+ */
+const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState: boolean) => {
+    if (match.player1.isReady && match.player2.isReady) {
+        const notifier = new PositioningCompletedEmitter(ioServer, match._id);
+        notifier.emit();
+    }
+    else {
+        const notifier = new PlayerStateChangedEmitter(ioServer, match._id);
+        notifier.emit({
+            isReady: newState,
+            playerId: playerId.toString()
+        });
+    }
+}
+
 const getOpponentId = (match: MatchDocument, playerId: Types.ObjectId): Types.ObjectId => {
     const player1Id: Types.ObjectId = match.player1.playerId;
     const player2Id: Types.ObjectId = match.player2.playerId;
@@ -305,24 +351,4 @@ const getOpponentId = (match: MatchDocument, playerId: Types.ObjectId): Types.Ob
     }
 
     return opponentId;
-}
-
-/**
- * Notify the players if both are ready that the positioning phase is completed,
- * else notify just the opponent if only one player is ready
- *
- * @param match match that the two players are in
- * @param playerId id of the player that changed his ready state
- * @param newState value of the ready state set by the player
- */
-const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState: boolean) => {
-    let notifier: Emitter<Object> = null;
-    if (match.player1.isReady && match.player2.isReady) {
-        notifier = new PositioningCompletedEmitter(ioServer, match._id);
-    }
-    else {
-        const opponentId: Types.ObjectId = getOpponentId(match, playerId);
-        notifier = new OpponentStateChangedEmitter(ioServer, opponentId, newState);
-    }
-    notifier.emit();
 }
