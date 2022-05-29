@@ -4,7 +4,10 @@ import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
 
-import { createUser, getUserByUsername, UserDocument } from '../models/user/user';
+import { createUser, getUserByUsername, UserDocument, UserModel } from '../models/user/user';
+import { Types } from 'mongoose';
+import { FriendOnlineEmitter } from '../events/socket-io/emitters/friend-online';
+import { ioServer } from '../index';
 
 export const router = Router();
 
@@ -58,7 +61,7 @@ passport.use(new LocalStrategy(localAuth));
 router.post(
     '/auth/signin',
     passport.authenticate('local', { session: false }),
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
         const tokenData = {
             username: req.user.username,
             roles: req.user.roles,
@@ -69,9 +72,25 @@ router.post(
             expiresIn: '1h',
         });
 
+        await notifyFriends(req.user.username);
+
         return res.status(200).json({ token: signed_token });
     }
 );
+
+const notifyFriends = async (username: string) => {
+    const userOnline: UserDocument = await UserModel.findOne({ username: username });
+    const friendsIdsToNotify: Types.ObjectId[] = userOnline.relationships.map((rel) => {
+        return rel.friendId;
+    });
+
+    friendsIdsToNotify.forEach((toNotifyId: Types.ObjectId) => {
+        const notifier: FriendOnlineEmitter = new FriendOnlineEmitter(ioServer, toNotifyId);
+        notifier.emit({
+            friendId: userOnline._id
+        });
+    });
+}
 
 /**
  * Request must contain at least this information -> username: string, roles: string[], password: string

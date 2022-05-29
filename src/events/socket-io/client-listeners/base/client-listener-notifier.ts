@@ -21,20 +21,24 @@ export abstract class ClientListenerNotifier<L, N> extends ClientListener<L> {
     /**
      * Listens for a client event and, when that event is raised,
      * emits data based on what was received by the client.
+     * Such data may be sent by one or more emitters, which are created
+     * by the provided function
      *
      * @param emitterProvider function invoked to build the emitter
      * @param emitDataProvider function invoked to build the data to emit
      * @protected
      */
     protected async listenAndEmit(
-        emitterProvider: (eventData: L) => Promise<Emitter<N>>,
+        emitterProvider: (eventData: L) => Promise<Emitter<N>[]>,
         emitDataProvider: (eventData: L) => Promise<N>
     ): Promise<void> {
         super.listen(async (eventData: L) => {
-            const emitter: Emitter<N> = await emitterProvider(eventData);
+            const emitters: Emitter<N>[] = await emitterProvider(eventData);
             const emitData: N = await emitDataProvider(eventData);
 
-            emitter.emit(emitData);
+            emitters.forEach((e) => {
+                e.emit(emitData);
+            });
         });
     }
 }

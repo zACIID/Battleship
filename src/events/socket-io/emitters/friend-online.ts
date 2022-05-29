@@ -15,11 +15,11 @@ export interface FriendOnlineData {
 export class FriendOnlineEmitter extends RoomEmitter<FriendOnlineData> {
     /**
      * @param ioServer Socket.io server instance
-     * @param userId id of the user that has to be notified
+     * @param toNotifyId id of the user that has to be notified
      */
-    public constructor(ioServer: Server, userId: Types.ObjectId) {
+    public constructor(ioServer: Server, toNotifyId: Types.ObjectId) {
         const eventName: string = 'friend-online';
 
-        super(ioServer, eventName, userId.toString());
+        super(ioServer, eventName, toNotifyId.toString());
     }
 }

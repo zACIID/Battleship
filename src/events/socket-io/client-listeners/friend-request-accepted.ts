@@ -3,11 +3,14 @@ import { Types } from 'mongoose';
 
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { FriendOnlineData, FriendOnlineEmitter } from '../emitters/friend-online';
-import * as process from 'process';
 
+/**
+ * Interface representing the data coming from a
+ * "friend-request-accepted" event
+ */
 interface AcceptedFriendRequestData {
-    userToNotify: Types.ObjectId;
-    friendId: Types.ObjectId;
+    userToNotify: string;
+    friendId: string;
 }
 
 /**
@@ -32,14 +35,17 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
     public listen(): Promise<void> {
         const emitterProvider = (
             eventData: AcceptedFriendRequestData
-        ): Promise<FriendOnlineEmitter> => {
-            return Promise.resolve(new FriendOnlineEmitter(this.ioServer, eventData.userToNotify));
+        ): Promise<FriendOnlineEmitter[]> => {
+            const emitters = [new FriendOnlineEmitter(this.ioServer, Types.ObjectId(eventData.userToNotify))]
+
+            return Promise.resolve(emitters);
         };
+
         const emitDataProvider = (
             eventData: AcceptedFriendRequestData
         ): Promise<FriendOnlineData> => {
             return Promise.resolve({
-                friendId: eventData.friendId,
+                friendId: Types.ObjectId(eventData.friendId),
             });
         };
 

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
+import { Server } from 'socket.io';
 
 import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
 import { Message, MessageSubDocument } from '../models/chat/message';
@@ -10,6 +11,8 @@ import {
     retrieveId,
     retrieveUserId,
 } from './utils/param-checking';
+import { ioServer } from '../index';
+import { ChatMessageEmitter } from '../events/socket-io/emitters/chat-message';
 
 export const router = Router();
 
@@ -242,7 +245,17 @@ router.post(
             const chat: ChatDocument = await getChatById(chatId);
             const { author, timestamp, content } = req.body;
 
-            await chat.addMessage(content, new Date(timestamp * 1000), Types.ObjectId(author));
+            const authorId: Types.ObjectId = Types.ObjectId(author);
+            const msgDate: Date = new Date(timestamp * 1000)
+            await chat.addMessage(content, msgDate, authorId);
+
+            // Notify users in the chat with the message sent
+            const messageNotifier: ChatMessageEmitter = new ChatMessageEmitter(ioServer, chatId);
+            messageNotifier.emit({
+                author: authorId,
+                content: content,
+                timestamp: msgDate
+            });
 
             return res.status(201).json(req.body);
         } catch (err) {
