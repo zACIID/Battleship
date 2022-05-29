@@ -1,8 +1,8 @@
-import {Socket} from 'socket.io';
-import {ClientListener} from './base/client-listener';
+import { Socket } from 'socket.io';
+import { ClientListener } from './base/client-listener';
 
 interface ChatJoinData {
-  chatId: string;
+    chatId: string;
 }
 
 /**
@@ -12,19 +12,19 @@ interface ChatJoinData {
  * specific chat, so that he can listen only to messages of such chat.
  */
 export class ChatJoinedListener extends ClientListener<ChatJoinData> {
-  constructor(client: Socket) {
-    super(client, 'chat-joined');
-  }
+    constructor(client: Socket) {
+        super(client, 'chat-joined');
+    }
 
-  public listen() {
-    super.listen((joinData: ChatJoinData): Promise<void> => {
-      this.client.join(joinData.chatId);
+    public listen() {
+        super.listen((joinData: ChatJoinData): Promise<void> => {
+            this.client.join(joinData.chatId);
 
-      this.client.on('chat-left', (joinData: ChatJoinData) => {
-        this.client.leave(joinData.chatId);
-      });
+            this.client.on('chat-left', (joinData: ChatJoinData) => {
+                this.client.leave(joinData.chatId);
+            });
 
-      return Promise.resolve();
-    });
-  }
+            return Promise.resolve();
+        });
+    }
 }

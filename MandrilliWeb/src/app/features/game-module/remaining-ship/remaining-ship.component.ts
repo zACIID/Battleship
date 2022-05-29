@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-remaining-ship',
-  templateUrl: './remaining-ship.component.html',
-  styleUrls: ['./remaining-ship.component.css'],
+    selector: 'app-remaining-ship',
+    templateUrl: './remaining-ship.component.html',
+    styleUrls: ['./remaining-ship.component.css'],
 })
 export class RemainingShipComponent implements OnInit {
-  constructor() {}
+    constructor() {}
 
-  ngOnInit(): void {}
+    ngOnInit(): void {}
 }

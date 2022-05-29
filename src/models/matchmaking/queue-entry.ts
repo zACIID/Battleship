@@ -1,13 +1,13 @@
-import {Document, Schema, SchemaTypes, Types} from 'mongoose';
+import { Document, Schema, SchemaTypes, Types } from 'mongoose';
 import mongoose from 'mongoose';
 
 /**
  * Interface that represent the stats of some user of the system.
  */
 export interface QueueEntry {
-  userId: Types.ObjectId;
-  elo: number;
-  queuedSince: Date;
+    userId: Types.ObjectId;
+    elo: number;
+    queuedSince: Date;
 }
 
 /**
@@ -18,25 +18,25 @@ export interface QueueEntry {
 export interface QueueEntryDocument extends QueueEntry, Document {}
 
 export const QueueEntrySchema = new Schema<QueueEntryDocument>({
-  userId: {
-    type: SchemaTypes.ObjectId,
-    required: [true, 'User id is required'],
-    index: true,
-    unique: true,
-  },
-  elo: {
-    type: SchemaTypes.Number,
-    required: [true, 'Elo is required'],
-  },
-  queuedSince: {
-    type: SchemaTypes.Date,
-    default: () => new Date(),
-  },
+    userId: {
+        type: SchemaTypes.ObjectId,
+        required: [true, 'User id is required'],
+        index: true,
+        unique: true,
+    },
+    elo: {
+        type: SchemaTypes.Number,
+        required: [true, 'Elo is required'],
+    },
+    queuedSince: {
+        type: SchemaTypes.Date,
+        default: () => new Date(),
+    },
 });
 
 // A MatchmakingQueue is a collection of QueueEntry documents
 export const MatchmakingQueueModel = mongoose.model(
-  'MatchmakingQueue',
-  QueueEntrySchema,
-  'MatchmakingQueue'
+    'MatchmakingQueue',
+    QueueEntrySchema,
+    'MatchmakingQueue'
 );

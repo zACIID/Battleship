@@ -1,36 +1,41 @@
-import {Router, Request, Response} from 'express';
-import {Types} from 'mongoose';
+import { Router, Request, Response } from 'express';
+import { Types } from 'mongoose';
 
-import {ChatDocument, getChatById, deleteChat} from '../models/chat/chat';
-import {Message, MessageSubDocument} from '../models/chat/message';
-import {authenticateToken} from './auth-routes';
-import {skipLimitChecker, retrieveChatId, retrieveId, retrieveUserId} from './utils/param-checking';
+import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
+import { Message, MessageSubDocument } from '../models/chat/message';
+import { authenticateToken } from './auth-routes';
+import {
+    skipLimitChecker,
+    retrieveChatId,
+    retrieveId,
+    retrieveUserId,
+} from './utils/param-checking';
 
 export const router = Router();
 
 interface ChatEndpointLocals {
-  chatId: Types.ObjectId;
-  userId: Types.ObjectId;
-  skip: string;
-  limit: string;
+    chatId: Types.ObjectId;
+    userId: Types.ObjectId;
+    skip: string;
+    limit: string;
 }
 
 interface ChatEndpointResponse extends Response {
-  locals: ChatEndpointLocals;
+    locals: ChatEndpointLocals;
 }
 
 interface UserPostBody {
-  userId: string;
+    userId: string;
 }
 
 interface UserPostRequest extends Request {
-  body: UserPostBody;
+    body: UserPostBody;
 }
 
 interface ResponseMessage {
-  author: string;
-  content: string;
-  timestamp: number;
+    author: string;
+    content: string;
+    timestamp: number;
 }
 
 const userErr: string = 'No user with that identifier';
@@ -40,36 +45,36 @@ const userErr: string = 'No user with that identifier';
  *   Return the entire chat object or a 404 error if chat is not found
  */
 router.get(
-  '/chats/:chatId',
-  authenticateToken,
-  retrieveChatId,
-  async (req: Request, res: ChatEndpointResponse) => {
-    const chatId: Types.ObjectId = res.locals.chatId;
+    '/chats/:chatId',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
 
-    let chat: ChatDocument;
+        let chat: ChatDocument;
 
-    try {
-      chat = await getChatById(chatId);
-    } catch (err) {
-      return res.status(404).json({
-        timestamp: Math.floor(new Date().getTime() / 1000),
-        errorMessage: err.message,
-        requestPath: req.path,
-      });
+        try {
+            chat = await getChatById(chatId);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+
+        return res.status(200).json({
+            chatId: chat._id,
+            users: chat.users,
+            messages: chat.messages.map((m: MessageSubDocument): ResponseMessage => {
+                return {
+                    author: m.author.toString(),
+                    content: m.content,
+                    timestamp: m.timestamp.getTime() / 1000,
+                };
+            }),
+        });
     }
-
-    return res.status(200).json({
-      chatId: chat._id,
-      users: chat.users,
-      messages: chat.messages.map((m: MessageSubDocument): ResponseMessage => {
-        return {
-          author: m.author.toString(),
-          content: m.content,
-          timestamp: m.timestamp.getTime() / 1000,
-        };
-      }),
-    });
-  }
 );
 
 /**
@@ -77,49 +82,49 @@ router.get(
  *   Returns an empty response or an error 404 if something went wrong
  */
 router.delete(
-  '/chats/:chatId',
-  authenticateToken,
-  retrieveChatId,
-  async (req: Request, res: ChatEndpointResponse) => {
-    const chatId: Types.ObjectId = res.locals.chatId;
+    '/chats/:chatId',
+    authenticateToken,
+    retrieveChatId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
 
-    await deleteChat(chatId).catch((err: Error) => {
-      return res.status(404).json({
-        timestamp: Math.floor(new Date().getTime() / 1000),
-        errorMessage: err.message,
-        requestPath: req.path,
-      });
-    });
+        await deleteChat(chatId).catch((err: Error) => {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        });
 
-    return res.status(204).json();
-  }
+        return res.status(204).json();
+    }
 );
 
 /**
  *   /chats/:chatId/users | POST | Add the user with the provided id (in the request body) to the specified chat |
  */
 router.post(
-  '/chats/:chatId/users',
-  authenticateToken,
-  retrieveChatId,
-  async (req: UserPostRequest, res: ChatEndpointResponse) => {
-    const chatId: Types.ObjectId = res.locals.chatId;
-    let userId: Types.ObjectId;
-    let chat: ChatDocument;
-    try {
-      userId = retrieveId(req.body.userId);
-      chat = await getChatById(chatId);
-      await chat.addUser(userId);
-    } catch (err) {
-      const code: number = err.message === userErr ? 404 : 400;
-      return res.status(code).json({
-        timestamp: Math.floor(new Date().getTime() / 1000),
-        errorMessage: err.message,
-        requestPath: req.path,
-      });
+    '/chats/:chatId/users',
+    authenticateToken,
+    retrieveChatId,
+    async (req: UserPostRequest, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
+        let userId: Types.ObjectId;
+        let chat: ChatDocument;
+        try {
+            userId = retrieveId(req.body.userId);
+            chat = await getChatById(chatId);
+            await chat.addUser(userId);
+        } catch (err) {
+            const code: number = err.message === userErr ? 404 : 400;
+            return res.status(code).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+        return res.status(201).json({ userId: req.body.userId });
     }
-    return res.status(201).json({userId: req.body.userId});
-  }
 );
 
 /**
@@ -127,36 +132,36 @@ router.post(
  *   Returns an empty response or a 404 error
  */
 router.delete(
-  '/chats/:chatId/users/:userId',
-  authenticateToken,
-  retrieveChatId,
-  retrieveUserId,
-  async (req: Request, res: ChatEndpointResponse) => {
-    const chatId: Types.ObjectId = res.locals.chatId;
-    const userId: Types.ObjectId = res.locals.userId;
-    let chat: ChatDocument;
-    try {
-      chat = await getChatById(chatId);
-      await chat.removeUser(userId);
-    } catch (err) {
-      return res.status(404).json({
-        timestamp: Math.floor(new Date().getTime() / 1000),
-        errorMessage: err.message,
-        requestPath: req.path,
-      });
+    '/chats/:chatId/users/:userId',
+    authenticateToken,
+    retrieveChatId,
+    retrieveUserId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        const chatId: Types.ObjectId = res.locals.chatId;
+        const userId: Types.ObjectId = res.locals.userId;
+        let chat: ChatDocument;
+        try {
+            chat = await getChatById(chatId);
+            await chat.removeUser(userId);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+        return res.status(204).json({});
     }
-    return res.status(204).json({});
-  }
 );
 
 interface MessagePostBody {
-  author: string;
-  content: string;
-  timestamp: number;
+    author: string;
+    content: string;
+    timestamp: number;
 }
 
 interface MessagePostRequest extends Request {
-  body: MessagePostBody;
+    body: MessagePostBody;
 }
 
 /**
@@ -164,63 +169,63 @@ interface MessagePostRequest extends Request {
  *  Query params: skip, limit
  */
 router.get(
-  '/chats/:chatId/messages',
-  authenticateToken,
-  skipLimitChecker,
-  retrieveChatId,
-  async (req: Request, res: ChatEndpointResponse) => {
-    try {
-      const chatId: Types.ObjectId = res.locals.chatId;
+    '/chats/:chatId/messages',
+    authenticateToken,
+    skipLimitChecker,
+    retrieveChatId,
+    async (req: Request, res: ChatEndpointResponse) => {
+        try {
+            const chatId: Types.ObjectId = res.locals.chatId;
 
-      // Res.locals assigns '0' string if skip
-      // and limit params are not passed to the request
-      const skip: number = parseInt(res.locals.skip);
-      let limit: number = parseInt(res.locals.limit);
+            // Res.locals assigns '0' string if skip
+            // and limit params are not passed to the request
+            const skip: number = parseInt(res.locals.skip);
+            let limit: number = parseInt(res.locals.limit);
 
-      // Set default value for limit
-      if (limit === 0) {
-        limit = 50;
-      }
+            // Set default value for limit
+            if (limit === 0) {
+                limit = 50;
+            }
 
-      const chat: ChatDocument = await getChatById(chatId);
-      const resMessages: ResponseMessage[] = chat.messages.map((m: MessageSubDocument) => {
-        return {
-          author: m.author.toString(),
-          content: m.content,
-          timestamp: m.timestamp.getTime() / 1000,
-        };
-      });
+            const chat: ChatDocument = await getChatById(chatId);
+            const resMessages: ResponseMessage[] = chat.messages.map((m: MessageSubDocument) => {
+                return {
+                    author: m.author.toString(),
+                    content: m.content,
+                    timestamp: m.timestamp.getTime() / 1000,
+                };
+            });
 
-      // Apply pagination params
-      const paginatedMessages: ResponseMessage[] = resMessages.slice(skip, skip + limit);
+            // Apply pagination params
+            const paginatedMessages: ResponseMessage[] = resMessages.slice(skip, skip + limit);
 
-      // Sort messages by most recent timestamp (bigger = first)
-      paginatedMessages.sort((a: ResponseMessage, b: ResponseMessage) => {
-        const timeA = new Date(a.timestamp);
-        const timeB = new Date(b.timestamp);
+            // Sort messages by most recent timestamp (bigger = first)
+            paginatedMessages.sort((a: ResponseMessage, b: ResponseMessage) => {
+                const timeA = new Date(a.timestamp);
+                const timeB = new Date(b.timestamp);
 
-        if (timeA < timeB) {
-          return 1;
-        } else if (timeA > timeB) {
-          return -1;
-        } else {
-          return 0;
+                if (timeA < timeB) {
+                    return 1;
+                } else if (timeA > timeB) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+
+            const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
+            return res.status(200).json({
+                messages: paginatedMessages,
+                nextPage: nextPage,
+            });
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
         }
-      });
-
-      const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
-      return res.status(200).json({
-        messages: paginatedMessages,
-        nextPage: nextPage,
-      });
-    } catch (err) {
-      return res.status(404).json({
-        timestamp: Math.floor(new Date().getTime() / 1000),
-        errorMessage: err.message,
-        requestPath: req.path,
-      });
     }
-  }
 );
 
 /**
@@ -228,24 +233,24 @@ router.get(
  *   Returns the new message or an error 500
  */
 router.post(
-  '/chats/:chatId/messages',
-  authenticateToken,
-  retrieveChatId,
-  async (req: MessagePostRequest, res: ChatEndpointResponse) => {
-    try {
-      const chatId: Types.ObjectId = res.locals.chatId;
-      const chat: ChatDocument = await getChatById(chatId);
-      const {author, timestamp, content} = req.body;
+    '/chats/:chatId/messages',
+    authenticateToken,
+    retrieveChatId,
+    async (req: MessagePostRequest, res: ChatEndpointResponse) => {
+        try {
+            const chatId: Types.ObjectId = res.locals.chatId;
+            const chat: ChatDocument = await getChatById(chatId);
+            const { author, timestamp, content } = req.body;
 
-      await chat.addMessage(content, new Date(timestamp * 1000), Types.ObjectId(author));
+            await chat.addMessage(content, new Date(timestamp * 1000), Types.ObjectId(author));
 
-      return res.status(201).json(req.body);
-    } catch (err) {
-      return res.status(400).json({
-        timestamp: Math.floor(new Date().getTime() / 1000),
-        errorMessage: err.message,
-        requestPath: req.path,
-      });
+            return res.status(201).json(req.body);
+        } catch (err) {
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
     }
-  }
 );

@@ -1,8 +1,8 @@
-import {Types} from 'mongoose';
-import {Server} from 'socket.io';
+import { Types } from 'mongoose';
+import { Server } from 'socket.io';
 
-import {RoomEmitter} from './base/room-emitter';
-import {Message} from '../../../models/chat/message';
+import { RoomEmitter } from './base/room-emitter';
+import { Message } from '../../../models/chat/message';
 
 /**
  * Class that wraps socket.io functionality to generate a "chat-message" event
@@ -11,13 +11,13 @@ import {Message} from '../../../models/chat/message';
  * in order to retrieve any new messages sent.
  */
 export class ChatMessageEmitter extends RoomEmitter<Message> {
-  /**
-   * @param ioServer Socket.io server instance
-   * @param chatId id of the chat whose users have to be notified
-   */
-  public constructor(ioServer: Server, chatId: Types.ObjectId) {
-    const eventName: string = `chat-message`;
+    /**
+     * @param ioServer Socket.io server instance
+     * @param chatId id of the chat whose users have to be notified
+     */
+    public constructor(ioServer: Server, chatId: Types.ObjectId) {
+        const eventName: string = `chat-message`;
 
-    super(ioServer, eventName, chatId.toString());
-  }
+        super(ioServer, eventName, chatId.toString());
+    }
 }

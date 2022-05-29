@@ -1,8 +1,8 @@
-import {Socket} from 'socket.io';
-import {ClientListener} from './base/client-listener';
+import { Socket } from 'socket.io';
+import { ClientListener } from './base/client-listener';
 
 interface MatchJoinData {
-  matchId: string;
+    matchId: string;
 }
 
 /**
@@ -12,19 +12,19 @@ interface MatchJoinData {
  * specific match, so that he can listen only to events of such match.
  */
 export class MatchJoinedListener extends ClientListener<MatchJoinData> {
-  constructor(client: Socket) {
-    super(client, 'match-joined');
-  }
+    constructor(client: Socket) {
+        super(client, 'match-joined');
+    }
 
-  public listen(): void {
-    super.listen((joinData: MatchJoinData): Promise<void> => {
-      this.client.join(joinData.matchId);
+    public listen(): void {
+        super.listen((joinData: MatchJoinData): Promise<void> => {
+            this.client.join(joinData.matchId);
 
-      this.client.on('match-left', (joinData: MatchJoinData) => {
-        this.client.leave(joinData.matchId);
-      });
+            this.client.on('match-left', (joinData: MatchJoinData) => {
+                this.client.leave(joinData.matchId);
+            });
 
-      return Promise.resolve();
-    });
-  }
+            return Promise.resolve();
+        });
+    }
 }

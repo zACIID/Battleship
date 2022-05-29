@@ -1,8 +1,8 @@
-import {Types} from 'mongoose';
-import {Server} from 'socket.io';
+import { Types } from 'mongoose';
+import { Server } from 'socket.io';
 
-import {RoomEmitter} from './base/room-emitter';
-import {GenericMessage} from './base/generic-message';
+import { RoomEmitter } from './base/room-emitter';
+import { GenericMessage } from './base/generic-message';
 
 /**
  * Class that wraps socket.io functionality to generate an "opponent-ready" event.
@@ -10,20 +10,20 @@ import {GenericMessage} from './base/generic-message';
  * can be notified when their opponent is ready.
  */
 export class OpponentReadyEmitter extends RoomEmitter<GenericMessage> {
-  /**
-   * @param ioServer Socket.io server instance
-   * @param playerId id of the user that has to be notified
-   */
-  public constructor(ioServer: Server, playerId: Types.ObjectId) {
-    const eventName: string = `opponent-ready`;
+    /**
+     * @param ioServer Socket.io server instance
+     * @param playerId id of the user that has to be notified
+     */
+    public constructor(ioServer: Server, playerId: Types.ObjectId) {
+        const eventName: string = `opponent-ready`;
 
-    super(ioServer, eventName, playerId.toString());
-  }
+        super(ioServer, eventName, playerId.toString());
+    }
 
-  emit(): void {
-    // What is sent here is not really important
-    super.emit({
-      message: 'Opponent is ready',
-    });
-  }
+    emit(): void {
+        // What is sent here is not really important
+        super.emit({
+            message: 'Opponent is ready',
+        });
+    }
 }

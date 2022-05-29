@@ -3,5 +3,5 @@
  * message to send via Socket.io
  */
 export interface GenericMessage {
-  message: string;
+    message: string;
 }

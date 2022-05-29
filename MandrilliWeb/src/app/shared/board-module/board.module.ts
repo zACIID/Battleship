@@ -1,9 +1,9 @@
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {BoardComponent} from './board/board.component';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BoardComponent } from './board/board.component';
 
 @NgModule({
-  declarations: [BoardComponent],
-  imports: [CommonModule],
+    declarations: [BoardComponent],
+    imports: [CommonModule],
 })
 export class BoardModule {}
