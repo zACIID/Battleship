@@ -66,7 +66,6 @@ router.delete(
             const entry: QueueEntryDocument =
               await MatchmakingQueueModel.findOne({ userId: userToUnQueue });
 
-            // TODO non capisco perché non me lo trovi
             if (entry === null) {
                 throw new Error("User not found in queue");
             }
