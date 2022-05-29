@@ -18,7 +18,7 @@ interface MatchRequestAcceptedData {
  * Class that wraps Socket.io functionality to listen
  * to a 'match-request-accepted' client event.
  * Such event happens when a user accepts a match request.
- * The match is created between the two users, who are then notified.
+ * The match is then created between the two users, who are then notified.
  */
 export class MatchRequestAcceptedListener extends ClientListenerNotifier<
     MatchRequestAcceptedData,
@@ -33,6 +33,8 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
     }
 
     public async listen(): Promise<void> {
+        // Create two emitters, one for each player,
+        // which will send the notification containing the match id to play in
         const emitterProvider = (
             eventData: MatchRequestAcceptedData
         ): Promise<MatchFoundEmitter[]> => {
@@ -43,6 +45,7 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
             return Promise.resolve(emitters);
         };
 
+        // Create the match and the data containing the match id
         const emitDataProvider = async (eventData: MatchRequestAcceptedData): Promise<MatchData> => {
             const p1Id: Types.ObjectId = Types.ObjectId(eventData.player1Id);
             const p2Id: Types.ObjectId = Types.ObjectId(eventData.player2Id);
