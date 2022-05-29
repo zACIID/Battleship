@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { MatchData, MatchFoundEmitter } from '../emitters/match-found';
-import { createMatch, MatchDocument, MatchModel } from '../../../models/match/match';
+import { createMatch, MatchDocument } from '../../../models/match/match';
 
 /**
  * Interface that represents the data received

@@ -8,17 +8,17 @@ interface MatchJoinData {
 /**
  * Class that wraps Socket.io functionality to listen
  * to a 'match-joined' client event.
- * Such event allows the client to join a Socket.io room for some
- * specific match, so that he can listen only to socket-io-events of such match.
+ * Such event allows the client to leave a Socket.io room for some
+ * specific match, so that he can stop listening to the events of such match.
  */
-export class MatchJoinedListener extends ClientListener<MatchJoinData> {
+export class MatchLeftListener extends ClientListener<MatchJoinData> {
     constructor(client: Socket) {
-        super(client, 'match-joined');
+        super(client, 'match-left');
     }
 
     public listen(): void {
         super.listen((joinData: MatchJoinData): Promise<void> => {
-            this.client.join(joinData.matchId);
+            this.client.leave(joinData.matchId);
 
             return Promise.resolve();
         });

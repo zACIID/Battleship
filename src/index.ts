@@ -17,6 +17,8 @@ import { ServerJoinedListener } from './events/socket-io/client-listeners/server
 import { MatchRequestAcceptedListener } from './events/socket-io/client-listeners/match-request-accepted';
 import { FriendRequestAcceptedListener } from './events/socket-io/client-listeners/friend-request-accepted';
 import { registerRoutes } from './routes/utils/register-routes';
+import { ChatLeftListener } from './events/socket-io/client-listeners/chat-left';
+import { MatchLeftListener } from './events/socket-io/client-listeners/match-left';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -106,9 +108,15 @@ ioServer.on('connection', async function (client) {
     const chatJoined: ChatJoinedListener = new ChatJoinedListener(client);
     chatJoined.listen();
 
+    const chatLeft: ChatLeftListener = new ChatLeftListener(client);
+    chatLeft.listen();
+
     // A client joins/leaves a specific match room
     const matchJoined: MatchJoinedListener = new MatchJoinedListener(client);
     matchJoined.listen();
+
+    const matchLeft: MatchLeftListener = new MatchLeftListener(client);
+    matchLeft.listen();
 
     /* Other listeners for client socket-io-events */
 
