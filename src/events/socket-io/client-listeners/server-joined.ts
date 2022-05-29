@@ -1,8 +1,8 @@
-import { Socket } from 'socket.io';
-import { ClientListener } from './base/client-listener';
+import {Socket} from 'socket.io';
+import {ClientListener} from './base/client-listener';
 
 interface ServerJoinData {
-    userId: string;
+  userId: string;
 }
 
 /**
@@ -13,13 +13,13 @@ interface ServerJoinData {
  * This allows the server to send events to specific users.
  */
 export class ServerJoinedListener extends ClientListener<ServerJoinData> {
-    constructor(client: Socket) {
-        super(client, 'server-joined');
-    }
+  constructor(client: Socket) {
+    super(client, 'server-joined');
+  }
 
-    public listen() {
-        super.listen( (joinData: ServerJoinData): Promise<void> => {
-            return Promise.resolve(this.client.join(joinData.userId));
-        });
-    }
+  public listen() {
+    super.listen((joinData: ServerJoinData): Promise<void> => {
+      return Promise.resolve(this.client.join(joinData.userId));
+    });
+  }
 }

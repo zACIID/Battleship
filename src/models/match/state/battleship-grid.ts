@@ -1,13 +1,13 @@
-import { Schema, Types } from 'mongoose';
+import {Schema, Types} from 'mongoose';
 
-import { Ship, ShipSchema, ShipSubDocument } from './ship';
+import {Ship, ShipSchema, ShipSubDocument} from './ship';
 import {
-    areCoordinatesEqual,
-    GridCoordinates,
-    GridCoordinatesSchema,
-    GridCoordinatesSubDocument,
+  areCoordinatesEqual,
+  GridCoordinates,
+  GridCoordinatesSchema,
+  GridCoordinatesSubDocument,
 } from './grid-coordinates';
-import { Shot } from './shot';
+import {Shot} from './shot';
 
 /**
  * Interface representing a Battleship grid.
@@ -15,55 +15,55 @@ import { Shot } from './shot';
  * shots that have been fired on (received by) this grid.
  */
 export interface BattleshipGrid {
-    /**
-     * Ships positioned on the grid.
-     */
-    ships: Ship[];
+  /**
+   * Ships positioned on the grid.
+   */
+  ships: Ship[];
 
-    /**
-     * Coordinates where a shot has been fired on this grid.
-     */
-    shotsReceived: GridCoordinates[];
+  /**
+   * Coordinates where a shot has been fired on this grid.
+   */
+  shotsReceived: GridCoordinates[];
 }
 
 /**
  * Interface that represents a grid sub-document
  */
 export interface BattleshipGridSubDocument extends BattleshipGrid, Types.EmbeddedDocument {
-    ships: Types.DocumentArray<ShipSubDocument>;
-    shotsReceived: Types.DocumentArray<GridCoordinatesSubDocument>;
+  ships: Types.DocumentArray<ShipSubDocument>;
+  shotsReceived: Types.DocumentArray<GridCoordinatesSubDocument>;
 
-    /**
-     * Adds the specified shot to the grid
-     * @param s shot to add
-     * @return a promise containing the updated (saved) document
-     * @throws error if shot has already been fired
-     */
-    addShot(s: Shot): Promise<BattleshipGridSubDocument>;
+  /**
+   * Adds the specified shot to the grid
+   * @param s shot to add
+   * @return a promise containing the updated (saved) document
+   * @throws error if shot has already been fired
+   */
+  addShot(s: Shot): Promise<BattleshipGridSubDocument>;
 }
 
 export const BattleshipGridSchema = new Schema<BattleshipGridSubDocument>(
-    {
-        ships: {
-            type: [ShipSchema],
-            default: [],
-        },
-        shotsReceived: {
-            type: [GridCoordinatesSchema],
-            default: [],
-        },
+  {
+    ships: {
+      type: [ShipSchema],
+      default: [],
     },
-    { _id: false }
+    shotsReceived: {
+      type: [GridCoordinatesSchema],
+      default: [],
+    },
+  },
+  {_id: false}
 );
 
 BattleshipGridSchema.methods.addShot = function (s: Shot): Promise<BattleshipGridSubDocument> {
-    this.shotsReceived.forEach((c: GridCoordinates) => {
-        if (areCoordinatesEqual(c, s.coordinates)) {
-            throw new Error(`Shot was already fired at coordinates (${c.row}, ${c.col})`);
-        }
-    });
+  this.shotsReceived.forEach((c: GridCoordinates) => {
+    if (areCoordinatesEqual(c, s.coordinates)) {
+      throw new Error(`Shot was already fired at coordinates (${c.row}, ${c.col})`);
+    }
+  });
 
-    this.shotsReceived.push(s.coordinates);
+  this.shotsReceived.push(s.coordinates);
 
-    return this.save();
+  return this.save();
 };
