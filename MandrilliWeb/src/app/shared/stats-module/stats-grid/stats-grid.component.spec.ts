@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { StatsGridComponent } from './stats-grid.component';
+import {StatsGridComponent} from './stats-grid.component';
 
 describe('StatsGridComponent', () => {
   let component: StatsGridComponent;
@@ -8,9 +8,8 @@ describe('StatsGridComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StatsGridComponent ]
-    })
-    .compileComponents();
+      declarations: [StatsGridComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

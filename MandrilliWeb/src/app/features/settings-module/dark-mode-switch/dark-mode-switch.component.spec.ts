@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DarkModeSwitchComponent } from './dark-mode-switch.component';
+import {DarkModeSwitchComponent} from './dark-mode-switch.component';
 
 describe('DarkModeSwitchComponent', () => {
   let component: DarkModeSwitchComponent;
@@ -8,9 +8,8 @@ describe('DarkModeSwitchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DarkModeSwitchComponent ]
-    })
-    .compileComponents();
+      declarations: [DarkModeSwitchComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

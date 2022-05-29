@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RemainingShipComponent } from './remaining-ship.component';
+import {RemainingShipComponent} from './remaining-ship.component';
 
 describe('RemainingShipComponent', () => {
   let component: RemainingShipComponent;
@@ -8,9 +8,8 @@ describe('RemainingShipComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RemainingShipComponent ]
-    })
-    .compileComponents();
+      declarations: [RemainingShipComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

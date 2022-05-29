@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OptionalButtonComponent } from './optional-button.component';
+import {OptionalButtonComponent} from './optional-button.component';
 
 describe('OptionalButtonComponent', () => {
   let component: OptionalButtonComponent;
@@ -8,9 +8,8 @@ describe('OptionalButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OptionalButtonComponent ]
-    })
-    .compileComponents();
+      declarations: [OptionalButtonComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ObserversScreenComponent } from './observers-screen.component';
+import {ObserversScreenComponent} from './observers-screen.component';
 
 describe('ObserversScreenComponent', () => {
   let component: ObserversScreenComponent;
@@ -8,9 +8,8 @@ describe('ObserversScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ObserversScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [ObserversScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

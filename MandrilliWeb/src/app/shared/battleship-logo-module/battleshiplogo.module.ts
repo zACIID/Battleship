@@ -1,18 +1,11 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LogoComponent } from './logo/logo.component';
-import { IconComponent } from './icon/icon.component';
-
-
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {LogoComponent} from './logo/logo.component';
+import {IconComponent} from './icon/icon.component';
 
 @NgModule({
-  declarations: [
-    LogoComponent,
-    IconComponent
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [LogoComponent, IconComponent]
+  declarations: [LogoComponent, IconComponent],
+  imports: [CommonModule],
+  exports: [LogoComponent, IconComponent],
 })
-export class BattleshiplogoModule { }
+export class BattleshiplogoModule {}

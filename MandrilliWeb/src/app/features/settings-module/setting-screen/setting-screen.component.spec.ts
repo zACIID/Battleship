@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SettingScreenComponent } from './setting-screen.component';
+import {SettingScreenComponent} from './setting-screen.component';
 
 describe('SettingScreenComponent', () => {
   let component: SettingScreenComponent;
@@ -8,9 +8,8 @@ describe('SettingScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SettingScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [SettingScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

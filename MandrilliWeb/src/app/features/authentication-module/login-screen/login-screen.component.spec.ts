@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LoginScreenComponent } from './login-screen.component';
+import {LoginScreenComponent} from './login-screen.component';
 
 describe('LoginScreenComponent', () => {
   let component: LoginScreenComponent;
@@ -8,9 +8,8 @@ describe('LoginScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoginScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [LoginScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

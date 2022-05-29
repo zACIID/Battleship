@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { HistorySidebarComponent } from './history-sidebar.component';
+import {HistorySidebarComponent} from './history-sidebar.component';
 
 describe('HistorySidebarComponent', () => {
   let component: HistorySidebarComponent;
@@ -8,9 +8,8 @@ describe('HistorySidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HistorySidebarComponent ]
-    })
-    .compileComponents();
+      declarations: [HistorySidebarComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

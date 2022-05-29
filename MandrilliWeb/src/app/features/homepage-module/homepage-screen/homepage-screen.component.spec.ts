@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { HomepageScreenComponent } from './homepage-screen.component';
+import {HomepageScreenComponent} from './homepage-screen.component';
 
 describe('HomepageScreenComponent', () => {
   let component: HomepageScreenComponent;
@@ -8,9 +8,8 @@ describe('HomepageScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HomepageScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [HomepageScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-rank-overview',
   templateUrl: './rank-overview.component.html',
-  styleUrls: ['./rank-overview.component.css']
+  styleUrls: ['./rank-overview.component.css'],
 })
 export class RankOverviewComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

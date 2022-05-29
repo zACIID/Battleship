@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ModeratorSectionComponent } from './moderator-section.component';
+import {ModeratorSectionComponent} from './moderator-section.component';
 
 describe('ModeratorSectionComponent', () => {
   let component: ModeratorSectionComponent;
@@ -8,9 +8,8 @@ describe('ModeratorSectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModeratorSectionComponent ]
-    })
-    .compileComponents();
+      declarations: [ModeratorSectionComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

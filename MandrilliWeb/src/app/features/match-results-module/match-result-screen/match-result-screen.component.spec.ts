@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MatchResultScreenComponent } from './match-result-screen.component';
+import {MatchResultScreenComponent} from './match-result-screen.component';
 
 describe('MatchResultScreenComponent', () => {
   let component: MatchResultScreenComponent;
@@ -8,9 +8,8 @@ describe('MatchResultScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MatchResultScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [MatchResultScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PreparationPhaseScreenComponent } from './preparation-phase-screen.component';
+import {PreparationPhaseScreenComponent} from './preparation-phase-screen.component';
 
 describe('PreparationPhaseScreenComponent', () => {
   let component: PreparationPhaseScreenComponent;
@@ -8,9 +8,8 @@ describe('PreparationPhaseScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PreparationPhaseScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [PreparationPhaseScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

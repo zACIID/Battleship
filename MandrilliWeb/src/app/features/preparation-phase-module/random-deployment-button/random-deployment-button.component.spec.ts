@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RandomDeploymentButtonComponent } from './random-deployment-button.component';
+import {RandomDeploymentButtonComponent} from './random-deployment-button.component';
 
 describe('RandomDeploymentButtonComponent', () => {
   let component: RandomDeploymentButtonComponent;
@@ -8,9 +8,8 @@ describe('RandomDeploymentButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RandomDeploymentButtonComponent ]
-    })
-    .compileComponents();
+      declarations: [RandomDeploymentButtonComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

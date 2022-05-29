@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ProfileScreenComponent } from './profile-screen.component';
+import {ProfileScreenComponent} from './profile-screen.component';
 
 describe('ProfileScreenComponent', () => {
   let component: ProfileScreenComponent;
@@ -8,9 +8,8 @@ describe('ProfileScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProfileScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [ProfileScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

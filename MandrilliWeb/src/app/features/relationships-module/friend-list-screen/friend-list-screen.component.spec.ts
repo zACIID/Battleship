@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FriendListScreenComponent } from './friend-list-screen.component';
+import {FriendListScreenComponent} from './friend-list-screen.component';
 
 describe('FriendListScreenComponent', () => {
   let component: FriendListScreenComponent;
@@ -8,9 +8,8 @@ describe('FriendListScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FriendListScreenComponent ]
-    })
-    .compileComponents();
+      declarations: [FriendListScreenComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

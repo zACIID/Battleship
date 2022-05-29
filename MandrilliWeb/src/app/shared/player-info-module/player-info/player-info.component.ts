@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'player-info',
   templateUrl: './player-info.component.html',
-  styleUrls: ['./player-info.component.css']
+  styleUrls: ['./player-info.component.css'],
 })
 export class PlayerInfoComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

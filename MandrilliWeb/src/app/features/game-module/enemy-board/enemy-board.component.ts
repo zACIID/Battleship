@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-enemy-board',
   templateUrl: './enemy-board.component.html',
-  styleUrls: ['./enemy-board.component.css']
+  styleUrls: ['./enemy-board.component.css'],
 })
 export class EnemyBoardComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

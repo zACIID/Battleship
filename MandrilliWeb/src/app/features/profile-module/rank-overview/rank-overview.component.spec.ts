@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RankOverviewComponent } from './rank-overview.component';
+import {RankOverviewComponent} from './rank-overview.component';
 
 describe('RankOverviewComponent', () => {
   let component: RankOverviewComponent;
@@ -8,9 +8,8 @@ describe('RankOverviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RankOverviewComponent ]
-    })
-    .compileComponents();
+      declarations: [RankOverviewComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { StatBlockComponent } from './stat-block.component';
+import {StatBlockComponent} from './stat-block.component';
 
 describe('StatBlockComponent', () => {
   let component: StatBlockComponent;
@@ -8,9 +8,8 @@ describe('StatBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StatBlockComponent ]
-    })
-    .compileComponents();
+      declarations: [StatBlockComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

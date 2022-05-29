@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BattleButtonComponent } from './battle-button.component';
+import {BattleButtonComponent} from './battle-button.component';
 
 describe('BattleButtonComponent', () => {
   let component: BattleButtonComponent;
@@ -8,9 +8,8 @@ describe('BattleButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BattleButtonComponent ]
-    })
-    .compileComponents();
+      declarations: [BattleButtonComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
