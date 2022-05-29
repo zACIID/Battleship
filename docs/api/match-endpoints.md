@@ -32,6 +32,10 @@
       - [Url Parameters](#url-parameters-3)
       - [Example Request Body](#example-request-body-3)
       - [Example Response Body](#example-response-body-4)
+    - [Set Player Ready State](#set-player-ready-state)
+      - [Url Parameters](#url-parameters-4)
+      - [Example Request Body](#example-request-body-4)
+      - [Example Response Body](#example-response-body-5)
 
 ## Resources
 
@@ -379,6 +383,55 @@ A [GridCoordinates](#gridcoordinates) resource representing the coordinates of t
 {
     "row": 0,
     "col": 1
+}
+```
+
+##### Error
+
+- Status Codes: 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Set Player Ready State
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /api/matches/:matchId/players/:userId/ready | PUT | Change the ready state of the player in the match |
+
+#### Url Parameters
+
+| Name    | Data Type | Description |
+|:--------| :-------- | :---------- |
+| matchId | string | Id of the match where player is playing |
+| userId  | string | Id of the player whose state needs to be changed |
+
+#### Example Request Body
+
+An object containing a boolean, which represents the new ready state of the player
+
+```json
+{
+    "ready": true
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 200
+- An object containing a boolean, which represents the updated ready state of the player
+
+```json
+{
+    "ready": true
 }
 ```
 

@@ -15,6 +15,11 @@ export interface PlayerState {
      * Grid containing information about the ships and the shots received by the player
      */
     grid: BattleshipGrid;
+
+    /**
+     * True if player has completed his positioning phase, false otheriwse
+     */
+    isReady: boolean;
 }
 
 /**
@@ -37,6 +42,10 @@ export const PlayerStateSchema = new Schema<PlayerStateSubDocument>(
             type: BattleshipGridSchema,
             default: () => ({}),
         },
+        isReady: {
+            type: SchemaTypes.Boolean,
+            default: false
+        }
     },
     { _id: false }
 );

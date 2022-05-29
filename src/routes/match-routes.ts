@@ -12,7 +12,12 @@ import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
 import { GridCoordinates } from '../models/match/state/grid-coordinates';
 import { BattleshipGrid } from '../models/match/state/battleship-grid';
+import { PlayerStateSubDocument } from '../models/match/state/player-state';
 import { Shot } from '../models/match/state/shot';
+import { OpponentStateChangedEmitter } from '../events/socket-io/emitters/opponent-state-changed';
+import { PositioningCompletedEmitter } from '../events/socket-io/emitters/postioning-completed';
+import { Emitter } from '../events/socket-io/emitters/base/emitter';
+import { ioServer } from '../index';
 
 export const router = Router();
 
@@ -204,11 +209,7 @@ router.post(
 
             const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
             if (match === null) {
-                return res.status(404).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
-                    errorMessage: `Match with id ${matchId}not found`,
-                    requestPath: req.path,
-                });
+                throw new Error(`Match with id ${matchId}not found`);
             }
 
             await match.registerShot(shot);
@@ -223,3 +224,105 @@ router.post(
         }
     }
 );
+
+interface PlayerReadyRequestBody {
+    ready: boolean;
+}
+
+interface PlayerReadyRequest extends Request {
+    body: PlayerReadyRequestBody;
+}
+
+/**
+ *
+ */
+router.put(
+    '/matches/:matchId/players/:userId/ready',
+    authenticateToken,
+    retrieveMatchId,
+    retrieveUserId,
+    async (req: PlayerReadyRequest, res: Response) => {
+        try {
+            const matchId: Types.ObjectId = res.locals.matchId;
+            const playerId: Types.ObjectId = res.locals.userId;
+            const newReadyState: boolean = req.body.ready;
+
+            const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
+            if (match === null) {
+                throw new Error(`Match with id ${matchId}not found`);
+            }
+
+            // Update the ready state of the player
+            await setReadyState(match, playerId, newReadyState);
+
+            // Send notifications to the players based on their states
+            notifyPlayers(match, playerId, newReadyState);
+
+            return res.status(200).json(req.body);
+        } catch (err) {
+            return res.status(400).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
+
+/**
+ * Sets the isReady field of the player in the match with the new provided value
+ *
+ * @param match document representing the match that the player is in
+ * @param playerId id of the player whose state needs to be changed
+ * @param isReady value to set
+ */
+const setReadyState = async (match: MatchDocument, playerId: Types.ObjectId, isReady: boolean): Promise<void> => {
+    let playerState: PlayerStateSubDocument = null;
+    if (match.player1.playerId.equals(playerId)) {
+        playerState = match.player1;
+    }
+    else {
+        playerState = match.player2;
+    }
+
+    // Set player state as ready and save the main match document
+    playerState.isReady = isReady;
+    await match.save();
+}
+
+const getOpponentId = (match: MatchDocument, playerId: Types.ObjectId): Types.ObjectId => {
+    const player1Id: Types.ObjectId = match.player1.playerId;
+    const player2Id: Types.ObjectId = match.player2.playerId;
+
+    // Opponent is the opposite player
+    let opponentId: Types.ObjectId = null;
+    if (player1Id.equals(playerId)) {
+        opponentId = player2Id;
+    } else if (player2Id.equals(playerId)) {
+        opponentId = player1Id;
+    } else {
+        throw new Error(`PlayerId '${playerId}' not in match`);
+    }
+
+    return opponentId;
+}
+
+/**
+ * Notify the players if both are ready that the positioning phase is completed,
+ * else notify just the opponent if only one player is ready
+ *
+ * @param match match that the two players are in
+ * @param playerId id of the player that changed his ready state
+ * @param newState value of the ready state set by the player
+ */
+const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState: boolean) => {
+    let notifier: Emitter<Object> = null;
+    if (match.player1.isReady && match.player2.isReady) {
+        notifier = new PositioningCompletedEmitter(ioServer, match._id);
+    }
+    else {
+        const opponentId: Types.ObjectId = getOpponentId(match, playerId);
+        notifier = new OpponentStateChangedEmitter(ioServer, opponentId, newState);
+    }
+    notifier.emit();
+}

@@ -14,7 +14,7 @@ export abstract class Emitter<T> {
         this.eventName = eventName;
     }
 
-    public emit(data: T) {
+    public emit(data?: T) {
         this.ioServer.emit(this.eventName, data);
     }
 }

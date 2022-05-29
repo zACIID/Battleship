@@ -6,6 +6,7 @@ import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from './match-sta
 import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/player-state';
 import { BattleshipGrid, BattleshipGridSubDocument } from './state/battleship-grid';
 import { Shot } from './state/shot';
+import { GridCoordinates } from './state/grid-coordinates';
 
 export interface Match {
     player1: PlayerState;
@@ -81,6 +82,19 @@ MatchSchema.methods.registerShot = function (
         ? this.player2
         : this.player1;
     const receivingGrid: BattleshipGridSubDocument = receivingPlayer.grid;
+
+    let isShotDuplicate: boolean = false;
+    const shotCoords: GridCoordinates = shot.coordinates;
+    receivingGrid.shotsReceived.forEach((coords) => {
+        if (coords.row === shotCoords.row && coords.col === shotCoords.col) {
+            isShotDuplicate = true;
+        }
+    })
+
+    if (isShotDuplicate) {
+        return Promise.reject(new Error(`Coordinates (${shotCoords.row}, ${shotCoords.col})`
+                                            + 'have already been shot'));
+    }
 
     receivingGrid.shotsReceived.push(shot.coordinates);
 
