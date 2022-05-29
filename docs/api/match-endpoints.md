@@ -105,7 +105,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches | POST | Create a new match |
+| /api/matches | POST | Create a new match |
 
 #### Example Request Body
 
@@ -172,7 +172,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId | GET | Retrieve the match with the specified id |
+| /api/matches/:matchId | GET | Retrieve the match with the specified id |
 
 #### Url Parameters
 
@@ -221,7 +221,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/stats | PUT | Update the statistics of the specified match |
+| /api/matches/:matchId/stats | PATCH | Update the statistics of the specified match |
 
 #### Url Parameters
 
@@ -231,12 +231,11 @@
 
 #### Example Request Body
 
-A full [MatchStats](#matchstats) resource that will replace the old one.
+A [MatchStats](#matchstats) resource, without the startTime field, that will replace the old one.
 
 ```json
 {
     "winner": "winner-user-id",
-    "startTime": 1651881600,
     "endTime": 1651881600,
     "shipsDestroyed": 5,
     "totalShots": 40
@@ -248,12 +247,11 @@ A full [MatchStats](#matchstats) resource that will replace the old one.
 ##### Success
 
 - Status Code: 200
-- The full [MatchStats](#matchstats) resource that replaced the old one
+- The [MatchStats](#matchstats) resource, without the startTime field, that replaced the old one
 
 ```json
 {
     "winner": "winner-user-id",
-    "startTime": 1651881600,
     "endTime": 1651881600,
     "shipsDestroyed": 5,
     "totalShots": 40
@@ -277,14 +275,14 @@ A full [MatchStats](#matchstats) resource that will replace the old one.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/players/:playerId/grid | PUT | Update the grid of the specified player of the match |
+| /api/matches/:matchId/players/:userId/grid | PUT | Update the grid of the specified player of the match |
 
 #### Url Parameters
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
 | matchId | string | Id of the match to update the grid of |
-| playerId | string | Id of the player to update the grid of |
+| userId | string | Id of the player to update the grid of |
 
 #### Example Request Body
 
@@ -350,14 +348,14 @@ A full [BattleshipGrid](#battleshipgrid) resource that will replace the old one.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /matches/:matchId/players/:playerId/shotsFired | POST | Add a shot made by the specified player |
+| /api/matches/:matchId/players/:userId/shotsFired | POST | Add a shot made by the specified player |
 
 #### Url Parameters
 
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| matchId | string | Id of the match to update the grid of |
-| playerId | string | Id of the player to update the grid of |
+| Name    | Data Type | Description |
+|:--------| :-------- | :---------- |
+| matchId | string | Id of the match to fire the shot in |
+| userId  | string | Id of the player that fires the shot |
 
 #### Example Request Body
 

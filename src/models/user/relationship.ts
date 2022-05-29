@@ -1,11 +1,11 @@
-import { Schema, SchemaTypes, Types } from 'mongoose';
+import {Schema, SchemaTypes, Types} from 'mongoose';
 
 /**
  * Interface that represents relationship information for some user.
  */
 export interface Relationship {
-    friendId: Types.ObjectId;
-    chatId?: Types.ObjectId;
+  friendId: Types.ObjectId;
+  chatId?: Types.ObjectId;
 }
 
 /**
@@ -13,12 +13,15 @@ export interface Relationship {
  */
 export interface RelationshipSubDocument extends Relationship, Types.EmbeddedDocument {}
 
-export const RelationshipSchema = new Schema<RelationshipSubDocument>({
+export const RelationshipSchema = new Schema<RelationshipSubDocument>(
+  {
     friendId: {
-        type: SchemaTypes.ObjectId,
-        required: true,
+      type: SchemaTypes.ObjectId,
+      required: true,
     },
     chatId: {
-        type: SchemaTypes.ObjectId,
+      type: SchemaTypes.ObjectId,
     },
-}, { _id: false });
+  },
+  {_id: false}
+);

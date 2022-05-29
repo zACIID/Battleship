@@ -41,7 +41,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/notifications | GET | Retrieve the notifications of the specified user |
+| /api/users/:userId/notifications | GET | Retrieve the notifications of the specified user |
 
 #### Url Parameters
 
@@ -90,7 +90,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/notifications | POST | Add a notification to the specified user |
+| /api/users/:userId/notifications | POST | Add a notification to the specified user |
 
 #### Url Parameters
 
@@ -140,7 +140,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /users/:userId/notifications | DELETE | Remove the notification from the specified user |
+| /api/users/:userId/notifications | DELETE | Remove the notification from the specified user |
 
 #### Url Parameters
 

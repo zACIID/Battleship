@@ -32,7 +32,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /moderators/:userId/additions | POST | Check if the user is a moderator and create a new user using request body data |
+| /api/moderators/:userId/additions | POST | Check if the user is a moderator and create a new user using request body data |
 
 #### Url Parameters
 
@@ -83,7 +83,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /moderators/:userId/bans | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
+| /api/moderators/:userId/bans | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
 
 #### Url Parameters
 
