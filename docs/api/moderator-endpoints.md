@@ -45,8 +45,7 @@
 ```json
 {
     "username": "",
-    "password": "",
-    "online": true
+    "password": ""
 }
 ```
 
@@ -62,7 +61,7 @@
     "userId": "",
     "username": "",
     "roles": [], 
-    "online": true
+    "online": false
 }
 ```
 

@@ -297,6 +297,7 @@ UserSchema.methods.addRelationship = async function (
     friendId: Types.ObjectId,
     chatId?: Types.ObjectId
 ): Promise<UserDocument> {
+    // TODO si può rimuovere dato che c'è constraint unique su relationship.friendId
     for (let idx in this.relationships) {
         if (this.relationships[idx].friendId.equals(friendId)) {
             return Promise.reject(new Error('Relationship already existent'));

@@ -1,6 +1,6 @@
 import { Message } from './message';
 
-export interface ApiChat {
+export interface Chat {
     /**
      * Id of the chat
      */

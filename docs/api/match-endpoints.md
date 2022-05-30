@@ -32,7 +32,7 @@
       - [Url Parameters](#url-parameters-3)
       - [Example Request Body](#example-request-body-3)
       - [Example Response Body](#example-response-body-4)
-    - [Set Player Ready State](#set-player-ready-state)
+    - [Set Ready State](#set-ready-state)
       - [Url Parameters](#url-parameters-4)
       - [Example Request Body](#example-request-body-4)
       - [Example Response Body](#example-response-body-5)
@@ -399,7 +399,7 @@ A [GridCoordinates](#gridcoordinates) resource representing the coordinates of t
 }
 ```
 
-### Set Player Ready State
+### Set Ready State
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |

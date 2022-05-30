@@ -30,7 +30,7 @@ const dbUri: string = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI;
 const serverPort: number = parseInt(process.env.PORT, 10);
 
 /* Database Connection */
-console.log('demanding the sauce...');
+console.log('Demanding the sauce...');
 mongoose
     .connect(dbUri, {
         useNewUrlParser: true,

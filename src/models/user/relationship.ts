@@ -18,6 +18,7 @@ export const RelationshipSchema = new Schema<RelationshipSubDocument>(
         friendId: {
             type: SchemaTypes.ObjectId,
             required: true,
+            unique: true
         },
         chatId: {
             type: SchemaTypes.ObjectId,
