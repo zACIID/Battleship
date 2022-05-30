@@ -16,7 +16,6 @@ import { PlayerStateSubDocument } from '../models/match/state/player-state';
 import { Shot } from '../models/match/state/shot';
 import { PlayerStateChangedEmitter } from '../events/socket-io/emitters/player-state-changed';
 import { PositioningCompletedEmitter } from '../events/socket-io/emitters/positioning-completed';
-import { Emitter } from '../events/socket-io/emitters/base/emitter';
 import { ioServer } from '../index';
 import { ShotFiredEmitter } from '../events/socket-io/emitters/shot-fired';
 import { PlayerShipsUpdatedEmitter } from '../events/socket-io/emitters/player-ships-updated';
@@ -305,8 +304,11 @@ const setReadyState = async (match: MatchDocument, playerId: Types.ObjectId, isR
     if (match.player1.playerId.equals(playerId)) {
         playerState = match.player1;
     }
-    else {
+    else if (match.player2.playerId.equals(playerId)) {
         playerState = match.player2;
+    }
+    else {
+        throw new Error(`User ${playerId} is not part of the match`);
     }
 
     // Set player state as ready and save the main match document
