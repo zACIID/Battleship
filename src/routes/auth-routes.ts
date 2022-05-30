@@ -98,8 +98,15 @@ const notifyFriends = async (username: string) => {
 router.post('/auth/signup', async (req: Request, res: Response) => {
     let u: UserDocument;
     try {
-        u = await createUser(req.body);
+        // A user that registers through this endpoint becomes online right away
+        const userData = {
+            username: req.body.username,
+            online: true
+        }
+        u = await createUser(userData);
+
         await u.setPassword(req.body.password);
+
         return res
             .status(201)
             .json({ userId: u._id, username: u.username, roles: u.roles, online: u.online });

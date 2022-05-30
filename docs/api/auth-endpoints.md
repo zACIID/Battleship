@@ -9,7 +9,6 @@
     - [Error](#error)
     - [LoginInfo](#logininfo)
     - [JWT](#jwt)
-    - [RegistrationInfo](#registrationinfo)
     - [User](#user)
   - [Endpoints](#endpoints)
     - [User Login](#user-login)
@@ -45,15 +44,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| token | string | Json Web Token used to authenticate future requests |
-
-### RegistrationInfo
-
-| Attribute | Data Type |
-| :-------- | :-------- |
-| username | string | Username credential |
-| password | string | Password credential |
-| online | boolean | Status of the user right after registration. True if a normal user is registering, because after that he is automatically redirected to the home page, false in other cases such as a moderator creating another moderator account. |
+| token | string | o |
 
 ### User
 
@@ -117,13 +108,12 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 #### Example Request Body
 
-[RegistrationInfo](#registrationinfo) resource containing the information required to register to the system
+[LoginInfo](#logininfo) resource containing the information required to register to the system
 
 ```json
 {
     "username": "",
-    "password": "",
-    "online": true
+    "password": ""
 }
 ```
 

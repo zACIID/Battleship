@@ -51,7 +51,7 @@
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| player1 | string | Id of player #1 of the match |
+| player1 | string | s |
 | player2 | string | Id of player #2 of the match |
 
 ### Match
