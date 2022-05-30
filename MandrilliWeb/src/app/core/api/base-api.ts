@@ -1,11 +1,19 @@
+import axios from 'axios';
+import { AxiosInstance } from "axios";
+
 /**
  * Base class for Api wrappers
  */
 export abstract class BaseApi {
-    public readonly host: string;
+    protected readonly _axios: AxiosInstance;
 
-    protected constructor(host: string) {
-        this.host = host;
+    protected constructor(baseUrl: string) {
+        this._axios = axios.create({
+            timeout: 20000,
+            baseURL: baseUrl,
+        });
+
+        this._axios.defaults.headers.common['Content-Type'] = 'application/json';
     }
 }
 
@@ -13,12 +21,10 @@ export abstract class BaseApi {
  * Base class for Api wrappers that call authenticated endpoints
  */
 export abstract class BaseAuthenticatedApi extends BaseApi {
-    public readonly authToken: string;
+    protected constructor(baseUrl: string, authToken: string) {
+        super(baseUrl);
 
-    protected constructor(host: string, authToken: string) {
-        super(host);
-
-        this.authToken = authToken;
+        this._axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
     }
 }
 
