@@ -2,11 +2,7 @@ import { BaseAuthenticatedApi } from './base-api';
 import { User } from '../model/user/user';
 import { HttpClient } from '@angular/common/http';
 import { UserStats } from '../model/user/user-stats';
-<<<<<<< HEAD
-import { Observable, throwError, catchError } from 'rxjs';
-=======
 import { Observable, catchError } from 'rxjs';
->>>>>>> Frontend
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 
 
