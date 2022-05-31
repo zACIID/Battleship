@@ -6,5 +6,6 @@ import { MessageComponent } from './message/message.component';
 @NgModule({
     declarations: [ChatBodyComponent, MessageComponent],
     imports: [CommonModule],
+    exports: [ChatBodyComponent]
 })
 export class ChatModule {}

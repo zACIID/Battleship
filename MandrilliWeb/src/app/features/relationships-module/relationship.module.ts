@@ -1,3 +1,4 @@
+import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { RelationshipRoutingModule } from './relationship-routing.module';
 import { ChatModule } from './../../shared/chat-module/chat.module';
 import { FriendListModule } from './../../shared/friend-list-module/friend-list.module';
@@ -14,6 +15,7 @@ import { FriendListScreenComponent } from './friend-list-screen/friend-list-scre
         FriendListModule,
         ChatModule,
         RelationshipRoutingModule,
+        MatchHistoryModule,
     ],
 })
 export class RelationshipModule {}
