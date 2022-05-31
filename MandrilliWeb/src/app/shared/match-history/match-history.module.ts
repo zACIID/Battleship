@@ -7,10 +7,11 @@ import { HistorySidebarComponent } from './history-sidebar/history-sidebar.compo
 import { HistoryListComponent } from './history-list/history-list.component';
 import { BattleshiplogoModule } from '../battleship-logo-module/battleshiplogo.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
     declarations: [HistorySidebarComponent, HistoryListComponent, SettingsButtonComponent],
-    imports: [CommonModule, PlainButtonModule, BattleshiplogoModule, ListModule, FontAwesomeModule],
+    imports: [CommonModule, PlainButtonModule, BattleshiplogoModule, ListModule, FontAwesomeModule, RouterModule],
     exports: [HistorySidebarComponent],
 })
 export class MatchHistoryModule {}
