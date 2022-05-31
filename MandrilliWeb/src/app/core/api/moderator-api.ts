@@ -2,7 +2,7 @@ import { BaseAuthenticatedApi } from './base-api';
 import { User } from '../model/user/user';
 import { LoginInfo } from './auth-api';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
-import { throwError, catchError, Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 /**

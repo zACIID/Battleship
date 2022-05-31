@@ -1,6 +1,5 @@
 import { SettingsButtonComponent } from './settings-button/settings-button.component';
 import { ListModule } from '../list-module/list.module';
-import { PlainButtonModule } from '../plain-button-module/plain-button.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HistorySidebarComponent } from './history-sidebar/history-sidebar.component';
@@ -11,7 +10,7 @@ import { RouterModule } from '@angular/router';
 
 @NgModule({
     declarations: [HistorySidebarComponent, HistoryListComponent, SettingsButtonComponent],
-    imports: [CommonModule, PlainButtonModule, BattleshiplogoModule, ListModule, FontAwesomeModule, RouterModule],
+    imports: [CommonModule, BattleshiplogoModule, ListModule, FontAwesomeModule, RouterModule],
     exports: [HistorySidebarComponent],
 })
 export class MatchHistoryModule {}

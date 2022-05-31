@@ -1,17 +1,24 @@
-<div class="box has-background-height p-5">
+<div class="box overflow-scroll p-5 chat-body-height mb-2">
 
-    <!-- Let this become a foreign message -->
-    <message></message>
-    <br class="mb-4">
-
-
-    <!-- Add this as a proprietary message -->
-    <div class="columns">
-        <div class="column is-half"></div>
-        <div class="column is-half box has-background-primary">
-            <p class="">Lorem ipsum anfdsnfnsfv  weofinwe   qwdoiewobf</p>
+    <!-- To implement *ngFor to iterate on every message-->
+    <foreign-message></foreign-message>
     
-        </div>
-    </div>
+    <user-message></user-message>
+    <user-message></user-message>
+    <user-message></user-message>
+    <user-message></user-message>
+    <user-message></user-message>
+    <user-message></user-message>
+    
+    
 
 </div>
+<div class="columns">
+    <div class="column is-three-quarters">
+        <input class="input" type="text" placeholder="Type messages">
+    </div>
+    <div class="column">
+        <button class="button"> Send </button>
+    </div>
+</div>
+
