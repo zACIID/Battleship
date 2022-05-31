@@ -1,7 +1,7 @@
 import { BaseAuthenticatedApi } from './base-api';
-import { Observable, throwError, catchError } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
-import {HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import {HttpClient } from '@angular/common/http';
 import { Types } from 'mongoose';
 /**
  * Class that handles communication with matchmaking-related endpoints

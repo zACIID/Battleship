@@ -1,8 +1,8 @@
 import { BaseAuthenticatedApi } from './base-api';
 import { Notification } from '../model/user/notification';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
-import { Observable, throwError, catchError } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 /**
  * Class that handles communication with relationship-related endpoints

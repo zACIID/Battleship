@@ -1,9 +1,8 @@
 import { BaseAuthenticatedApi } from './base-api';
 import { User } from '../model/user/user';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UserStats } from '../model/user/user-stats';
-import { Observable, throwError, catchError } from 'rxjs';
-import * as jwtdecode from 'jwt-decode';
+import { Observable, catchError } from 'rxjs';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 
 

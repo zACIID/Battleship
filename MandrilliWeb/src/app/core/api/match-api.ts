@@ -2,8 +2,8 @@ import { BaseAuthenticatedApi } from './base-api';
 import { Match } from '../model/match/match';
 import { BattleshipGrid } from '../model/match/battleship-grid';
 import { GridCoordinates } from '../model/match/coordinates';
-import { throwError, catchError, Observable } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { catchError, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Ship } from '../model/match/ship';
 
