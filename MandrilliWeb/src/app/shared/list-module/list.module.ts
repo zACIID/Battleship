@@ -1,4 +1,3 @@
-import { PlainButtonModule } from './../plain-button-module/plain-button.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ListComponent } from './list/list.component';
@@ -7,7 +6,7 @@ import { OptionalButtonComponent } from './optional-button/optional-button.compo
 
 @NgModule({
     declarations: [ListComponent, ListItemComponent, OptionalButtonComponent],
-    imports: [CommonModule, PlainButtonModule],
+    imports: [CommonModule],
     exports: [ListComponent],
 })
 export class ListModule {}
