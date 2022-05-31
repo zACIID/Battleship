@@ -46,3 +46,12 @@
   height: 50px;
   object-fit: contain;
 }
+
+/* IDK but margin become stronger with a little div in the middle */
+.just-a-spacer{
+  height:2px
+}
+
+.overflow-scroll{
+  overflow-y: scroll;
+}

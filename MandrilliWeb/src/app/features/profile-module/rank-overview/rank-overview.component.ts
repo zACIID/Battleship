@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app-rank-overview',
+    selector: 'rank-overview',
     templateUrl: './rank-overview.component.html',
     styleUrls: ['./rank-overview.component.css'],
 })

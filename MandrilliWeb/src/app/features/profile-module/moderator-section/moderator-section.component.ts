@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app-moderator-section',
+    selector: 'moderator-section',
     templateUrl: './moderator-section.component.html',
     styleUrls: ['./moderator-section.component.css'],
 })

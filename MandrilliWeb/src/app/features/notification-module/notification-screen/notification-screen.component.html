@@ -1,1 +1,36 @@
-<p>notification-screen works!</p>
+<div class="columns">
+    <div class="column is-one-quarter">
+          <history-sidebar> </history-sidebar>
+    </div>
+    <div class = "column">
+        <div class="box has-background-primary height mt-2 is-vcentered mr-2">
+
+            <div class="columns">
+                <div class="column">
+                    <h1 class="is-size-1 has-text-light has-text-centered has-text-weight-bold">Notification</h1>
+                </div>
+                <div class="column is-one-quarter">
+                    <back-button></back-button>
+                </div>
+            </div>
+
+            <div>
+                <h1 class="is-size-4 has-text-light has-text-weight-semibold">Friend Request</h1>
+                <hr class="mb-2 mt-1">
+                <div class="request-list-height overflow-scroll p-1">
+                    <app-list></app-list>
+                </div>
+
+                <h1 class="is-size-4 has-text-light mt-6 has-text-weight-semibold">Match Request</h1>
+                <hr class="mb-2 mt-1">
+                <div class="request-list-height overflow-scroll p-1">
+                    <app-list></app-list>
+                </div>
+
+            </div>
+
+            
+
+        </div>
+    </div>
+</div>

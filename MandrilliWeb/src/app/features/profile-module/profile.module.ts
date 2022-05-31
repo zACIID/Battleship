@@ -17,6 +17,6 @@ import { ModeratorSectionComponent } from './moderator-section/moderator-section
         StatsOverviewComponent,
         ModeratorSectionComponent,
     ],
-    imports: [CommonModule, MatchHistoryModule, BackButtonModule, StatsModule, InputFieldModule],
+    imports: [CommonModule, MatchHistoryModule, BackButtonModule, StatsModule, ProfileRoutingModule],
 })
 export class ProfileModule {}
