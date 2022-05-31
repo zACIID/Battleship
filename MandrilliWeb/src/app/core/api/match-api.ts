@@ -4,7 +4,7 @@ import { BattleshipGrid } from '../model/match/battleship-grid';
 import { GridCoordinates } from '../model/match/coordinates';
 import { throwError, catchError, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
-
+import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 
 export interface MatchInfo {
     /**
@@ -57,37 +57,11 @@ export class MatchApi extends BaseAuthenticatedApi {
         this.authToken = authToken;
     }
 
-    private create_options( params = {} ) {
-        return  {
-            headers: new HttpHeaders({
-            authorization: 'Bearer ' + this.authToken,
-            'cache-control': 'no-cache',
-            'Content-Type':  'application/json',
-          }),
-          params: new HttpParams( {fromObject: params} )
-        };
-    
-    }
-
-    private handleError(error: HttpErrorResponse) {
-        if (error.error instanceof ErrorEvent) {
-          // A client-side or network error occurred. Handle it accordingly.
-          console.error('An error occurred:', error.error.message);
-        } else {
-          // The backend returned an unsuccessful response code.
-          // The response body may contain clues as to what went wrong,
-          console.error(
-            `Backend returned code ${error.status}, ` +
-            'body was: ' + JSON.stringify(error.error));
-        }
-    
-        return throwError('Something bad happened; please try again later.');
-    }
 
     public getMatch(matchId: string): Observable<Match> {
         const reqPath: string = `/api/matches/${matchId}`;
-        return this.http.get<Match>( reqPath,  this.create_options() ).pipe(
-            catchError(this.handleError)
+        return this.http.get<Match>( reqPath, createOptions({}, this.authToken) ).pipe(
+            catchError(handleError)
         )
     }
 
@@ -95,36 +69,36 @@ export class MatchApi extends BaseAuthenticatedApi {
     //  sia che matchmaking trova partita, sia che user accetta richiesta
     public createMatch(matchInfo: MatchInfo): Observable<Match> {
         const reqPath: string = `/api/matches`;
-        return this.http.post<Match>( reqPath, matchInfo,  this.create_options() ).pipe(
-            catchError(this.handleError)
+        return this.http.post<Match>( reqPath, matchInfo, createOptions({}, this.authToken) ).pipe(
+            catchError(handleError)
         );
     }
 
     public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<Match> {
         const reqPath: string = `/api/matches/${matchId}`;
-        return this.http.patch<Match>( reqPath, statsUpdate,  this.create_options() ).pipe(
-            catchError(this.handleError)
+        return this.http.patch<Match>( reqPath, statsUpdate, createOptions({}, this.authToken) ).pipe(
+            catchError(handleError)
         );
     }
 
     public updatePlayerGrid(matchId: string, playerId: string, gridUpdate: BattleshipGrid): Observable<Match> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}`;
-        return this.http.put<Match>( reqPath, gridUpdate,  this.create_options() ).pipe(
-            catchError(this.handleError)
+        return this.http.put<Match>( reqPath, gridUpdate, createOptions({}, this.authToken) ).pipe(
+            catchError(handleError)
         );
     }
 
     public fireShot(matchId: string, shot: Shot): Observable<Match> {
         const reqPath: string = `/api/matches/${matchId}/players/${shot.playerId}/shotsFired`;
-        return this.http.post<Match>( reqPath, shot,  this.create_options() ).pipe(
-            catchError(this.handleError)
+        return this.http.post<Match>( reqPath, shot, createOptions({}, this.authToken) ).pipe(
+            catchError(handleError)
         );
     }
 
     public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<Match> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}/ready`;
-        return this.http.put<Match>( reqPath, isReady,  this.create_options() ).pipe(
-            catchError(this.handleError)
+        return this.http.put<Match>( reqPath, isReady, createOptions({}, this.authToken) ).pipe(
+            catchError(handleError)
         );
     }
 }
