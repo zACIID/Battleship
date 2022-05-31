@@ -5,6 +5,7 @@ import { GridCoordinates } from '../model/match/coordinates';
 import { throwError, catchError, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
+import { Ship } from '../model/match/ship';
 
 export interface MatchInfo {
     /**
@@ -74,30 +75,30 @@ export class MatchApi extends BaseAuthenticatedApi {
         );
     }
 
-    public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<Match> {
+    public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<MatchInfo> {
         const reqPath: string = `/api/matches/${matchId}`;
-        return this.http.patch<Match>( reqPath, statsUpdate, createOptions({}, this.authToken) ).pipe(
+        return this.http.patch<MatchInfo>( reqPath, statsUpdate, createOptions({}, this.authToken) ).pipe(
             catchError(handleError)
         );
     }
 
-    public updatePlayerGrid(matchId: string, playerId: string, gridUpdate: BattleshipGrid): Observable<Match> {
+    public updatePlayerGrid(matchId: string, playerId: string, gridUpdate: BattleshipGrid): Observable<Ship> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}`;
-        return this.http.put<Match>( reqPath, gridUpdate, createOptions({}, this.authToken) ).pipe(
+        return this.http.put<Ship>( reqPath, gridUpdate, createOptions({}, this.authToken) ).pipe(
             catchError(handleError)
         );
     }
 
-    public fireShot(matchId: string, shot: Shot): Observable<Match> {
+    public fireShot(matchId: string, shot: Shot): Observable<Shot> {
         const reqPath: string = `/api/matches/${matchId}/players/${shot.playerId}/shotsFired`;
-        return this.http.post<Match>( reqPath, shot, createOptions({}, this.authToken) ).pipe(
+        return this.http.post<Shot>( reqPath, shot, createOptions({}, this.authToken) ).pipe(
             catchError(handleError)
         );
     }
 
-    public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<Match> {
+    public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<boolean> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}/ready`;
-        return this.http.put<Match>( reqPath, isReady, createOptions({}, this.authToken) ).pipe(
+        return this.http.put<boolean>( reqPath, isReady, createOptions({}, this.authToken) ).pipe(
             catchError(handleError)
         );
     }

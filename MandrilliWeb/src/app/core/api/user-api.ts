@@ -34,23 +34,23 @@ export class UserApi extends BaseAuthenticatedApi {
         )
     }
 
-    public deleteUser(userId: string): Observable<User> {
+    public deleteUser(userId: string): Observable<void> {
         const reqPath: string = `/api/users/${userId}`;
-        return this.http.delete<User>(reqPath, createOptions({}, this.authToken)).pipe(
+        return this.http.delete<void>(reqPath, createOptions({}, this.authToken)).pipe(
             catchError(handleError)
         )
     }
 
-    public updatePassword(userId: string, newPassword: string): Observable<User> {
+    public updatePassword(userId: string, newPassword: string): Observable<void> {
         const reqPath: string = `/api/users/${userId}/password`;
-        return this.http.put<User>(reqPath, newPassword, createOptions({}, this.authToken)).pipe(
+        return this.http.put<void>(reqPath, newPassword, createOptions({}, this.authToken)).pipe(
             catchError(handleError)
         )
     }
 
-    public updateUsername(userId: string, newUsername: string): Observable<User> {
+    public updateUsername(userId: string, newUsername: string): Observable<string> {
         const reqPath: string = `/api/users/${userId}/username`;
-        return this.http.put<User>(reqPath, newUsername, createOptions({}, this.authToken)).pipe(
+        return this.http.put<string>(reqPath, newUsername, createOptions({}, this.authToken)).pipe(
             catchError(handleError)
         )
     }
