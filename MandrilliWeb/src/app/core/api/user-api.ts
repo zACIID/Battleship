@@ -3,7 +3,6 @@ import { User } from '../model/user/user';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { UserStats } from '../model/user/user-stats';
 import { Observable, throwError, catchError } from 'rxjs';
-import * as jwtdecode from 'jwt-decode';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 
 
@@ -48,9 +47,9 @@ export class UserApi extends BaseAuthenticatedApi {
         )
     }
 
-    public updateUsername(userId: string, newUsername: string): Observable<string> {
+    public updateUsername(userId: string, newUsername: string): Observable<{username: string}> {
         const reqPath: string = `/api/users/${userId}/username`;
-        return this.http.put<string>(reqPath, newUsername, createOptions({}, this.authToken)).pipe(
+        return this.http.put<{username: string}>(reqPath, newUsername, createOptions({}, this.authToken)).pipe(
             catchError(handleError)
         )
     }

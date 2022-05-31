@@ -96,9 +96,9 @@ export class MatchApi extends BaseAuthenticatedApi {
         );
     }
 
-    public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<boolean> {
+    public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<{ready: boolean}> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}/ready`;
-        return this.http.put<boolean>( reqPath, isReady, createOptions({}, this.authToken) ).pipe(
+        return this.http.put<{ready: boolean}>( reqPath, isReady, createOptions({}, this.authToken) ).pipe(
             catchError(handleError)
         );
     }

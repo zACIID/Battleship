@@ -5,12 +5,12 @@ export interface Message {
     author: string;
 
     /**
-     * Time that the message was sent at
-     */
-    timestamp: Date;
-
-    /**
      * Content of the message
      */
     content: string;
+
+    /**
+     * Time that the message was sent at
+     */
+    timestamp: Date;
 }

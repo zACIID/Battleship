@@ -14,16 +14,16 @@ export class MatchmakingApi extends BaseAuthenticatedApi {
         this.authToken = authToken
     }
 
-    public enqueue(userId: string): Observable<string> {
+    public enqueue(userId: string): Observable<{userId: string}> {
         const reqPath: string = `/api/matchmaking/queue`;
-        return this.http.put<string>(reqPath, userId, createOptions({}, this.authToken)).pipe(
+        return this.http.put<{userId: string}>(reqPath, userId, createOptions({}, this.authToken)).pipe(
             catchError(handleError)
         )    
     }
 
-    public removeFromQueue(userId: string): Observable<{userId: Types.ObjectId}> {
+    public removeFromQueue(userId: string): Observable<void> {
         const reqPath: string = `/api/matchmaking/queue/${userId}`;
-        return this.http.delete<{userId: Types.ObjectId}>(reqPath, createOptions({}, this.authToken)).pipe(
+        return this.http.delete<void>(reqPath, createOptions({}, this.authToken)).pipe(
             catchError(handleError)
         )
     }
