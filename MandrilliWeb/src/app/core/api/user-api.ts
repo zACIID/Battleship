@@ -11,9 +11,10 @@ import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
  * Class that handles communication with user-related endpoints
  */
 export class UserApi extends BaseAuthenticatedApi {
-    private http: HttpClient;
+
     private authToken: string;
-    public constructor(baseUrl: string, authToken: string, http: HttpClient) {
+    
+    public constructor(baseUrl: string, authToken: string, private http: HttpClient) {
         super(baseUrl, authToken);
         this.http = http;
         this.authToken = authToken;
