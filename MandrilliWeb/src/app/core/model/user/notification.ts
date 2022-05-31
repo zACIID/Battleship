@@ -1,3 +1,6 @@
+import { RequestTypes } from '../../../../../../src/models/user/notification'
+
+
 export interface Notification {
     /**
      * type of the notification

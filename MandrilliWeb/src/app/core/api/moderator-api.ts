@@ -24,9 +24,9 @@ export class ModeratorApi extends BaseAuthenticatedApi {
         )
     }
 
-    public banUser(moderatorId: string, banId: string): Observable<User> {
+    public banUser(moderatorId: string, banId: string): Observable<void> {
         const reqPath: string = `/api/moderators/${moderatorId}/bans`;
-        return this.http.post<User>( reqPath, banId, createOptions({}, this.authToken) ).pipe(
+        return this.http.post<void>( reqPath, banId, createOptions({}, this.authToken) ).pipe(
             catchError(handleError)
         )
     }
