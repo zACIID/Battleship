@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable, catchError } from 'rxjs';
+import { MatchApi, MatchInfo } from '../../../core/api/match-api'
+import { UserApi } from '../../../core/api/user-api'
+import { User, CUser } from '../../../core/model/user/user';
+import { Match } from '../../../core/model/match/match';
+import { CUserStats, UserStats } from '../../../core/model/user/user-stats';
 
 @Component({
     selector: 'app-profile-screen',
@@ -6,7 +13,59 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./profile-screen.component.css'],
 })
 export class ProfileScreenComponent implements OnInit {
-    constructor() {}
+
+    public user: CUser
+    public matchHistory: Match[] = []
+    public stats: CUserStats
+    constructor(private matchClient: MatchApi, private userClient: UserApi, private router: Router) {
+        this.user = new CUser()
+        this.stats = new CUserStats()
+    }
 
     ngOnInit(): void {}
+
+    public getUser(userId: string) : boolean {
+        try {
+            this.userClient.getUser(userId).subscribe((user: User) => {
+                this.user = user
+            })
+        } catch(err) {
+            console.log("Handling error: " + err)
+            return false;
+        }
+        return true
+    }
+
+    public get10UserIdMatch(userId: string) : boolean {
+        try {
+            this.matchClient.getuserMatches(userId).subscribe((match: Match[]) => {
+                this.matchHistory = [...match]
+            })
+        } catch(err) {
+            console.log("Handling error: " + err)
+            return false;
+        }
+        return true
+    }
+
+    public getUserStats(userId: string) : boolean {
+        try {
+            this.userClient.getStats(userId).subscribe((stat: UserStats) => {
+                this.stats = stat
+                this.applyRank()
+            })
+        } catch(err) {
+            console.log("Handling error: " + err)
+            return false;
+        }
+        return true
+    }
+
+    private applyRank(){}
+
+    // ignietto contruct gli api, match, user
+    // match history 
+    // info personali, (stats, and shi)
+    // rank da fare (formula)
+    // 
 }
