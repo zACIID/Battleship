@@ -1,3 +1,4 @@
+import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { PlayTogetherRoutingModule } from './play-together-routing.module';
 import { FriendListModule } from './../../shared/friend-list-module/friend-list.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
@@ -7,6 +8,6 @@ import { PlayTogetherScreenComponent } from './play-together-screen/play-togethe
 
 @NgModule({
     declarations: [PlayTogetherScreenComponent],
-    imports: [CommonModule, BackButtonModule, FriendListModule, PlayTogetherRoutingModule],
+    imports: [CommonModule, BackButtonModule, FriendListModule, PlayTogetherRoutingModule, MatchHistoryModule],
 })
 export class PlayTogetherModule {}
