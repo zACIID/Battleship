@@ -56,7 +56,7 @@ export const MatchSchema = new Schema<MatchDocument>({
         type: MatchStatsSchema,
         default: () => ({}),
     },
-});
+}, { timestamps: true });
 
 MatchSchema.methods.updatePlayerGrid = function (
     this: MatchDocument,
@@ -167,5 +167,19 @@ export async function updateMatchStats(
     return match.save();
 }
 
+export async function getMatchByUserId( userId: Types.ObjectId ) : Promise<Match[]> {
+    const matchData: Match[] = await MatchModel.find({ 'player1.playerId': userId })
+    .or([{ 'player2.playerId': userId }]).sort({ createdAt: -1 }).limit(10)
+    .catch((err: Error) =>
+        Promise.reject(new Error('Internal server error'))
+    );
+
+    return (!matchData)
+    ? Promise.reject(new Error("No match found with that identifier"))
+    : Promise.resolve(matchData)
+}
+
 // Create "Matches" collection
 export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'Matches');
+
+

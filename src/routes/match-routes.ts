@@ -7,6 +7,8 @@ import {
     createMatch,
     updateMatchStats,
     MatchModel,
+    getMatchByUserId, 
+    Match
 } from '../models/match/match';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
@@ -94,6 +96,25 @@ router.get(
             };
 
             return res.status(200).json(toSend);
+        } catch (err) {
+            return res.status(404).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
+
+router.get(
+    '/matches/:userId',
+    authenticateToken,
+    retrieveUserId,
+    async (req: Request, res: MatchEndpointResponse) => {
+        try {
+            let userId: Types.ObjectId = res.locals.userId;
+            const matches: Match[] = await getMatchByUserId(userId);
+            return res.status(200).json(matches);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
