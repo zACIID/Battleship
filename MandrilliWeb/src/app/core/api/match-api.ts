@@ -6,6 +6,7 @@ import { catchError, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Ship } from '../model/match/ship';
+import { Injectable } from '@angular/core';
 
 export interface MatchInfo {
     /**
@@ -49,7 +50,7 @@ export interface Shot {
 /**
  * Class that handles communication with match-related endpoints
  */
-
+@Injectable()
 export class MatchApi extends BaseAuthenticatedApi {
 
     private authToken: string;

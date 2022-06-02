@@ -3,9 +3,12 @@ import { Observable, catchError } from 'rxjs';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import {HttpClient } from '@angular/common/http';
 import { Types } from 'mongoose';
+import { Injectable } from '@angular/core';
 /**
  * Class that handles communication with matchmaking-related endpoints
  */
+
+@Injectable()
 export class MatchmakingApi extends BaseAuthenticatedApi {
 
     private authToken: string;
@@ -28,3 +31,5 @@ export class MatchmakingApi extends BaseAuthenticatedApi {
         )
     }
 }
+
+

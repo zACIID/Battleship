@@ -4,18 +4,19 @@ import { HttpClient } from '@angular/common/http';
 import { UserStats } from '../model/user/user-stats';
 import { Observable, catchError } from 'rxjs';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
+import { Injectable } from '@angular/core';
 
 
 /**
  * Class that handles communication with user-related endpoints
  */
+@Injectable()
 export class UserApi extends BaseAuthenticatedApi {
 
     private authToken: string;
     
     public constructor(baseUrl: string, authToken: string, private http: HttpClient) {
         super(baseUrl, authToken);
-        this.http = http;
         this.authToken = authToken;
     }
 

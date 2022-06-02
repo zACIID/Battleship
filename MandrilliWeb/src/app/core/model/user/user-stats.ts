@@ -55,3 +55,13 @@ export class CUserStats implements UserStats {
         this.rank = ""
     }
 }
+
+export enum UGrade {
+    private = "private",
+    sergeant = 'sergeant',
+    chief = 'chief',
+    liutenant = 'liutenant',
+    captain = 'captain',
+    colonel = 'colonel', 
+    generalOfTheArmy = 'General of the army'
+}

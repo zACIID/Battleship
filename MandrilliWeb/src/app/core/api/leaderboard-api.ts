@@ -3,10 +3,12 @@ import { LeaderboardEntry } from '../model/leaderboard/entry';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Observable, throwError, catchError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 /**
  * Class that handles communication with leaderboard-related endpoints
  */
+@Injectable()
 export class LeaderboardApi extends BaseAuthenticatedApi {
 
     private authToken: string;

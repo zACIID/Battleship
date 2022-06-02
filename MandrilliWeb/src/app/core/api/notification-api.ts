@@ -3,10 +3,12 @@ import { Notification } from '../model/user/notification';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Observable, catchError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 /**
  * Class that handles communication with relationship-related endpoints
  */
+@Injectable()
 export class NotificationApi extends BaseAuthenticatedApi {
 
     private authToken: string;

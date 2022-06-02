@@ -4,17 +4,18 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import { UserStats } from '../model/user/user-stats';
 import { Observable, throwError, catchError } from 'rxjs';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
+import { Injectable } from '@angular/core';
 
 export interface LoginInfo {
     /**
      * Username credential
      */
-    username: string;
+    username?: string;
 
     /**
      * Password credential
      */
-    password: string;
+    password?: string;
 }
 
 interface Jwt {
@@ -27,13 +28,12 @@ interface Jwt {
 /**
  * Class that handles communication with authentication-related endpoints
  */
+@Injectable()
 export class AuthApi extends BaseApi {
     public constructor(baseUrl: string, private http: HttpClient) {
         super(baseUrl);
     }
 
-    // TODO login ritorna solo JWT, però a me serve anche userId per
-    //  fare una getUser(userId). Considerare che Login debba ritornare anche uno userId
     public login(credentials: LoginInfo): Observable<{token: Jwt}> {
         const reqPath: string = `/api/auth/signin`;
         return this.http.post<{token: Jwt}>(reqPath, credentials).pipe(

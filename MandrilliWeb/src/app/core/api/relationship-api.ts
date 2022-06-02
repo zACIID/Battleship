@@ -3,10 +3,12 @@ import { Relationship } from '../model/user/relationship';
 import { HttpClient } from '@angular/common/http';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Observable, catchError } from 'rxjs';
+import { Injectable } from '@angular/core';
 
 /**
  * Class that handles communication with relationship-related endpoints
  */
+@Injectable()
 export class RelationshipApi extends BaseAuthenticatedApi {
 
     private authToken: string;

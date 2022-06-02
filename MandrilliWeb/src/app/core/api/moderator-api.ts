@@ -4,10 +4,12 @@ import { LoginInfo } from './auth-api';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { catchError, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 /**
  * Class that handles communication with moderator-related endpoints
  */
+@Injectable()
 export class ModeratorApi extends BaseAuthenticatedApi {
     
     private authToken: string;

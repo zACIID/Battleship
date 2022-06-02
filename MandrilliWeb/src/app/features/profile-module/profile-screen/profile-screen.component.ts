@@ -17,51 +17,49 @@ export class ProfileScreenComponent implements OnInit {
     public user: CUser
     public matchHistory: Match[] = []
     public stats: CUserStats
+    private userId: string
     constructor(private matchClient: MatchApi, private userClient: UserApi, private router: Router) {
         this.user = new CUser()
         this.stats = new CUserStats()
+        this.userId = localStorage.getItem('id') || ""
     }
 
     ngOnInit(): void {}
 
-    public getUser(userId: string) : boolean {
+    public getUser() : void {
         try {
-            this.userClient.getUser(userId).subscribe((user: User) => {
+            this.userClient.getUser(this.userId).subscribe((user: User) => {
                 this.user = user
             })
         } catch(err) {
             console.log("Handling error: " + err)
-            return false;
         }
-        return true
     }
 
-    public get10UserIdMatch(userId: string) : boolean {
+    public get10UserMatch() : void {
         try {
-            this.matchClient.getuserMatches(userId).subscribe((match: Match[]) => {
+            this.matchClient.getuserMatches(this.userId).subscribe((match: Match[]) => {
                 this.matchHistory = [...match]
             })
         } catch(err) {
             console.log("Handling error: " + err)
-            return false;
         }
-        return true
     }
 
-    public getUserStats(userId: string) : boolean {
+    public getUserStats() : void {
         try {
-            this.userClient.getStats(userId).subscribe((stat: UserStats) => {
+            this.userClient.getStats(this.userId).subscribe((stat: UserStats) => {
                 this.stats = stat
                 this.applyRank()
             })
         } catch(err) {
             console.log("Handling error: " + err)
-            return false;
         }
-        return true
     }
 
-    private applyRank(){}
+    private applyRank(){
+
+    }
 
     // ignietto contruct gli api, match, user
     // match history 

@@ -7,6 +7,7 @@ import { Message } from '../model/chat/message';
 import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Observable, throwError, catchError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 
 /**
@@ -53,6 +54,7 @@ export interface ApiMessage {
 /**
  * Class that handles communication with chat-related endpoints
  */
+@Injectable()
 export class ChatApi extends BaseAuthenticatedApi {
 
     private authToken: string;
