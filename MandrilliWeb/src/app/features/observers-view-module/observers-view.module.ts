@@ -1,3 +1,4 @@
+import { PlayerInfoModule } from './../../shared/player-info-module/player-info.module';
 import { ObserversRoutingModule } from './observers-routing.module';
 import { BoardModule } from './../../shared/board-module/board.module';
 import { ChatModule } from './../../shared/chat-module/chat.module';
@@ -15,6 +16,7 @@ import { ObserversScreenComponent } from './observers-screen/observers-screen.co
         BackButtonModule,
         ChatModule,
         BoardModule,
+        PlayerInfoModule,
         ObserversRoutingModule,
     ],
 })
