@@ -5,6 +5,10 @@ import { Observable, catchError } from 'rxjs';
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { AccessTokenProvider } from '../access/access-token-provider';
 
+interface EnqueueResponse {
+    userId: string;
+}
+
 /**
  * Class that handles communication with matchmaking-related endpoints
  */
@@ -16,10 +20,10 @@ export class MatchmakingApi extends BaseAuthenticatedApi {
         super(httpClient, accessTokenProvider);
     }
 
-    public enqueue(userId: string): Observable<{ userId: string }> {
+    public enqueue(userId: string): Observable<EnqueueResponse> {
         const reqPath: string = `/api/matchmaking/queue`;
         return this.httpClient
-            .put<{ userId: string }>(reqPath, userId, this.createRequestOptions())
+            .put<EnqueueResponse>(reqPath, userId, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 

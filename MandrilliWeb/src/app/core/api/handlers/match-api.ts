@@ -75,15 +75,6 @@ export class MatchApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    // TODO rimuovere? perché create viene fatta dal server in entrambi i casi,
-    //  sia che matchmaking trova partita, sia che user accetta richiesta
-    public createMatch(matchInfo: MatchInfo): Observable<Match> {
-        const reqPath: string = `/api/matches`;
-        return this.httpClient
-            .post<Match>(reqPath, matchInfo, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
-    }
-
     public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<MatchInfo> {
         const reqPath: string = `/api/matches/${matchId}`;
 
