@@ -4,6 +4,7 @@
 }
 
 
-#board td{
-    height:40px
+#board{
+    table-layout: fixed;
+    width: 100%
 }
