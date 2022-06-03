@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app-enemy-board',
+    selector: 'enemy-board',
     templateUrl: './enemy-board.component.html',
     styleUrls: ['./enemy-board.component.css'],
 })

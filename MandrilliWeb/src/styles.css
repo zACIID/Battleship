@@ -8,9 +8,6 @@
     width: 10px;
   }
   
-*::-webkit-scrollbar-track {
-    /*background: hsl(171, 100%, 41%);*/
-  }
   
 *::-webkit-scrollbar-thumb {
     background-color: hsl(171, 100%, 41%);
@@ -68,4 +65,7 @@
   overflow-y: scroll;
 }
 
+.chat-height{
+  height:95%;
+}
 
