@@ -1,10 +1,9 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, catchError } from 'rxjs';
+
 import { BaseApi } from './base/base-api';
 import { User } from '../../model/user/user';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError } from 'rxjs/src';
-import { handleError } from '../utils';
-import { Injectable } from '@angular/core';
-import { AccessTokenStorage } from '../access/access-token-storage';
 
 export interface LoginInfo {
     /**
@@ -39,11 +38,16 @@ export class AuthApi extends BaseApi {
     public login(credentials: LoginInfo): Observable<Jwt> {
         const reqPath: string = `/api/auth/signin`;
 
-        return this.httpClient.post<Jwt>(reqPath, credentials).pipe(catchError(handleError));
+        return this.httpClient.post<Jwt>(reqPath, credentials).pipe(
+            catchError(this.handleError)
+        );
     }
 
     public register(credentials: LoginInfo): Observable<User> {
         const reqPath: string = `/api/auth/signup`;
-        return this.httpClient.post<User>(reqPath, credentials).pipe(catchError(handleError));
+
+        return this.httpClient.post<User>(reqPath, credentials).pipe(
+            catchError(this.handleError)
+        );
     }
 }
