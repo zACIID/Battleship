@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, catchError } from 'rxjs';
-import { MatchApi, MatchInfo } from '../../../core/api/match-api'
-import { UserApi } from '../../../core/api/user-api'
+import { MatchApi, MatchInfo } from '../../../core/api/handlers/match-api'
+import { UserApi } from '../../../core/api/handlers/user-api'
 import { User, CUser } from '../../../core/model/user/user';
 import { Match } from '../../../core/model/match/match';
 import { CUserStats, UserStats } from '../../../core/model/user/user-stats';
@@ -38,7 +38,7 @@ export class ProfileScreenComponent implements OnInit {
 
     public get10UserMatch() : void {
         try {
-            this.matchClient.getuserMatches(this.userId).subscribe((match: Match[]) => {
+            this.matchClient.getUserMatches(this.userId).subscribe((match: Match[]) => {
                 this.matchHistory = [...match]
             })
         } catch(err) {
@@ -62,8 +62,8 @@ export class ProfileScreenComponent implements OnInit {
     }
 
     // ignietto contruct gli api, match, user
-    // match history 
+    // match history
     // info personali, (stats, and shi)
     // rank da fare (formula)
-    // 
+    //
 }

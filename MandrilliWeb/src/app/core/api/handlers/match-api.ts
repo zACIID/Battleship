@@ -1,12 +1,13 @@
-import { BaseAuthenticatedApi } from './base-api';
-import { Match } from '../model/match/match';
-import { BattleshipGrid } from '../model/match/battleship-grid';
-import { GridCoordinates } from '../model/match/coordinates';
-import { catchError, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
-import { Ship } from '../model/match/ship';
 import { Injectable } from '@angular/core';
+import { Observable, catchError } from 'rxjs';
+
+import { BaseAuthenticatedApi } from './base/base-authenticated-api';
+import { AccessTokenProvider } from '../access-token-provider';
+import { Ship } from '../../model/match/ship';
+import { Match } from '../../model/match/match';
+import { BattleshipGrid } from '../../model/match/battleship-grid';
+import { GridCoordinates } from '../../model/match/coordinates';
 
 export interface MatchInfo {
     /**
@@ -50,27 +51,28 @@ export interface Shot {
 /**
  * Class that handles communication with match-related endpoints
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class MatchApi extends BaseAuthenticatedApi {
-
-    private authToken: string;
-    public constructor(private http: HttpClient, baseUrl: string, authToken: string) {
-        super(baseUrl, authToken);
-        this.authToken = authToken;
+    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+        super(httpClient, accessTokenProvider);
     }
 
 
     public getMatch(matchId: string): Observable<Match> {
         const reqPath: string = `/api/matches/${matchId}`;
-        return this.http.get<Match>( reqPath, createOptions({}, this.authToken) ).pipe(
-            catchError(handleError)
+
+        return this.httpClient.get<Match>( reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         )
     }
 
-    public getuserMatches(userId: string): Observable<Match[]> {
+    public getUserMatches(userId: string): Observable<Match[]> {
         const reqPath: string = `/api/matches/${userId}`;
-        return this.http.get<Match[]>( reqPath, createOptions({}, this.authToken)).pipe(
-            catchError(handleError)
+
+        return this.httpClient.get<Match[]>(reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         )
     }
 
@@ -78,36 +80,40 @@ export class MatchApi extends BaseAuthenticatedApi {
     //  sia che matchmaking trova partita, sia che user accetta richiesta
     public createMatch(matchInfo: MatchInfo): Observable<Match> {
         const reqPath: string = `/api/matches`;
-        return this.http.post<Match>( reqPath, matchInfo, createOptions({}, this.authToken) ).pipe(
-            catchError(handleError)
+        return this.httpClient.post<Match>( reqPath, matchInfo, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         );
     }
 
     public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<MatchInfo> {
         const reqPath: string = `/api/matches/${matchId}`;
-        return this.http.patch<MatchInfo>( reqPath, statsUpdate, createOptions({}, this.authToken) ).pipe(
-            catchError(handleError)
+
+        return this.httpClient.patch<MatchInfo>( reqPath, statsUpdate, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         );
     }
 
     public updatePlayerGrid(matchId: string, playerId: string, gridUpdate: BattleshipGrid): Observable<Ship> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}`;
-        return this.http.put<Ship>( reqPath, gridUpdate, createOptions({}, this.authToken) ).pipe(
-            catchError(handleError)
+
+        return this.httpClient.put<Ship>( reqPath, gridUpdate, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         );
     }
 
     public fireShot(matchId: string, shot: Shot): Observable<Shot> {
         const reqPath: string = `/api/matches/${matchId}/players/${shot.playerId}/shotsFired`;
-        return this.http.post<Shot>( reqPath, shot, createOptions({}, this.authToken) ).pipe(
-            catchError(handleError)
+
+        return this.httpClient.post<Shot>( reqPath, shot, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         );
     }
 
     public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<{ready: boolean}> {
         const reqPath: string = `/api/matches/${matchId}/players/${playerId}/ready`;
-        return this.http.put<{ready: boolean}>( reqPath, isReady, createOptions({}, this.authToken) ).pipe(
-            catchError(handleError)
+
+        return this.httpClient.put<{ready: boolean}>( reqPath, isReady, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         );
     }
 }

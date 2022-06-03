@@ -1,40 +1,42 @@
-import { BaseAuthenticatedApi } from './base-api';
-import { Relationship } from '../model/user/relationship';
 import { HttpClient } from '@angular/common/http';
-import {handleError, createOptions} from '../handler/ErrorsNdHeaders'
 import { Observable, catchError } from 'rxjs';
 import { Injectable } from '@angular/core';
+
+import { Relationship } from '../../model/user/relationship';
+import { BaseAuthenticatedApi } from './base/base-authenticated-api';
+import { AccessTokenProvider } from '../access-token-provider';
 
 /**
  * Class that handles communication with relationship-related endpoints
  */
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class RelationshipApi extends BaseAuthenticatedApi {
-
-    private authToken: string;
-    public constructor(baseUrl: string, authToken: string, private http: HttpClient) {
-        super(baseUrl, authToken);
-        this.authToken = authToken
+    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+        super(httpClient, accessTokenProvider);
     }
 
     public getRelationships(userId: string): Observable<Relationship[]> {
         const reqPath: string = `/api/users/${userId}/relationships`;
-        return this.http.get<Relationship[]>(reqPath, createOptions({}, this.authToken)).pipe(
-            catchError(handleError)
+        return this.httpClient.get<Relationship[]>(reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         )
     }
 
     public addRelationship(userId: string, newRel: Relationship): Observable<Relationship> {
         const reqPath: string = `/api/users/${userId}/relationships`;
-        return this.http.post<Relationship>(reqPath, newRel, createOptions({}, this.authToken)).pipe(
-            catchError(handleError)
+
+        return this.httpClient.post<Relationship>(reqPath, newRel, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         )
     }
 
     public removeRelationship(userId: string, friendId: string): Observable<void> {
         const reqPath: string = `/api/users/${userId}/relationships/${friendId}`;
-        return this.http.delete<void>(reqPath, createOptions({}, this.authToken)).pipe(
-            catchError(handleError)
+
+        return this.httpClient.delete<void>(reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError)
         )
     }
 }

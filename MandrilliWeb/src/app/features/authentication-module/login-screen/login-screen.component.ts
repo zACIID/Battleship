@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { User, CUser } from '../../../core/model/user/user';
+import { User } from '../../../core/model/user/user';
 import { Router } from '@angular/router';
-import { UserApi } from '../../../core/api/user-api'
-import { AuthApi, LoginInfo } from '../../../core/api/auth-api'
+import { UserApi } from '../../../core/api/handlers/user-api'
+import { AuthApi, LoginInfo, Jwt } from '../../../core/api/handlers/auth-api'
 
 @Component({
     selector: 'app-login-screen',
@@ -11,19 +11,23 @@ import { AuthApi, LoginInfo } from '../../../core/api/auth-api'
 })
 export class LoginScreenComponent implements OnInit {
 
-    public logInfo: LoginInfo = {}
-    constructor(private userClient: UserApi, private authClient: AuthApi, private router: Router) {
-        //gettare elem by id dall'html per userInfo
+    constructor(private userClient: UserApi, private authClient: AuthApi) {
+
     }
 
     ngOnInit(): void {
-        this.login()
+        // TODO this.login() perché qui? login dovrebbe essere chiamato dal pulsante
     }
 
-    login() {
+    login(username: string, password: string) {
         try {
-            this.authClient.login(this.logInfo).subscribe( (data) => {
-                localStorage.setItem('token', data.token.token)
+            const loginInfo: LoginInfo = {
+                username: username,
+                password: password
+            };
+
+            this.authClient.login(loginInfo).subscribe( (data: Jwt) => {
+                localStorage.setItem('token', data.token)
                 // this.router.navigate(['/']);
             })
         } catch(err) {

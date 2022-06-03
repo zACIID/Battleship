@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserApi} from '../../../core/api/user-api'
+import { UserApi} from '../../../core/api/handlers/user-api'
 import { User } from '../../../core/model/user/user'
-import { AuthApi } from '../../../core/api/auth-api'
-import { LoginInfo } from '../../../core/api/auth-api'
+import { AuthApi } from '../../../core/api/handlers/auth-api'
+import { LoginInfo } from '../../../core/api/handlers/auth-api'
 
 @Component({
     selector: 'app-registration-screen',
@@ -28,6 +28,6 @@ export class RegistrationScreenComponent implements OnInit {
             })
         } catch(err){
             console.log("An error occurred" + err)
-        }    
+        }
     }
 }
