@@ -18,6 +18,7 @@ export class ProfileScreenComponent implements OnInit {
     public matchHistory: Match[] = []
     public stats: UserStats
     private userId: string
+    public rank: string = ""
     constructor(private matchClient: MatchApi, private userClient: UserApi, private router: Router) {
         this.user = new User()
         this.stats = new UserStats()
@@ -34,6 +35,7 @@ export class ProfileScreenComponent implements OnInit {
         try {
             this.userClient.getUser(this.userId).subscribe((user: User) => {
                 this.user = user
+                this.user.online = true
             })
         } catch(err) {
             console.log("Handling error: " + err)
@@ -62,12 +64,6 @@ export class ProfileScreenComponent implements OnInit {
     }
 
     private applyRank(){
-
+        this.rank = this.user.setrank(this.stats.elo)
     }
-
-    // ignietto contruct gli api, match, user
-    // match history 
-    // info personali, (stats, and shi)
-    // rank da fare (formula)
-    // 
 }

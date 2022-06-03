@@ -11,19 +11,17 @@ import { LoginInfo } from '../../../core/api/handlers/auth-api';
     styleUrls: ['./registration-screen.component.css'],
 })
 export class RegistrationScreenComponent implements OnInit {
-    public userInfo: LoginInfo = {};
     constructor(private authClient: AuthApi, private router: Router) {
-        //gettare elem by id dall'html per userInfo
     }
 
     ngOnInit(): void {
-        this.signup();
     }
 
-    signup() {
+    signup(username: string, password: string) {
         try {
-            this.authClient.register(this.userInfo).subscribe((data: User) => {
+            this.authClient.register({username, password}).subscribe((data: User) => {
                 localStorage.setItem('id', data.userId);
+                this.router.navigate(['/homepage'])
             });
         } catch (err) {
             console.log('An error occurred' + err);

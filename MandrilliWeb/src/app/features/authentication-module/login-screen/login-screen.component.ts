@@ -17,9 +17,7 @@ export class LoginScreenComponent implements OnInit {
         private _accessTokenStorage: AccessTokenStorage
     ) {}
 
-    ngOnInit(): void {
-        // TODO this.login() perché qui? login dovrebbe essere chiamato dal pulsante
-    }
+    ngOnInit(): void {}
 
     login(username: string, password: string) {
         try {

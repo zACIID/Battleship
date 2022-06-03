@@ -9,12 +9,12 @@ export interface LoginInfo {
     /**
      * Username credential
      */
-    username: string;
+    username?: string;
 
     /**
      * Password credential
      */
-    password: string;
+    password?: string;
 }
 
 export interface Jwt {
