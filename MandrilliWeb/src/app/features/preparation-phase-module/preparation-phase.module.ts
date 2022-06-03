@@ -7,14 +7,10 @@ import { BackButtonModule } from './../../shared/back-button-module/back-button.
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PreparationPhaseScreenComponent } from './preparation-phase-screen/preparation-phase-screen.component';
-import { RandomDeploymentButtonComponent } from './random-deployment-button/random-deployment-button.component';
-import { BattleButtonComponent } from './battle-button/battle-button.component';
 
 @NgModule({
     declarations: [
         PreparationPhaseScreenComponent,
-        RandomDeploymentButtonComponent,
-        BattleButtonComponent,
     ],
     imports: [
         CommonModule,
