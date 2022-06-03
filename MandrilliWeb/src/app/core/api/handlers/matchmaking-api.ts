@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access-token-provider';
+import { AccessTokenProvider } from '../access/access-token-provider';
 
 /**
  * Class that handles communication with matchmaking-related endpoints

@@ -4,7 +4,7 @@ import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { LeaderboardEntry } from '../../model/leaderboard/entry';
-import { AccessTokenProvider } from '../access-token-provider';
+import { AccessTokenProvider } from '../access/access-token-provider';
 
 export interface LeaderboardPage {
     leaderboard: LeaderboardEntry[];

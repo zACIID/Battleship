@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 
 import { Relationship } from '../../model/user/relationship';
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access-token-provider';
+import { AccessTokenProvider } from '../access/access-token-provider';
 
 /**
  * Class that handles communication with relationship-related endpoints

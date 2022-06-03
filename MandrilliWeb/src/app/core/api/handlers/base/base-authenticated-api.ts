@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParamsOptions } from '@angular/common/http';
 
 import { BaseApi, RequestOptions } from './base-api';
-import { AccessTokenProvider } from '../../access-token-provider';
+import { AccessTokenProvider } from '../../access/access-token-provider';
 
 /**
  * Base class for Api wrappers that call authenticated endpoints
