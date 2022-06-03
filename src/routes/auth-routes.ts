@@ -87,10 +87,10 @@ const notifyFriends = async (username: string) => {
     friendsIdsToNotify.forEach((toNotifyId: Types.ObjectId) => {
         const notifier: FriendOnlineEmitter = new FriendOnlineEmitter(ioServer, toNotifyId);
         notifier.emit({
-            friendId: userOnline._id
+            friendId: userOnline._id,
         });
     });
-}
+};
 
 /**
  * Request must contain at least this information -> username: string, roles: string[], password: string
@@ -101,8 +101,8 @@ router.post('/auth/signup', async (req: Request, res: Response) => {
         // A user that registers through this endpoint becomes online right away
         const userData = {
             username: req.body.username,
-            online: true
-        }
+            online: true,
+        };
         u = await createUser(userData);
 
         await u.setPassword(req.body.password);

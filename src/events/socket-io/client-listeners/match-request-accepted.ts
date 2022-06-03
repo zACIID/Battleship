@@ -38,21 +38,29 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
         const emitterProvider = (
             eventData: MatchRequestAcceptedData
         ): Promise<MatchFoundEmitter[]> => {
-            const player1Emitter = new MatchFoundEmitter(this.ioServer, Types.ObjectId(eventData.player1Id));
-            const player2Emitter = new MatchFoundEmitter(this.ioServer, Types.ObjectId(eventData.player2Id));
+            const player1Emitter = new MatchFoundEmitter(
+                this.ioServer,
+                Types.ObjectId(eventData.player1Id)
+            );
+            const player2Emitter = new MatchFoundEmitter(
+                this.ioServer,
+                Types.ObjectId(eventData.player2Id)
+            );
             const emitters: MatchFoundEmitter[] = [player1Emitter, player2Emitter];
 
             return Promise.resolve(emitters);
         };
 
         // Create the match and the data containing the match id
-        const emitDataProvider = async (eventData: MatchRequestAcceptedData): Promise<MatchData> => {
+        const emitDataProvider = async (
+            eventData: MatchRequestAcceptedData
+        ): Promise<MatchData> => {
             const p1Id: Types.ObjectId = Types.ObjectId(eventData.player1Id);
             const p2Id: Types.ObjectId = Types.ObjectId(eventData.player2Id);
             const match: MatchDocument = await createMatch(p1Id, p2Id);
 
             return Promise.resolve({
-                matchId: match._id
+                matchId: match._id,
             });
         };
 

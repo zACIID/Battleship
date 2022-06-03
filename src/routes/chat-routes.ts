@@ -246,7 +246,7 @@ router.post(
             const { author, timestamp, content } = req.body;
 
             const authorId: Types.ObjectId = Types.ObjectId(author);
-            const msgDate: Date = new Date(timestamp * 1000)
+            const msgDate: Date = new Date(timestamp * 1000);
             await chat.addMessage(content, msgDate, authorId);
 
             // Notify users in the chat with the message sent
@@ -254,7 +254,7 @@ router.post(
             messageNotifier.emit({
                 author: authorId.toString(),
                 content: content,
-                timestamp: msgDate.getTime() / 1000
+                timestamp: msgDate.getTime() / 1000,
             });
 
             return res.status(201).json(req.body);

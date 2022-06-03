@@ -7,6 +7,6 @@ import { UserMessageComponent } from './user-message/user-message.component';
 @NgModule({
     declarations: [ChatBodyComponent, ForeignMessageComponent, UserMessageComponent],
     imports: [CommonModule],
-    exports: [ChatBodyComponent]
+    exports: [ChatBodyComponent],
 })
 export class ChatModule {}

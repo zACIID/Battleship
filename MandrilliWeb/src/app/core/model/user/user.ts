@@ -10,7 +10,7 @@ export interface User {
     /**
      * Status of the user
      */
-    online: boolean
+    online: boolean;
 }
 
 /** TODO al massimo cambiare User da interface a class

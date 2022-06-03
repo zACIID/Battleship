@@ -8,6 +8,12 @@ import { PlayTogetherScreenComponent } from './play-together-screen/play-togethe
 
 @NgModule({
     declarations: [PlayTogetherScreenComponent],
-    imports: [CommonModule, BackButtonModule, FriendListModule, PlayTogetherRoutingModule, MatchHistoryModule],
+    imports: [
+        CommonModule,
+        BackButtonModule,
+        FriendListModule,
+        PlayTogetherRoutingModule,
+        MatchHistoryModule,
+    ],
 })
 export class PlayTogetherModule {}

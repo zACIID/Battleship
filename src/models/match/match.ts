@@ -31,32 +31,35 @@ export interface MatchDocument extends Match, Document {
     registerShot(shot: Shot): Promise<MatchDocument>;
 }
 
-export const MatchSchema = new Schema<MatchDocument>({
-    player1: {
-        type: PlayerStateSchema,
-        required: true,
-    },
+export const MatchSchema = new Schema<MatchDocument>(
+    {
+        player1: {
+            type: PlayerStateSchema,
+            required: true,
+        },
 
-    player2: {
-        type: PlayerStateSchema,
-        required: true,
-    },
+        player2: {
+            type: PlayerStateSchema,
+            required: true,
+        },
 
-    playersChat: {
-        type: SchemaTypes.ObjectId,
-        required: true,
-    },
+        playersChat: {
+            type: SchemaTypes.ObjectId,
+            required: true,
+        },
 
-    observersChat: {
-        type: SchemaTypes.ObjectId,
-        required: true,
-    },
+        observersChat: {
+            type: SchemaTypes.ObjectId,
+            required: true,
+        },
 
-    stats: {
-        type: MatchStatsSchema,
-        default: () => ({}),
+        stats: {
+            type: MatchStatsSchema,
+            default: () => ({}),
+        },
     },
-}, { timestamps: true });
+    { timestamps: true }
+);
 
 MatchSchema.methods.updatePlayerGrid = function (
     this: MatchDocument,
@@ -89,11 +92,14 @@ MatchSchema.methods.registerShot = function (
         if (coords.row === shotCoords.row && coords.col === shotCoords.col) {
             isShotDuplicate = true;
         }
-    })
+    });
 
     if (isShotDuplicate) {
-        return Promise.reject(new Error(`Coordinates (${shotCoords.row}, ${shotCoords.col})`
-                                            + 'have already been shot'));
+        return Promise.reject(
+            new Error(
+                `Coordinates (${shotCoords.row}, ${shotCoords.col})` + 'have already been shot'
+            )
+        );
     }
 
     receivingGrid.shotsReceived.push(shot.coordinates);
@@ -167,19 +173,17 @@ export async function updateMatchStats(
     return match.save();
 }
 
-export async function getMatchByUserId( userId: Types.ObjectId ) : Promise<Match[]> {
+export async function getMatchByUserId(userId: Types.ObjectId): Promise<Match[]> {
     const matchData: Match[] = await MatchModel.find({ 'player1.playerId': userId })
-    .or([{ 'player2.playerId': userId }]).sort({ createdAt: -1 }).limit(10)
-    .catch((err: Error) =>
-        Promise.reject(new Error('Internal server error'))
-    );
+        .or([{ 'player2.playerId': userId }])
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .catch((err: Error) => Promise.reject(new Error('Internal server error')));
 
-    return (!matchData)
-    ? Promise.reject(new Error("No match found with that identifier"))
-    : Promise.resolve(matchData)
+    return !matchData
+        ? Promise.reject(new Error('No match found with that identifier'))
+        : Promise.resolve(matchData);
 }
 
 // Create "Matches" collection
 export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'Matches');
-
-

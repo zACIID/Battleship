@@ -44,10 +44,8 @@ export const PlayerStateSchema = new Schema<PlayerStateSubDocument>(
         },
         isReady: {
             type: SchemaTypes.Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     { _id: false }
 );
-
-

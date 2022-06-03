@@ -15,7 +15,7 @@ export interface LeaderboardPage {
  * Class that handles communication with leaderboard-related endpoints
  */
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root',
 })
 export class LeaderboardApi extends BaseAuthenticatedApi {
     public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
@@ -26,8 +26,8 @@ export class LeaderboardApi extends BaseAuthenticatedApi {
         const queryParams: string = `skip=${skip}&limit=${limit}`;
         const reqPath: string = `/api/leaderboard?${queryParams}`;
 
-        return this.httpClient.get<LeaderboardPage>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .get<LeaderboardPage>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 }

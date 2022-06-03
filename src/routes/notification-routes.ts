@@ -76,7 +76,7 @@ router.post(
 
             const notificationData = {
                 type: reqType.valueOf(),
-                sender: senderObjId.toString()
+                sender: senderObjId.toString(),
             };
             notifier.emit(notificationData);
 

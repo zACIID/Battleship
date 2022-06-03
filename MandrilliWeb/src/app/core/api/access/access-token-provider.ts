@@ -2,13 +2,11 @@ import { Injectable } from '@angular/core';
 
 import { environment } from '../../../../environments/environment';
 
-
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root',
 })
 export class AccessTokenProvider {
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * Retrieves the token used to authenticate requests to the backend.
@@ -21,7 +19,7 @@ export class AccessTokenProvider {
         const token: string | null = localStorage.getItem(environment.localStorageTokenKey);
 
         if (token === null) {
-            throw new Error("Access Token is not set");
+            throw new Error('Access Token is not set');
         }
 
         return token;

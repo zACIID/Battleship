@@ -5,6 +5,6 @@ import { BoardComponent } from './board/board.component';
 @NgModule({
     declarations: [BoardComponent],
     imports: [CommonModule],
-    exports: [BoardComponent]
+    exports: [BoardComponent],
 })
 export class BoardModule {}

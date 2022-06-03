@@ -24,11 +24,14 @@ export abstract class BaseAuthenticatedApi extends BaseApi {
         const reqOptions: RequestOptions = super.createRequestOptions(params);
 
         const accessToken: string = this.accessTokenProvider.getToken();
-        const headersWithAuth: HttpHeaders = reqOptions.headers.set("Authorization", `Bearer ${accessToken}`);
+        const headersWithAuth: HttpHeaders = reqOptions.headers.set(
+            'Authorization',
+            `Bearer ${accessToken}`
+        );
 
         return {
             headers: headersWithAuth,
-            params: reqOptions.params
+            params: reqOptions.params,
         };
     }
 }

@@ -1,5 +1,4 @@
-import { RequestTypes } from '../../../../../../src/models/user/notification'
-
+import { RequestTypes } from '../../../../../../src/models/user/notification';
 
 export interface Notification {
     /**

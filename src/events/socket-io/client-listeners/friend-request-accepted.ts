@@ -36,7 +36,9 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
         const emitterProvider = (
             eventData: AcceptedFriendRequestData
         ): Promise<FriendOnlineEmitter[]> => {
-            const emitters = [new FriendOnlineEmitter(this.ioServer, Types.ObjectId(eventData.userToNotify))]
+            const emitters = [
+                new FriendOnlineEmitter(this.ioServer, Types.ObjectId(eventData.userToNotify)),
+            ];
 
             return Promise.resolve(emitters);
         };

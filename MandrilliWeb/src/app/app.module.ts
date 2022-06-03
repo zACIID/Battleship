@@ -14,7 +14,7 @@ import { AppComponent } from './app.component';
         HttpClientModule,
         BrowserModule,
         AppRoutingModule,
-        MatchHistoryModule
+        MatchHistoryModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

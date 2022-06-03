@@ -6,6 +6,6 @@ import { FriendListComponent } from './friend-list/friend-list.component';
 @NgModule({
     declarations: [FriendListComponent],
     imports: [CommonModule, ListModule],
-    exports: [FriendListComponent]
+    exports: [FriendListComponent],
 })
 export class FriendListModule {}

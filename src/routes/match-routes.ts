@@ -7,8 +7,8 @@ import {
     createMatch,
     updateMatchStats,
     MatchModel,
-    getMatchByUserId, 
-    Match
+    getMatchByUserId,
+    Match,
 } from '../models/match/match';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
@@ -199,7 +199,7 @@ router.put(
             const shipsToEmit = req.body.ships.map((s) => {
                 return {
                     type: s.type.valueOf(),
-                    coordinates: s.coordinates
+                    coordinates: s.coordinates,
                 };
             });
 
@@ -207,7 +207,7 @@ router.put(
             const notifier = new PlayerShipsUpdatedEmitter(ioServer, matchId);
             notifier.emit({
                 ships: shipsToEmit,
-                playerId: playerId.toString()
+                playerId: playerId.toString(),
             });
 
             return res.status(200).json(req.body);
@@ -255,7 +255,7 @@ router.post(
             const notifier: ShotFiredEmitter = new ShotFiredEmitter(ioServer, matchId);
             notifier.emit({
                 coordinates: req.body,
-                playerId: shootingPlayerId.toString()
+                playerId: shootingPlayerId.toString(),
             });
 
             return res.status(200).json(req.body);
@@ -320,22 +320,24 @@ router.put(
  * @param playerId id of the player whose state needs to be changed
  * @param isReady value to set
  */
-const setReadyState = async (match: MatchDocument, playerId: Types.ObjectId, isReady: boolean): Promise<void> => {
+const setReadyState = async (
+    match: MatchDocument,
+    playerId: Types.ObjectId,
+    isReady: boolean
+): Promise<void> => {
     let playerState: PlayerStateSubDocument = null;
     if (match.player1.playerId.equals(playerId)) {
         playerState = match.player1;
-    }
-    else if (match.player2.playerId.equals(playerId)) {
+    } else if (match.player2.playerId.equals(playerId)) {
         playerState = match.player2;
-    }
-    else {
+    } else {
         throw new Error(`User ${playerId} is not part of the match`);
     }
 
     // Set player state as ready and save the main match document
     playerState.isReady = isReady;
     await match.save();
-}
+};
 
 /**
  * Notify the players if both are ready that the positioning phase is completed,
@@ -349,15 +351,14 @@ const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState:
     if (match.player1.isReady && match.player2.isReady) {
         const notifier = new PositioningCompletedEmitter(ioServer, match._id);
         notifier.emit();
-    }
-    else {
+    } else {
         const notifier = new PlayerStateChangedEmitter(ioServer, match._id);
         notifier.emit({
             isReady: newState,
-            playerId: playerId.toString()
+            playerId: playerId.toString(),
         });
     }
-}
+};
 
 const getOpponentId = (match: MatchDocument, playerId: Types.ObjectId): Types.ObjectId => {
     const player1Id: Types.ObjectId = match.player1.playerId;
@@ -374,4 +375,4 @@ const getOpponentId = (match: MatchDocument, playerId: Types.ObjectId): Types.Ob
     }
 
     return opponentId;
-}
+};

@@ -2,13 +2,11 @@ import { Injectable } from '@angular/core';
 
 import { environment } from '../../../../environments/environment';
 
-
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root',
 })
 export class AccessTokenStorage {
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * Stores the provided token in the browser local storage.

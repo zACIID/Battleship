@@ -10,7 +10,7 @@ import { AccessTokenProvider } from '../access/access-token-provider';
  * Class that handles communication with relationship-related endpoints
  */
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root',
 })
 export class NotificationApi extends BaseAuthenticatedApi {
     public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
@@ -20,25 +20,28 @@ export class NotificationApi extends BaseAuthenticatedApi {
     public getNotifications(userId: string): Observable<Notification[]> {
         const reqPath: string = `/api/users/${userId}/notifications`;
 
-        return this.httpClient.get<Notification[]>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .get<Notification[]>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
-    public addNotification(userId: string, newNotification: Notification): Observable<Notification> {
+    public addNotification(
+        userId: string,
+        newNotification: Notification
+    ): Observable<Notification> {
         const reqPath: string = `/api/users/${userId}/notifications`;
 
-        return this.httpClient.post<Notification>(reqPath, newNotification, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .post<Notification>(reqPath, newNotification, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public removeNotification(userId: string, n: Notification): Observable<void> {
         const queryParams: string = `type=${n.type}&sender=${n.sender}`;
         const reqPath: string = `/api/users/${userId}/notifications?${queryParams}`;
 
-        return this.httpClient.delete<void>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .delete<void>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 }

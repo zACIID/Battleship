@@ -1,4 +1,10 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpParamsOptions } from '@angular/common/http';
+import {
+    HttpClient,
+    HttpErrorResponse,
+    HttpHeaders,
+    HttpParams,
+    HttpParamsOptions,
+} from '@angular/common/http';
 
 import { environment } from '../../../../../environments/environment';
 import { throwError } from 'rxjs';
@@ -26,12 +32,12 @@ export abstract class BaseApi {
      * @protected
      */
     protected createRequestOptions(params?: HttpParamsOptions): RequestOptions {
-        return  {
+        return {
             headers: new HttpHeaders({
                 'cache-control': 'no-cache',
-                'Content-Type':  'application/json',
+                'Content-Type': 'application/json',
             }),
-            params: new HttpParams(params)
+            params: new HttpParams(params),
         };
     }
 
@@ -44,10 +50,11 @@ export abstract class BaseApi {
             // The response body may contain clues as to what went wrong,
             console.error(
                 `Backend returned code ${error.status}, ` +
-                'body was: ' + JSON.stringify(error.error));
+                    'body was: ' +
+                    JSON.stringify(error.error)
+            );
         }
 
         return throwError(() => new Error('An error has occurred during or after an api request'));
     }
 }
-

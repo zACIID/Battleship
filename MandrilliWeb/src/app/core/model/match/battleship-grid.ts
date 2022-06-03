@@ -12,5 +12,5 @@ export interface BattleshipGrid {
      *  Array of coordinates that represents the shots
      *  received by the player on his grid
      */
-    shotsReceived: GridCoordinates[]
+    shotsReceived: GridCoordinates[];
 }

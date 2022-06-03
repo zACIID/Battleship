@@ -15,11 +15,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         GameButtonComponent,
         ProfileButtonComponent,
     ],
-    imports: [
-        CommonModule,
-        MatchHistoryModule,
-        HomepageRoutingModule,
-        FontAwesomeModule,
-    ],
+    imports: [CommonModule, MatchHistoryModule, HomepageRoutingModule, FontAwesomeModule],
 })
 export class HomepageModule {}

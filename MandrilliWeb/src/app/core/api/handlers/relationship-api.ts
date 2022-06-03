@@ -10,7 +10,7 @@ import { AccessTokenProvider } from '../access/access-token-provider';
  * Class that handles communication with relationship-related endpoints
  */
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root',
 })
 export class RelationshipApi extends BaseAuthenticatedApi {
     public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
@@ -19,24 +19,24 @@ export class RelationshipApi extends BaseAuthenticatedApi {
 
     public getRelationships(userId: string): Observable<Relationship[]> {
         const reqPath: string = `/api/users/${userId}/relationships`;
-        return this.httpClient.get<Relationship[]>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .get<Relationship[]>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public addRelationship(userId: string, newRel: Relationship): Observable<Relationship> {
         const reqPath: string = `/api/users/${userId}/relationships`;
 
-        return this.httpClient.post<Relationship>(reqPath, newRel, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .post<Relationship>(reqPath, newRel, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public removeRelationship(userId: string, friendId: string): Observable<void> {
         const reqPath: string = `/api/users/${userId}/relationships/${friendId}`;
 
-        return this.httpClient.delete<void>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .delete<void>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 }

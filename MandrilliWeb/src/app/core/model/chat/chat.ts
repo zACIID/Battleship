@@ -14,5 +14,5 @@ export interface Chat {
     /**
      * Messages exchanged in the chat
      */
-    messages: Message[]
+    messages: Message[];
 }

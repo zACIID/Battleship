@@ -8,7 +8,6 @@ import { Chat } from '../../model/chat/chat';
 import { Message } from '../../model/chat/message';
 import { toUnixSeconds } from '../utils/date';
 
-
 /**
  * Interface that mimics what the api responds with after
  * a request on a chat endpoint
@@ -27,7 +26,7 @@ export interface ApiChat {
     /**
      * Messages exchanged in the chat
      */
-    messages: ApiMessage[]
+    messages: ApiMessage[];
 }
 
 /**
@@ -54,14 +53,14 @@ export interface ApiMessage {
  * Interface that represents a response from the Add User endpoint
  */
 interface AddUserResponse {
-    userId: string
+    userId: string;
 }
 
 /**
  * Class that handles communication with chat-related endpoints
  */
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root',
 })
 export class ChatApi extends BaseAuthenticatedApi {
     public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
@@ -72,17 +71,17 @@ export class ChatApi extends BaseAuthenticatedApi {
         const reqPath: string = `/api/chat/${chatId}`;
 
         // TODO manipolare l'observable in modo che converta il messaggio da ApiChat a Chat
-        return this.httpClient.get<ApiChat>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .get<ApiChat>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public deleteChat(chatId: string): Observable<void> {
         const reqPath: string = `/api/chat/${chatId}`;
 
-        return this.httpClient.delete<void>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .delete<void>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public getMessages(chatId: string, skip: number, limit: number): Observable<Message[]> {
@@ -90,9 +89,9 @@ export class ChatApi extends BaseAuthenticatedApi {
         const reqPath: string = `/api/chat/${chatId}/messages?${queryParams}`;
 
         // TODO manipolare l'observable in modo che converta il messaggio da ApiMessage a Message
-        return this.httpClient.get<ApiMessage[]>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .get<ApiMessage[]>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public addMessage(chatId: string, message: Message): Observable<Message> {
@@ -100,28 +99,28 @@ export class ChatApi extends BaseAuthenticatedApi {
         const reqBody: ApiMessage = {
             author: message.author,
             timestamp: toUnixSeconds(message.timestamp),
-            content: message.content
-        }
+            content: message.content,
+        };
 
         // TODO manipolare l'observable in modo che converta il messaggio da ApiMessage a Message
-        return this.httpClient.post<ApiMessage>(reqPath, reqBody, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .post<ApiMessage>(reqPath, reqBody, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public addUser(chatId: string, userId: string): Observable<AddUserResponse> {
         const reqPath: string = `/api/chat/${chatId}/users`;
 
-        return this.httpClient.post<AddUserResponse>(reqPath, userId, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .post<AddUserResponse>(reqPath, userId, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public removeUser(chatId: string, userId: string): Observable<void> {
         const reqPath: string = `/api/chat/${chatId}/users/${userId}`;
 
-        return this.httpClient.delete<void>(reqPath, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .delete<void>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 }

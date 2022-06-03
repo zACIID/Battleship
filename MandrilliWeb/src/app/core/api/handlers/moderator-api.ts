@@ -19,16 +19,16 @@ export class ModeratorApi extends BaseAuthenticatedApi {
     public addModerator(moderatorId: string, newModInfo: LoginInfo): Observable<User> {
         const reqPath: string = `/api/moderators/${moderatorId}/additions`;
 
-        return this.httpClient.post<User>(reqPath, newModInfo, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .post<User>(reqPath, newModInfo, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public banUser(moderatorId: string, banId: string): Observable<void> {
         const reqPath: string = `/api/moderators/${moderatorId}/bans`;
 
-        return this.httpClient.post<void>(reqPath, banId, this.createRequestOptions()).pipe(
-            catchError(this.handleError)
-        )
+        return this.httpClient
+            .post<void>(reqPath, banId, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 }
