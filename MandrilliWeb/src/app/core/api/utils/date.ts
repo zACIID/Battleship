@@ -5,3 +5,7 @@
 export const toUnixSeconds = (d: Date): number => {
     return d.getTime() / 1000;
 };
+
+export const fromUnixSeconds = (unixSeconds: number): Date => {
+    return new Date(unixSeconds * 1000);
+}

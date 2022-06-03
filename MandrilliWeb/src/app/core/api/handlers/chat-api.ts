@@ -1,18 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { AccessTokenProvider } from '../access/access-token-provider';
 import { Chat } from '../../model/chat/chat';
 import { Message } from '../../model/chat/message';
-import { toUnixSeconds } from '../utils/date';
+import { fromUnixSeconds, toUnixSeconds } from '../utils/date';
 
 /**
  * Interface that mimics what the api responds with after
  * a request on a chat endpoint
  */
-export interface ApiChat {
+interface ApiChat {
     /**
      * Id of the chat
      */
@@ -29,10 +29,20 @@ export interface ApiChat {
     messages: ApiMessage[];
 }
 
+const toChat = (apiChat: ApiChat): Chat => {
+    return {
+        chatId: apiChat.chatId,
+        users: apiChat.users,
+        messages: apiChat.messages.map((apiMessage: ApiMessage) => {
+            return toMessage(apiMessage);
+        })
+    }
+}
+
 /**
  * Interface that represents a Message resource sent by the api
  */
-export interface ApiMessage {
+interface ApiMessage {
     /**
      * Id of the user that sent this message
      */
@@ -47,6 +57,22 @@ export interface ApiMessage {
      * Content of the message
      */
     content: string;
+}
+
+const toMessage = (apiMessage: ApiMessage): Message => {
+    return {
+        author: apiMessage.author,
+        timestamp: fromUnixSeconds(apiMessage.timestamp),
+        content: apiMessage.content,
+    };
+}
+
+const toApiMessage = (message: Message): ApiMessage => {
+    return {
+        author: message.author,
+        timestamp: toUnixSeconds(message.timestamp),
+        content: message.content,
+    };
 }
 
 /**
@@ -70,10 +96,14 @@ export class ChatApi extends BaseAuthenticatedApi {
     public getChat(chatId: string): Observable<Chat> {
         const reqPath: string = `/api/chat/${chatId}`;
 
-        // TODO manipolare l'observable in modo che converta il messaggio da ApiChat a Chat
         return this.httpClient
             .get<ApiChat>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .pipe(
+                catchError(this.handleError),
+                map<ApiChat, Chat>((apiChat: ApiChat) => {
+                    return toChat(apiChat)
+                })
+            );
     }
 
     public deleteChat(chatId: string): Observable<void> {
@@ -88,24 +118,30 @@ export class ChatApi extends BaseAuthenticatedApi {
         const queryParams: string = `skip=${skip}&limit=${limit}`;
         const reqPath: string = `/api/chat/${chatId}/messages?${queryParams}`;
 
-        // TODO manipolare l'observable in modo che converta il messaggio da ApiMessage a Message
         return this.httpClient
             .get<ApiMessage[]>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .pipe(
+                catchError(this.handleError),
+                map<ApiMessage[], Message[]>((messages: ApiMessage[]) => {
+                    return messages.map((m: ApiMessage) => {
+                        return toMessage(m);
+                    });
+                })
+            );
     }
 
     public addMessage(chatId: string, message: Message): Observable<Message> {
         const reqPath: string = `/api/chat/${chatId}/users`;
-        const reqBody: ApiMessage = {
-            author: message.author,
-            timestamp: toUnixSeconds(message.timestamp),
-            content: message.content,
-        };
+        const reqBody: ApiMessage = toApiMessage(message);
 
-        // TODO manipolare l'observable in modo che converta il messaggio da ApiMessage a Message
         return this.httpClient
             .post<ApiMessage>(reqPath, reqBody, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .pipe(
+                catchError(this.handleError),
+                map<ApiMessage, Message>((apiMessage: ApiMessage) => {
+                    return toMessage(apiMessage);
+                })
+            );
     }
 
     public addUser(chatId: string, userId: string): Observable<AddUserResponse> {
