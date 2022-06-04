@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { UserOverview } from './../../../core/model/user/user-overview';
+import { Component, OnInit, Input } from '@angular/core';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
@@ -7,8 +8,12 @@ import { faUser } from '@fortawesome/free-regular-svg-icons';
     styleUrls: ['./profile-button.component.css'],
 })
 export class ProfileButtonComponent implements OnInit {
-    faUser = faUser;
+    public faUser = faUser;
+
+    @Input() public user?: UserOverview;
+
     constructor() {}
 
     ngOnInit(): void {}
 }
+
