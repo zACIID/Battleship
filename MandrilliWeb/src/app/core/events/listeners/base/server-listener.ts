@@ -1,8 +1,8 @@
-import { Socket } from 'socket.io-client';
+import { Socket } from 'ngx-socket-io';
 
 /**
  * Abstract class that wraps functionality used to listen
- * to server-emitted Socket.io
+ * to server-emitted Socket.io events
  */
 export abstract class ServerListener<T> {
     public readonly client: Socket;

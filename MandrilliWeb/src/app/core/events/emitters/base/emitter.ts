@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io-client';
+import { Socket } from 'ngx-socket-io';
 
 /**
  * Abstract class that wraps Socket.io emitter functionality
