@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 const sIoConfig: SocketIoConfig = {
-    url: '',
+    url: '', // TODO capire che url mettere
     options: {
 
     }
@@ -20,6 +20,8 @@ const sIoConfig: SocketIoConfig = {
         // This is needed to inject an HttpClient instance
         // to the api services
         HttpClientModule,
+
+        // This is needed to inject the Socket instance
         SocketIoModule.forRoot(sIoConfig),
         BrowserModule,
         AppRoutingModule,
