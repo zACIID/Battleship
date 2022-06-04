@@ -28,6 +28,8 @@ export class LoginScreenComponent implements OnInit {
 
             this._authClient.login(loginInfo).subscribe((data: Jwt) => {
                 this._accessTokenStorage.store(data.token);
+                //TODO, trovare un modo per salvare lo userId
+                localStorage.setItem("username", username);
             });
         } catch (err) {
             console.log('An error occurred' + err);

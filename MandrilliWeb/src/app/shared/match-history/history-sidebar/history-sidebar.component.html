@@ -12,7 +12,11 @@
             <p class="is-size-4"> <strong>Match History</strong> </p>
         </div>
        
-        <history-list></history-list>
+        <div class="match-list-height overflow-scroll">
+
+            <app-list [MatchList]="matchHistory"></app-list>
+        
+        </div>
 
         <div class="mt-6">
             <settings-button></settings-button>

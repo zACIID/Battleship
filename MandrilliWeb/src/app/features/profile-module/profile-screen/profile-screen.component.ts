@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, catchError } from 'rxjs';
-import { MatchApi, MatchInfo } from '../../../core/api/handlers/match-api'
+import { MatchApi } from '../../../core/api/handlers/match-api'
 import { UserApi } from '../../../core/api/handlers/user-api'
 import { User } from '../../../core/model/user/user';
 import { Match } from '../../../core/model/match/match';
@@ -15,7 +14,6 @@ import { UserStats } from '../../../core/model/user/user-stats';
 export class ProfileScreenComponent implements OnInit {
 
     public user: User
-    public matchHistory: Match[] = []
     public stats: UserStats
     private userId: string
     public rank: string = ""
@@ -27,7 +25,6 @@ export class ProfileScreenComponent implements OnInit {
 
     ngOnInit(): void {
         this.getUser()
-        this.get10UserMatch()
         this.getUserStats()
     }
 
@@ -36,16 +33,6 @@ export class ProfileScreenComponent implements OnInit {
             this.userClient.getUser(this.userId).subscribe((user: User) => {
                 this.user = user
                 this.user.online = true
-            })
-        } catch(err) {
-            console.log("Handling error: " + err)
-        }
-    }
-
-    public get10UserMatch() : void {
-        try {
-            this.matchClient.getUserMatches(this.userId).subscribe((match: Match[]) => {
-                this.matchHistory = [...match]
             })
         } catch(err) {
             console.log("Handling error: " + err)

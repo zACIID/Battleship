@@ -13,9 +13,10 @@ export interface Match {
     player1: PlayerState;
 
     /**
-     * State of player #1 of the match
+     * State of player #2 of the match
      */
     player2: PlayerState;
+
 
     /**
      * Id of the player's chat

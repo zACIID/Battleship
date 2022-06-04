@@ -1,13 +1,55 @@
-<div class="list-height overflow-scroll">
 
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
-    <app-list-item></app-list-item>
+<!-- List crafted for the matches-->
+<div *ngIf="MatchList" [ngSwitch]="num_matches()" class="list-height overflow-scroll">
+
+    <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
+        <p> <strong>No matches available</strong></p>
+    </div>
+
+    <div *ngSwitchDefault>
+        <div *ngFor="let item of MatchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+            <p> <strong>{{item.username1}}</strong> vs. <strong>{{item.username2}}</strong></p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- List crafted for the friends-->
+<div *ngIf="FriendList" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
+
+    <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
+        <p> <strong>No matches available</strong></p>
+    </div>
+
+    <div *ngSwitchDefault>
+        <div *ngFor="let item of FriendList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+            <p> <strong>{{item.username}}</strong> vs. <strong>elo??</strong></p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- List crafted for the battle requests -->
+<div *ngIf="NotificationList" class="list-height overflow-scroll">
+
+    <div *ngFor="let item of NotificationList">
+        <div *ngIf="item.type == 'MatchRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+            <p> <strong>{{item.username}}</strong> wants to battle you !</p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- List crafted for the battle requests -->
+<div *ngIf="NotificationList" class="list-height overflow-scroll">
+
+    <div *ngFor="let item of NotificationList">
+        <div *ngIf="item.type == 'FriendRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+            <p> <strong>{{item.username}}</strong> wants to be your friend !</p>
+        </div>
+    </div>
 
 </div>
