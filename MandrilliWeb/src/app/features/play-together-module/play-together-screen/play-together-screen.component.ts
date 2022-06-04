@@ -1,3 +1,5 @@
+import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
+import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -6,7 +8,10 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./play-together-screen.component.css'],
 })
 export class PlayTogetherScreenComponent implements OnInit {
-    constructor() {}
+
+    public friends: RelationshipOverview[] = [];
+
+    constructor(private relationshipClient: RelationshipApi) {}
 
     ngOnInit(): void {}
 }

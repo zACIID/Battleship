@@ -1,3 +1,4 @@
+import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { MatchOverview } from './../../../core/model/match/match-overview';
 import { Match } from './../../../core/model/match/match';
 import { User } from './../../../core/model/user/user';
@@ -13,9 +14,9 @@ import { NotificationOverview } from 'src/app/core/model/user/notification-overv
 })
 export class ListComponent implements OnInit {
 
-    @Input() MatchList?: MatchOverview[];
-    @Input() FriendList?: User[];
-    @Input() NotificationList?: NotificationOverview[];
+    @Input() matchList?: MatchOverview[];
+    @Input() friendList?: RelationshipOverview[];
+    @Input() notificationList?: NotificationOverview[];
 
     constructor() {}
 
@@ -24,16 +25,16 @@ export class ListComponent implements OnInit {
 
     public num_matches() : number {
     
-        if(this.MatchList)
-            return this.MatchList.length;
+        if(this.matchList)
+            return this.matchList.length;
         else return 0;
 
     }
 
     public num_friends() : number {
 
-        if(this.FriendList)
-            return this.FriendList.length;
+        if(this.friendList)
+            return this.friendList.length;
         else return 0;
 
     }

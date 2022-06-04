@@ -15,7 +15,9 @@
                     <h1 class="is-size-1 has-text-light has-text-weight-semibold">Friends</h1>
                     <hr class="mb-4">
 
-                    <friend-list></friend-list>
+                    <div class="friends-list-height overflow-scroll p-1">
+                        <app-list [friendList]="friends" ></app-list>
+                    </div>
 
                     
                 </div>

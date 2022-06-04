@@ -1,13 +1,13 @@
 
 <!-- List crafted for the matches-->
-<div *ngIf="MatchList" [ngSwitch]="num_matches()" class="list-height overflow-scroll">
+<div *ngIf="matchList" [ngSwitch]="num_matches()" class="list-height overflow-scroll">
 
     <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
         <p> <strong>No matches available</strong></p>
     </div>
 
     <div *ngSwitchDefault>
-        <div *ngFor="let item of MatchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+        <div *ngFor="let item of matchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
             <p> <strong>{{item.username1}}</strong> vs. <strong>{{item.username2}}</strong></p>
         </div>
     </div>
@@ -16,15 +16,15 @@
 
 
 <!-- List crafted for the friends-->
-<div *ngIf="FriendList" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
+<div *ngIf="friendList" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
 
     <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
-        <p> <strong>No matches available</strong></p>
+        <p> <strong>There's no friends here :(</strong></p>
     </div>
 
     <div *ngSwitchDefault>
-        <div *ngFor="let item of FriendList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
-            <p> <strong>{{item.username}}</strong> vs. <strong>elo??</strong></p>
+        <div *ngFor="let item of friendList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+            <p> <strong>{{item.username}}</strong></p>
         </div>
     </div>
 
@@ -32,9 +32,9 @@
 
 
 <!-- List crafted for the battle requests -->
-<div *ngIf="NotificationList" class="list-height overflow-scroll">
+<div *ngIf="notificationList" class="list-height overflow-scroll">
 
-    <div *ngFor="let item of NotificationList">
+    <div *ngFor="let item of notificationList">
         <div *ngIf="item.type == 'MatchRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
             <p> <strong>{{item.username}}</strong> wants to battle you !</p>
         </div>
@@ -44,9 +44,9 @@
 
 
 <!-- List crafted for the battle requests -->
-<div *ngIf="NotificationList" class="list-height overflow-scroll">
+<div *ngIf="notificationList" class="list-height overflow-scroll">
 
-    <div *ngFor="let item of NotificationList">
+    <div *ngFor="let item of notificationList">
         <div *ngIf="item.type == 'FriendRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
             <p> <strong>{{item.username}}</strong> wants to be your friend !</p>
         </div>

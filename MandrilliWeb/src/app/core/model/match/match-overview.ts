@@ -1,4 +1,3 @@
-import { MatchStats } from './match-stats';
 
 
 export interface MatchOverview {
