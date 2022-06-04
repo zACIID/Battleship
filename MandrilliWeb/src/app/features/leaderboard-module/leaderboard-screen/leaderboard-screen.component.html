@@ -3,12 +3,13 @@
           <history-sidebar> </history-sidebar>
     </div>
     <div class = "column">
-        <div class="box has-background-primary height mt-2 mr-2 p-5">
+        <div class="box has-background-primary height mt-2 is-vcentered mr-1">
 
-            <div class="columns mb-6">
+            <div class="columns height-20">
                 <div class="column">
-                    <h1 class="is-size-1 has-text-light has-text-weight-bold ml-2">Play with a friend</h1>
+                    <h1 class="is-size-1 has-text-light has-text-centered has-text-weight-bold">Leaderboard</h1>
                 </div>
+
                 <div class="column is-one-quarter">
                     <div class="box has-background-light pointer">
                         <div class="has-text-centered">
@@ -16,13 +17,20 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
-            <div class="friends-list-height overflow-scroll p-1">
-                <app-list [friendsList]="friends" ></app-list>
-            </div>
+            <div class="height-80 width-80 margin-auto">
 
-                
+                <div class="request-list-height overflow-scroll p-1">
+                    <app-list [userList]="leaders" ></app-list>
+                </div>
+
+
+            </div>
+            
+
         </div>
     </div>
 </div>
+

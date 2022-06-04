@@ -22,6 +22,12 @@ const routes: Routes = [
             import('./features/homepage-module/homepage.module').then((m) => m.HomepageModule),
     },
     {
+        path: 'leaderboard',
+        loadChildren: () =>
+            import('./features/leaderboard-module/leaderboard.module').then(
+                (m) => m.LeaderboardModule),
+    },
+    {
         path: 'match-results',
         loadChildren: () =>
             import('./features/match-results-module/match-results.module').then(

@@ -6,14 +6,14 @@
 
 *::-webkit-scrollbar {
     width: 10px;
-  }
-  
-  
+}
+
+
 *::-webkit-scrollbar-thumb {
     background-color: hsl(171, 100%, 41%);
     border-radius: 20px;
     border: 3px solid hsl(0, 0%, 96%);
-  }
+}
 
 .width-80{
     width: 80%
@@ -69,3 +69,15 @@
   height:95%;
 }
 
+
+.height-20{
+  height:20%
+}
+
+.height-60{
+  height: 60%
+}
+
+.height-80{
+  height: 80%
+}
