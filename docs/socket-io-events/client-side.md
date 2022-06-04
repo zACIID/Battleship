@@ -107,4 +107,4 @@ table th:nth-of-type(3) {
 
 | Event names | Description | Event Data |
 | :--------- | :---------- | :--------- |
-| match-request-accepted | This event is raised by a user who has accepted a match request. The user notifies the server that he has accepted the request, so that the server can create the match and notify the two players abut the game that has started. |  With this event, a [MatchRequestAcceptedData](#matchrequestaccepteddata) resource is sent, which contains the id of the two players involved in the match. |
+| match-request-accepted | This event is raised by a user who has accepted a match request. The user notifies the server that he has accepted the request, so that the server can create the match and notify the two players about the game that has started. |  With this event, a [MatchRequestAcceptedData](#matchrequestaccepteddata) resource is sent, which contains the id of the two players involved in the match. |
