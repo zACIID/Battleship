@@ -12,9 +12,9 @@ import { AccessTokenStorage } from '../../../core/api/access/access-token-storag
 })
 export class LoginScreenComponent implements OnInit {
     constructor(
-        private _userClient: UserApi,
-        private _authClient: AuthApi,
-        private _accessTokenStorage: AccessTokenStorage
+        private userClient: UserApi,
+        private authClient: AuthApi,
+        private accessTokenStorage: AccessTokenStorage
     ) {}
 
     ngOnInit(): void {}
@@ -26,8 +26,8 @@ export class LoginScreenComponent implements OnInit {
                 password: password,
             };
 
-            this._authClient.login(loginInfo).subscribe((data: Jwt) => {
-                this._accessTokenStorage.store(data.token);
+            this.authClient.login(loginInfo).subscribe((data: Jwt) => {
+                this.accessTokenStorage.store(data.token);
                 //TODO, trovare un modo per salvare lo userId
                 localStorage.setItem("username", username);
             });

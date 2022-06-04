@@ -5,6 +5,7 @@ import { UserApi } from '../../../core/api/handlers/user-api'
 import { User } from '../../../core/model/user/user';
 import { Match } from '../../../core/model/match/match';
 import { UserStats } from '../../../core/model/user/user-stats';
+import { getRank } from '../../../core/model/user/elo-rankings';
 
 @Component({
     selector: 'app-profile-screen',
@@ -51,6 +52,6 @@ export class ProfileScreenComponent implements OnInit {
     }
 
     private applyRank(){
-        this.rank = this.user.setrank(this.stats.elo)
+        this.rank = getRank(this.stats.elo);
     }
 }

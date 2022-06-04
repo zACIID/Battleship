@@ -6,7 +6,8 @@ export class UserStats {
     shipsDestroyed: number;
     totalShots: number;
     totalHits: number;
-    rank?: string;
+    rank: string;
+
     constructor(
         elo: number = 0,
         topElo: number = 0,
@@ -25,14 +26,4 @@ export class UserStats {
         this.totalHits = totalHits;
         this.rank = '';
     }
-}
-
-export enum UGrade {
-    private = 'private',
-    sergeant = 'sergeant',
-    chief = 'chief',
-    liutenant = 'liutenant',
-    captain = 'captain',
-    colonel = 'colonel',
-    generalOfTheArmy = 'General of the army',
 }
