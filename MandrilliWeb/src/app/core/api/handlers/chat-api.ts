@@ -6,74 +6,8 @@ import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { AccessTokenProvider } from '../access/access-token-provider';
 import { Chat } from '../../model/chat/chat';
 import { Message } from '../../model/chat/message';
-import { fromUnixSeconds, toUnixSeconds } from '../utils/date';
-
-/**
- * Interface that mimics what the api responds with after
- * a request on a chat endpoint
- */
-interface ApiChat {
-    /**
-     * Id of the chat
-     */
-    chatId: string;
-
-    /**
-     * Ids of the users involved in the chat
-     */
-    users: string[];
-
-    /**
-     * Messages exchanged in the chat
-     */
-    messages: ApiMessage[];
-}
-
-const toChat = (apiChat: ApiChat): Chat => {
-    return {
-        chatId: apiChat.chatId,
-        users: apiChat.users,
-        messages: apiChat.messages.map((apiMessage: ApiMessage) => {
-            return toMessage(apiMessage);
-        })
-    }
-}
-
-/**
- * Interface that represents a Message resource sent by the api
- */
-interface ApiMessage {
-    /**
-     * Id of the user that sent this message
-     */
-    author: string;
-
-    /**
-     * Time (in Unix seconds) that the message was sent at
-     */
-    timestamp: number;
-
-    /**
-     * Content of the message
-     */
-    content: string;
-}
-
-const toMessage = (apiMessage: ApiMessage): Message => {
-    return {
-        author: apiMessage.author,
-        timestamp: fromUnixSeconds(apiMessage.timestamp),
-        content: apiMessage.content,
-    };
-}
-
-const toApiMessage = (message: Message): ApiMessage => {
-    return {
-        author: message.author,
-        timestamp: toUnixSeconds(message.timestamp),
-        content: message.content,
-    };
-}
+import { ApiChat, toChat } from '../../model/api/chat/api-chat';
+import { ApiMessage, toApiMessage, toMessage } from '../../model/api/chat/api-message';
 
 /**
  * Interface that represents a response from the Add User endpoint

@@ -7,46 +7,8 @@ import { AccessTokenProvider } from '../access/access-token-provider';
 import { Ship } from '../../model/match/ship';
 import { Match } from '../../model/match/match';
 import { BattleshipGrid } from '../../model/match/battleship-grid';
-import { GridCoordinates } from '../../model/match/coordinates';
-
-export interface MatchInfo {
-    /**
-     * Id of player #1 of the match
-     */
-    player1Id: string;
-
-    /**
-     * Id of player #2 of the match
-     */
-    player2Id: string;
-}
-
-export interface MatchStatsUpdate {
-    /**
-     * Id of player that won the match
-     */
-    winner: string;
-
-    /**
-     * Time (in unix seconds) that the match ended at
-     */
-    endTime: number;
-
-    /**
-     * Total shots fired during the match
-     */
-    totalShots: number;
-
-    /**
-     * Number of ships destroyed during the match
-     */
-    totalHits: number;
-}
-
-export interface Shot {
-    playerId: string;
-    coordinates: GridCoordinates;
-}
+import { MatchStatsUpdate } from '../../model/api/match/match-stats-update';
+import { Shot } from '../../model/api/match/shot';
 
 /**
  * Class that handles communication with match-related endpoints
@@ -75,11 +37,11 @@ export class MatchApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<MatchInfo> {
+    public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<MatchStatsUpdate> {
         const reqPath: string = `/api/matches/${matchId}`;
 
         return this.httpClient
-            .patch<MatchInfo>(reqPath, statsUpdate, this.createRequestOptions())
+            .patch<MatchStatsUpdate>(reqPath, statsUpdate, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 

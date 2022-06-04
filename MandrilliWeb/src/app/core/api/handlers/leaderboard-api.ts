@@ -3,13 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { LeaderboardEntry } from '../../model/leaderboard/entry';
 import { AccessTokenProvider } from '../access/access-token-provider';
-
-export interface LeaderboardPage {
-    leaderboard: LeaderboardEntry[];
-    nextPage: string;
-}
+import { LeaderboardPage } from '../../model/api/leaderboard/page';
 
 /**
  * Class that handles communication with leaderboard-related endpoints
