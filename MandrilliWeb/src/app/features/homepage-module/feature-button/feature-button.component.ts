@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'feature-button',
@@ -6,7 +6,15 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./feature-button.component.css'],
 })
 export class FeatureButtonComponent implements OnInit {
+
+
+    @Input() title: string = "";
+    @Input() link: string = "";
+    
     constructor() {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.link = "/" + this.link;
+        console.log(this.link);
+    }
 }

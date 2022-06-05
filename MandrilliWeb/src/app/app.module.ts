@@ -24,8 +24,7 @@ const sIoConfig: SocketIoConfig = {
         // This is needed to inject the Socket instance
         SocketIoModule.forRoot(sIoConfig),
         BrowserModule,
-        AppRoutingModule,
-        MatchHistoryModule, // TODO chiedere perché è stato messo qua -pier
+        AppRoutingModule
     ],
     providers: [],
     bootstrap: [AppComponent],
