@@ -2,12 +2,14 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
+        "allowJs": true,
         "baseUrl": "./",
         "outDir": "./dist/out-tsc",
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": false,
+        "emitDecoratorMetadata": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,
@@ -16,9 +18,11 @@
         "experimentalDecorators": true,
         "moduleResolution": "node",
         "importHelpers": true,
-        "target": "es2017",
-        "module": "es2020",
-        "lib": ["es2020", "dom"]
+        "esModuleInterop": true,
+        "target": "es6",
+        "module": "commonjs",
+        "lib": ["es2020", "dom"],
+        "allowSyntheticDefaultImports": true
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,

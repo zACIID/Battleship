@@ -6,11 +6,11 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { MatchHistoryModule } from './shared/match-history/match-history.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { environment } from '../environments/environment';
 
 const sIoConfig: SocketIoConfig = {
-    url: '', // TODO capire che url mettere
+    url: environment.apiBaseUrl, // TODO capire che url mettere
     options: {
-
     }
 };
 

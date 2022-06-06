@@ -8,7 +8,7 @@ export const environment = {
     /**
      * Base url of the backend api
      */
-    apiBaseUrl: 'localhost:3000',
+    apiBaseUrl: 'http://localhost:3000',
 
     /**
      * Key by which the access token is stored in the browser local storage
