@@ -11,7 +11,7 @@ export const environment = {
     apiBaseUrl: 'http://localhost:3000',
 
     /**
-     * Key by which the access token is stored in the browser local storage
+     * Key by which the jwt-auth token is stored in the browser local storage
      */
     localStorageTokenKey: 'token',
 };

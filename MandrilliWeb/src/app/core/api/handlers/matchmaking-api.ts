@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access/access-token-provider';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 
 interface EnqueueResponse {
     userId: string;
@@ -16,19 +16,19 @@ interface EnqueueResponse {
     providedIn: 'root',
 })
 export class MatchmakingApi extends BaseAuthenticatedApi {
-    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);
     }
 
     public enqueue(userId: string): Observable<EnqueueResponse> {
-        const reqPath: string = `/api/matchmaking/queue`;
+        const reqPath: string = `${this.baseUrl}/api/matchmaking/queue`;
         return this.httpClient
             .put<EnqueueResponse>(reqPath, userId, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 
     public removeFromQueue(userId: string): Observable<void> {
-        const reqPath: string = `/api/matchmaking/queue/${userId}`;
+        const reqPath: string = `${this.baseUrl}/api/matchmaking/queue/${userId}`;
         return this.httpClient
             .delete<void>(reqPath, this.createRequestOptions())
             .pipe(catchError(this.handleError));

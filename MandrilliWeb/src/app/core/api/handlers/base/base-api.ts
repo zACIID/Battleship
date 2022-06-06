@@ -8,6 +8,7 @@ import {
 
 import { environment } from '../../../../../environments/environment';
 import { throwError } from 'rxjs';
+import { Inject } from '@angular/core';
 
 export interface RequestOptions {
     headers: HttpHeaders;
@@ -21,8 +22,8 @@ export abstract class BaseApi {
     protected readonly baseUrl: string;
     protected readonly httpClient: HttpClient;
 
-    protected constructor(httpClient: HttpClient) {
-        this.baseUrl = environment.apiBaseUrl;
+    protected constructor(httpClient: HttpClient, baseUrl: string = environment.apiBaseUrl) {
+        this.baseUrl = baseUrl;
         this.httpClient = httpClient;
     }
 

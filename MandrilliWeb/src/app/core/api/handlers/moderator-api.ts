@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError } from 'rxjs'; // TODO non viene riconosciuto dal compiler se si esegue comando 'tsc'
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access/access-token-provider';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 import { User } from '../../model/user/user';
 import { LoginInfo } from './auth-api';
 
@@ -12,12 +12,12 @@ import { LoginInfo } from './auth-api';
  */
 @Injectable()
 export class ModeratorApi extends BaseAuthenticatedApi {
-    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);
     }
 
     public addModerator(moderatorId: string, newModInfo: LoginInfo): Observable<User> {
-        const reqPath: string = `/api/moderators/${moderatorId}/additions`;
+        const reqPath: string = `${this.baseUrl}/api/moderators/${moderatorId}/additions`;
 
         return this.httpClient
             .post<User>(reqPath, newModInfo, this.createRequestOptions())
@@ -25,7 +25,7 @@ export class ModeratorApi extends BaseAuthenticatedApi {
     }
 
     public banUser(moderatorId: string, banId: string): Observable<void> {
-        const reqPath: string = `/api/moderators/${moderatorId}/bans`;
+        const reqPath: string = `${this.baseUrl}/api/moderators/${moderatorId}/bans`;
 
         return this.httpClient
             .post<void>(reqPath, banId, this.createRequestOptions())

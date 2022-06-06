@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access/access-token-provider';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 
 /**
  * Class that handles communication with relationship-related endpoints
@@ -13,12 +13,12 @@ import { AccessTokenProvider } from '../access/access-token-provider';
     providedIn: 'root',
 })
 export class NotificationApi extends BaseAuthenticatedApi {
-    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);
     }
 
     public getNotifications(userId: string): Observable<Notification[]> {
-        const reqPath: string = `/api/users/${userId}/notifications`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/notifications`;
 
         return this.httpClient
             .get<Notification[]>(reqPath, this.createRequestOptions())
@@ -29,7 +29,7 @@ export class NotificationApi extends BaseAuthenticatedApi {
         userId: string,
         newNotification: Notification
     ): Observable<Notification> {
-        const reqPath: string = `/api/users/${userId}/notifications`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/notifications`;
 
         return this.httpClient
             .post<Notification>(reqPath, newNotification, this.createRequestOptions())
@@ -38,7 +38,7 @@ export class NotificationApi extends BaseAuthenticatedApi {
 
     public removeNotification(userId: string, n: Notification): Observable<void> {
         const queryParams: string = `type=${n.type}&sender=${n.sender}`;
-        const reqPath: string = `/api/users/${userId}/notifications?${queryParams}`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/notifications?${queryParams}`;
 
         return this.httpClient
             .delete<void>(reqPath, this.createRequestOptions())

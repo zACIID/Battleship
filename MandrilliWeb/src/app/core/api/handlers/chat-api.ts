@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, map } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access/access-token-provider';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 import { Chat } from '../../model/chat/chat';
 import { Message } from '../../model/chat/message';
 import { ApiChat, toChat } from '../../model/api/chat/api-chat';
@@ -23,12 +23,12 @@ interface AddUserResponse {
     providedIn: 'root',
 })
 export class ChatApi extends BaseAuthenticatedApi {
-    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);
     }
 
     public getChat(chatId: string): Observable<Chat> {
-        const reqPath: string = `/api/chat/${chatId}`;
+        const reqPath: string = `${this.baseUrl}/api/chat/${chatId}`;
 
         return this.httpClient
             .get<ApiChat>(reqPath, this.createRequestOptions())
@@ -41,7 +41,7 @@ export class ChatApi extends BaseAuthenticatedApi {
     }
 
     public deleteChat(chatId: string): Observable<void> {
-        const reqPath: string = `/api/chat/${chatId}`;
+        const reqPath: string = `${this.baseUrl}/api/chat/${chatId}`;
 
         return this.httpClient
             .delete<void>(reqPath, this.createRequestOptions())
@@ -50,7 +50,7 @@ export class ChatApi extends BaseAuthenticatedApi {
 
     public getMessages(chatId: string, skip: number, limit: number): Observable<Message[]> {
         const queryParams: string = `skip=${skip}&limit=${limit}`;
-        const reqPath: string = `/api/chat/${chatId}/messages?${queryParams}`;
+        const reqPath: string = `${this.baseUrl}/api/chat/${chatId}/messages?${queryParams}`;
 
         return this.httpClient
             .get<ApiMessage[]>(reqPath, this.createRequestOptions())
@@ -65,7 +65,7 @@ export class ChatApi extends BaseAuthenticatedApi {
     }
 
     public addMessage(chatId: string, message: Message): Observable<Message> {
-        const reqPath: string = `/api/chat/${chatId}/users`;
+        const reqPath: string = `${this.baseUrl}/api/chat/${chatId}/users`;
         const reqBody: ApiMessage = toApiMessage(message);
 
         return this.httpClient
@@ -79,7 +79,7 @@ export class ChatApi extends BaseAuthenticatedApi {
     }
 
     public addUser(chatId: string, userId: string): Observable<AddUserResponse> {
-        const reqPath: string = `/api/chat/${chatId}/users`;
+        const reqPath: string = `${this.baseUrl}/api/chat/${chatId}/users`;
 
         return this.httpClient
             .post<AddUserResponse>(reqPath, userId, this.createRequestOptions())
@@ -87,7 +87,7 @@ export class ChatApi extends BaseAuthenticatedApi {
     }
 
     public removeUser(chatId: string, userId: string): Observable<void> {
-        const reqPath: string = `/api/chat/${chatId}/users/${userId}`;
+        const reqPath: string = `${this.baseUrl}/api/chat/${chatId}/users/${userId}`;
 
         return this.httpClient
             .delete<void>(reqPath, this.createRequestOptions())

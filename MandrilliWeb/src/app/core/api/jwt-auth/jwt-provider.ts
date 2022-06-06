@@ -5,14 +5,14 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
     providedIn: 'root',
 })
-export class AccessTokenProvider {
+export class JwtProvider {
     constructor() {}
 
     /**
      * Retrieves the token used to authenticate requests to the backend.
      * Such token should be stored in the local storage.
      * If the token is not set, an error is thrown.
-     * @returns access token
+     * @returns jwt-auth token
      * @throws Error if the token has not yet been set
      */
     public getToken(): string {

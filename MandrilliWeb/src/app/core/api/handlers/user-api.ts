@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access/access-token-provider';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 import { User } from '../../model/user/user';
 import { UserStats } from '../../model/user/user-stats';
 
@@ -21,19 +21,19 @@ export interface UsernameUpdate {
     providedIn: 'root',
 })
 export class UserApi extends BaseAuthenticatedApi {
-    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);
     }
 
     public getUser(userId: string): Observable<User> {
-        const reqPath: string = `/api/users/${userId}`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}`;
         return this.httpClient
             .get<User>(reqPath, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 
     public getMultipleUsers(userIds: string[]): Observable<User[]> {
-        const reqPath: string = `/api/users`;
+        const reqPath: string = `${this.baseUrl}/api/users`;
         const reqBody = {
             userIds: userIds,
         };
@@ -44,7 +44,7 @@ export class UserApi extends BaseAuthenticatedApi {
     }
 
     public deleteUser(userId: string): Observable<void> {
-        const reqPath: string = `/api/users/${userId}`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}`;
 
         return this.httpClient
             .delete<void>(reqPath, this.createRequestOptions())
@@ -52,14 +52,14 @@ export class UserApi extends BaseAuthenticatedApi {
     }
 
     public updatePassword(userId: string, newPassword: string): Observable<void> {
-        const reqPath: string = `/api/users/${userId}/password`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/password`;
         return this.httpClient
             .put<void>(reqPath, newPassword, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 
     public updateUsername(userId: string, newUsername: string): Observable<UsernameUpdate> {
-        const reqPath: string = `/api/users/${userId}/username`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/username`;
 
         return this.httpClient
             .put<UsernameUpdate>(reqPath, newUsername, this.createRequestOptions())
@@ -67,7 +67,7 @@ export class UserApi extends BaseAuthenticatedApi {
     }
 
     public getStats(userId: string): Observable<UserStats> {
-        const reqPath: string = `/api/users/${userId}/stats`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/stats`;
 
         return this.httpClient
             .get<UserStats>(reqPath, this.createRequestOptions())
@@ -75,7 +75,7 @@ export class UserApi extends BaseAuthenticatedApi {
     }
 
     public updateStats(userId: string, statsUpdate: UserStats): Observable<UserStats> {
-        const reqPath: string = `/api/users/${userId}/stats`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/stats`;
 
         return this.httpClient
             .put<UserStats>(reqPath, statsUpdate, this.createRequestOptions())

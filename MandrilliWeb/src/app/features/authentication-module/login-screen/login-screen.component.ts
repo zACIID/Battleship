@@ -3,7 +3,7 @@ import { User } from '../../../core/model/user/user';
 import { Router } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
 import { AuthApi, LoginInfo, Jwt } from '../../../core/api/handlers/auth-api';
-import { AccessTokenStorage } from '../../../core/api/access/access-token-storage';
+import { JwtStorage } from '../../../core/api/jwt-auth/jwt-storage';
 
 @Component({
     selector: 'app-login-screen',
@@ -14,7 +14,7 @@ export class LoginScreenComponent implements OnInit {
     constructor(
         private userClient: UserApi,
         private authClient: AuthApi,
-        private accessTokenStorage: AccessTokenStorage
+        private accessTokenStorage: JwtStorage
     ) {}
 
     ngOnInit(): void {}

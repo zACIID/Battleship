@@ -1,15 +1,15 @@
 import { HttpClient, HttpHeaders, HttpParamsOptions } from '@angular/common/http';
 
 import { BaseApi, RequestOptions } from './base-api';
-import { AccessTokenProvider } from '../../access/access-token-provider';
+import { JwtProvider } from '../../jwt-auth/jwt-provider';
 
 /**
  * Base class for Api wrappers that call authenticated endpoints
  */
 export abstract class BaseAuthenticatedApi extends BaseApi {
-    protected readonly accessTokenProvider: AccessTokenProvider;
+    protected readonly accessTokenProvider: JwtProvider;
 
-    protected constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    protected constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient);
 
         this.accessTokenProvider = accessTokenProvider;

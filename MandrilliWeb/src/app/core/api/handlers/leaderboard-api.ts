@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
-import { AccessTokenProvider } from '../access/access-token-provider';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 import { LeaderboardPage } from '../../model/api/leaderboard/page';
 
 /**
@@ -13,13 +13,13 @@ import { LeaderboardPage } from '../../model/api/leaderboard/page';
     providedIn: 'root',
 })
 export class LeaderboardApi extends BaseAuthenticatedApi {
-    public constructor(httpClient: HttpClient, accessTokenProvider: AccessTokenProvider) {
+    public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);
     }
 
     public getLeaderboard(skip: number, limit: number): Observable<LeaderboardPage> {
         const queryParams: string = `skip=${skip}&limit=${limit}`;
-        const reqPath: string = `/api/leaderboard?${queryParams}`;
+        const reqPath: string = `${this.baseUrl}/api/leaderboard?${queryParams}`;
 
         return this.httpClient
             .get<LeaderboardPage>(reqPath, this.createRequestOptions())
