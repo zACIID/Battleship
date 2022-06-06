@@ -19,7 +19,7 @@
         "moduleResolution": "node",
         "importHelpers": true,
         "esModuleInterop": true,
-        "target": "es6",
+        "target": "es2020",
         "module": "commonjs",
         "lib": ["es2020", "dom"],
         "allowSyntheticDefaultImports": true

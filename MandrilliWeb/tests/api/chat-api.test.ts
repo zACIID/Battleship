@@ -5,6 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthApi } from '../../src/app/core/api/handlers/auth-api';
 import { AccessTokenStorage } from '../../src/app/core/api/access/access-token-storage';
 import { AccessTokenProvider } from '../../src/app/core/api/access/access-token-provider';
+import { Jwt } from '../../src/app/core/api/handlers/auth-api';
 
 describe("Get Chat", () => {
     let httpClient: HttpClient;
@@ -32,7 +33,7 @@ describe("Get Chat", () => {
             password: ""
         });
 
-        jwtObs.subscribe((jwt) => {
+        jwtObs.subscribe((jwt: Jwt) => {
 
 
             done();
