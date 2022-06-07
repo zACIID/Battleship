@@ -40,14 +40,14 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
                 new FriendOnlineEmitter(this.ioServer, Types.ObjectId(eventData.userToNotify)),
             ];
 
-            // TODO add relationship and remove notification done here
-
             return Promise.resolve(emitters);
         };
 
         const emitDataProvider = (
             eventData: AcceptedFriendRequestData
         ): Promise<FriendOnlineData> => {
+            // TODO add relationship and remove notification done here
+
             return Promise.resolve({
                 friendId: Types.ObjectId(eventData.friendId),
             });

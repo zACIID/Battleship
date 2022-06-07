@@ -38,6 +38,11 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
         const emitterProvider = (
             eventData: MatchRequestAcceptedData
         ): Promise<MatchFoundEmitter[]> => {
+            // TODO check that both clients are listening for this event
+            //  else a match could be created between two players where
+            //  the one that sent the request isn't listening
+            // TODO 2: do something to notify the user that the match couldn't be created?
+
             const player1Emitter = new MatchFoundEmitter(
                 this.ioServer,
                 Types.ObjectId(eventData.player1Id)
@@ -58,6 +63,8 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
             const p1Id: Types.ObjectId = Types.ObjectId(eventData.player1Id);
             const p2Id: Types.ObjectId = Types.ObjectId(eventData.player2Id);
             const match: MatchDocument = await createMatch(p1Id, p2Id);
+
+            // TODO remove notification
 
             return Promise.resolve({
                 matchId: match._id,

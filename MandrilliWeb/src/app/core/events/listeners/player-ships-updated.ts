@@ -4,8 +4,9 @@ import { Socket } from 'ngx-socket-io';
 import { ServerListener } from './base/server-listener';
 import { Ship } from '../../model/match/ship';
 
+// TODO remove
 export interface ShipsUpdateEventData {
-    ships: Ship[]
+    ships: Ship[];
 }
 
 /**
@@ -16,8 +17,8 @@ export interface ShipsUpdateEventData {
  * This is useful, because the client can then update his state of the grid.
  */
 Injectable({
-    providedIn: "root"
-})
+    providedIn: 'root',
+});
 export class PlayerShipsUpdatedListener extends ServerListener<ShipsUpdateEventData> {
     constructor(client: Socket) {
         super(client, 'player-ships-updated');

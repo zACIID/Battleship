@@ -5,7 +5,7 @@ import { Emitter } from './base/emitter';
 
 export interface MatchRequestAcceptedEventData {
     player1Id: string;
-    player2id: string;
+    player2Id: string;
 }
 
 /**
@@ -15,8 +15,8 @@ export interface MatchRequestAcceptedEventData {
  * about the game that has started.
  */
 Injectable({
-    providedIn: "root"
-})
+    providedIn: 'root',
+});
 export class MatchRequestAcceptedEmitter extends Emitter<MatchRequestAcceptedEventData> {
     public constructor(client: Socket) {
         super(client, `match-request-accepted`);
