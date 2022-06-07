@@ -2,8 +2,8 @@ import { Socket } from 'ngx-socket-io';
 import { Emitter } from './base/emitter';
 import { Injectable } from '@angular/core';
 
-export interface ChatJoinData {
-    chatId: string;
+export interface ServerJoinData {
+    userId: string;
 }
 
 /**
@@ -12,9 +12,9 @@ export interface ChatJoinData {
  * it can receive data specifically sent to the currently logged user.
  */
 Injectable({
-    providedIn: "root"
-})
-export class ServerJoinedEmitter extends Emitter<ChatJoinData> {
+    providedIn: 'root',
+});
+export class ServerJoinedEmitter extends Emitter<ServerJoinData> {
     public constructor(client: Socket) {
         super(client, `server-joined`);
     }

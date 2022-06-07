@@ -13,7 +13,7 @@ export abstract class ServerListener<T> {
         this.eventName = eventName;
     }
 
-    public listen(onEvent: (eventData: T) => Promise<void>): void {
+    public listen(onEvent: (eventData: T) => void): void {
         this.client.on(this.eventName, onEvent);
     }
 

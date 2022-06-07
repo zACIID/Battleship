@@ -4,7 +4,14 @@ import { Injectable } from '@angular/core';
 import { Emitter } from './base/emitter';
 
 export interface FriendRequestAcceptedEventData {
+    /**
+     * Id of the user to notify (the sender)
+     */
     userToNotifyId: string;
+
+    /**
+     * Id of the new friend (user that accepted the request)
+     */
     friendId: string;
 }
 
@@ -14,8 +21,8 @@ export interface FriendRequestAcceptedEventData {
  * so that the server can notify the sender that he has a new friend.
  */
 Injectable({
-    providedIn: "root"
-})
+    providedIn: 'root',
+});
 export class FriendRequestAcceptedEmitter extends Emitter<FriendRequestAcceptedEventData> {
     public constructor(client: Socket) {
         super(client, `friend-request-accepted`);
