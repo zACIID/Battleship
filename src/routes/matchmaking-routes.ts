@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
 import { authenticateToken } from './auth-routes';
@@ -9,6 +9,7 @@ import {
     QueueEntryDocument,
 } from '../models/matchmaking/queue-entry';
 import { getUserById, UserDocument } from '../models/user/user';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
 
@@ -16,7 +17,7 @@ interface EnqueueRequestBody {
     userId: Types.ObjectId;
 }
 
-interface EnqueueRequest extends Request {
+interface EnqueueRequest extends AuthenticatedRequest {
     body: EnqueueRequestBody;
 }
 
@@ -49,7 +50,7 @@ interface RemoveFromQueueRequestLocals {
     userId: Types.ObjectId;
 }
 
-interface RemoveFromQueueRequest extends Request {
+interface RemoveFromQueueRequest extends AuthenticatedRequest {
     locals: RemoveFromQueueRequestLocals;
 }
 

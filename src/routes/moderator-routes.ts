@@ -1,41 +1,33 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId } from './utils/param-checking';
 import { Types } from 'mongoose';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
 
-interface PostBody {
-    user: UserDocument;
+interface AddModeratorBody {
+    username: string;
+    password: string;
 }
 
-interface PostRequest extends Request {
-    body: PostBody;
-}
-
-interface DeleteBody {
-    userId: Types.ObjectId;
-}
-
-interface DeleteRequest extends Request {
-    body: DeleteBody;
+interface AddModRequest extends AuthenticatedRequest {
+    body: AddModeratorBody;
 }
 
 /**
  *    Check if the user is a moderator and create a new user using request body data
- *    /moderators/:userId/additions   |   POST
+ *   The check is done by verifying the content of the jwt
+ *    /moderators/additions   |   POST
  */
 router.post(
-    '/moderators/:userId/additions',
+    '/moderators/additions',
     authenticateToken,
     retrieveUserId,
-    async (req: PostRequest, res: Response) => {
-        const userId: Types.ObjectId = res.locals.userId;
+    async (req: AddModRequest, res: Response) => {
         try {
-            const moderator: UserDocument = await getUserById(userId);
-
-            if (moderator.isModerator() || moderator.isAdmin()) {
+            if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
                 const newMod: UserDocument = await createUser(req.body);
                 await newMod.setRole(UserRoles.Moderator);
 
@@ -48,12 +40,11 @@ router.post(
             } else
                 return res.status(403).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
-                    errorMessage: `Unauthorized: user ${userId} is not a moderator`,
+                    errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
                     requestPath: req.path,
                 });
         } catch (err) {
-            const status: number = err.message === 'No user with that id' ? 404 : 500;
-            return res.status(status).json({
+            return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,
@@ -62,31 +53,37 @@ router.post(
     }
 );
 
+interface BanUserBody {
+    userId: Types.ObjectId;
+}
+
+interface BanUserRequest extends AuthenticatedRequest {
+    body: BanUserBody;
+}
+
 /**
  *    Check if the user is a moderator and delete a user identified by the id found in the request body
- *    /moderators/:userId/bans   |   POST
+ *    The check is done by verifying the content of the jwt
+ *    /moderators/bans   |   POST
  */
 router.post(
-    '/moderators/:userId/bans',
+    '/moderators/bans',
     authenticateToken,
     retrieveUserId,
-    async (req: DeleteRequest, res: Response) => {
-        const userId: Types.ObjectId = res.locals.userId;
-
+    async (req: BanUserRequest, res: Response) => {
         try {
-            const moderator: UserDocument = await getUserById(userId);
-
-            if (moderator.isModerator() || moderator.isAdmin()) {
+            if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
                 await deleteUser(req.body.userId);
+
                 return res.status(204).json();
             } else
                 res.status(403).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
-                    errorMessage: `Unauthorized: user ${userId} is not a moderator`,
+                    errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
                     requestPath: req.path,
                 });
         } catch (err) {
-            return res.status(404).json({
+            return res.status(400).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,

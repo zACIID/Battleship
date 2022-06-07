@@ -1,11 +1,12 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 
 import { getLeaderboard, UserDocument } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router: Router = Router();
 
-router.get('/leaderboard', authenticateToken, async (req: Request, res: Response) => {
+router.get('/leaderboard', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const skip: number = req.query.skip ? parseInt(req.query.skip as string) : 0;
         const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 0;

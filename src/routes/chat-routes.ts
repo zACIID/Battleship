@@ -1,9 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { Types } from 'mongoose';
-import { Server } from 'socket.io';
 
 import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
-import { Message, MessageSubDocument } from '../models/chat/message';
+import { MessageSubDocument } from '../models/chat/message';
 import { authenticateToken } from './auth-routes';
 import {
     skipLimitChecker,
@@ -13,6 +12,7 @@ import {
 } from './utils/param-checking';
 import { ioServer } from '../index';
 import { ChatMessageEmitter } from '../events/socket-io/emitters/chat-message';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
 
@@ -31,7 +31,7 @@ interface UserPostBody {
     userId: string;
 }
 
-interface UserPostRequest extends Request {
+interface UserPostRequest extends AuthenticatedRequest {
     body: UserPostBody;
 }
 
@@ -51,7 +51,7 @@ router.get(
     '/chats/:chatId',
     authenticateToken,
     retrieveChatId,
-    async (req: Request, res: ChatEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
 
         let chat: ChatDocument;
@@ -88,7 +88,7 @@ router.delete(
     '/chats/:chatId',
     authenticateToken,
     retrieveChatId,
-    async (req: Request, res: ChatEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
 
         await deleteChat(chatId).catch((err: Error) => {
@@ -139,7 +139,7 @@ router.delete(
     authenticateToken,
     retrieveChatId,
     retrieveUserId,
-    async (req: Request, res: ChatEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: ChatEndpointResponse) => {
         const chatId: Types.ObjectId = res.locals.chatId;
         const userId: Types.ObjectId = res.locals.userId;
         let chat: ChatDocument;
@@ -163,7 +163,7 @@ interface MessagePostBody {
     timestamp: number;
 }
 
-interface MessagePostRequest extends Request {
+interface MessagePostRequest extends AuthenticatedRequest {
     body: MessagePostBody;
 }
 
@@ -176,7 +176,7 @@ router.get(
     authenticateToken,
     skipLimitChecker,
     retrieveChatId,
-    async (req: Request, res: ChatEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: ChatEndpointResponse) => {
         try {
             const chatId: Types.ObjectId = res.locals.chatId;
 

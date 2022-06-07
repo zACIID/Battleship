@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
 import {
@@ -21,6 +21,7 @@ import { PositioningCompletedEmitter } from '../events/socket-io/emitters/positi
 import { ioServer } from '../index';
 import { ShotFiredEmitter } from '../events/socket-io/emitters/shot-fired';
 import { PlayerShipsUpdatedEmitter } from '../events/socket-io/emitters/player-ships-updated';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
 
@@ -38,7 +39,7 @@ interface CreateMatchBody {
     player2: Types.ObjectId;
 }
 
-interface CreateMatchRequest extends Request {
+interface CreateMatchRequest extends AuthenticatedRequest {
     body: CreateMatchBody;
 }
 
@@ -82,7 +83,7 @@ router.get(
     '/matches/:matchId',
     authenticateToken,
     retrieveMatchId,
-    async (req: Request, res: MatchEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: MatchEndpointResponse) => {
         try {
             let matchId: Types.ObjectId = res.locals.matchId;
             const match: MatchDocument = await getMatchById(matchId);
@@ -110,7 +111,7 @@ router.get(
     '/matches/:userId',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: MatchEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: MatchEndpointResponse) => {
         try {
             let userId: Types.ObjectId = res.locals.userId;
             const matches: Match[] = await getMatchByUserId(userId);
@@ -132,7 +133,7 @@ interface UpdateStatsBody {
     endTime: number;
 }
 
-interface UpdateStatsRequest extends Request {
+interface UpdateStatsRequest extends AuthenticatedRequest {
     body: UpdateStatsBody;
 }
 
@@ -170,7 +171,7 @@ router.patch(
 
 interface UpdateGridBody extends BattleshipGrid {}
 
-interface UpdateGridRequest extends Request {
+interface UpdateGridRequest extends AuthenticatedRequest {
     body: UpdateGridBody;
 }
 
@@ -223,7 +224,7 @@ router.put(
 
 interface FireShotBody extends GridCoordinates {}
 
-interface FireShotRequest extends Request {
+interface FireShotRequest extends AuthenticatedRequest {
     body: FireShotBody;
 }
 
@@ -273,7 +274,7 @@ interface PlayerReadyRequestBody {
     ready: boolean;
 }
 
-interface PlayerReadyRequest extends Request {
+interface PlayerReadyRequest extends AuthenticatedRequest {
     body: PlayerReadyRequestBody;
 }
 

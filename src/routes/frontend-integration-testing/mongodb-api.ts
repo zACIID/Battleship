@@ -207,7 +207,7 @@ export class MongoDbApi {
 
             const res = await axios.post<R>(url, reqData, axiosReqConfig);
             return res.data;
-        } catch (err: any) {
+        } catch (err) {
             console.log('Error has occurred in MongoDbApi');
             console.log(err.message);
         }

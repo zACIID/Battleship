@@ -1,20 +1,13 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
 import { Relationship } from '../models/user/relationship';
 import { UserDocument, getUserById } from '../models/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
-
-interface PostBody {
-    friendId: string;
-}
-
-interface RelationshipRequest extends Request {
-    body: PostBody;
-}
 
 /**
  *   /users/:userId/relationships | GET | Retrieve the relationships of the specified user
@@ -23,7 +16,7 @@ router.get(
     '/users/:userId/relationships',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: AuthenticatedRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
         let user: UserDocument;
 
@@ -40,6 +33,14 @@ router.get(
         }
     }
 );
+
+interface RelationshipRequestBody {
+    friendId: string;
+}
+
+interface RelationshipRequest extends AuthenticatedRequest {
+    body: RelationshipRequestBody;
+}
 
 /**
  *   /users/:userId/relationships | POST | Add a relationship to the specified user
@@ -82,7 +83,7 @@ router.delete(
     '/users/:userId/relationships/:friendId',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: AuthenticatedRequest, res: Response) => {
         try {
             const userId: Types.ObjectId = res.locals.userId;
             const friendId: string = req.params.friendId;

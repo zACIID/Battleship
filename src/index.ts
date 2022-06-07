@@ -10,13 +10,13 @@ import mongoose = require('mongoose');
 import filter = require('content-filter');
 import chalk from 'chalk';
 
+import { registerRoutes } from './routes/utils/register-routes';
 import { MatchmakingEngine } from './events/matchmaking-engine';
 import { ChatJoinedListener } from './events/socket-io/client-listeners/chat-joined';
 import { MatchJoinedListener } from './events/socket-io/client-listeners/match-joined';
 import { ServerJoinedListener } from './events/socket-io/client-listeners/server-joined';
 import { MatchRequestAcceptedListener } from './events/socket-io/client-listeners/match-request-accepted';
 import { FriendRequestAcceptedListener } from './events/socket-io/client-listeners/friend-request-accepted';
-import { registerRoutes } from './routes/utils/register-routes';
 import { ChatLeftListener } from './events/socket-io/client-listeners/chat-left';
 import { MatchLeftListener } from './events/socket-io/client-listeners/match-left';
 

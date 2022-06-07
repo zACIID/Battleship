@@ -1,32 +1,24 @@
 import { Types } from 'mongoose';
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 
 import * as usr from '../models/user/user';
 import { UserStats } from '../models/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
 }
 
+/**
+ * Interface that models the response of a user endpoint
+ */
 interface UserEndpointResponse extends Response {
     locals: UserEndpointLocals;
 }
 
-interface PatchUsernameBody {
-    username: string;
-}
-
-interface PatchPasswordBody {
-    password: string;
-}
-
-interface GetMultipleUsersBody {
-    userIds: Types.ObjectId[];
-}
-
-interface PatchStatsBody {
+interface UpdateStatsBody {
     elo: number;
     topElo: number;
     wins: number;
@@ -36,20 +28,8 @@ interface PatchStatsBody {
     totalShots: number;
 }
 
-interface GetMultipleUsersRequest extends Request {
-    body: GetMultipleUsersBody;
-}
-
-interface PatchUsernameRequest extends Request {
-    body: PatchUsernameBody;
-}
-
-interface PatchPasswordRequest extends Request {
-    body: PatchPasswordBody;
-}
-
-interface PatchStatsRequest extends Request {
-    body: PatchStatsBody;
+interface UpdateStatsRequest extends AuthenticatedRequest {
+    body: UpdateStatsBody;
 }
 
 export const router = Router();
@@ -60,7 +40,7 @@ router.get(
     '/users/:userId',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: UserEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
         let user: usr.UserDocument;
         const userId: Types.ObjectId = res.locals.userId;
         try {
@@ -82,11 +62,19 @@ router.get(
     }
 );
 
+interface UpdateUsernameBody {
+    username: string;
+}
+
+interface UpdateUsernameRequest extends AuthenticatedRequest {
+    body: UpdateUsernameBody;
+}
+
 router.put(
     '/users/:userId/username',
     authenticateToken,
     retrieveUserId,
-    async (req: PatchUsernameRequest, res: UserEndpointResponse) => {
+    async (req: UpdateUsernameRequest, res: UserEndpointResponse) => {
         const { username } = req.body;
 
         const userId: Types.ObjectId = res.locals.userId;
@@ -113,11 +101,19 @@ router.put(
     }
 );
 
+interface UpdatePasswordBody {
+    password: string;
+}
+
+interface UpdatePasswordRequest extends AuthenticatedRequest {
+    body: UpdatePasswordBody;
+}
+
 router.put(
     '/users/:userId/password',
     authenticateToken,
     retrieveUserId,
-    async (req: PatchPasswordRequest, res: UserEndpointResponse) => {
+    async (req: UpdatePasswordRequest, res: UserEndpointResponse) => {
         const { password } = req.body;
         const userId: Types.ObjectId = res.locals.userId;
         if (password) {
@@ -146,7 +142,7 @@ router.delete(
     '/users/:userId',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: UserEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
 
         try {
@@ -167,7 +163,7 @@ router.get(
     '/users/:userId/stats',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: UserEndpointResponse) => {
+    async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
         let stats: UserStats;
         try {
@@ -196,7 +192,7 @@ router.put(
     '/users/:userId/stats',
     authenticateToken,
     retrieveUserId,
-    async (req: PatchStatsRequest, res: UserEndpointResponse) => {
+    async (req: UpdateStatsRequest, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
         const { elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits } = req.body;
         console.log('DA ROUTES');
@@ -232,6 +228,14 @@ router.put(
         }
     }
 );
+
+interface GetMultipleUsersBody {
+    userIds: Types.ObjectId[];
+}
+
+interface GetMultipleUsersRequest extends AuthenticatedRequest {
+    body: GetMultipleUsersBody;
+}
 
 router.get(
     '/users',

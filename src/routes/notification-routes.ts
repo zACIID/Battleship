@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { Request, Response, Router } from 'express';
+import { Response, Router } from 'express';
 
 import { RequestTypes } from '../models/user/notification';
 import { getUserById, UserDocument } from '../models/user/user';
@@ -7,6 +7,7 @@ import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { NotificationReceivedEmitter } from '../events/socket-io/emitters/notification-received';
 import { ioServer } from '../index';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
 
@@ -15,7 +16,7 @@ interface PostBody {
     sender: string;
 }
 
-interface NotificationRequest extends Request {
+interface NotificationRequest extends AuthenticatedRequest {
     body: PostBody;
 }
 
@@ -31,7 +32,7 @@ router.get(
     '/users/:userId/notifications',
     authenticateToken,
     retrieveUserId,
-    async (req: Request, res: Response) => {
+    async (req: AuthenticatedRequest, res: Response) => {
         const userId: Types.ObjectId = res.locals.userId;
 
         try {

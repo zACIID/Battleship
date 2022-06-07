@@ -2,29 +2,36 @@ import { NextFunction, Request, Response, Router } from 'express';
 import passport from 'passport';
 import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import LocalStrategy from 'passport-local';
+import { Strategy } from 'passport-local';
 
-import { createUser, getUserByUsername, UserDocument, UserModel } from '../models/user/user';
+import { createUser, getUserByUsername, User, UserDocument, UserModel } from '../models/user/user';
 import { Types } from 'mongoose';
 import { FriendOnlineEmitter } from '../events/socket-io/emitters/friend-online';
 import { ioServer } from '../index';
+import { JwtData } from '../models/auth/jwt-data';
+import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
 
-// TODO cos'è?
-declare module 'express' {
-    export interface Request {
-        user: UserDocument;
-    }
-}
-
-export const authenticateToken = function (req: Request, res: Response, next: NextFunction) {
+/**
+ * This function verifies the authentication token that comes with each
+ * request to an authenticated endpoint.
+ *
+ * @param req request
+ * @param res response
+ * @param next function to move to the next middleware
+ */
+export const authenticateToken = function (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.JWT_SECRET, (err: any, user: UserDocument) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err: any, content: JwtData) => {
         if (err)
             return res.status(403).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -32,7 +39,10 @@ export const authenticateToken = function (req: Request, res: Response, next: Ne
                 requestPath: req.path,
             });
 
-        req.user = user;
+        // Here the content of the token is assigned
+        // to its own request field, so that each endpoint
+        // can access it
+        req.jwtContent = content;
 
         next();
     });
@@ -52,8 +62,21 @@ const localAuth = async function (username: string, password: string, done: Func
         return done(null, false);
     }
 };
+passport.use(new Strategy(localAuth));
 
-passport.use(new LocalStrategy(localAuth));
+interface SignInRequestBody {
+    username: string;
+    password: string;
+}
+
+interface SignInRequest extends Request {
+    body: SignInRequestBody;
+
+    /**
+     * Field inserted by passport-local authentication middleware
+     */
+    user: UserDocument;
+}
 
 /**
  *  Login endpoint, check the authentication and generate the jwt
@@ -61,9 +84,9 @@ passport.use(new LocalStrategy(localAuth));
 router.post(
     '/auth/signin',
     passport.authenticate('local', { session: false }),
-    async (req: Request, res: Response) => {
-        const tokenData = {
-            username: req.user.username,
+    async (req: SignInRequest, res: Response) => {
+        const tokenData: JwtData = {
+            userId: req.user._id,
             roles: req.user.roles,
         };
 

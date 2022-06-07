@@ -28,11 +28,14 @@
 
 ## Endpoints
 
+An important thing to note is that, since these endpoints require the caller to be a moderator, an additional layer of authentication is needed. Such layer consists of verifying the information contained in the JWT that the caller authenticates with, which includes the roles of the user that calls the api.
+Access is granted only if the user is a Moderator.
+
 ### Create new moderator
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/moderators/:userId/additions | POST | Check if the user is a moderator and create a new user using request body data |
+| /api/moderators/additions | POST | Check if the user is a moderator and create a new user using request body data |
 
 #### Url Parameters
 
@@ -82,7 +85,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/moderators/:userId/bans | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
+| /api/moderators/bans | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
 
 #### Url Parameters
 
