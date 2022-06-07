@@ -8,7 +8,7 @@
   - [Resources](#resources)
     - [Error](#error)
     - [LoginInfo](#logininfo)
-    - [JWT](#jwt)
+    - [AuthenticationData](#authenticationdata)
     - [User](#user)
   - [Endpoints](#endpoints)
     - [User Login](#user-login)
@@ -40,11 +40,12 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 | username | string | Username credential |
 | password | string | Password credential |
 
-### JWT
+### AuthenticationData
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| token | string | o |
+| userId | string | Id of the user that has just authenticated
+| token | string | JWT used to authenticate requests to the api |
 
 ### User
 
@@ -83,6 +84,7 @@ define how authenticating for the API works: Basic Authentication, use of jwt an
 
 ```json
 {
+    "userId": "user-id",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 }
 ```
