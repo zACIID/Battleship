@@ -1,9 +1,8 @@
-
+import { Relationship } from 'src/app/core/model/user/relationship';
 import { UserApi } from './../../../core/api/handlers/user-api';
+import { User } from 'src/app/core/model/user/user';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
-import { Relationship } from './../../../core/model/user/relationship';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
-import { User } from './../../../core/model/user/user';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -19,10 +18,14 @@ export class FriendListScreenComponent implements OnInit {
     public friendUsername?: string;
 
 
-    constructor(private relationshipsClient: RelationshipApi, private userClient: UserApi) {}
+    constructor(
+        private relationshipsClient: RelationshipApi,
+        private userClient: UserApi
+        ) {}
 
 
     ngOnInit(): void {
+        
         let userId: string = localStorage.getItem('id') || "";
         
         this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
@@ -44,16 +47,19 @@ export class FriendListScreenComponent implements OnInit {
             })
 
         })
-
+        
+       
     }
 
     public update_chat(clickedFriendId: string): void{
+        
         
         for(let fr of this.friends){
             if (fr.friendId === clickedFriendId)
             this.chatId = fr.chatId;
             this.friendUsername = fr.username;
         }
+        
     }
 
 

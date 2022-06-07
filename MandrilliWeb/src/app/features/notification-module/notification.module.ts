@@ -1,3 +1,4 @@
+import { FriendRequestAcceptedEmitter } from './../../core/events/emitters/friend-request-accepted';
 import { NotificationRoutingModule } from './notification-routing.module';
 import { ListModule } from './../../shared/list-module/list.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
@@ -15,5 +16,6 @@ import { NotificationScreenComponent } from './notification-screen/notification-
         ListModule,
         NotificationRoutingModule,
     ],
+    providers: [FriendRequestAcceptedEmitter]
 })
 export class NotificationModule {}

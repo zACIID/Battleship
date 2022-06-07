@@ -1,6 +1,6 @@
 
 <!-- List crafted for the matches-->
-<div *ngIf="matchList; else Error" [ngSwitch]="num_matches()" class="list-height overflow-scroll">
+<div *ngIf="matchList" [ngSwitch]="num_matches()" class="list-height overflow-scroll">
 
     <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
         <p> <strong>No matches available</strong></p>
@@ -16,14 +16,14 @@
 
 
 <!-- List crafted for friends-->
-<div *ngIf="friendsList; else Error" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
+<div *ngIf="friendsList && clickAction" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
 
     <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
         <p> <strong>There's no friends here :(</strong></p>
     </div>
 
     <div *ngSwitchDefault>
-        <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+        <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="clickAction()">
             <p> <strong>{{item.username}}</strong></p>
         </div>
     </div>
@@ -31,8 +31,9 @@
 </div>
 
 
+
 <!-- List crafted for users -->
-<div *ngIf="userList && clickAction; else Error" [ngSwitch]="num_users()" class="list-height overflow-scroll">
+<div *ngIf="userList && clickAction" [ngSwitch]="num_users()" class="list-height overflow-scroll">
 
     <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
         <p> <strong>There's no users here :(</strong></p>
@@ -49,7 +50,7 @@
 
 
 <!-- List crafted for the battle requests -->
-<div *ngIf="notificationList && refuse && accept; else Error" class="list-height overflow-scroll">
+<div *ngIf="notificationList && refuse && accept" class="list-height overflow-scroll">
 
     <div *ngFor="let item of notificationList">
         <div *ngIf="item.type == 'MatchRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
@@ -64,7 +65,7 @@
 
 
 <!-- List crafted for the friend requests -->
-<div *ngIf="notificationList && refuse && accept; else Error" class="list-height overflow-scroll">
+<div *ngIf="notificationList && refuse && accept" class="list-height overflow-scroll">
 
     <div *ngFor="let item of notificationList">
         <div *ngIf="item.type == 'FriendRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
@@ -77,6 +78,3 @@
 </div>
 
 
-<ng-template #Error class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
-    <p> <strong>An error occurred while loading the list :(</strong></p>
-</ng-template>

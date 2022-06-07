@@ -3,11 +3,17 @@
     infiniteScroll 
     (scrolled)="loadMore()" >
 
-    <!-- To implement *ngFor to iterate on every message-->
-    <foreign-message></foreign-message>
-    
-    <user-message></user-message>
-    
+    <div *ngFor="let mess of messages">
+
+        <div *ngIf="mess.author == userId">
+            <user-message [text]="mess.content"></user-message>
+        </div>
+
+        <div *ngIf="mess.author != userId">
+            <foreign-message [text]="mess.content"></foreign-message>
+        </div>
+
+    </div>
     
 
 </div>

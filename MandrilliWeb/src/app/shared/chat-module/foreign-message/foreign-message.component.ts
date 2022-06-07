@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'foreign-message',
@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./foreign-message.component.css'],
 })
 export class ForeignMessageComponent implements OnInit {
+
+    @Input() text: string = "";
+
     constructor() {}
 
     ngOnInit(): void {}

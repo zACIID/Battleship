@@ -13,31 +13,43 @@ export class ChatBodyComponent implements OnInit {
 
     @Input() chatId: string = "";
     public messages: Message[] = [];
-
+    public userId: string = "";
     private options = {
         skip: 0,
         limit: 5
     }
 
 
+    ngOnChanges(): void{
+        this.options = {skip: 0, limit: 5}
+    }
+
     ngOnInit(): void {
-        this.chatClient.getMessages(this.chatId, this.options.skip, this.options.limit).subscribe(data => {
-            this.messages = data;
-            this.options.skip += this.options.limit;
-        })
+
+        this.userId = localStorage.getItem('id') || "";
+        try{
+            this.chatClient.getMessages(this.chatId, this.options.skip, this.options.limit).subscribe(data => {
+                this.messages = data;
+                this.options.skip += this.options.limit;
+            })
+        }
+        catch(err){
+            console.log("An error while loading the chat: " + err);
+        }
 
     }
 
     public loadMore():void {
-        this.chatClient.getMessages(this.chatId, this.options.skip, this.options.limit).subscribe(data => {
-            this.messages.push(...data);
-            this.options.skip += this.options.limit;
-        })
+        try{
+            this.chatClient.getMessages(this.chatId, this.options.skip, this.options.limit).subscribe(data => {
+                this.messages.push(...data);
+                this.options.skip += this.options.limit;
+            })
+        }
+        catch(err){
+            console.log("An error while retrieving more messages: " + err);
+        }
     }
-
-
-    
-
 
 
 }

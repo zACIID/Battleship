@@ -47,10 +47,12 @@ export class ListComponent implements OnInit {
 
     public num_friends() : number {
 
-        if(this.friendsList)
+        
+        if(this.friendsList){
             return this.friendsList.length;
+        }
         else return 0;
-
+        
     }
 
 }

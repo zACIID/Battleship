@@ -20,9 +20,9 @@ export interface FriendRequestAcceptedEventData {
  * The client notifies the server that he has accepted the request,
  * so that the server can notify the sender that he has a new friend.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class FriendRequestAcceptedEmitter extends Emitter<FriendRequestAcceptedEventData> {
     public constructor(client: Socket) {
         super(client, `friend-request-accepted`);
