@@ -64,13 +64,13 @@ const localAuth = async function (username: string, password: string, done: Func
 };
 passport.use(new Strategy(localAuth));
 
-interface SignInRequestBody {
+interface AuthenticationRequestBody {
     username: string;
     password: string;
 }
 
 interface SignInRequest extends Request {
-    body: SignInRequestBody;
+    body: AuthenticationRequestBody;
 
     /**
      * Field inserted by passport-local authentication middleware
@@ -97,7 +97,11 @@ router.post(
 
         await notifyFriends(req.user.username);
 
-        return res.status(200).json({ token: signed_token });
+        // Return the token along with the id of the authenticated user
+        return res.status(200).json({
+            userId: req.user._id,
+            token: signed_token,
+        });
     }
 );
 
@@ -115,24 +119,30 @@ const notifyFriends = async (username: string) => {
     });
 };
 
+interface SignUpRequest extends Request {
+    body: AuthenticationRequestBody;
+}
+
 /**
- * Request must contain at least this information -> username: string, roles: string[], password: string
+ * Request must contain at least this information -> username: string, password: string
  */
-router.post('/auth/signup', async (req: Request, res: Response) => {
-    let u: UserDocument;
+router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
     try {
         // A user that registers through this endpoint becomes online right away
         const userData = {
             username: req.body.username,
             online: true,
         };
-        u = await createUser(userData);
+        const newUser: UserDocument = await createUser(userData);
 
-        await u.setPassword(req.body.password);
+        await newUser.setPassword(req.body.password);
 
-        return res
-            .status(201)
-            .json({ userId: u._id, username: u.username, roles: u.roles, online: u.online });
+        return res.status(201).json({
+            userId: newUser._id,
+            username: newUser.username,
+            roles: newUser.roles,
+            online: newUser.online,
+        });
     } catch (err) {
         if (err.message === 'User already exists') {
             return res.status(400).json({
