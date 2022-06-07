@@ -21,10 +21,10 @@ export class RegistrationScreenComponent implements OnInit {
         try {
             this.authClient.register({username, password}).subscribe((data: User) => {
                 localStorage.setItem('id', data.userId);
-                this.router.navigate(['/homepage'])
+                this.router.navigate(['/homepage']);
             });
         } catch (err) {
-            console.log('An error occurred' + err);
+            console.log('An error occurred while signin up: ' + err);
         }
     }
 }

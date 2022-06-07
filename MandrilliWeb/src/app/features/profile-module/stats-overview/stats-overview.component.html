@@ -1,12 +1,13 @@
 <div class="columns">
     <div class="column">
-        <h1 class="is-size-1 has-text-light">Saygong</h1>
+        <h1 class="is-size-1 has-text-light">{{user.username}}</h1>
     </div>
     <div class="column is-one-quarter">
         <!-- To show only if it's another profile -->
-        <button class="button is-info is-medium mt-4">Add Friend</button>
+        <button class="button is-info is-medium mt-4" >Add Friend</button>
+
     </div>
 </div>
 
                     
-<stats-grid></stats-grid>
+<stats-grid [profile]="true" [stats]="stats" ></stats-grid>

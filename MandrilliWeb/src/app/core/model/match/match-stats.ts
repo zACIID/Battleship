@@ -1,26 +1,30 @@
-export interface MatchStats {
+export class MatchStats {
     /**
      * Id of player that won the match
      */
-    winner: string;
+    winner: string = "";
 
     /**
      * Time that the match started at
      */
-    startTime: Date;
+    startTime: Date = new Date();
 
     /**
      * Time that the match ended at
      */
-    endTime: Date;
+    endTime: Date = new Date();
 
     /**
      * Total shots fired during the match
      */
-    totalShots: number;
+    totalShots: number = 0;
 
     /**
      * Number of ships destroyed during the match
      */
-    totalHits: number;
+    totalHits: number = 0;
+
+
+    constructor(){
+    }
 }

@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '../../../core/model/user/user';
-import { Router } from '@angular/router';
-import { UserApi } from '../../../core/api/handlers/user-api';
 import { AuthApi, LoginInfo, Jwt } from '../../../core/api/handlers/auth-api';
 import { JwtStorage } from '../../../core/api/jwt-auth/jwt-storage';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-login-screen',
@@ -12,14 +10,16 @@ import { JwtStorage } from '../../../core/api/jwt-auth/jwt-storage';
 })
 export class LoginScreenComponent implements OnInit {
     constructor(
-        private userClient: UserApi,
         private authClient: AuthApi,
-        private accessTokenStorage: JwtStorage
+        private accessTokenStorage: JwtStorage,
+        private router: Router
     ) {}
 
     ngOnInit(): void {}
 
     login(username: string, password: string) {
+
+
         try {
             const loginInfo: LoginInfo = {
                 username: username,
@@ -29,10 +29,10 @@ export class LoginScreenComponent implements OnInit {
             this.authClient.login(loginInfo).subscribe((data: Jwt) => {
                 this.accessTokenStorage.store(data.token);
                 //TODO, trovare un modo per salvare lo userId
-                localStorage.setItem("username", username);
+                this.router.navigate(["/homepage"]);
             });
         } catch (err) {
-            console.log('An error occurred' + err);
+            console.log('An error occurred while logging in: ' + err);
         }
     }
 }

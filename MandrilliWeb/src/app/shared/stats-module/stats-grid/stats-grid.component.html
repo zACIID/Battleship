@@ -1,16 +1,50 @@
 
-<div class="columns margin-auto is-widescreen max-height">
+<div *ngIf="profile" class="is-flex margin-auto is-widescreen overflow-scroll is-flex-wrap-wrap  is-justify-content-space-evenly">
 
-    <div class="column max-height">
-        <stat-block></stat-block>
+    <div class="box has-background-light">
+        <stat-block title="Top Elo" [value]="stats.topElo"></stat-block>
     </div>
     
-    <div class="column max-height">
-        <stat-block></stat-block>
+    <div class="box has-background-light">
+        <stat-block title="Total Wins" [value]="stats.wins"></stat-block>
     </div>
 
-    <div class="column max-height">
-        <stat-block></stat-block>
+    <div class="box has-background-light">
+        <stat-block title="Total Losses" [value]="stats.losses"></stat-block>
+    </div>
+
+    <div class="box has-background-light">
+        <stat-block title="Ships Destroyed" [value]="stats.losses"></stat-block>
+    </div>
+
+    <div class="box has-background-light">
+        <stat-block title="Total Shots" [value]="stats.totalShots"></stat-block>
+    </div>
+
+    <div class="box has-background-light">
+        <stat-block title="Total Hits" [value]="stats.totalHits"></stat-block>
+    </div>
+
+    <div class="box has-background-light">
+        <stat-block title="sauce" ></stat-block>
+    </div>
+    
+
+</div>
+
+
+<div *ngIf="!profile" class="is-flex margin-auto is-widescreen overflow-scroll is-flex-wrap-wrap is-justify-content-center is-justify-content-space-around">
+
+    <div class="box has-background-light">
+        <stat-block title="Total Shots" [value]="matchStats.totalShots"></stat-block>
+    </div>
+
+    <div class="box has-background-light">
+        <stat-block title="Total Hits" [value]="matchStats.totalHits"></stat-block>
+    </div>
+
+    <div class="box has-background-light">
+        <stat-block title="Duration" [value]="duration"></stat-block>
     </div>
     
 

@@ -12,7 +12,6 @@ import { RegistrationScreenComponent } from './registration-screen/registration-
     declarations: [LoginScreenComponent, RegistrationScreenComponent],
     imports: [
         CommonModule,
-        InputFieldModule,
         BackButtonModule,
         AuthenticationRoutingModule,
         BattleshiplogoModule,

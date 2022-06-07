@@ -26,7 +26,9 @@
                 <h1 class="has-text-weight-semibold is-family-sans-serif is-size-3">Username </h1>
             </div>
             <div class="column">
-                <input-field></input-field>
+                
+                <input class="input is-medium" type="text" placeholder="Insert" #username>
+                
             </div>
         </div>
 
@@ -35,7 +37,9 @@
                 <h1 class="has-text-weight-semibold is-family-sans-serif is-size-3">Password </h1>
             </div>
             <div class="column">
-                <input-field></input-field>
+                
+                <input class="input is-medium" type="text" placeholder="Insert" #password>
+                
             </div>
         </div>
         <div class="columns width-80 is-vcentered mt-4">
@@ -43,16 +47,14 @@
                 
             </div>
             <div class="column">
-                <button class="button is-primary is-size-5">Login</button>
+                <button class="button is-primary is-size-5" (click)="login(username.value, password.value)">Login</button>
             </div>
         </div>
 
         <div class="width-40 margin-auto has-text-centered mb-3 mt-6">
             <p>Don't have an account ? <a routerLink="/authentication/register"> Register here ! </a> </p>
         </div>
-        <div class="box has-background-primary width-40 margin-auto has-text-centered pointer">
-            <strong class="has-text-light">Login</strong>
-        </div>
+        
 
     </fieldset>
 
