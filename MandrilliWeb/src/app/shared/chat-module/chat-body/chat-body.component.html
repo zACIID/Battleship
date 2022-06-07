@@ -1,13 +1,11 @@
-<div class="box overflow-scroll p-5 chat-body-height mb-2">
+
+<div class="box overflow-scroll p-5 chat-body-height mb-2" 
+    infiniteScroll 
+    (scrolled)="loadMore()" >
 
     <!-- To implement *ngFor to iterate on every message-->
     <foreign-message></foreign-message>
     
-    <user-message></user-message>
-    <user-message></user-message>
-    <user-message></user-message>
-    <user-message></user-message>
-    <user-message></user-message>
     <user-message></user-message>
     
     

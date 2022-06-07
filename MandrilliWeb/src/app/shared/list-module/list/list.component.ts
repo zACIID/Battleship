@@ -16,6 +16,13 @@ export class ListComponent implements OnInit {
     @Input() friendsList?: RelationshipOverview[];
     @Input() userList?: UserOverview[];
     @Input() notificationList?: NotificationOverview[];
+    
+    /** Action that will be triggered by clicking the entire list element */
+    @Input() clickAction?: Function
+
+    /** Particular props for accepting or refusing an incoming notification */
+    @Input() accept?: Function
+    @Input() refuse?: Function
 
     constructor() {}
 

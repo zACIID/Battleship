@@ -16,18 +16,18 @@
                     <hr class="mb-4">
 
                     <div class="friends-list-height overflow-scroll p-1">
-                        <app-list [friendsList]="friends" ></app-list>
+                        <app-list [friendsList]="friends" [clickAction]="update_chat"></app-list>
                     </div>
 
                     
                 </div>
 
             </div>
-            <div class="column is-half mt-4">
+            <div *ngIf="friendUsername " class="column is-half mt-4">
 
                 <div class="box has-background-primary mt-2 chat-div mb-3">
-                    <h1 class="is-size-1 has-text-light has-text-weight-semibold">AciiD</h1>
-                    <chat-body></chat-body>
+                    <h1 class="is-size-1 has-text-light has-text-weight-semibold">{{friendUsername}}</h1>
+                    <chat-body [chatId]="chatId"></chat-body>
 
                 </div>
 

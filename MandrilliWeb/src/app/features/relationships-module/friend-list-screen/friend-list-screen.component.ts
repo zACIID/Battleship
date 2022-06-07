@@ -1,3 +1,4 @@
+
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { Relationship } from './../../../core/model/user/relationship';
@@ -14,6 +15,10 @@ export class FriendListScreenComponent implements OnInit {
 
 
     public friends: RelationshipOverview[] = [];
+    public chatId: string = "";
+    public friendUsername?: string;
+
+
     constructor(private relationshipsClient: RelationshipApi, private userClient: UserApi) {}
 
 
@@ -41,4 +46,15 @@ export class FriendListScreenComponent implements OnInit {
         })
 
     }
+
+    public update_chat(clickedFriendId: string): void{
+        
+        for(let fr of this.friends){
+            if (fr.friendId === clickedFriendId)
+            this.chatId = fr.chatId;
+            this.friendUsername = fr.username;
+        }
+    }
+
+
 }
