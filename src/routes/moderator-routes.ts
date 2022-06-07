@@ -31,6 +31,10 @@ router.post(
                 const newMod: UserDocument = await createUser(req.body);
                 await newMod.setRole(UserRoles.Moderator);
 
+                // TODO Consider doing this instead:
+                // https://stackoverflow.com/questions/14588032/mongoose-password-hashing
+                await newMod.setPassword(req.body.password);
+
                 return res.status(201).json({
                     userId: newMod._id,
                     username: newMod.username,
