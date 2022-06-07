@@ -195,13 +195,6 @@ router.put(
     async (req: UpdateStatsRequest, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
         const { elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits } = req.body;
-        console.log('DA ROUTES');
-        console.log('elo ' + elo);
-        console.log('topelo' + topElo);
-        console.log('wins + losses' + ' :' + wins + ' :' + losses);
-        console.log('shipsDestroyed ' + shipsDestroyed);
-        console.log('shots ' + totalShots);
-        console.log('hits ' + totalHits);
 
         try {
             await usr.updateUserStats(
@@ -218,8 +211,8 @@ router.put(
                 .status(200)
                 .json({ elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits });
         } catch (err) {
-            console.log('MESSAGGIO ERRORE   ' + err.message);
             const statusCode: number = err.message === userErr ? 404 : 500;
+
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,

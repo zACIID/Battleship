@@ -79,11 +79,8 @@ ChatSchema.methods.addMessage = async function (
     timestamp: Date,
     author: Types.ObjectId
 ): Promise<ChatDocument> {
-    console.log('author');
-    console.log(author);
-    console.log('content');
-    console.log(content);
     this.messages.push({ content, timestamp, author });
+
     return this.save();
 };
 

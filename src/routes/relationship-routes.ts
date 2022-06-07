@@ -22,7 +22,7 @@ router.get(
 
         try {
             user = await getUserById(userId);
-            console.log(user);
+
             return res.status(200).json({ relationships: user.relationships });
         } catch (err) {
             return res.status(404).json({
