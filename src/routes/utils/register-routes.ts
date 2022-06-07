@@ -9,7 +9,8 @@ import { router as modRouter } from '../moderator-routes';
 import { router as notificationRouter } from '../notification-routes';
 import { router as userRouter } from '../user-routes';
 import { router as relRouter } from '../relationship-routes';
-import { API_BASE_URL } from '../../index';
+import { router as mongoDbApiRouter } from '../frontend-integration-testing/mongodb-api-routes';
+import { API_BASE_URL, isTesting } from '../../index';
 
 export const registerRoutes = (app: Express) => {
     app.use(API_BASE_URL, authRouter);
@@ -21,4 +22,8 @@ export const registerRoutes = (app: Express) => {
     app.use(API_BASE_URL, notificationRouter);
     app.use(API_BASE_URL, relRouter);
     app.use(API_BASE_URL, userRouter);
+
+    if (isTesting) {
+        app.use(API_BASE_URL, mongoDbApiRouter);
+    }
 };

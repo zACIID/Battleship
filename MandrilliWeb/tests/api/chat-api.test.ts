@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthApi, LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { JwtStorage } from '../../src/app/core/api/jwt-auth/jwt-storage';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
@@ -37,7 +37,7 @@ describe("Get Chat", () => {
     let httpClient: HttpClient;
     let loginInfo: LoginInfo = {
         username: "test",
-        password: ""
+        password: "test"
     }
 
     beforeEach((done) => {

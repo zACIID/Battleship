@@ -25,7 +25,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 export const app: Express = express();
 
 // If testing, set test db uri, else use the other
-const isTesting: boolean = process.env.TEST === 'true';
+export const isTesting: boolean = process.env.TEST === 'true';
 const dbUri: string = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI;
 const serverPort: number = parseInt(process.env.PORT, 10);
 
