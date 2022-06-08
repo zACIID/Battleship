@@ -1,11 +1,11 @@
 import { Types } from 'mongoose';
 import { Router, Response } from 'express';
 
-import * as usr from '../models/user/user';
-import { UserStats } from '../models/user/user-stats';
+import * as usr from '../model/user/user';
+import { UserStats } from '../model/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
@@ -33,8 +33,12 @@ interface UpdateStatsRequest extends AuthenticatedRequest {
 }
 
 export const router = Router();
-const userErr: string = 'No user with that identifier';
-const usersErr: string = 'None of the given ids are present in the db';
+
+// TODO consider using this enum also in user.ts so that error strings are consistent
+enum UserNotFoundErrors {
+    SingleUser = 'No user with that identifier',
+    MultipleUsers = 'None of the given ids are present in the db',
+}
 
 router.get(
     '/users/:userId',
@@ -50,10 +54,10 @@ router.get(
                 username: user.username,
                 roles: user.roles,
                 online: user.online,
-                elo: user.stats.elo
+                elo: user.stats.elo,
             });
         } catch (err) {
-            const statusCode: number = err.message === userErr ? 404 : 500;
+            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
@@ -85,7 +89,8 @@ router.put(
                 await usr.updateUserName(userId, username);
                 return res.status(200).json({ username });
             } catch (err) {
-                const statusCode: number = err.message === userErr ? 404 : 500;
+                const statusCode: number =
+                    err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
                 return res.status(statusCode).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
                     errorMessage: err.message,
@@ -122,7 +127,8 @@ router.put(
                 await usr.updatePassword(userId, password);
                 return res.sendStatus(204);
             } catch (err) {
-                const statusCode: number = err.message === userErr ? 404 : 500;
+                const statusCode: number =
+                    err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
                 return res.status(statusCode).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
                     errorMessage: err.message,
@@ -150,7 +156,7 @@ router.delete(
             await usr.deleteUser(userId);
             return res.status(204).json();
         } catch (err) {
-            const statusCode: number = err.message === userErr ? 404 : 500;
+            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
@@ -179,7 +185,7 @@ router.get(
                 totalHits: stats.totalHits,
             });
         } catch (err) {
-            const statusCode: number = err.message === userErr ? 404 : 500;
+            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
@@ -212,7 +218,7 @@ router.put(
                 .status(200)
                 .json({ elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits });
         } catch (err) {
-            const statusCode: number = err.message === userErr ? 404 : 500;
+            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
 
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -244,19 +250,20 @@ router.get(
             });
 
             users = await usr.getUsers(userObjIds);
-            const results = users.map((x: usr.UserDocument) => {
+            const results = users.map((u: usr.UserDocument) => {
                 return {
-                    userId: x._id,
-                    username: x.username,
-                    roles: x.roles,
-                    online: x.online,
+                    userId: u._id,
+                    username: u.username,
+                    roles: u.roles,
+                    online: u.online,
+                    elo: u.stats.elo,
                 };
             });
 
             return res.status(200).json({ users: results });
         } catch (err) {
             let statusCode: number = 404;
-            if (err instanceof Error && err.message === usersErr) {
+            if (err instanceof Error && err.message === UserNotFoundErrors.MultipleUsers) {
                 statusCode = 500;
             } else {
                 return res.status(statusCode).json({

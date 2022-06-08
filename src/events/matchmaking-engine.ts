@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 
-import { MatchmakingQueueModel, QueueEntry } from '../models/matchmaking/queue-entry';
-import * as match from '../models/match/match';
+import { MatchmakingQueueModel, QueueEntry } from '../model/matchmaking/queue-entry';
+import * as match from '../model/match/match';
 import { MatchData, MatchFoundEmitter } from './socket-io/emitters/match-found';
 
 /**

@@ -53,6 +53,7 @@
 | username | string | Username of the user |
 | roles | string[] | List of roles assigned to the user |
 | online | boolean | Status of the user |
+| elo | number | Elo of the user |
 
 ### UserStats
 
@@ -95,7 +96,8 @@
         "Base", 
         "Moderator"
     ],
-    "online": true
+    "online": true,
+    "elo": 750
 }
 ```
 
@@ -154,7 +156,8 @@ Object representing the ids of the users to retrieve
                 "Base", 
                 "Moderator"
             ],
-            "online": true
+            "online": true,
+            "elo": 750
         },
         {
             "userId": "user-id-2",
@@ -163,7 +166,8 @@ Object representing the ids of the users to retrieve
                 "Base", 
                 "Moderator"
             ],
-            "online": true
+            "online": true,
+            "elo": 750
         },
         ...
     ]

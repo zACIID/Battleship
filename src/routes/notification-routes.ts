@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 import { Response, Router } from 'express';
 
-import { RequestTypes } from '../models/user/notification';
-import { getUserById, UserDocument } from '../models/user/user';
+import { RequestTypes } from '../model/user/notification';
+import { getUserById, UserDocument } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { NotificationReceivedEmitter } from '../events/socket-io/emitters/notification-received';
 import { ioServer } from '../index';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
 

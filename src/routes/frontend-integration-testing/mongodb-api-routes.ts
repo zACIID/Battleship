@@ -14,6 +14,6 @@ export const router = Router();
  * (notably the api-key) to make requests to the MongoDb Data Api. This allows the client to directly
  * perform operations in the database, which is useful for integration testing purposes.
  */
-router.get('/testing/mongoDbApi/config', async (req: Request, res: Response) => {
+router.get('/testing/mongoDbApi/credentials', async (req: Request, res: Response) => {
     // TODO
 });

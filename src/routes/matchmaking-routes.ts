@@ -7,9 +7,9 @@ import {
     MatchmakingQueueModel,
     QueueEntry,
     QueueEntryDocument,
-} from '../models/matchmaking/queue-entry';
-import { getUserById, UserDocument } from '../models/user/user';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+} from '../model/matchmaking/queue-entry';
+import { getUserById, UserDocument } from '../model/user/user';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
 

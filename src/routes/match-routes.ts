@@ -9,18 +9,18 @@ import {
     MatchModel,
     getMatchByUserId,
     Match,
-} from '../models/match/match';
+} from '../model/match/match';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
-import { GridCoordinates } from '../models/match/state/grid-coordinates';
-import { BattleshipGrid } from '../models/match/state/battleship-grid';
-import { PlayerStateSubDocument } from '../models/match/state/player-state';
-import { Shot } from '../models/match/state/shot';
+import { GridCoordinates } from '../model/match/state/grid-coordinates';
+import { BattleshipGrid } from '../model/match/state/battleship-grid';
+import { PlayerStateSubDocument } from '../model/match/state/player-state';
+import { Shot } from '../model/match/state/shot';
 import { PlayerStateChangedEmitter } from '../events/socket-io/emitters/player-state-changed';
 import { PositioningCompletedEmitter } from '../events/socket-io/emitters/positioning-completed';
 import { ioServer } from '../index';
 import { ShotFiredEmitter } from '../events/socket-io/emitters/shot-fired';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
 

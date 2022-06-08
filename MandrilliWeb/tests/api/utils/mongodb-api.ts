@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-import * as dbUser from '../../../../src/models/user/user';
-import * as dbMatch from '../../../../src/models/match/match';
-import * as dbChat from '../../../../src/models/chat/chat';
-import * as dbMatchmaking from '../../../../src/models/matchmaking/queue-entry';
+import * as dbUser from '../../../../src/model/user/user';
+import * as dbMatch from '../../../../src/model/match/match';
+import * as dbChat from '../../../../src/model/chat/chat';
+import * as dbMatchmaking from '../../../../src/model/matchmaking/queue-entry';
 
 // TODO the secret values are retrieved from the testing endpoint of the server api
 const dbInfo = {

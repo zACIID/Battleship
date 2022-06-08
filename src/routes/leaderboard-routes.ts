@@ -1,8 +1,8 @@
 import { Router, Response } from 'express';
 
-import { getLeaderboard, UserDocument } from '../models/user/user';
+import { getLeaderboard, UserDocument } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router: Router = Router();
 

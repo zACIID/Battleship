@@ -1,11 +1,11 @@
 import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { Relationship } from '../models/user/relationship';
-import { UserDocument, getUserById } from '../models/user/user';
+import { Relationship } from '../model/user/relationship';
+import { UserDocument, getUserById } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
 

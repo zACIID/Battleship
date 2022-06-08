@@ -1,8 +1,8 @@
 import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { ChatDocument, getChatById, deleteChat } from '../models/chat/chat';
-import { MessageSubDocument } from '../models/chat/message';
+import { ChatDocument, getChatById, deleteChat } from '../model/chat/chat';
+import { MessageSubDocument } from '../model/chat/message';
 import { authenticateToken } from './auth-routes';
 import {
     skipLimitChecker,
@@ -12,7 +12,7 @@ import {
 } from './utils/param-checking';
 import { ioServer } from '../index';
 import { ChatMessageEmitter } from '../events/socket-io/emitters/chat-message';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
 

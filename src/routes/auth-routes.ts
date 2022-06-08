@@ -4,12 +4,12 @@ import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { Strategy } from 'passport-local';
 
-import { createUser, getUserByUsername, User, UserDocument, UserModel } from '../models/user/user';
+import { createUser, getUserByUsername, User, UserDocument, UserModel } from '../model/user/user';
 import { Types } from 'mongoose';
 import { FriendOnlineEmitter } from '../events/socket-io/emitters/friend-online';
 import { ioServer } from '../index';
-import { JwtData } from '../models/auth/jwt-data';
-import { AuthenticatedRequest } from '../models/auth/authenticated-request';
+import { JwtData } from '../model/api/auth/jwt-data';
+import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
 

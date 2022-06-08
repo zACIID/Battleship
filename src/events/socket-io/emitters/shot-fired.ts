@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-import { GridCoordinates } from '../../../models/match/state/grid-coordinates';
+import { GridCoordinates } from '../../../model/match/state/grid-coordinates';
 
 interface Shot {
     coordinates: GridCoordinates;
