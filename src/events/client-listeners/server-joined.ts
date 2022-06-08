@@ -29,6 +29,9 @@ export class ServerJoinedListener extends ClientListener<UserData> {
             // Add disconnect listener to set the user offline when he leaves the server
             this.client.on('disconnect', async () => {
                 await ServerJoinedListener.setUserOffline(joinData.userId);
+
+                // TODO friendOffline emitter -> cambiare friend-online event in
+                //  friend-online-status-changed e passare valore online
             });
 
             return Promise.resolve();
