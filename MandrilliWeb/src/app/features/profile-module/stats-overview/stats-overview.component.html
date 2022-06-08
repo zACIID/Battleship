@@ -3,9 +3,10 @@
         <h1 class="is-size-1 has-text-light">{{user.username}}</h1>
     </div>
     <div class="column is-one-quarter">
-        <!-- To show only if it's another profile -->
-        <button class="button is-info is-medium mt-4" >Add Friend</button>
-
+        <div *ngIf="!myProfile">
+            <!--    TODO what's the behaviour of this action ? -Unguenty     -->
+            <button class="button is-info is-medium mt-4" >Add Friend</button>
+        </div>
     </div>
 </div>
 

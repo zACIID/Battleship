@@ -63,7 +63,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'profile',
+        path: 'profile/:id',
         loadChildren: () =>
             import('./features/profile-module/profile.module').then((m) => m.ProfileModule),
     },
@@ -81,7 +81,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: '',
+        redirectTo: '/authentication/login',
         pathMatch: 'full',
     },
 ];

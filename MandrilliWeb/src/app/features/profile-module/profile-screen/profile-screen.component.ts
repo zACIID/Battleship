@@ -1,10 +1,8 @@
+import { UserStats } from './../../../core/model/user/user-stats';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatchApi } from '../../../core/api/handlers/match-api'
+import { Router, ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api'
 import { User } from '../../../core/model/user/user';
-import { UserStats } from '../../../core/model/user/user-stats';
-import { getRank } from '../../../core/model/user/elo-rankings';
 
 @Component({
     selector: 'app-profile-screen',
@@ -13,34 +11,59 @@ import { getRank } from '../../../core/model/user/elo-rankings';
 })
 export class ProfileScreenComponent implements OnInit {
 
-    public user: User;
-    private userId: string;
+
+    public myProfile: boolean = false;
+    public user: User = new User();
+    private userShowedId: string = "";
     public rank: string = "";
+    public stats: UserStats = new UserStats();
 
-
-    constructor(private matchClient: MatchApi, private userClient: UserApi, private router: Router) {
-        this.user = new User();
-        this.userId = localStorage.getItem('id') || "";
-    }
+    constructor(
+        private userClient: UserApi,
+        private router: Router,
+        private route: ActivatedRoute
+    ) { }
 
     ngOnInit(): void {
+
+        this.route.params.subscribe((params => {
+            this.userShowedId = params['id'];
+        }));
         this.getUser();
+        this.getUserStats();
+
+        let userInSessionId = localStorage.getItem('id') || "";
+
+        if (userInSessionId === this.userShowedId){
+            this.myProfile = true;
+        }
+
     }
 
     public getUser() : void {
         try {
-            this.userClient.getUser(this.userId).subscribe((user: User) => {
+            this.userClient.getUser(this.userShowedId).subscribe((user: User) => {
                 this.user = user;
+                // TODO a chi serve modificare il campo online in questo modo ??  -agenty atmosferici
                 this.user.online = true;
             });
         } catch(err) {
-            console.log("Handling error: " + err);
+            console.log("An error occurred retrieving the user: " + err);
         }
     }
 
-    /*
-        private applyRank(){
-            this.rank = getRank(this.stats.elo);
+
+    public getUserStats() : void {
+        try {
+
+            if(!this.user) throw new Error("User is not defined");
+            this.userClient.getStats(this.user.userId).subscribe((stat: UserStats) => {
+                this.stats = stat;
+            });
+        } catch(err) {
+            console.log("An error occurred while retrieving user stats: " + err);
         }
-    */
+    }
+
+    
 }   

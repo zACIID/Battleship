@@ -13,7 +13,7 @@
 
                 <div class="box has-background-primary mt-2 profile-body-div mb-3">
 
-                    <stats-overview [user]="user"></stats-overview>
+                    <stats-overview [user]="user" [stats]="stats" [myProfile]="myProfile"></stats-overview>
 
                 </div>
 
@@ -22,13 +22,13 @@
 
                 <div class="half-profile-div box has-background-primary mt-2">
                     
-                    <rank-overview></rank-overview>
+                    <rank-overview [user]="user" [stats]="stats"></rank-overview>
 
                 </div>
                 <div class="half-profile-div box has-background-primary mt-2 mb-2">
-                    
-                    <moderator-section></moderator-section>
-
+                    <div *ngIf="myProfile">
+                        <moderator-section></moderator-section>
+                    </div>
                 </div>
 
             </div>

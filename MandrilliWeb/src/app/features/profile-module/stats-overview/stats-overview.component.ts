@@ -12,27 +12,16 @@ export class StatsOverviewComponent implements OnInit {
 
     @Input() user: User = new User();
     
-    public stats: UserStats;
+    @Input() stats: UserStats = new UserStats();
 
-    constructor(private userClient: UserApi) {
-        this.stats = new UserStats();
-    }
+    @Input() myProfile: boolean = false;
 
-    ngOnInit(): void {
-        
-        this.getUserStats();
-    }
+    constructor(
+        private userClient: UserApi
+    ) { }
+
+    ngOnInit(): void { }
 
 
-    public getUserStats() : void {
-        try {
-
-            if(!this.user) throw new Error("User is not defined");
-            this.userClient.getStats(this.user.userId).subscribe((stat: UserStats) => {
-                this.stats = stat;
-            });
-        } catch(err) {
-            console.log("An error occurred while retrieving user stats: " + err);
-        }
-    }
+    
 }

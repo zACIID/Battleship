@@ -3,18 +3,18 @@
 <p class="has-text-light mt-3">Ban user</p>
 <div class="columns">
     <div class="column">
-        <input class="input" type="text" placeholder="Insert valid username">
+        <input class="input" type="text" placeholder="Insert valid username" #banUsername>
     </div>
     <div class="column is-one-quarter">
-        <button class="button is-danger">BAN</button>
+        <button class="button is-danger" (click)="ban(banUsername.value)">BAN</button>
     </div>
 </div>
 <hr class="mt-1 mb-1">
 <p class="has-text-light">Insert new moderator</p>
 
-<input class="input mt-1" type="text" placeholder="Insert username">
+<input class="input mt-1" type="text" placeholder="Insert username" #newModUsername>
 
-<input class="input mt-1" type="text" placeholder="Insert temporary password">
+<input class="input mt-1" type="text" placeholder="Insert temporary password" #newModPassword>
 
 
-<button class="button mt-1 is-small is-info is-fullwidth">Create moderator</button>
+<button class="button mt-1 is-small is-info is-fullwidth" (click)="newModerator(newModUsername.value, newModPassword.value)">Create moderator</button>
