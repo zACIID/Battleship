@@ -1,18 +1,14 @@
-import * as dotenv from 'dotenv';
-import path from 'path';
 import axios, { AxiosRequestConfig } from 'axios';
+import * as dbUser from '../../../../src/models/user/user';
+import * as dbMatch from '../../../../src/models/match/match';
+import * as dbChat from '../../../../src/models/chat/chat';
+import * as dbMatchmaking from '../../../../src/models/matchmaking/queue-entry';
 
-import { User, UserDocument } from '../../models/user/user';
-import { Match, MatchDocument } from '../../models/match/match';
-import { Chat, ChatDocument } from '../../models/chat/chat';
-import { QueueEntry, QueueEntryDocument } from '../../models/matchmaking/queue-entry';
-
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
-
+// TODO the secret values are retrieved from the testing endpoint of the server api
 const dbInfo = {
-    url: process.env.MONGO_DB_API_URL,
-    apiKey: process.env.MONGO_DB_API_KEY,
-    clusterName: process.env.MONGO_DB_CLUSTER_NAME,
+    url: 'TODO',
+    apiKey: 'TODO',
+    clusterName: 'TODO',
     userCollection: 'Users',
     matchCollection: 'Matches',
     chatCollection: 'Chats',
@@ -67,24 +63,24 @@ export class MongoDbApi {
     }
 
     /*
-     * Get User document by _id
+     * Get dbUser.User document by _id
      */
-    public async getUserDocument(_id: string): Promise<UserDocument> {
-        return await this.getDocumentById<UserDocument>(dbInfo.userCollection, _id);
+    public async getUserDocument(_id: string): Promise<dbUser.UserDocument> {
+        return await this.getDocumentById<dbUser.UserDocument>(dbInfo.userCollection, _id);
     }
 
     /*
-     * Get Match document by _id
+     * Get dbMatch.Match document by _id
      */
-    public async getMatchDocument(_id: string): Promise<MatchDocument> {
-        return await this.getDocumentById<MatchDocument>(dbInfo.matchCollection, _id);
+    public async getMatchDocument(_id: string): Promise<dbMatch.MatchDocument> {
+        return await this.getDocumentById<dbMatch.MatchDocument>(dbInfo.matchCollection, _id);
     }
 
     /*
-     * Get Chat document by _id
+     * Get dbChat.Chat document by _id
      */
-    public async getChatDocument(_id: string): Promise<ChatDocument> {
-        return await this.getDocumentById<ChatDocument>(dbInfo.userCollection, _id);
+    public async getChatDocument(_id: string): Promise<dbChat.ChatDocument> {
+        return await this.getDocumentById<dbChat.ChatDocument>(dbInfo.userCollection, _id);
     }
 
     /*
@@ -98,12 +94,15 @@ export class MongoDbApi {
         return await this.getDocument<T>(filter, collectionName);
     }
 
-    public async getQueueEntry(userId: string): Promise<QueueEntryDocument> {
+    public async getQueueEntry(userId: string): Promise<dbMatchmaking.QueueEntryDocument> {
         const filter = {
             userId: userId,
         };
 
-        return await this.getDocument<QueueEntryDocument>(filter, dbInfo.matchmakingCollection);
+        return await this.getDocument<dbMatchmaking.QueueEntryDocument>(
+            filter,
+            dbInfo.matchmakingCollection
+        );
     }
 
     public async getDocument<D>(filter: Object, collection: string): Promise<D> {
@@ -120,23 +119,34 @@ export class MongoDbApi {
         });
     }
 
-    public async insertUser(userData: User): Promise<UserDocument> {
-        return await this.insertDocument<User, UserDocument>(userData, dbInfo.userCollection);
-    }
-
-    public async insertChat(chatData: Chat): Promise<ChatDocument> {
-        return await this.insertDocument<Chat, ChatDocument>(chatData, dbInfo.chatCollection);
-    }
-
-    public async insertMatch(matchData: Match): Promise<MatchDocument> {
-        return await this.insertDocument<Match, MatchDocument>(matchData, dbInfo.matchCollection);
-    }
-
-    public async insertQueueEntry(entryData: QueueEntry): Promise<QueueEntryDocument> {
-        return await this.insertDocument<QueueEntry, QueueEntryDocument>(
-            entryData,
-            dbInfo.matchmakingCollection
+    public async insertUser(userData: dbUser.User): Promise<dbUser.UserDocument> {
+        return await this.insertDocument<dbUser.User, dbUser.UserDocument>(
+            userData,
+            dbInfo.userCollection
         );
+    }
+
+    public async insertChat(chatData: dbChat.Chat): Promise<dbChat.ChatDocument> {
+        return await this.insertDocument<dbChat.Chat, dbChat.ChatDocument>(
+            chatData,
+            dbInfo.chatCollection
+        );
+    }
+
+    public async insertMatch(matchData: dbMatch.Match): Promise<dbMatch.MatchDocument> {
+        return await this.insertDocument<dbMatch.Match, dbMatch.MatchDocument>(
+            matchData,
+            dbInfo.matchCollection
+        );
+    }
+
+    public async insertQueueEntry(
+        entryData: dbMatchmaking.QueueEntry
+    ): Promise<dbMatchmaking.QueueEntryDocument> {
+        return await this.insertDocument<
+            dbMatchmaking.QueueEntry,
+            dbMatchmaking.QueueEntryDocument
+        >(entryData, dbInfo.matchmakingCollection);
     }
 
     public async insertDocument<I, D>(insertData: I, collection: string): Promise<D> {
@@ -208,8 +218,12 @@ export class MongoDbApi {
             const res = await axios.post<R>(url, reqData, axiosReqConfig);
             return res.data;
         } catch (err) {
-            console.log('Error has occurred in MongoDbApi');
-            console.log(err.message);
+            if (err instanceof Error) {
+                console.log('Error has occurred in MongoDbApi');
+                console.log(err.message);
+            }
+
+            throw err;
         }
     }
 }
