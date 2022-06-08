@@ -16,14 +16,14 @@
 
 
 <!-- List crafted for friends-->
-<div *ngIf="friendsList && clickAction" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
+<div *ngIf="friendsList" [ngSwitch]="num_friends()" class="list-height overflow-scroll">
 
     <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
         <p> <strong>There's no friends here :(</strong></p>
     </div>
 
     <div *ngSwitchDefault>
-        <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="clickAction()">
+        <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="showChat(item.chatId)">
             <p> <strong>{{item.username}}</strong></p>
         </div>
     </div>

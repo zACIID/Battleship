@@ -9,11 +9,15 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ChatBodyComponent implements OnInit {
 
-    constructor(private chatClient: ChatApi) {}
+    constructor(
+        private chatClient: ChatApi
+    ) {}
 
     @Input() chatId: string = "";
     public messages: Message[] = [];
     public userId: string = "";
+
+
     private options = {
         skip: 0,
         limit: 5
@@ -49,6 +53,15 @@ export class ChatBodyComponent implements OnInit {
         catch(err){
             console.log("An error while retrieving more messages: " + err);
         }
+    }
+
+    // TODO check for emit() something
+    public post_message(message: string){
+
+        this.chatClient.addMessage(
+            this.chatId,
+            {author: this.userId, content: message, timestamp: new Date()}
+        );
     }
 
 

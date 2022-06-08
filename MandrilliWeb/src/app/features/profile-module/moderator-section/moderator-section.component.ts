@@ -25,11 +25,10 @@ export class ModeratorSectionComponent implements OnInit {
     public ban(username: string): void{
         
         try{
-            this.userClient.getUser(username).subscribe((data) => {
 
-                let bannedUserId = data.userId;
-                this.moderatorClient.banUser(this.userInSessionId, bannedUserId);
-            })
+            // TODO modify banUser in order to accept the username of the banned user
+            this.moderatorClient.banUser(this.userInSessionId, username);
+            
         }
         catch(err){
             console.log("An error occurred while banning a user: " + err);

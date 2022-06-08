@@ -19,10 +19,10 @@
 </div>
 <div class="columns">
     <div class="column is-three-quarters">
-        <input class="input" type="text" placeholder="Type messages">
+        <input class="input" type="text" placeholder="Type messages" #messageContent>
     </div>
     <div class="column">
-        <button class="button"> Send </button>
+        <button class="button" (click)="post_message(messageContent.value)"> Send </button>
     </div>
 </div>
 

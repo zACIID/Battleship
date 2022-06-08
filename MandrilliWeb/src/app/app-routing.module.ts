@@ -87,6 +87,11 @@ const routes: Routes = [
             import('./features/settings-module/settings.module').then((m) => m.SettingsModule),
     },
     {
+        path: 'chat/:id',
+        loadChildren: () =>
+            import('./features/user-chat-module/user-chat.module').then((m) => m.UserChatModule),
+    },
+    {
         path: '',
         redirectTo: '/authentication/login',
         pathMatch: 'full',

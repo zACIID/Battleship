@@ -1,4 +1,4 @@
-import { UserOverview } from './../../../core/model/user/user-overview';
+import { Router } from '@angular/router';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { MatchOverview } from './../../../core/model/match/match-overview';
 import { Component, OnInit, Input } from '@angular/core';
@@ -16,14 +16,14 @@ export class ListComponent implements OnInit {
     @Input() friendsList?: RelationshipOverview[];
     @Input() notificationList?: NotificationOverview[];
     
-    /** Action that will be triggered by clicking the entire list element */
-    @Input() clickAction?: Function
 
     /** Particular props for accepting or refusing an incoming notification */
     @Input() accept?: Function
     @Input() refuse?: Function
 
-    constructor() {}
+    constructor(
+        private router: Router
+    ) {}
 
     ngOnInit(): void {}
 
@@ -39,12 +39,16 @@ export class ListComponent implements OnInit {
 
     public num_friends() : number {
 
-        
         if(this.friendsList){
             return this.friendsList.length;
         }
         else return 0;
         
+    }
+
+    public showChat(chatId: string){
+        let url = "/chat/" + chatId; 
+        this.router.navigate([url]);
     }
 
 }

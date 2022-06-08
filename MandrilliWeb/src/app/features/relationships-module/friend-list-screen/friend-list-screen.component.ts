@@ -14,52 +14,41 @@ export class FriendListScreenComponent implements OnInit {
 
 
     public friends: RelationshipOverview[] = [];
-    public chatId: string = "";
-    public friendUsername?: string;
 
 
     constructor(
         private relationshipsClient: RelationshipApi,
         private userClient: UserApi
-        ) {}
+    ) {}
 
 
     ngOnInit(): void {
         
         let userId: string = localStorage.getItem('id') || "";
         
-        this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
+        try{
+            this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
 
-            
+                this.friends = data.map( (rel: Relationship) => {
 
-            this.friends = data.map( (rel: Relationship) => {
+                    let usrnm: string = "";
+                    this.userClient.getUser(rel.friendId).subscribe((x: User) =>
+                        usrnm = x.username 
+                    );
 
-                let usrnm: string = "";
-                this.userClient.getUser(rel.friendId).subscribe((x: User) =>
-                    usrnm = x.username 
-                );
+                    return {
+                        friendId: rel.friendId,
+                        chatId: rel.friendId,
+                        username: usrnm
+                    };
+                })
 
-                return {
-                    friendId: rel.friendId,
-                    chatId: rel.friendId,
-                    username: usrnm
-                };
             })
-
-        })
-        
-       
-    }
-
-    public update_chat(clickedFriendId: string): void{
-        
-        
-        for(let fr of this.friends){
-            if (fr.friendId === clickedFriendId)
-            this.chatId = fr.chatId;
-            this.friendUsername = fr.username;
         }
-        
+        catch(err){
+            console.log("An error occurred while retrieving the friends list: " + err);
+        }
+       
     }
 
 

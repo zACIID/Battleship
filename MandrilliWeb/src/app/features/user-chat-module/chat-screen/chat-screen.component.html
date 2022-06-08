@@ -9,7 +9,7 @@
                 
             <div class="columns">
                 <div class="column">
-                    <h1 class="is-size-1 has-text-light ml-5 has-text-weight-bold">Friends</h1>
+                    <player-info [user]="friend"></player-info>
                 </div>
                 <div class="column is-one-quarter pointer" [routerLink]="['/homepage']">
                     <div class="box has-background-light pointer">
@@ -22,13 +22,13 @@
             
             <hr class="mb-4">
 
-
-            <div class="friends-list-height overflow-scroll p-1">
-                <app-list [friendsList]="friends"></app-list>
-            </div>
+            <chat-body [chatId]="chatId"></chat-body>
 
             
         </div>
 
     </div>
 </div>
+
+
+

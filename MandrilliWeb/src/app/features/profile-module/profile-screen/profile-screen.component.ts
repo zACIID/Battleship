@@ -20,7 +20,6 @@ export class ProfileScreenComponent implements OnInit {
 
     constructor(
         private userClient: UserApi,
-        private router: Router,
         private route: ActivatedRoute
     ) { }
 
