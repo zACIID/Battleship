@@ -58,7 +58,7 @@ router.post(
             const correctFriendId = retrieveId(req.body.friendId);
             await getUserById(correctFriendId);
 
-            user = await user.addRelationship(correctFriendId);
+            user = await user.addRelationshipSymmetrically(correctFriendId);
             const rel: Relationship = user.relationships[user.relationships.length - 1];
 
             return res.status(201).json({

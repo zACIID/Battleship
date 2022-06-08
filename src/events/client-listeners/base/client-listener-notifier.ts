@@ -7,7 +7,9 @@ import { Emitter } from '../../emitters/base/emitter';
  * Abstract class that wraps functionality used to listen
  * to client-emitted Socket.io events and respond to
  * them by emitting data.
- * @param K
+ *
+ * @param L type of the data that is received when listening to the event
+ * @param N type of the data that is sent by the notifier
  */
 export abstract class ClientListenerNotifier<L, N> extends ClientListener<L> {
     public readonly ioServer: Server;
@@ -32,6 +34,10 @@ export abstract class ClientListenerNotifier<L, N> extends ClientListener<L> {
         emitterProvider: (eventData: L) => Promise<Emitter<N>[]>,
         emitDataProvider: (eventData: L) => Promise<N>
     ): Promise<void> {
+        // TODO to make the api of this class cleaner,
+        //  an additional arg "onEvent?" could be added that returns Promise<void>
+        //  this would be used to perform operations detached from the creation
+        //  of the emitter
         super.listen(async (eventData: L) => {
             const emitters: Emitter<N>[] = await emitterProvider(eventData);
             const emitData: N = await emitDataProvider(eventData);

@@ -99,7 +99,7 @@ export interface UserDocument extends User, Document {
     isFriend(key: Types.ObjectId): boolean;
 
     /**
-     * Set a new password using bcrypt's hashing and salt generation functions
+     * Set a new password using bcrypt hashing and salt generation functions
      * @param pwd new password to set
      */
     setPassword(pwd: string): Promise<UserDocument>;
@@ -127,11 +127,11 @@ export interface UserDocument extends User, Document {
     removeNotification(type: RequestTypes, sender: Types.ObjectId): Promise<UserDocument>;
 
     /**
-     * Add a relationship and automatically create a new chat object
+     * Add a relationship and automatically create a new chat object.
+     * The relationship is added symmetrically to both users involved.
      * @param friendId new friend's id
-     * @param chat_id optional param in order to trigger the symmetric addition
      */
-    addRelationship(friendId: Types.ObjectId, chat_id?: Types.ObjectId): Promise<UserDocument>;
+    addRelationshipSymmetrically(friendId: Types.ObjectId): Promise<UserDocument>;
 
     /**
      * Remove a relationship from both users
@@ -293,49 +293,45 @@ UserSchema.methods.isAdmin = function (): boolean {
 
 /* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
 
-UserSchema.methods.addRelationship = async function (
-    friendId: Types.ObjectId,
-    chatId?: Types.ObjectId
+UserSchema.methods.addRelationshipSymmetrically = async function (
+    friendId: Types.ObjectId
 ): Promise<UserDocument> {
+    const doesUserContainRelationship = (user: UserDocument) => {
+        for (let idx in this.relationships) {
+            if (this.relationships[idx].friendId.equals(friendId)) {
+                return true;
+            }
+        }
+    };
+
     // TODO friendId could be set to unique to avoid this check
-    for (let idx in this.relationships) {
-        if (this.relationships[idx].friendId.equals(friendId)) {
-            return Promise.reject(new Error('Relationship already existent'));
-        }
+    if (doesUserContainRelationship(this)) {
+        return Promise.reject(new Error('Relationship already existent'));
     }
-
-    let toInsert: Relationship = { friendId: friendId, chatId: null };
 
     try {
-        if (!chatId) {
-            let chat: ChatDocument;
-            chat = await createChat([this._id, friendId]);
-            toInsert.chatId = chat._id;
-            await symmetricAddRelationship(friendId, this._id, chat._id);
-        }
-    } catch (err) {
-        return Promise.reject(new Error(err.message));
-    }
+        // Create a new chat between the two friends
+        const friendChat: ChatDocument = await createChat([this._id, friendId]);
 
-    if (toInsert.chatId !== null) {
-        this.relationships.push(toInsert);
-    } else {
-        this.relationships.push({ friendId: toInsert.friendId, chatId: null });
-    }
+        // Relationship from the point of view of the current user
+        const newRelationship: Relationship = {
+            friendId: friendId,
+            chatId: friendChat._id,
+        };
 
-    return this.save();
-};
+        // Relationship from the point of view of the other user
+        const newSymmetricRelationship: Relationship = {
+            friendId: this._id,
+            chatId: friendChat._id,
+        };
 
-/* Symmetrical addition of a friend relation */
-const symmetricAddRelationship = async function (
-    userId: Types.ObjectId,
-    friendId: Types.ObjectId,
-    chatId: Types.ObjectId
-): Promise<UserDocument> {
-    let user: UserDocument;
-    try {
-        user = await getUserById(userId);
-        return user.addRelationship(friendId, chatId);
+        // Add the relationship to both users and save
+        const friend: UserDocument = await getUserById(friendId);
+        friend.relationships.push(newSymmetricRelationship);
+        await friend.save();
+
+        this.relationships.push(newRelationship);
+        return this.save();
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }

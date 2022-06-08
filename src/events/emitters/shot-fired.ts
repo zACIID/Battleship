@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-import { Shot } from '../../model/match/state/shot';
+import { Shot } from '../../model/events/shot';
 
 /**
  * Class that wraps socket.io functionality to generate a "shot-fired" event.
