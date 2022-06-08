@@ -23,7 +23,26 @@
             <div class="height-80 width-80 margin-auto">
 
                 <div class="request-list-height overflow-scroll p-1">
-                    <app-list [userList]="leaders" ></app-list>
+
+                   
+                    <div [ngSwitch]="num_leaders()" class="list-height overflow-scroll">
+
+                        <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
+                            <p> <strong>There's no users here :(</strong></p>
+                        </div>
+
+
+                        <div *ngSwitchDefault infiniteScroll (scrolled)="loadMore()">
+
+                            <div *ngFor="let item of leaders" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" [routerLink]="['/profile/{{item.userId}}']">
+                                <p> <strong>{{item.username}} - {{ item.elo }} pp</strong></p>
+                            </div>
+                            
+                        </div>
+
+                    </div>
+
+                    
                 </div>
 
 

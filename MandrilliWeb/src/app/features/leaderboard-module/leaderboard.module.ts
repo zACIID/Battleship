@@ -4,6 +4,7 @@ import { LeaderboardRoutingModule } from './leaderboard-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LeaderboardScreenComponent } from './leaderboard-screen/leaderboard-screen.component';
+import { RouterModule } from '@angular/router';
 
 
 
@@ -14,8 +15,8 @@ import { LeaderboardScreenComponent } from './leaderboard-screen/leaderboard-scr
   imports: [
     CommonModule,
     LeaderboardRoutingModule,
-    ListModule,
-    MatchHistoryModule
+    MatchHistoryModule,
+    RouterModule
   ]
 })
 export class LeaderboardModule { }

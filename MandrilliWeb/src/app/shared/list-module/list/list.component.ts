@@ -14,7 +14,6 @@ export class ListComponent implements OnInit {
 
     @Input() matchList?: MatchOverview[];
     @Input() friendsList?: RelationshipOverview[];
-    @Input() userList?: UserOverview[];
     @Input() notificationList?: NotificationOverview[];
     
     /** Action that will be triggered by clicking the entire list element */
@@ -35,13 +34,6 @@ export class ListComponent implements OnInit {
             return this.matchList.length;
         else return 0;
 
-    }
-
-    public num_users() : number {
-
-        if(this.userList)
-            return this.userList.length;
-        else return 0;
     }
 
 

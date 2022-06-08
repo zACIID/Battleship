@@ -6,7 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
     declarations: [BackButtonComponent],
-    imports: [CommonModule, FontAwesomeModule, RouterModule ],
+    imports: [CommonModule, FontAwesomeModule, RouterModule],
     exports: [BackButtonComponent],
 })
 export class BackButtonModule {}

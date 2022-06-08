@@ -32,23 +32,6 @@
 
 
 
-<!-- List crafted for users -->
-<div *ngIf="userList && clickAction" [ngSwitch]="num_users()" class="list-height overflow-scroll">
-
-    <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
-        <p> <strong>There's no users here :(</strong></p>
-    </div>
-
-    <div *ngSwitchDefault>
-        <div *ngFor="let item of userList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="clickAction()">
-            <p> <strong>{{item.username}} - {{ item.elo }} pp</strong></p>
-        </div>
-    </div>
-
-</div>
-
-
-
 <!-- List crafted for the battle requests -->
 <div *ngIf="notificationList && refuse && accept" class="list-height overflow-scroll">
 

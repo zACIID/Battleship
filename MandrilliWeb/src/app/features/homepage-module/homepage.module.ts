@@ -7,6 +7,7 @@ import { FeatureButtonComponent } from './feature-button/feature-button.componen
 import { GameButtonComponent } from './game-button/game-button.component';
 import { ProfileButtonComponent } from './profile-button/profile-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
     declarations: [
@@ -15,6 +16,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         GameButtonComponent,
         ProfileButtonComponent,
     ],
-    imports: [CommonModule, MatchHistoryModule, HomepageRoutingModule, FontAwesomeModule],
+    imports: [CommonModule, MatchHistoryModule, HomepageRoutingModule, FontAwesomeModule, RouterModule],
 })
 export class HomepageModule {}
