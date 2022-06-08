@@ -7,7 +7,9 @@ import { faClipboard } from '@fortawesome/free-solid-svg-icons';
     styleUrls: ['./settings-button.component.css'],
 })
 export class SettingsButtonComponent implements OnInit {
+
     faClipboard = faClipboard;
+    
     constructor() {}
 
     ngOnInit(): void {}

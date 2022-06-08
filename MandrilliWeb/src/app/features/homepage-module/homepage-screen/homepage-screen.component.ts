@@ -1,3 +1,4 @@
+import { getRank } from './../../../core/model/user/elo-rankings';
 import { UserStats } from './../../../core/model/user/user-stats';
 import { User } from './../../../core/model/user/user'
 import { UserApi } from './../../../core/api/handlers/user-api';
@@ -11,7 +12,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomepageScreenComponent implements OnInit {
 
-    public user?: UserOverview;
+    public user: UserOverview = new UserOverview();
 
 
     constructor(private userClient: UserApi) {}
@@ -27,7 +28,8 @@ export class HomepageScreenComponent implements OnInit {
                     this.user = {
                         userId: x.userId,
                         username: x.username,
-                        elo: data.elo
+                        elo: data.elo,
+                        rank: getRank(data.elo)
                     }
             
                 })

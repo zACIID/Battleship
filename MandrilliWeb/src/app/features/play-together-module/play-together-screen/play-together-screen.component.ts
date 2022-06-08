@@ -1,3 +1,6 @@
+import { getRank } from './../../../core/model/user/elo-rankings';
+import { UserOverview } from './../../../core/model/user/user-overview';
+import { UserApi } from './../../../core/api/handlers/user-api';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { Component, OnInit } from '@angular/core';
@@ -9,9 +12,45 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PlayTogetherScreenComponent implements OnInit {
 
-    public friends: RelationshipOverview[] = [];
+    public friends: UserOverview[] = [];
 
-    constructor(private relationshipClient: RelationshipApi) {}
+    constructor(
+        private relationshipClient: RelationshipApi,
+        private userClient: UserApi
+    ) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        let userId: string = localStorage.getItem('id') || "";
+        try{
+            // Retrieving only online friends
+            this.relationshipClient.getRelationships(userId).subscribe((relationships) => {
+                
+                for(let relation of relationships){
+                    this.userClient.getUser(relation.friendId).subscribe((friend) => {
+
+                        if(friend.online){
+                            // TODO wait for friend.elo otherwise i have to get userStats
+                            this.friends.push({
+                                userId: friend.userId,
+                                username: friend.username,
+                                elo: friend.elo,
+                                rank: getRank(friend.elo)
+                            });
+
+                        }
+
+                    })
+                }
+
+            })
+        }catch(err){
+            console.log("An error occured while retrieving online friends list: " + err);
+        }
+    }
+
+
+
+    public num_online(){
+        return this.friends.length;
+    }
 }

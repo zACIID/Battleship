@@ -75,6 +75,13 @@ const routes: Routes = [
             ),
     },
     {
+        path: 'game-mode',
+        loadChildren: () =>
+            import('./features/select-game-mode-module/select-game-mode.module').then(
+                (m) => m.SelectGameModeModule
+            ),
+    },
+    {
         path: 'settings',
         loadChildren: () =>
             import('./features/settings-module/settings.module').then((m) => m.SettingsModule),

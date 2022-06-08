@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { UserOverview } from './../../../core/model/user/user-overview';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'player-info',
@@ -6,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./player-info.component.css'],
 })
 export class PlayerInfoComponent implements OnInit {
+ 
+    @Input() user: UserOverview = new UserOverview();
+
     constructor() {}
 
     ngOnInit(): void {}

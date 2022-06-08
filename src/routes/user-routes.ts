@@ -50,6 +50,7 @@ router.get(
                 username: user.username,
                 roles: user.roles,
                 online: user.online,
+                elo: user.stats.elo
             });
         } catch (err) {
             const statusCode: number = err.message === userErr ? 404 : 500;

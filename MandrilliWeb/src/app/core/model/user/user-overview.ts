@@ -1,22 +1,33 @@
+import { getRank } from './elo-rankings';
 /**
- * Interface that contains all the relevant information to show about a user, some of these field may need to link an action
+ * Class that contains all the relevant information to show about a user, some of these field may need to link an action
  * Like userId will need to open the corresponding player info just by clicking it
  */
- export interface UserOverview {
+ export class UserOverview {
     /**
      * Id of the user
      */
-    userId: string;
+    userId: string = "";
 
 
     /**
      * Username of the user
      */
-    username: string;
+    username: string = "";
 
 
     /**
      * elo of the user
      */
-    elo: number;
+    elo: number =  0;
+
+
+    /**
+     * rank of the user, it's also used to build the source of the image which represents the rank
+     */
+    rank: string = "";
+
+    constructor(){
+        getRank(this.elo);
+    }
 }

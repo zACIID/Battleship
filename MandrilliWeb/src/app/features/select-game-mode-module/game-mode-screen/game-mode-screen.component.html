@@ -1,0 +1,54 @@
+<div class="columns">
+    <div class="column is-one-quarter">
+          <history-sidebar> </history-sidebar>
+    </div>
+    <div class = "column">
+        <div class="box has-background-primary height mt-2 is-vcentered mr-1">
+
+            <div class="columns height-20 mt-5">
+                <div class="column">
+                    <h1 class="is-size-1 has-text-light has-text-centered has-text-weight-bold">Select a game mode: </h1>
+                </div>
+
+                <div class="column is-one-quarter" [routerLink]="['/homepage']">
+                    <div class="box has-background-light pointer">
+                        <div class="has-text-centered">
+                            <strong>BACK</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="columns height-80 width-80 margin-auto mt-6">
+
+
+                <!-- TODO add logic on these 2 buttons to start a match -->
+
+                <div class="column height-20 is-half mr-6 has-text-centered pointer">
+
+                    <div class="box has-background-light">
+                        <strong class="is-size-3 has-weight-bold is-vcentered">Casual game</strong>
+                    </div>
+                    <p class="has-text-light is-size-5 p-3"> Play with a random user thanks to a skill based matchmaking !</p>
+                        
+                </div>
+
+                <div class="column height-20 is-half has-text-centered pointer">
+
+                    <div class="box has-background-light">
+                        <strong class="is-size-3 has-weight-bold ">Play with a friend </strong>
+                    </div>
+                    <p class="has-text-light is-size-5 p-3"> Select an online user from your friends list and fight him !</p>
+                    
+                </div>
+
+
+            </div>
+            
+
+        </div>
+    </div>
+</div>
+
+

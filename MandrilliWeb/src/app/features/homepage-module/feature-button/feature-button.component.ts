@@ -15,6 +15,5 @@ export class FeatureButtonComponent implements OnInit {
 
     ngOnInit(): void {
         this.link = "/" + this.link;
-        console.log(this.link);
     }
 }

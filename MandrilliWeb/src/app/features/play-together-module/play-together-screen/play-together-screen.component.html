@@ -19,7 +19,21 @@
             </div>
 
             <div class="friends-list-height overflow-scroll p-1">
-                <app-list [friendsList]="friends" ></app-list>
+
+                <div [ngSwitch]="num_online()" class="list-height overflow-scroll">
+
+                    <div *ngSwitchCase="0" class= "box has-background-light width-80 mb-1 has-text-centered margin-auto">
+                        <p> <strong>No friends online :(</strong></p>
+                    </div>
+                
+                    <div *ngSwitchDefault>
+                        <div *ngFor="let item of friends" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+                            <p> <strong>{{item.username}} - {{item.elo}} </strong></p>
+                        </div>
+                    </div>
+                
+                </div>
+                
             </div>
 
                 

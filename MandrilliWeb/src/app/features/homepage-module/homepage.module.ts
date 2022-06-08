@@ -1,3 +1,4 @@
+import { PlayerInfoModule } from './../../shared/player-info-module/player-info.module';
 import { HomepageRoutingModule } from './homepage-routing.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { NgModule } from '@angular/core';
@@ -14,8 +15,15 @@ import { RouterModule } from '@angular/router';
         HomepageScreenComponent,
         FeatureButtonComponent,
         GameButtonComponent,
-        ProfileButtonComponent,
+        ProfileButtonComponent
     ],
-    imports: [CommonModule, MatchHistoryModule, HomepageRoutingModule, FontAwesomeModule, RouterModule],
+    imports: [
+        CommonModule,
+        MatchHistoryModule,
+        HomepageRoutingModule,
+        FontAwesomeModule,
+        RouterModule,
+        PlayerInfoModule
+    ],
 })
 export class HomepageModule {}
