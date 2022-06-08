@@ -36,6 +36,13 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
             //  the one that sent the request isn't listening
             // TODO 2: do something to notify the user that the match couldn't be created?
 
+            // TODO qui è da capire come fare. Mi verrebbe da dire che se
+            //  user è offline oppure online ma inGame allora pacco,
+            //  altrimenti si fa. Il problema è che non c'è una scadenza per la richiesta,
+            //  però vabbè, quella è una feature su cui ragionare. In effetti non c'è neanche
+            //  una lista di richieste pending, dunque il concetto di richiesta scaduta
+            //  richiederebbe una ristrutturazione più profonda. Noi ci accontentiamo.
+
             const player1Emitter = new MatchFoundEmitter(
                 this.ioServer,
                 Types.ObjectId(eventData.player1Id)
