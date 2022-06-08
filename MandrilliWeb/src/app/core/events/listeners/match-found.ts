@@ -9,13 +9,14 @@ export interface MatchFoundEventData {
 
 /**
  * Class that wraps Socket.io functionality to listen
- * to a 'chat-joined' client event.
- * Such event allows the client to join a Socket.io room for some
- * specific chat, so that he can listen only to messages of such chat.
+ * to a 'match-found' server event.
+ * Such event allows the user to be notified when the server has arranged
+ * a new match for him. This can happen either when another user accepts a match
+ * request or when the matchmaking engine finds a suitable pair of players for a game.
  */
 Injectable({
-    providedIn: "root"
-})
+    providedIn: 'root',
+});
 export class MatchFoundListener extends ServerListener<MatchFoundEventData> {
     constructor(client: Socket) {
         super(client, 'match-found');

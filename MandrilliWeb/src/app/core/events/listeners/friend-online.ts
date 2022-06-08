@@ -11,11 +11,11 @@ export interface FriendOnlineEventData {
  * Class that wraps Socket.io functionality to listen
  * to a 'friend-online' server event.
  * Such event allows the client to get notified by the server when
- * one of his friends comes online.
+ * one of the user's friends comes online.
  */
 Injectable({
-    providedIn: "root"
-})
+    providedIn: 'root',
+});
 export class FriendOnlineListener extends ServerListener<FriendOnlineEventData> {
     constructor(client: Socket) {
         super(client, 'friend-online');
