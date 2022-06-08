@@ -20,7 +20,6 @@ import { PlayerStateChangedEmitter } from '../events/socket-io/emitters/player-s
 import { PositioningCompletedEmitter } from '../events/socket-io/emitters/positioning-completed';
 import { ioServer } from '../index';
 import { ShotFiredEmitter } from '../events/socket-io/emitters/shot-fired';
-import { PlayerShipsUpdatedEmitter } from '../events/socket-io/emitters/player-ships-updated';
 import { AuthenticatedRequest } from '../models/auth/authenticated-request';
 
 export const router = Router();
@@ -195,21 +194,6 @@ router.put(
             }
 
             await match.updatePlayerGrid(playerId, req.body);
-
-            // Need to prepare the data so that it can be emitted
-            const shipsToEmit = req.body.ships.map((s) => {
-                return {
-                    type: s.type.valueOf(),
-                    coordinates: s.coordinates,
-                };
-            });
-
-            // Notify of the update players and spectators of the match
-            const notifier = new PlayerShipsUpdatedEmitter(ioServer, matchId);
-            notifier.emit({
-                ships: shipsToEmit,
-                playerId: playerId.toString(),
-            });
 
             return res.status(200).json(req.body);
         } catch (err) {

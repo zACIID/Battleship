@@ -11,7 +11,6 @@
     - [Notification](#notification)
     - [StateChanged](#statechanged)
     - [GenericEventMessage](#genericeventmessage)
-    - [ShipsUpdate](#shipsupdate)
     - [Ship](#ship)
     - [GridCoordinates](#gridcoordinates)
     - [Shot](#shot)
@@ -22,7 +21,6 @@
     - [Notification Received](#notification-received)
     - [Player Positioning State Changed](#player-positioning-state-changed)
     - [Positioning Phase Completed](#positioning-phase-completed)
-    - [Player Ships Updated](#player-ships-updated)
     - [Shot Fired](#shot-fired)
 
 <style>
@@ -78,12 +76,6 @@ table th:nth-of-type(3) {
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
 | message | string | Generic info message sent by an event, containing non-critical data |
-
-### ShipsUpdate
-
-| Attribute | Data Type | Description |
-| :-------- | :-------- | :---------- |
-| ships | [Ship](#ship)[] | Array containing information about the ships on some battleship grid |
 
 ### Ship
 
@@ -143,12 +135,6 @@ table th:nth-of-type(3) {
 | Event name | Description | Event Data |
 | :--------- | :---------- | :--------- |
 | positioning-completed | This event is raised by the server when a player queries the api to change his *ready* state, only if both players have declared that they are *ready*, meaning that they have finished their positioning phase. Both players will then be notified that the positioning phase has been completed and can move on to play the actual game. Also, spectators will be notified, so that they know that the actual game is starting. </br> The main purpose of this event is letting the server synchronize when the two players can actually start the game, rather than having both players carefully listening for state changes of the opponent and try to start the next phase of the game at the same time. | A [GenericEventMessage](#genericeventmessage) resource containing the message *"positioning completed"*. |
-
-### Player Ships Updated
-
-| Event name | Description | Event Data |
-| :--------- | :---------- | :--------- |
-| player-ships-updated | This event is raised by the server when a player updates the positioning of his ships. More specifically, this happens when the *Update Grid* endpoint is called, which should happen after a player is done positioning his ships on the grid. </br> The opposing player is notified of this event, so that he can update his game state accordingly. | With this event, a [ShipsUpdate](#shipsupdate) resource is sent, which contains information about the updated positions of the ships of the opposing player. |
 
 ### Shot Fired
 
