@@ -16,10 +16,10 @@ import { GridCoordinates } from '../model/match/state/grid-coordinates';
 import { BattleshipGrid } from '../model/match/state/battleship-grid';
 import { PlayerStateSubDocument } from '../model/match/state/player-state';
 import { Shot } from '../model/match/state/shot';
-import { PlayerStateChangedEmitter } from '../events/socket-io/emitters/player-state-changed';
-import { PositioningCompletedEmitter } from '../events/socket-io/emitters/positioning-completed';
+import { PlayerStateChangedEmitter } from '../events/emitters/player-state-changed';
+import { PositioningCompletedEmitter } from '../events/emitters/positioning-completed';
 import { ioServer } from '../index';
-import { ShotFiredEmitter } from '../events/socket-io/emitters/shot-fired';
+import { ShotFiredEmitter } from '../events/emitters/shot-fired';
 import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();

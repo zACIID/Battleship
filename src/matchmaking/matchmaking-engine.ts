@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 
 import { MatchmakingQueueModel, QueueEntry } from '../model/matchmaking/queue-entry';
 import * as match from '../model/match/match';
-import { MatchData, MatchFoundEmitter } from './socket-io/emitters/match-found';
+import { MatchData, MatchFoundEmitter } from '../events/emitters/match-found';
 
 /**
  * Class that represents a matchmaking engine, whose purpose is to arrange game

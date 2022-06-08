@@ -2,10 +2,7 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-
-export interface MatchData {
-    matchId: Types.ObjectId;
-}
+import { MatchData } from '../../model/events/match-data';
 
 /**
  * Class that wraps socket.io functionality to generate a "match-found" event

@@ -2,18 +2,7 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-
-interface StateChangedData {
-    /**
-     * Id of the player that changed his state
-     */
-    playerId: string;
-
-    /**
-     * True if the player is now ready, false otherwise
-     */
-    isReady: boolean;
-}
+import { StateChangedData } from '../../model/events/state-changed-data';
 
 /**
  * Class that wraps socket.io functionality to generate an "opponent-state-changed" event.

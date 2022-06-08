@@ -5,9 +5,12 @@ import { RequestTypes } from '../model/user/notification';
 import { getUserById, UserDocument } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
-import { NotificationReceivedEmitter } from '../events/socket-io/emitters/notification-received';
+import { NotificationReceivedEmitter } from '../events/emitters/notification-received';
 import { ioServer } from '../index';
 import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { Notification } from '../model/events/notification';
+import { NotificationDeletedEmitter } from '../events/emitters/notification-deleted';
+import { Emitter } from '../events/emitters/base/emitter';
 
 export const router = Router();
 
@@ -20,11 +23,13 @@ interface NotificationRequest extends AuthenticatedRequest {
     body: PostBody;
 }
 
+// TODO could be an enum
 const errorMessages: string[] = [
     'No user with that identifier',
     'Notification not found',
     'Notification already sent',
 ];
+
 /**
  *    /users/:userId/notifications | GET | Retrieve the notifications of the specified user
  */
@@ -75,7 +80,7 @@ router.post(
             // Notify the user of the new notification
             const notifier = new NotificationReceivedEmitter(ioServer, userId);
 
-            const notificationData = {
+            const notificationData: Notification = {
                 type: reqType.valueOf(),
                 sender: senderObjId.toString(),
             };
@@ -113,10 +118,20 @@ router.delete(
             const senderObjId: Types.ObjectId = retrieveId(senderQParam);
 
             // Check if users exist
+            // TODO it is not clear here that getUserById is used to check if user exists
             const user: UserDocument = await getUserById(userId);
             const sender: UserDocument = await getUserById(senderObjId);
 
             await user.removeNotification(reqType, senderObjId);
+
+            // Notify the user of the new notification
+            const notifier = new NotificationDeletedEmitter(ioServer, userId);
+
+            const notificationData: Notification = {
+                type: reqType.valueOf(),
+                sender: senderObjId.toString(),
+            };
+            notifier.emit(notificationData);
 
             return res.status(204).json();
         } catch (err) {

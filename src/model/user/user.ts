@@ -297,7 +297,7 @@ UserSchema.methods.addRelationship = async function (
     friendId: Types.ObjectId,
     chatId?: Types.ObjectId
 ): Promise<UserDocument> {
-    // TODO si può rimuovere dato che c'è constraint unique su relationship.friendId
+    // TODO friendId could be set to unique to avoid this check
     for (let idx in this.relationships) {
         if (this.relationships[idx].friendId.equals(friendId)) {
             return Promise.reject(new Error('Relationship already existent'));
@@ -472,11 +472,13 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
 
 /**
  * @param userId id of the user to update
- * @param elo elo to add to the stats
- * @param wasLatestMatchVictory true if the latest match was a victory, false otherwise
- * @param shipsDestroyed number of ships destroyed to add to the stats
- * @param shots number of shots to add to the stats
- * @param hits number of hits to add to the stats
+ * @param elo new elo of the user
+ * @param topElo top elo reached by the user
+ * @param wins total number of wins of the user
+ * @param losses total number of losses of the user
+ * @param shipsDestroyed total number of ships destroyed
+ * @param totalShots total number of shots fired by the user
+ * @param totalHits total number of hits on enemy ships by the user
  */
 export async function updateUserStats(
     userId: Types.ObjectId,

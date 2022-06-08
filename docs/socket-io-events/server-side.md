@@ -19,6 +19,7 @@
     - [Friend Online](#friend-online)
     - [Match Found](#match-found)
     - [Notification Received](#notification-received)
+    - [Notification Deleted](#notification-deleted)
     - [Player Positioning State Changed](#player-positioning-state-changed)
     - [Positioning Phase Completed](#positioning-phase-completed)
     - [Shot Fired](#shot-fired)
@@ -123,6 +124,12 @@ table th:nth-of-type(3) {
 | Event name | Description | Event Data |
 | :--------- | :---------- | :--------- |
 | notification-received | Every time a user sends some request to another user, the latter is notified by the server that he has a new notification. More specifically, this happens after the server receives a request on the *Add Notification* endpoint. | With this event, a [Notification](#notification) resource is sent, which contains information about the notification that has just been added to the user. |
+
+### Notification Deleted
+
+| Event name | Description | Event Data |
+| :--------- | :---------- | :--------- |
+| notification-deleted | Every time a notification is deleted by the server, the user is notified so that he can update his state. More specifically, this happens after the server receives a request on the *Remove Notification* endpoint. | With this event, a [Notification](#notification) resource is sent, which contains information about the notification that has just been deleted. |
 
 ### Player Positioning State Changed
 

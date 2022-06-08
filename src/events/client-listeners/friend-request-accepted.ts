@@ -3,15 +3,7 @@ import { Types } from 'mongoose';
 
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { FriendOnlineData, FriendOnlineEmitter } from '../emitters/friend-online';
-
-/**
- * Interface representing the data coming from a
- * "friend-request-accepted" event
- */
-interface AcceptedFriendRequestData {
-    userToNotify: string;
-    friendId: string;
-}
+import { AcceptedFriendRequest } from '../../model/events/accepted-friend-request-data';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -21,7 +13,7 @@ interface AcceptedFriendRequestData {
  * is online and has done so.
  */
 export class FriendRequestAcceptedListener extends ClientListenerNotifier<
-    AcceptedFriendRequestData,
+    AcceptedFriendRequest,
     FriendOnlineData
 > {
     /**
@@ -34,7 +26,7 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
 
     public listen(): Promise<void> {
         const emitterProvider = (
-            eventData: AcceptedFriendRequestData
+            eventData: AcceptedFriendRequest
         ): Promise<FriendOnlineEmitter[]> => {
             const emitters = [
                 new FriendOnlineEmitter(this.ioServer, Types.ObjectId(eventData.userToNotify)),
@@ -43,9 +35,7 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
             return Promise.resolve(emitters);
         };
 
-        const emitDataProvider = (
-            eventData: AcceptedFriendRequestData
-        ): Promise<FriendOnlineData> => {
+        const emitDataProvider = (eventData: AcceptedFriendRequest): Promise<FriendOnlineData> => {
             // TODO add relationship and remove notification done here
 
             return Promise.resolve({

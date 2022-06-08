@@ -2,18 +2,7 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-
-interface Notification {
-    /**
-     * Id of the user that generated the notification
-     */
-    sender: string;
-
-    /**
-     * Type of the notification
-     */
-    type: string;
-}
+import { Notification } from '../../model/events/notification';
 
 /**
  * Class that wraps socket.io functionality to generate a "notification-received" event

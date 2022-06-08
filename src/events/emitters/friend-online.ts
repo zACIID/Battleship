@@ -2,10 +2,7 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-
-export interface FriendOnlineData {
-    friendId: Types.ObjectId;
-}
+import { FriendOnlineData } from '../../model/events/friend-online-data';
 
 /**
  * Class that wraps socket.io functionality to generate a "friend-online" event

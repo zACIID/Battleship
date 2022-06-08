@@ -1,9 +1,7 @@
 import { Socket } from 'socket.io';
-import { ClientListener } from './base/client-listener';
 
-interface MatchJoinData {
-    matchId: string;
-}
+import { ClientListener } from './base/client-listener';
+import { MatchData } from '../../model/events/match-data';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -11,13 +9,13 @@ interface MatchJoinData {
  * Such event allows the client to leave a Socket.io room for some
  * specific match, so that he can stop listening to the events of such match.
  */
-export class MatchLeftListener extends ClientListener<MatchJoinData> {
+export class MatchLeftListener extends ClientListener<MatchData> {
     constructor(client: Socket) {
         super(client, 'match-left');
     }
 
     public listen(): void {
-        super.listen((joinData: MatchJoinData): Promise<void> => {
+        super.listen((joinData: MatchData): Promise<void> => {
             this.client.leave(joinData.matchId);
 
             return Promise.resolve();

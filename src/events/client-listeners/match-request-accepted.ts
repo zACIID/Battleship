@@ -2,17 +2,10 @@ import { Server, Socket } from 'socket.io';
 import { Types } from 'mongoose';
 
 import { ClientListenerNotifier } from './base/client-listener-notifier';
-import { MatchData, MatchFoundEmitter } from '../emitters/match-found';
-import { createMatch, MatchDocument } from '../../../model/match/match';
-
-/**
- * Interface that represents the data received
- * on a "match-request-accepted" event
- */
-interface MatchRequestAcceptedData {
-    player1Id: string;
-    player2Id: string;
-}
+import { MatchFoundEmitter } from '../emitters/match-found';
+import { createMatch, MatchDocument } from '../../model/match/match';
+import { MatchData } from '../../model/events/match-data';
+import { MatchRequestAcceptedData } from '../../model/events/match-request-accepted-data';
 
 /**
  * Class that wraps Socket.io functionality to listen
