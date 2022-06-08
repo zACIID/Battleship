@@ -153,7 +153,7 @@ router.delete(
         const userId: Types.ObjectId = res.locals.userId;
 
         try {
-            await usr.deleteUser(userId);
+            await usr.deleteUser({ _id: userId });
             return res.status(204).json();
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;

@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Document, Model, Schema, SchemaTypes, Types } from 'mongoose';
+import { Document, FilterQuery, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import {
@@ -433,8 +433,8 @@ export async function getLeaderboard(skip: number, limit: number): Promise<UserD
         .catch((err: Error) => Promise.reject(new Error('Sum internal error just occurred')));
 }
 
-export async function deleteUser(_id: Types.ObjectId): Promise<void> {
-    const obj: { deletedCount?: number } = await UserModel.deleteOne({ _id }).catch((err) =>
+export async function deleteUser(filter: FilterQuery<UserDocument>): Promise<void> {
+    const obj: { deletedCount?: number } = await UserModel.deleteOne(filter).catch((err) =>
         Promise.reject(new Error('Sum internal error just occurred'))
     );
     return !obj.deletedCount

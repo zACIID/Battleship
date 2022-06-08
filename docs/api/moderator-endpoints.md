@@ -8,11 +8,9 @@
     - [Error](#error)
   - [Endpoints](#endpoints)
     - [Create new moderator](#create-new-moderator)
-      - [Url Parameters](#url-parameters)
       - [Example Request Body](#example-request-body)
       - [Example Response Body](#example-response-body)
     - [Ban User](#ban-user)
-      - [Url Parameters](#url-parameters-1)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-1)
 
@@ -35,20 +33,14 @@ Access is granted only if the user is a Moderator.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/moderators/additions | POST | Check if the user is a moderator and create a new user using request body data |
-
-#### Url Parameters
-
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| userId | string | Id of the moderator who is creating a new user |
+| /api/moderators/additions | POST | Check if the user is a moderator and create a new moderator using request body data |
 
 #### Example Request Body
 
 ```json
 {
-    "username": "",
-    "password": ""
+    "username": "username",
+    "password": "password"
 }
 ```
 
@@ -61,16 +53,16 @@ Access is granted only if the user is a Moderator.
 
 ```json
 {
-    "userId": "",
-    "username": "",
-    "roles": [], 
+    "userId": "user-id",
+    "username": "username",
+    "roles": ["Base", "Moderator"], 
     "online": false
 }
 ```
 
 ##### Error
 
-- Status Code: 403 (if unauthorized), 500 (general server error)
+- Status Code: 403, 400
 - [Error](#error) resource
 
 ```json
@@ -85,21 +77,15 @@ Access is granted only if the user is a Moderator.
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/moderators/bans | POST | Check if the user is a moderator and delete a user identified by the id found in the request body |
-
-#### Url Parameters
-
-| Name | Data Type | Description |
-| :--- | :-------- | :---------- |
-| userId | string | Id of the moderator who is deleting another user |
+| /api/moderators/bans | POST | Check if the user is a moderator and delete a user identified by the username found in the request body |
 
 #### Example Request Body
 
-[Role](#role) resource representing the role to add
+Resource containing the username of the user to ban
 
 ```json
 {
-    "userId": "user-id-1"
+    "username": "username"
 }
 ```
 

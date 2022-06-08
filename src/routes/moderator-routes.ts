@@ -1,8 +1,7 @@
 import { Router, Response } from 'express';
-import { UserDocument, getUserById, createUser, deleteUser, UserRoles } from '../model/user/user';
+import { UserDocument, createUser, deleteUser, UserRoles } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId } from './utils/param-checking';
-import { Types } from 'mongoose';
 import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
 
 export const router = Router();
@@ -58,7 +57,7 @@ router.post(
 );
 
 interface BanUserBody {
-    userId: Types.ObjectId;
+    username: string;
 }
 
 interface BanUserRequest extends AuthenticatedRequest {
@@ -77,7 +76,7 @@ router.post(
     async (req: BanUserRequest, res: Response) => {
         try {
             if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
-                await deleteUser(req.body.userId);
+                await deleteUser({ username: req.body.username });
 
                 return res.status(204).json();
             } else
