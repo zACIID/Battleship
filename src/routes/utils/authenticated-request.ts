@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-import { JwtData } from './jwt-data';
+import { JwtData } from '../../model/api/auth/jwt-data';
 
 /**
  * Interface that represents authenticated requests made to our api

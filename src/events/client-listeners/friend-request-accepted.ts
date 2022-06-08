@@ -2,8 +2,9 @@ import { Server, Socket } from 'socket.io';
 import { Types } from 'mongoose';
 
 import { ClientListenerNotifier } from './base/client-listener-notifier';
-import { FriendOnlineData, FriendOnlineEmitter } from '../emitters/friend-online';
+import { FriendOnlineEmitter } from '../emitters/friend-online';
 import { AcceptedFriendRequest } from '../../model/events/accepted-friend-request-data';
+import { FriendOnlineData } from '../../model/events/friend-online-data';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -39,7 +40,7 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
             // TODO add relationship and remove notification done here
 
             return Promise.resolve({
-                friendId: Types.ObjectId(eventData.friendId),
+                friendId: eventData.friendId,
             });
         };
 

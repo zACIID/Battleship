@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { UserDocument, createUser, deleteUser, UserRoles } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId } from './utils/param-checking';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 export const router = Router();
 

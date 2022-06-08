@@ -5,7 +5,7 @@ import * as usr from '../model/user/user';
 import { UserStats } from '../model/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;

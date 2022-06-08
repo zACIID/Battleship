@@ -9,7 +9,7 @@ import {
     QueueEntryDocument,
 } from '../model/matchmaking/queue-entry';
 import { getUserById, UserDocument } from '../model/user/user';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 export const router = Router();
 

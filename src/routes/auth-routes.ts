@@ -9,7 +9,7 @@ import { Types } from 'mongoose';
 import { FriendOnlineEmitter } from '../events/emitters/friend-online';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 export const router = Router();
 

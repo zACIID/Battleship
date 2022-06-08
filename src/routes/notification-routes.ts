@@ -7,7 +7,7 @@ import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { NotificationReceivedEmitter } from '../events/emitters/notification-received';
 import { ioServer } from '../index';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 import { Notification } from '../model/events/notification';
 import { NotificationDeletedEmitter } from '../events/emitters/notification-deleted';
 import { Emitter } from '../events/emitters/base/emitter';

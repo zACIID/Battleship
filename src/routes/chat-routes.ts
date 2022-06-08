@@ -12,7 +12,7 @@ import {
 } from './utils/param-checking';
 import { ioServer } from '../index';
 import { ChatMessageEmitter } from '../events/emitters/chat-message';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 export const router = Router();
 

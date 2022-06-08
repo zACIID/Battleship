@@ -5,7 +5,7 @@ import { Relationship } from '../model/user/relationship';
 import { UserDocument, getUserById } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 export const router = Router();
 

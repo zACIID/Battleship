@@ -20,7 +20,7 @@ import { PlayerStateChangedEmitter } from '../events/emitters/player-state-chang
 import { PositioningCompletedEmitter } from '../events/emitters/positioning-completed';
 import { ioServer } from '../index';
 import { ShotFiredEmitter } from '../events/emitters/shot-fired';
-import { AuthenticatedRequest } from '../model/api/auth/authenticated-request';
+import { AuthenticatedRequest } from './utils/authenticated-request';
 
 export const router = Router();
 
