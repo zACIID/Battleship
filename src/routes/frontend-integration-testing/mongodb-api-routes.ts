@@ -7,6 +7,12 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 export const router = Router();
 
+interface MongoDpApiCredentials {
+    apiBaseUrl: string;
+    clusterName: string;
+    apiKey: string;
+}
+
 /**
  * Returns the necessary information to access the MongoDb Data Api
  *
@@ -15,5 +21,19 @@ export const router = Router();
  * perform operations in the database, which is useful for integration testing purposes.
  */
 router.get('/testing/mongoDbApi/credentials', async (req: Request, res: Response) => {
-    // TODO
+    try {
+        const apiCred: MongoDpApiCredentials = {
+            apiBaseUrl: process.env.MONGO_DB_API_URL,
+            clusterName: process.env.MONGO_DB_CLUSTER_NAME,
+            apiKey: process.env.MONGO_DB_API_KEY,
+        };
+
+        return res.status(200).json(apiCred);
+    } catch (err) {
+        return res.status(400).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
+    }
 });
