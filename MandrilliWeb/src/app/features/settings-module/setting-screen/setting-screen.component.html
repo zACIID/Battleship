@@ -26,10 +26,12 @@
 
                 <div class="columns">
                     <div class="column">
-                        <input-field></input-field>
+                        
+                        <input class="input is-medium" type="text" placeholder="Insert new valid username" #newUsername>
+                        
                     </div>
                     <div class="column is-one-quarter">
-                        <button class="button is-medium is-light">Change</button>
+                        <button class="button is-medium is-light" (click)="changeUsername(newUsername.value)">Change</button>
                     </div>
                 </div>
             </div>
@@ -41,14 +43,14 @@
                 
                 <div class="columns">
                     <div class="column">
-                        <div class="mb-3">
-                            <input-field></input-field>
-                        </div>
-                        <input-field></input-field>
+
+                        <input class="input is-medium" type="text" placeholder="Insert new password" #newPwd>
+
                     </div>
                     <div class="column is-one-quarter">
-                        <div class="height-50"></div>
-                        <button class="button is-medium is-light">Change</button>
+                        
+                        <button class="button is-medium is-light" (click)="changePwd(newPwd.value)">Change</button>
+                        
                     </div>
                 </div>
             </div>
@@ -58,11 +60,11 @@
             <div class="columns width-40 margin-auto">
                 <div class="column">
                     
-                    <button class="button is-medium is-warning button-width">Logout</button>
+                    <button class="button is-medium is-warning button-width" (click)="logout()" >Logout</button>
                 </div>
                 <div class="column">
 
-                    <button class="button is-medium is-danger button-width">Delete Profile</button>
+                    <button class="button is-medium is-danger button-width" (click)="deleteProfile()" >Delete Profile</button>
                     
                 </div>
             </div>

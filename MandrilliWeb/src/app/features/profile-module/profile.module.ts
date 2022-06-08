@@ -1,5 +1,4 @@
 import { ProfileRoutingModule } from './profile-routing.module';
-import { InputFieldModule } from './../../shared/input-field-module/input-field.module';
 import { StatsModule } from './../../shared/stats-module/stats.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';

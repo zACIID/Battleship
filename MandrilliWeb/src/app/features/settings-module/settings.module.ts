@@ -1,5 +1,4 @@
 import { SettingsRoutingModule } from './relationship-routing.module';
-import { InputFieldModule } from './../../shared/input-field-module/input-field.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
 import { NgModule } from '@angular/core';
@@ -14,7 +13,6 @@ import { SettingScreenComponent } from './setting-screen/setting-screen.componen
         CommonModule,
         BackButtonModule,
         MatchHistoryModule,
-        InputFieldModule,
         SettingsRoutingModule,
     ],
 })
