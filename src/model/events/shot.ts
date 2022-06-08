@@ -1,6 +1,6 @@
 import { GridCoordinates } from '../match/state/grid-coordinates';
 
-interface Shot {
+export interface Shot {
     coordinates: GridCoordinates;
     playerId: string;
 }

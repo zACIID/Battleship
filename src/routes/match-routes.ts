@@ -33,46 +33,6 @@ interface MatchEndpointResponse extends Response {
     locals: MatchEndpointLocals;
 }
 
-interface CreateMatchBody {
-    player1: Types.ObjectId;
-    player2: Types.ObjectId;
-}
-
-interface CreateMatchRequest extends AuthenticatedRequest {
-    body: CreateMatchBody;
-}
-
-/**
- *  /matches | POST | Create a new match
- *  Returns the response with the newly created match object
- *  If some error occurred, response will contain an error 404
- */
-router.post(
-    '/matches',
-    authenticateToken,
-    async (req: CreateMatchRequest, res: MatchEndpointResponse) => {
-        try {
-            const match: MatchDocument = await createMatch(req.body.player1, req.body.player2);
-            const toSend = {
-                matchId: match._id,
-                player1: match.player1,
-                player2: match.player2,
-                playersChat: match.playersChat,
-                observersChat: match.observersChat,
-                stats: match.stats,
-            };
-
-            return res.status(201).json(toSend);
-        } catch (err) {
-            return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
-                requestPath: req.path,
-            });
-        }
-    }
-);
-
 /**
  *  /matches/:matchId | GET | Retrieve the match with the specified id
  *  Returns the response with the corresponding match object (if present on the db)

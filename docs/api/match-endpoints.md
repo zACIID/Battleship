@@ -6,7 +6,6 @@
   - [Table of Contents](#table-of-contents)
   - [Resources](#resources)
     - [Error](#error)
-    - [MatchInfo](#matchinfo)
     - [Match](#match)
     - [PlayerState](#playerstate)
     - [BattleshipGrid](#battleshipgrid)
@@ -14,28 +13,25 @@
     - [GridCoordinates](#gridcoordinates)
     - [MatchStats](#matchstats)
   - [Endpoints](#endpoints)
-    - [Create Match](#create-match)
-      - [Example Request Body](#example-request-body)
-      - [Example Response Body](#example-response-body)
     - [Retrieve Match](#retrieve-match)
       - [Url Parameters](#url-parameters)
-      - [Example Response Body](#example-response-body-1)
+      - [Example Response Body](#example-response-body)
     - [Update Match Stats](#update-match-stats)
       - [Url Parameters](#url-parameters-1)
-      - [Example Request Body](#example-request-body-1)
-      - [Example Response Body](#example-response-body-2)
+      - [Example Request Body](#example-request-body)
+      - [Example Response Body](#example-response-body-1)
     - [Update Player Grid](#update-player-grid)
       - [Url Parameters](#url-parameters-2)
-      - [Example Request Body](#example-request-body-2)
-      - [Example Response Body](#example-response-body-3)
+      - [Example Request Body](#example-request-body-1)
+      - [Example Response Body](#example-response-body-2)
     - [Fire Shot](#fire-shot)
       - [Url Parameters](#url-parameters-3)
-      - [Example Request Body](#example-request-body-3)
-      - [Example Response Body](#example-response-body-4)
+      - [Example Request Body](#example-request-body-2)
+      - [Example Response Body](#example-response-body-3)
     - [Set Ready State](#set-ready-state)
       - [Url Parameters](#url-parameters-4)
-      - [Example Request Body](#example-request-body-4)
-      - [Example Response Body](#example-response-body-5)
+      - [Example Request Body](#example-request-body-3)
+      - [Example Response Body](#example-response-body-4)
 
 ## Resources
 
@@ -46,13 +42,6 @@
 | timestamp | number | Time (in Unix seconds) that the error occurred at |
 | requestPath | string | Path of the request that lead to this error |
 | errorMsg | string | Error message |
-
-### MatchInfo
-
-| Attribute | Data Type | Description |
-| :-------- | :-------- | :---------- |
-| player1 | string | s |
-| player2 | string | Id of player #2 of the match |
 
 ### Match
 
@@ -104,73 +93,6 @@
 | shipsDestroyed | number | Number of ships destroyed during the match |
 
 ## Endpoints
-
-### Create Match
-
-| Endpoint | Method | Description |
-| :------- | :----- | :---------- |
-| /api/matches | POST | Create a new match |
-
-#### Example Request Body
-
-[MatchInfo](#matchinfo) containing the information about the match to create
-
-```json
-{
-    "player1": "player1-id",
-    "player2": "player2-id"
-}
-```
-
-#### Example Response Body
-
-##### Success
-
-- Status Code: 201
-- [Match](#match) resource representing the match that has just been created.
-**Note:** that *winner* and *endTime* are `null` because they are not decided yet.
-
-```json
-{
-    "matchId": "match-id",
-    "player1": {
-        "playerId": "player-1-id",
-        "grid": {
-            "ships": [],
-            "shots": []
-        }
-    },
-    "player2": {
-        "playerId": "player-2-id",
-        "grid": {
-            "ships": [],
-            "shots": []
-        }
-    },
-    "playersChat": "players-chat-id",
-    "observersChat": "observers-chat-id",
-    "stats": {
-        "winner": null,
-        "startTime": 1651881600,
-        "endTime": null,
-        "shipsDestroyed": 0,
-        "totalShots": 0
-    }
-}
-```
-
-##### Error
-
-- Status Code: 500
-- [Error](#error) resource
-
-```json
-{
-    "timestamp": 1651881600,
-    "errorMessage": "some error message",
-    "requestPath": "error/request/path"
-}
-```
 
 ### Retrieve Match
 
