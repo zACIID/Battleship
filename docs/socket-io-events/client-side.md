@@ -71,7 +71,7 @@ table th:nth-of-type(3) {
 
 | Event name | Description | Event Data |
 | :--------- | :---------- | :--------- |
-| server-joined | When a user logs in, he should raise this event to register itself to the socket.io server. This is necessary to allow the socket.io server to create a room for each user, so that data can be sent to any specific user online in the system. | With this event, a [ServerJoinData](#serverjoindata) resource is sent, which contains the id of the user that has just joined the server. |
+| server-joined | When a user logs in, he should raise this event to register itself to the socket.io server. This is necessary to allow the socket.io server to create a room for each user, so that data can be sent to any specific user online in the system. Also, this event allows the server to handle the online status of any specific user, setting it to online after joining the system and to offline after disconnecting. | With this event, a [ServerJoinData](#serverjoindata) resource is sent, which contains the id of the user that has just joined the server. |
 
 ### Join Chat
 
