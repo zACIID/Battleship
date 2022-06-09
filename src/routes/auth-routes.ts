@@ -10,10 +10,10 @@ import {
     User,
     UserDocument,
     UserModel,
-    UserStatuses,
+    UserStatus,
 } from '../model/user/user';
 import { AnyKeys, Types } from 'mongoose';
-import { FriendStatusChangedEmitter } from '../events/emitters/friend-online';
+import { FriendStatusChangedEmitter } from '../events/emitters/friend-status-changed';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';
 import { AuthenticatedRequest } from './utils/authenticated-request';
@@ -142,7 +142,7 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
         // A user that registers through this endpoint becomes online right away
         const userData: AnyKeys<UserDocument> = {
             username: req.body.username,
-            status: UserStatuses.Online,
+            status: UserStatus.Online,
         };
         const newUser: UserDocument = await createUser(userData);
 

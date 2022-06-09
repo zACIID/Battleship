@@ -17,6 +17,6 @@ Injectable({
 });
 export class MatchTerminatedListener extends ServerListener<MatchTerminatedData> {
     constructor(client: Socket) {
-        super(client, 'friend-status-changed');
+        super(client, 'match-terminated');
     }
 }

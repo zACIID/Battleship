@@ -3,8 +3,7 @@
  */
 export enum MatchTerminatedReason {
     PlayerLeftTheGame = 'A player has left the game',
-    Player1Won = 'Player 1 has won the game',
-    Player2Won = 'Player 2 has won the game',
+    PlayerWon = 'Player has won the game',
 }
 
 /**

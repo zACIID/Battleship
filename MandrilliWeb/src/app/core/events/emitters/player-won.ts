@@ -15,6 +15,6 @@ Injectable({
 });
 export class PlayerWonEmitter extends Emitter<PlayerWonData> {
     public constructor(client: Socket) {
-        super(client, `match-request-accepted`);
+        super(client, `player-won`);
     }
 }

@@ -19,6 +19,7 @@ import { MatchRequestAcceptedListener } from './events/client-listeners/match-re
 import { FriendRequestAcceptedListener } from './events/client-listeners/friend-request-accepted';
 import { ChatLeftListener } from './events/client-listeners/chat-left';
 import { MatchLeftListener } from './events/client-listeners/match-left';
+import { PlayerWonListener } from './events/client-listeners/player-won';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -55,9 +56,6 @@ httpServer.addListener('request', (req: Request) => {
     // inspect replaces circular references in the json with [Circular]
     console.log(chalk.yellow(inspect(req.body)));
 });
-
-/* Creation of JWT middleware TODO remove? */
-//var auth = jwt( {secret: process.env.JWT_SECRET} );
 
 /* Allows server to respond to a particular request that asks which request options it accepts */
 app.use(cors());
@@ -101,7 +99,7 @@ ioServer.on('connection', async function (client) {
 
     // A client joins its private room, so that the server has a way//
     // to send request specifically to him
-    const serverJoined: ServerJoinedListener = new ServerJoinedListener(client);
+    const serverJoined: ServerJoinedListener = new ServerJoinedListener(client, ioServer);
     serverJoined.listen();
 
     // A client joins/leaves a specific chat room
@@ -125,14 +123,18 @@ ioServer.on('connection', async function (client) {
         client,
         ioServer
     );
-    await matchReqAccepted.listen();
+    matchReqAccepted.listen();
 
     // A client accepts a friend request
     const friendReqAccepted: FriendRequestAcceptedListener = new FriendRequestAcceptedListener(
         client,
         ioServer
     );
-    await friendReqAccepted.listen();
+    friendReqAccepted.listen();
+
+    // A client wins a match
+    const playerWon: PlayerWonListener = new PlayerWonListener(client, ioServer);
+    playerWon.listen();
 });
 
 /* Register express routes */

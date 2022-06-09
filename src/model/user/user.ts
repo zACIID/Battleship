@@ -23,7 +23,7 @@ export enum UserRoles {
     Admin = 'Admin',
 }
 
-export enum UserStatuses {
+export enum UserStatus {
     Offline = 'Offline',
     Online = 'Online',
     PrepPhase = 'PrepPhase',
@@ -39,7 +39,7 @@ export interface User {
     roles: string[];
     pwd_hash: string;
     salt: string;
-    status: UserStatuses;
+    status: UserStatus;
     stats: UserStats;
     relationships: Relationship[];
     notifications: RequestNotification[];
