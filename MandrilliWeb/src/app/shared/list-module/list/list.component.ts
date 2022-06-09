@@ -14,6 +14,13 @@ export class ListComponent implements OnInit {
     @Input() friendsList?: RelationshipOverview[];
     @Input() notificationList?: NotificationOverview[];
 
+    /* TODO 
+     * Ognuno degli amici nella lista dovrebbe avere un bottone "osserva la partita"
+     * con il matchId della partita che si vuole spectare.
+     * Come ottengo il matchId della partita di un altro soggetto ? 
+    */
+
+
     /** Particular props for accepting or refusing an incoming notification */
     @Input() accept?: Function;
     @Input() refuse?: Function;
