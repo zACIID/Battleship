@@ -2,6 +2,10 @@ import { Match } from './../../../core/model/match/match';
 import { MatchApi } from './../../../core/api/handlers/match-api';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
+import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
+import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
+import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 
 @Component({
     selector: 'match-result-screen',
@@ -13,25 +17,58 @@ export class MatchResultScreenComponent implements OnInit {
     public match?: Match;
     public result: string = '';
 
-    constructor(private route: ActivatedRoute, private matchClient: MatchApi) {}
+    constructor(
+        private route: ActivatedRoute, 
+        private matchClient: MatchApi, 
+        private userIdProvider: UserIdProvider,
+        private joinMatchEmitter: MatchJoinedEmitter,
+        private fleeMatchEmitter: MatchLeftEmitter,
+        private fleeWinnerEmitter: PlayerWonEmitter
+    ) {}
 
     ngOnInit(): void {
         try {
-            let userId = localStorage.getItem('id') || '';
+            let userId = this.userIdProvider.getUserId();
 
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
             });
 
             this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
+                this.joinMatch()
                 this.match = data;
             });
 
             if (userId === this.match?.stats.winner) {
                 this.result = 'VICTORY';
-            } else this.result = 'DEFEAT';
+                this.saucingObservers()
+            }
+            else this.result = 'DEFEAT';
+            this.leaveMatch()
         } catch (err) {
             console.log('An error occurred while retrieving match info');
+        }
+    }
+
+    private leaveMatch() {
+        if (this.match?.matchId)
+            this.fleeMatchEmitter.emit({matchId: this.match.matchId})
+        else throw new Error("MatchId not found")
+    }
+
+    private joinMatch() {
+        if (this.match?.matchId)
+            this.joinMatchEmitter.emit({matchId: this.match.matchId})
+        else throw new Error("MatchId not found")
+    }
+
+    private saucingObservers(){
+        try {
+            this.fleeWinnerEmitter.emit({
+                winnerId: this.userIdProvider.getUserId()
+            })
+        } catch(err){
+            console.log("WinnerId is nowhere to be found")
         }
     }
 }

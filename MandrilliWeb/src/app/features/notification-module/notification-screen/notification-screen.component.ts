@@ -5,6 +5,7 @@ import { FriendRequestAcceptedEmitter } from './../../../core/events/emitters/fr
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { Component, OnInit } from '@angular/core';
 import { NotificationType } from '../../../core/model/user/notification';
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 
 @Component({
     selector: 'app-notification-screen',
@@ -21,13 +22,13 @@ export class NotificationScreenComponent implements OnInit {
         private matchRequestAcceptedEmitter: MatchRequestAcceptedEmitter,
         private notificationApi: NotificationApi,
         private userApi: UserApi,
-        private friendAcceptClient: FriendRequestAcceptedEmitter
+        private friendAcceptClient: FriendRequestAcceptedEmitter,
+        private userIdProvider: UserIdProvider,
     ) {}
 
     ngOnInit(): void {
-        this.userId = localStorage.getItem('id') || '';
-
         try {
+            this.userId = this.userIdProvider.getUserId();
             this.notificationApi.getNotifications(this.userId).subscribe((data) => {
                 for (let not of data) {
                     if (not.type === NotificationType.FriendRequest) {
