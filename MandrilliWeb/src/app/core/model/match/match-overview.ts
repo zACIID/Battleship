@@ -1,5 +1,3 @@
-
-
 export interface MatchOverview {
     /**
      * Id of the match
@@ -16,7 +14,6 @@ export interface MatchOverview {
      */
     player2Id: string;
 
-
     /**
      * username of player #1 of the match
      */
@@ -27,7 +24,6 @@ export interface MatchOverview {
      */
     username2: string;
 
-    
     /**
      * Id of the winner
      */

@@ -27,7 +27,7 @@ export const toMessage = (apiMessage: ApiMessage): Message => {
         timestamp: fromUnixSeconds(apiMessage.timestamp),
         content: apiMessage.content,
     };
-}
+};
 
 export const toApiMessage = (message: Message): ApiMessage => {
     return {
@@ -35,4 +35,4 @@ export const toApiMessage = (message: Message): ApiMessage => {
         timestamp: toUnixSeconds(message.timestamp),
         content: message.content,
     };
-}
+};

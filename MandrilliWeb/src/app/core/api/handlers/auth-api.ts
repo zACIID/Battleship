@@ -38,16 +38,12 @@ export class AuthApi extends BaseApi {
     public login(credentials: LoginInfo): Observable<Jwt> {
         const reqPath: string = `${this.baseUrl}/api/auth/signin`;
 
-        return this.httpClient.post<Jwt>(reqPath, credentials).pipe(
-            catchError(this.handleError)
-        );
+        return this.httpClient.post<Jwt>(reqPath, credentials).pipe(catchError(this.handleError));
     }
 
     public register(credentials: LoginInfo): Observable<User> {
         const reqPath: string = `${this.baseUrl}/api/auth/signup`;
 
-        return this.httpClient.post<User>(reqPath, credentials).pipe(
-            catchError(this.handleError)
-        );
+        return this.httpClient.post<User>(reqPath, credentials).pipe(catchError(this.handleError));
     }
 }

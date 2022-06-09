@@ -6,7 +6,6 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./back-button.component.css'],
 })
 export class BackButtonComponent implements OnInit {
-    
     constructor() {}
 
     ngOnInit(): void {}

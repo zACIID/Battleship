@@ -6,14 +6,7 @@ import { CommonModule } from '@angular/common';
 import { SettingScreenComponent } from './setting-screen/setting-screen.component';
 
 @NgModule({
-    declarations: [
-        SettingScreenComponent
-    ],
-    imports: [
-        CommonModule,
-        BackButtonModule,
-        MatchHistoryModule,
-        SettingsRoutingModule,
-    ],
+    declarations: [SettingScreenComponent],
+    imports: [CommonModule, BackButtonModule, MatchHistoryModule, SettingsRoutingModule],
 })
 export class SettingsModule {}

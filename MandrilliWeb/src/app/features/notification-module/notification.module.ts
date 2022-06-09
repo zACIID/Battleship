@@ -16,6 +16,6 @@ import { NotificationScreenComponent } from './notification-screen/notification-
         ListModule,
         NotificationRoutingModule,
     ],
-    providers: [FriendRequestAcceptedEmitter]
+    providers: [FriendRequestAcceptedEmitter],
 })
 export class NotificationModule {}

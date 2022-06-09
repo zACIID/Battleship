@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
         HomepageScreenComponent,
         FeatureButtonComponent,
         GameButtonComponent,
-        ProfileButtonComponent
+        ProfileButtonComponent,
     ],
     imports: [
         CommonModule,
@@ -23,7 +23,7 @@ import { RouterModule } from '@angular/router';
         HomepageRoutingModule,
         FontAwesomeModule,
         RouterModule,
-        PlayerInfoModule
+        PlayerInfoModule,
     ],
 })
 export class HomepageModule {}

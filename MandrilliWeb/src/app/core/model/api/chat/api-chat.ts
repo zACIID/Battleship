@@ -28,6 +28,6 @@ export const toChat = (apiChat: ApiChat): Chat => {
         users: apiChat.users,
         messages: apiChat.messages.map((apiMessage: ApiMessage) => {
             return toMessage(apiMessage);
-        })
-    }
-}
+        }),
+    };
+};

@@ -9,45 +9,31 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./moderator-section.component.css'],
 })
 export class ModeratorSectionComponent implements OnInit {
+    public userInSessionId: string = '';
 
-    public userInSessionId: string = "";
-
-    constructor(
-        private moderatorClient: ModeratorApi,
-        private userClient: UserApi
-    ) {}
+    constructor(private moderatorClient: ModeratorApi, private userClient: UserApi) {}
 
     ngOnInit(): void {
-        this.userInSessionId = localStorage.getItem('id') || "";
+        this.userInSessionId = localStorage.getItem('id') || '';
     }
 
-
-    public ban(username: string): void{
-        
-        try{
-
+    public ban(username: string): void {
+        try {
             // TODO modify banUser in order to accept the username of the banned user
             this.moderatorClient.banUser(this.userInSessionId, username);
-            
+        } catch (err) {
+            console.log('An error occurred while banning a user: ' + err);
         }
-        catch(err){
-            console.log("An error occurred while banning a user: " + err);
-        }
-
     }
 
-    public newModerator(usrnm: string, pwd: string):void {
-
-        try{
-            let loginInfo: LoginInfo = {username: usrnm, password: pwd};
+    public newModerator(usrnm: string, pwd: string): void {
+        try {
+            let loginInfo: LoginInfo = { username: usrnm, password: pwd };
             this.moderatorClient.addModerator(this.userInSessionId, loginInfo).subscribe((data) => {
-                console.log("Correctly added: " + data.username);
-            })
+                console.log('Correctly added: ' + data.username);
+            });
+        } catch (err) {
+            console.log('An error occurred while creating a new moderator: ' + err);
         }
-        catch(err){
-            console.log("An error occurred while creating a new moderator: " + err);
-        }
-
     }
-
 }

@@ -9,9 +9,7 @@ import { CommonModule } from '@angular/common';
 import { PreparationPhaseScreenComponent } from './preparation-phase-screen/preparation-phase-screen.component';
 
 @NgModule({
-    declarations: [
-        PreparationPhaseScreenComponent,
-    ],
+    declarations: [PreparationPhaseScreenComponent],
     imports: [
         CommonModule,
         BackButtonModule,

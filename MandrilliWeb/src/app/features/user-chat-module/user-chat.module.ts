@@ -6,18 +6,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatScreenComponent } from './chat-screen/chat-screen.component';
 
-
-
 @NgModule({
-  declarations: [
-    ChatScreenComponent
-  ],
-  imports: [
-    CommonModule,
-    ChatRoutingModule,
-    ChatModule,
-    PlayerInfoModule,
-    MatchHistoryModule
-  ]
+    declarations: [ChatScreenComponent],
+    imports: [CommonModule, ChatRoutingModule, ChatModule, PlayerInfoModule, MatchHistoryModule],
 })
-export class UserChatModule { }
+export class UserChatModule {}

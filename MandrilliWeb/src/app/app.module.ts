@@ -9,8 +9,7 @@ import { environment } from '../environments/environment';
 
 const sIoConfig: SocketIoConfig = {
     url: environment.apiBaseUrl, // TODO capire se questo url va bene
-    options: {
-    }
+    options: {},
 };
 
 @NgModule({
@@ -23,7 +22,7 @@ const sIoConfig: SocketIoConfig = {
         // This is needed to inject the Socket instance
         SocketIoModule.forRoot(sIoConfig),
         BrowserModule,
-        AppRoutingModule
+        AppRoutingModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

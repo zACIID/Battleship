@@ -37,7 +37,10 @@ export class MatchApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    public updateStats(matchId: string, statsUpdate: MatchStatsUpdate): Observable<MatchStatsUpdate> {
+    public updateStats(
+        matchId: string,
+        statsUpdate: MatchStatsUpdate
+    ): Observable<MatchStatsUpdate> {
         const reqPath: string = `${this.baseUrl}/api/matches/${matchId}`;
 
         return this.httpClient

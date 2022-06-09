@@ -9,41 +9,29 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./match-result-screen.component.css'],
 })
 export class MatchResultScreenComponent implements OnInit {
-
-    public matchShowedId: string = "";
+    public matchShowedId: string = '';
     public match?: Match;
-    public result: string = "";
+    public result: string = '';
 
-
-    constructor(
-        private route: ActivatedRoute,
-        private matchClient: MatchApi
-    ) {}
+    constructor(private route: ActivatedRoute, private matchClient: MatchApi) {}
 
     ngOnInit(): void {
+        try {
+            let userId = localStorage.getItem('id') || '';
 
-
-        try{
-
-            let userId = localStorage.getItem('id') || "";
-
-            this.route.params.subscribe((params => {
+            this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
-            }));
+            });
 
             this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
                 this.match = data;
             });
 
-            if(userId === this.match?.stats.winner){
-                this.result = "VICTORY";
-            }
-            else this.result = "DEFEAT";
-
+            if (userId === this.match?.stats.winner) {
+                this.result = 'VICTORY';
+            } else this.result = 'DEFEAT';
+        } catch (err) {
+            console.log('An error occurred while retrieving match info');
         }
-        catch(err){
-            console.log("An error occurred while retrieving match info")
-        }
-
     }
 }

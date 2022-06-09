@@ -18,8 +18,6 @@ export class LoginScreenComponent implements OnInit {
     ngOnInit(): void {}
 
     login(username: string, password: string) {
-
-
         try {
             const loginInfo: LoginInfo = {
                 username: username,
@@ -30,7 +28,7 @@ export class LoginScreenComponent implements OnInit {
                 this.accessTokenStorage.store(data.token);
                 // TODO, trovare un modo per salvare lo userId
                 // localStorage.setItem('id', data.userId);
-                this.router.navigate(["/homepage"]);
+                this.router.navigate(['/homepage']);
             });
         } catch (err) {
             console.log('An error occurred while logging in: ' + err);

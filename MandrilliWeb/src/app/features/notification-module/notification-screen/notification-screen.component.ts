@@ -72,13 +72,11 @@ export class NotificationScreenComponent implements OnInit {
         }
     }
 
-    public acceptBattle(friendId: string){
-
+    public acceptBattle(friendId: string) {
         this.matchRequestAcceptedEmitter.emit({
             player1Id: this.userId,
             player2Id: friendId,
-        })
-
+        });
     }
 
     public refuseBattle(friendId: string) {

@@ -5,22 +5,15 @@ export enum EloRankings {
     Lieutenant = 'Lieutenant',
     Captain = 'Captain',
     Colonel = 'Colonel',
-    GeneralOfTheArmy = 'General_of_the_army'
+    GeneralOfTheArmy = 'General_of_the_army',
 }
 
 export const getRank = (elo: number): EloRankings => {
-    if (elo < 90)
-        return EloRankings.Private
-    else if (elo < 150)
-        return EloRankings.Sergeant
-    else if (elo < 300)
-        return EloRankings.Chief
-    else if (elo < 400)
-        return EloRankings.Lieutenant
-    else if (elo < 500)
-        return EloRankings.Captain
-    else if (elo < 600)
-        return EloRankings.Colonel
-    else
-        return EloRankings.GeneralOfTheArmy
-}
+    if (elo < 90) return EloRankings.Private;
+    else if (elo < 150) return EloRankings.Sergeant;
+    else if (elo < 300) return EloRankings.Chief;
+    else if (elo < 400) return EloRankings.Lieutenant;
+    else if (elo < 500) return EloRankings.Captain;
+    else if (elo < 600) return EloRankings.Colonel;
+    else return EloRankings.GeneralOfTheArmy;
+};

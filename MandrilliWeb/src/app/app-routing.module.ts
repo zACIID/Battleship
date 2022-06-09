@@ -25,7 +25,8 @@ const routes: Routes = [
         path: 'leaderboard',
         loadChildren: () =>
             import('./features/leaderboard-module/leaderboard.module').then(
-                (m) => m.LeaderboardModule),
+                (m) => m.LeaderboardModule
+            ),
     },
     {
         path: 'match-results/:id',

@@ -8,4 +8,4 @@ export const toUnixSeconds = (d: Date): number => {
 
 export const fromUnixSeconds = (unixSeconds: number): Date => {
     return new Date(unixSeconds * 1000);
-}
+};

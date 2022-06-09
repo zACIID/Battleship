@@ -6,11 +6,8 @@ import { Component, OnInit, Input } from '@angular/core';
     styleUrls: ['./stat-block.component.css'],
 })
 export class StatBlockComponent implements OnInit {
-
-
-    @Input() title: string = "";
+    @Input() title: string = '';
     @Input() value: number = 0;
-
 
     constructor() {}
 

@@ -17,7 +17,6 @@ export interface Match {
      */
     player2: PlayerState;
 
-
     /**
      * Id of the player's chat
      */

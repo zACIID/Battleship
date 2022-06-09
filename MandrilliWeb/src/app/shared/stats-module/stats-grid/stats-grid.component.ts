@@ -8,23 +8,20 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./stats-grid.component.css'],
 })
 export class StatsGridComponent implements OnInit {
-
-
     @Input() stats: UserStats = new UserStats();
     @Input() matchStats: MatchStats = new MatchStats();
     @Input() profile: boolean = false;
     public duration: number = 0;
 
-    constructor() {
-    }
+    constructor() {}
 
     ngOnInit(): void {
+        if (this.matchStats) {
+            const diffTime = Math.abs(
+                this.matchStats.startTime.valueOf() - this.matchStats.endTime.valueOf()
+            );
 
-        if(this.matchStats){
-            const diffTime = Math.abs(this.matchStats.startTime.valueOf() - this.matchStats.endTime.valueOf());
-            
-            this.duration = diffTime
+            this.duration = diffTime;
         }
-
     }
 }

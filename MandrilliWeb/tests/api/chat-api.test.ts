@@ -10,35 +10,35 @@ import { Jwt } from '../../src/app/core/api/handlers/auth-api';
 const injectHttpClient = (): HttpClient => {
     TestBed.configureTestingModule({
         imports: [HttpClientModule],
-        providers: []
+        providers: [],
     });
 
     return TestBed.inject(HttpClient);
-}
+};
 
 let accessToken: string;
 const jwtStorageStub: JwtStorage = {
     store(token: string) {
         accessToken = token;
 
-        console.log("[JwtStorageStub] Token set!");
-    }
-}
+        console.log('[JwtStorageStub] Token set!');
+    },
+};
 
 const jwtProviderStub: JwtProvider = {
     getToken(): string {
-        console.log("[JwtProviderStub] Token retrieved!");
+        console.log('[JwtProviderStub] Token retrieved!');
 
         return accessToken;
-    }
-}
+    },
+};
 
-describe("Get Chat", () => {
+describe('Get Chat', () => {
     let httpClient: HttpClient;
     let loginInfo: LoginInfo = {
-        username: "test",
-        password: "test"
-    }
+        username: 'test',
+        password: 'test',
+    };
 
     beforeEach((done) => {
         httpClient = injectHttpClient();
@@ -57,9 +57,8 @@ describe("Get Chat", () => {
         done();
     });
 
-    test("Get Chat Should Return Non-Empty Response With Correct Fields", (done) => {
+    test('Get Chat Should Return Non-Empty Response With Correct Fields', (done) => {
         const authApi: AuthApi = new AuthApi(httpClient);
-
 
         // Correct request
 
@@ -70,51 +69,50 @@ describe("Get Chat", () => {
             jwtStorageStub.store(jwt.token);
 
             done();
-        })
-       }
-    );
+        });
+    });
 
-    it("Get Chat Should Throw", () => {
+    it('Get Chat Should Throw', () => {
         // wrong request
     });
 });
 
-it("Delete Chat Should Not Throw", () => {
+it('Delete Chat Should Not Throw', () => {
     // correct request
 });
 
-it("Delete Chat Should Throw", () => {
+it('Delete Chat Should Throw', () => {
     // wrong request
 });
 
-it("Get Messages Should Return Non-Empty Response With Correct Fields", () => {
+it('Get Messages Should Return Non-Empty Response With Correct Fields', () => {
     // correct request
 });
 
-it("Get Messages Should Throw", () => {
+it('Get Messages Should Throw', () => {
     // wrong request
 });
 
-it("Add Message Should Return Non-Empty Response With Correct Fields", () => {
+it('Add Message Should Return Non-Empty Response With Correct Fields', () => {
     // correct request
 });
 
-it("Add Message Should Throw", () => {
+it('Add Message Should Throw', () => {
     // wrong request
 });
 
-it("Add User Should Return Non-Empty Response With Correct Fields", () => {
+it('Add User Should Return Non-Empty Response With Correct Fields', () => {
     // correct request
 });
 
-it("Add User Should Throw", () => {
+it('Add User Should Throw', () => {
     // wrong request
 });
 
-it("Remove User Should Not Throw", () => {
+it('Remove User Should Not Throw', () => {
     // correct request
 });
 
-it("Remove User Should Throw", () => {
+it('Remove User Should Throw', () => {
     // wrong request
 });

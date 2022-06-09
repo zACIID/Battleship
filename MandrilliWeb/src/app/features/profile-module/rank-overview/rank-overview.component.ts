@@ -9,12 +9,10 @@ import { getRank } from 'src/app/core/model/user/elo-rankings';
     styleUrls: ['./rank-overview.component.css'],
 })
 export class RankOverviewComponent implements OnInit {
-
-    @Input() user: User = new User()
-    public rank: string = "";
-    public rankImageSrc: string = ""
+    @Input() user: User = new User();
+    public rank: string = '';
+    public rankImageSrc: string = '';
     @Input() stats: UserStats = new UserStats();
-
 
     constructor() {}
 
@@ -22,12 +20,8 @@ export class RankOverviewComponent implements OnInit {
         this.applyRank();
     }
 
-
-
-    private applyRank(){
+    private applyRank() {
         this.rank = getRank(this.stats.elo);
-        this.rankImageSrc = "assets/images/" + this.rank + ".png"
+        this.rankImageSrc = 'assets/images/' + this.rank + '.png';
     }
-    
-
 }

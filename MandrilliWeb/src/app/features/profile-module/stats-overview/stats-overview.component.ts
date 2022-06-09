@@ -10,32 +10,30 @@ import { Component, OnInit, Input } from '@angular/core';
     styleUrls: ['./stats-overview.component.css'],
 })
 export class StatsOverviewComponent implements OnInit {
-
     @Input() user: User = new User();
-    
+
     @Input() stats: UserStats = new UserStats();
 
     @Input() myProfile: boolean = false;
 
-    constructor(
-        private notificationClient: NotificationApi
-    ) { }
+    constructor(private notificationClient: NotificationApi) {}
 
-    ngOnInit(): void { }
+    ngOnInit(): void {}
 
+    public addFriend() {
+        let userInSessionId = localStorage.getItem('id') || '';
 
-    public addFriend(){
-        let userInSessionId = localStorage.getItem("id") || "";
-
-        try{
-            this.notificationClient.addNotification(this.user.userId, {type: "FriendRequest", sender: userInSessionId}).subscribe((data) =>{
-                console.log("Correctly added notification: " + data);
-            });
-        }
-        catch(err){
-            console.log("An error occurred in the process of adding a friend: " + err);
+        try {
+            this.notificationClient
+                .addNotification(this.user.userId, {
+                    type: 'FriendRequest',
+                    sender: userInSessionId,
+                })
+                .subscribe((data) => {
+                    console.log('Correctly added notification: ' + data);
+                });
+        } catch (err) {
+            console.log('An error occurred in the process of adding a friend: ' + err);
         }
     }
-
-    
 }

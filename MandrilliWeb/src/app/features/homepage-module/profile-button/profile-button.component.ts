@@ -16,4 +16,3 @@ export class ProfileButtonComponent implements OnInit {
 
     ngOnInit(): void {}
 }
-

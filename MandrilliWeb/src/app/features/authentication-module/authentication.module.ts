@@ -9,11 +9,6 @@ import { RegistrationScreenComponent } from './registration-screen/registration-
 
 @NgModule({
     declarations: [LoginScreenComponent, RegistrationScreenComponent],
-    imports: [
-        CommonModule,
-        BackButtonModule,
-        AuthenticationRoutingModule,
-        BattleshiplogoModule,
-    ],
+    imports: [CommonModule, BackButtonModule, AuthenticationRoutingModule, BattleshiplogoModule],
 })
 export class AuthenticationModule {}

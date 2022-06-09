@@ -2,7 +2,7 @@ export class MatchStats {
     /**
      * Id of player that won the match
      */
-    winner: string = "";
+    winner: string = '';
 
     /**
      * Time that the match started at
@@ -24,7 +24,5 @@ export class MatchStats {
      */
     totalHits: number = 0;
 
-
-    constructor(){
-    }
+    constructor() {}
 }
