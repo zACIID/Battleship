@@ -23,7 +23,7 @@ export class NotificationScreenComponent implements OnInit {
         private notificationApi: NotificationApi,
         private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter,
-        private userIdProvider: UserIdProvider,
+        private userIdProvider: UserIdProvider
     ) {}
 
     ngOnInit(): void {
@@ -42,7 +42,7 @@ export class NotificationScreenComponent implements OnInit {
                         });
                     } else {
                         this.userApi.getUser(not.sender).subscribe((usr) => {
-                            usr.username;
+                            usr.username; // TODO a cosa serve?
                             this.battleNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
@@ -57,8 +57,8 @@ export class NotificationScreenComponent implements OnInit {
 
     public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
-            userToNotifyId: friendId,
-            friendId: this.userId,
+            receiverId: this.userId,
+            senderId: friendId,
         });
     }
 
@@ -75,8 +75,8 @@ export class NotificationScreenComponent implements OnInit {
 
     public acceptBattle(friendId: string) {
         this.matchRequestAcceptedEmitter.emit({
-            player1Id: this.userId,
-            player2Id: friendId,
+            receiverId: this.userId,
+            senderId: friendId,
         });
     }
 

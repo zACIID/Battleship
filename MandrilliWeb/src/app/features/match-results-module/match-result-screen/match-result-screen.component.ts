@@ -18,8 +18,8 @@ export class MatchResultScreenComponent implements OnInit {
     public result: string = '';
 
     constructor(
-        private route: ActivatedRoute, 
-        private matchClient: MatchApi, 
+        private route: ActivatedRoute,
+        private matchClient: MatchApi,
         private userIdProvider: UserIdProvider,
         private joinMatchEmitter: MatchJoinedEmitter,
         private fleeMatchEmitter: MatchLeftEmitter,
@@ -34,41 +34,39 @@ export class MatchResultScreenComponent implements OnInit {
                 this.matchShowedId = params['id'];
             });
 
-            this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
-                this.joinMatch()
+            this.matchClient.getMatch(this.matchShowedId).subscribe((data: Match) => {
+                this.joinMatch();
                 this.match = data;
             });
 
             if (userId === this.match?.stats.winner) {
                 this.result = 'VICTORY';
-                this.saucingObservers()
-            }
-            else this.result = 'DEFEAT';
-            this.leaveMatch()
+                this.saucingObservers();
+            } else this.result = 'DEFEAT';
+            this.leaveMatch();
         } catch (err) {
             console.log('An error occurred while retrieving match info');
         }
     }
 
     private leaveMatch() {
-        if (this.match?.matchId)
-            this.fleeMatchEmitter.emit({matchId: this.match.matchId})
-        else throw new Error("MatchId not found")
+        if (this.match?.matchId) this.fleeMatchEmitter.emit({ matchId: this.match.matchId });
+        else throw new Error('MatchId not found');
     }
 
     private joinMatch() {
-        if (this.match?.matchId)
-            this.joinMatchEmitter.emit({matchId: this.match.matchId})
-        else throw new Error("MatchId not found")
+        if (this.match?.matchId) this.joinMatchEmitter.emit({ matchId: this.match.matchId });
+        else throw new Error('MatchId not found');
     }
 
-    private saucingObservers(){
-        try {
+    private saucingObservers() {
+        if (this.match !== undefined) {
             this.fleeWinnerEmitter.emit({
-                winnerId: this.userIdProvider.getUserId()
-            })
-        } catch(err){
-            console.log("WinnerId is nowhere to be found")
+                winnerId: this.userIdProvider.getUserId(),
+                matchId: this.match.matchId,
+            });
+        } else {
+            throw new Error('Match has not been set');
         }
     }
 }
