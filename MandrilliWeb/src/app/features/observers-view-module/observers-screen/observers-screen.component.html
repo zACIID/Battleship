@@ -1,4 +1,4 @@
-<div class="columns mt-3">
+<div *ngIf="match" class="columns mt-3">
 
     <div class="column height box has-background-light mr-2 ml-4">
     
@@ -7,18 +7,18 @@
             <div class="column is-half">
 
                 <div class="width-80 margin-auto mb-6">
-                    <player-info></player-info>
+                    <player-info [userId]="match.player1.playerId"></player-info>
                 </div>
-                <board></board>
+                <board [state]="match.player1.grid"></board>
 
             </div>
             <div class="column is-half">
 
 
                 <div class="width-80 margin-auto mb-6">
-                    <player-info></player-info>
+                    <player-info [userId]="match.player2.playerId"></player-info>
                 </div>
-                <board></board>
+                <board [state]="match.player2.grid"></board>
             </div>
 
         </div>
@@ -32,13 +32,14 @@
             
         <div class="box has-background-primary pointer height-100 width-80 margin-auto">
             <div class="has-text-centered">
-                <strong class="is-size-5 has-weight-semibold has-text-danger">Quit Game</strong>
+               
+                <strong class="is-size-5 has-weight-semibold has-text-danger" (click)="quitView()">Quit Game</strong>
             </div>
         </div>
             
     
         <div class="chat-height p-4">
-            <chat-body></chat-body>
+            <chat-body [chatId]="chatId"></chat-body>
         </div>
     
     </div>

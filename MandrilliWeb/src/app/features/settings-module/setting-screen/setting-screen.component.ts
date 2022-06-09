@@ -1,3 +1,4 @@
+import { JwtStorage } from './../../../core/api/jwt-auth/jwt-storage';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,7 +11,11 @@ import { Router } from '@angular/router';
 export class SettingScreenComponent implements OnInit {
     public userInSessionId: string = '';
 
-    constructor(private userClient: UserApi, private router: Router) {}
+    constructor(
+        private userClient: UserApi,
+        private router: Router,
+        private accessTokenStorage: JwtStorage
+    ) {}
 
     ngOnInit(): void {
         this.userInSessionId = localStorage.getItem('id') || '';
@@ -36,7 +41,7 @@ export class SettingScreenComponent implements OnInit {
     }
 
     public logout() {
-        // TODO we should drop here the JWT token
+        this.accessTokenStorage.store("");
     }
 
     public deleteProfile() {
