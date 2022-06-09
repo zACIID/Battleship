@@ -44,8 +44,6 @@ export class ProfileScreenComponent implements OnInit {
         try {
             this.userClient.getUser(this.userShowedId).subscribe((user: User) => {
                 this.user = user;
-                // TODO a chi serve modificare il campo online in questo modo ??  -agenty atmosferici
-                // this.user.online = true;
             });
         } catch(err) {
             console.log("An error occurred retrieving the user: " + err);

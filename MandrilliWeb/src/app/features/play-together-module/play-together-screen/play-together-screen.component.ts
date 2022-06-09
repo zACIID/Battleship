@@ -2,7 +2,6 @@ import { getRank } from './../../../core/model/user/elo-rankings';
 import { UserOverview } from './../../../core/model/user/user-overview';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
-import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -28,8 +27,8 @@ export class PlayTogetherScreenComponent implements OnInit {
                 for(let relation of relationships){
                     this.userClient.getUser(relation.friendId).subscribe((friend) => {
 
-                        if(friend.online){
-                            // TODO wait for friend.elo otherwise i have to get userStats
+                        if(friend.status.valueOf() === "Online"){
+                            
                             this.friends.push({
                                 userId: friend.userId,
                                 username: friend.username,
