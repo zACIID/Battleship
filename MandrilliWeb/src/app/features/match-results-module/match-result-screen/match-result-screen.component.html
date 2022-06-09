@@ -1,6 +1,6 @@
 
 
-<div class="box is-widescreen has-background-light front-height ml-4 mr-4">
+<div *ngIf="match" class="box is-widescreen has-background-light front-height ml-4 mr-4">
 
     <div class="columns is-widescreen mt-4">
         <div class="column is-one-quarter margin-auto">
@@ -21,7 +21,7 @@
     
     <div class="width-80 columns is-vcentered margin-auto mt-4">
         <div class="column">
-            <player-info></player-info>
+            <player-info [userId]="match.player1.playerId"></player-info>
         </div>
         <div class="column is-one-quarter has-text-centered">
             <div class= "is-vcentered" >
@@ -29,15 +29,15 @@
             </div>
         </div>
         <div class="column">
-            <player-info></player-info>
+            <player-info [userId]="match.player2.playerId"></player-info>
         </div>
     </div>
     <div class="width-80 margin-auto has-text-centered has-text-danger mt-5">
-        <h1 class="has-text-weight-semibold is-family-sans-serif is-size-1"> DEFEAT </h1>
+        <h1 class="has-text-weight-semibold is-family-sans-serif is-size-1"> {{ result }} </h1>
     </div>
 </div>
 
 <!-- stats grid block -->
-<div class= "box has-background-light stats-height ml-4 mr-4">
-    <stats-grid [profile]="false"></stats-grid>
+<div *ngIf="match" class= "box has-background-light stats-height ml-4 mr-4">
+    <stats-grid [profile]="false" [matchStats]="match.stats"></stats-grid>
 </div>

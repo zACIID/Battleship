@@ -13,31 +13,12 @@ import { Component, OnInit } from '@angular/core';
 export class HomepageScreenComponent implements OnInit {
 
     public user: UserOverview = new UserOverview();
-
+    public userId: string = "";
 
     constructor(private userClient: UserApi) {}
 
     ngOnInit(): void {
-        let userId = localStorage.getItem('id') || "";
-
-        try{
-            this.userClient.getUser(userId).subscribe((x: User) =>{
-                
-                this.userClient.getStats(userId).subscribe((data: UserStats) => {
-
-                    this.user = {
-                        userId: x.userId,
-                        username: x.username,
-                        elo: data.elo,
-                        rank: getRank(data.elo)
-                    }
-            
-                })
-            })
-        }
-        catch(err) {
-            console.log("Handling error: " + err)
-        }
+        this.userId = localStorage.getItem('id') || "";
 
     }
 }

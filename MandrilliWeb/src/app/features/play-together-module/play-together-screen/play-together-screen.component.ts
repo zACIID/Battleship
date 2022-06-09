@@ -13,7 +13,10 @@ import { UserStatus } from '../../../core/model/user/user';
 export class PlayTogetherScreenComponent implements OnInit {
     public friends: UserOverview[] = [];
 
-    constructor(private relationshipClient: RelationshipApi, private userClient: UserApi) {}
+    constructor(
+        private relationshipClient: RelationshipApi,
+        private userClient: UserApi
+    ) {}
 
     ngOnInit(): void {
         let userId: string = localStorage.getItem('id') || '';

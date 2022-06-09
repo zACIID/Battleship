@@ -26,6 +26,8 @@ export class ChatBodyComponent implements OnInit {
 
     ngOnChanges(): void{
         this.options = {skip: 0, limit: 5}
+
+        this.ngOnInit();
     }
 
     ngOnInit(): void {
@@ -38,7 +40,7 @@ export class ChatBodyComponent implements OnInit {
             })
         }
         catch(err){
-            console.log("An error while loading the chat: " + err);
+            console.log("An error happened while loading the chat: " + err);
         }
 
     }
@@ -55,7 +57,7 @@ export class ChatBodyComponent implements OnInit {
         }
     }
 
-    // TODO check for emit() something
+
     public post_message(message: string){
 
         this.chatClient.addMessage(
@@ -63,6 +65,7 @@ export class ChatBodyComponent implements OnInit {
             {author: this.userId, content: message, timestamp: new Date()}
         );
     }
+
 
 
 }

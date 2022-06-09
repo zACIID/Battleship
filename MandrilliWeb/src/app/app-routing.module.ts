@@ -28,7 +28,7 @@ const routes: Routes = [
                 (m) => m.LeaderboardModule),
     },
     {
-        path: 'match-results',
+        path: 'match-results/:id',
         loadChildren: () =>
             import('./features/match-results-module/match-results.module').then(
                 (m) => m.MatchResultsModule
@@ -42,7 +42,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'observers',
+        path: 'observers/:id',
         loadChildren: () =>
             import('./features/observers-view-module/observers-view.module').then(
                 (m) => m.ObserversViewModule
@@ -56,7 +56,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'preparation-phase',
+        path: 'preparation-phase/:id',
         loadChildren: () =>
             import('./features/preparation-phase-module/preparation-phase.module').then(
                 (m) => m.PreparationPhaseModule

@@ -4,8 +4,8 @@
     </div>
     <div class="column is-one-quarter">
         <div *ngIf="!myProfile">
-            <!--    TODO what's the behaviour of this action ? -Unguenty     -->
-            <button class="button is-info is-medium mt-4" >Add Friend</button>
+            
+            <button class="button is-info is-medium mt-4" (click)="addFriend()">Add Friend</button>
         </div>
     </div>
 </div>

@@ -1,3 +1,4 @@
+import { MatchRequestAcceptedEmitter } from './../../../core/events/emitters/match-request-accepted';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { NotificationOverview } from './../../../core/model/user/notification-overview';
 import { FriendRequestAcceptedEmitter } from './../../../core/events/emitters/friend-request-accepted';
@@ -17,6 +18,7 @@ export class NotificationScreenComponent implements OnInit {
 
     // TODO resolve NullInjectorError on FriendRequestAcceptedEmitter
     constructor(
+        private matchRequestAcceptedEmitter: MatchRequestAcceptedEmitter,
         private notificationApi: NotificationApi,
         private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter
@@ -30,7 +32,7 @@ export class NotificationScreenComponent implements OnInit {
                 for (let not of data) {
                     if (not.type === NotificationType.FriendRequest) {
                         this.userApi.getUser(not.sender).subscribe((usr) => {
-                            usr.username;
+                            usr.username; //TODO che serve?
                             this.friendNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
@@ -70,8 +72,14 @@ export class NotificationScreenComponent implements OnInit {
         }
     }
 
-    // TODO to implement
-    public acceptBattle(friendId: string) {}
+    public acceptBattle(friendId: string){
+
+        this.matchRequestAcceptedEmitter.emit({
+            player1Id: this.userId,
+            player2Id: friendId,
+        })
+
+    }
 
     public refuseBattle(friendId: string) {
         try {

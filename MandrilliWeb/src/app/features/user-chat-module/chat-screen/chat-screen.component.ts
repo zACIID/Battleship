@@ -1,3 +1,4 @@
+import { ChatMessageListener } from './../../../core/events/listeners/chat-message';
 import { getRank } from './../../../core/model/user/elo-rankings';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { UserOverview } from './../../../core/model/user/user-overview';
@@ -15,12 +16,13 @@ export class ChatScreenComponent implements OnInit {
 
 
 	public chatId: string = "";
-	public friend: UserOverview = new UserOverview();
+	public friend: string = "";
 
 	constructor(
 		private route: ActivatedRoute,
 		private chatClient: ChatApi,
-		private userClient: UserApi
+		private userClient: UserApi,
+		private chatMessageListener: ChatMessageListener
 	) { }
 
 	ngOnInit(): void {
@@ -29,34 +31,32 @@ export class ChatScreenComponent implements OnInit {
 			this.chatId = params['id'];
 		}));
 
-		let userInSessionId: string = localStorage.getItem('id') || "";
-
 		try{ 
 			this.chatClient.getChat(this.chatId).subscribe((data) => {
-
+				
+				let userInSessionId: string = localStorage.getItem('id') || "";
 				for(let user of data.users){
 
 					if(user != userInSessionId){
 
-						this.userClient.getUser(user).subscribe((us) => {
-							this.friend = {
-								userId: us.userId,
-								username: us.username,
-								elo: us.elo,
-								rank: getRank(us.elo)
-							}
-
-						})
+						this.friend = user;
+						
 					}
 				}
 			})
+			
 		}
 		catch(err){
 			console.log("An error occurred while retrieving the chat: " + err);
 		}
-
+		
+		// This is forcing the ngOnChanges() on chat-body component to refresh the message list (i hope)
+		this.chatMessageListener.listen(()=>{
+			this.route.params.subscribe((params => {
+				this.chatId = params['id'];
+			}));
+		});
   	}
-
 
 
 }
