@@ -28,6 +28,7 @@ export class ProfileScreenComponent implements OnInit {
         this.route.params.subscribe((params => {
             this.userShowedId = params['id'];
         }));
+        
         this.getUser();
         this.getUserStats();
 
@@ -44,7 +45,7 @@ export class ProfileScreenComponent implements OnInit {
             this.userClient.getUser(this.userShowedId).subscribe((user: User) => {
                 this.user = user;
                 // TODO a chi serve modificare il campo online in questo modo ??  -agenty atmosferici
-                this.user.online = true;
+                // this.user.online = true;
             });
         } catch(err) {
             console.log("An error occurred retrieving the user: " + err);

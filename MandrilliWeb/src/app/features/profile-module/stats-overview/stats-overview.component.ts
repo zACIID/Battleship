@@ -1,3 +1,4 @@
+import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { UserStats } from './../../../core/model/user/user-stats';
 import { User } from './../../../core/model/user/user';
@@ -17,11 +18,24 @@ export class StatsOverviewComponent implements OnInit {
     @Input() myProfile: boolean = false;
 
     constructor(
-        private userClient: UserApi
+        private notificationClient: NotificationApi
     ) { }
 
     ngOnInit(): void { }
 
+
+    public addFriend(){
+        let userInSessionId = localStorage.getItem("id") || "";
+
+        try{
+            this.notificationClient.addNotification(this.user.userId, {type: "FriendRequest", sender: userInSessionId}).subscribe((data) =>{
+                console.log("Correctly added notification: " + data);
+            });
+        }
+        catch(err){
+            console.log("An error occurred in the process of adding a friend: " + err);
+        }
+    }
 
     
 }
