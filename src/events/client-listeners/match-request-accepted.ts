@@ -35,6 +35,7 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<
             //  else a match could be created between two players where
             //  the one that sent the request isn't listening
             // TODO 2: do something to notify the user that the match couldn't be created?
+            //  in this case an error message is sent
 
             // TODO qui è da capire come fare. Mi verrebbe da dire che se
             //  user è offline oppure online ma inGame allora pacco,
