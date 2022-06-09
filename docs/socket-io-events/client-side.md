@@ -8,8 +8,8 @@
     - [ServerJoinData](#serverjoindata)
     - [ChatJoinData](#chatjoindata)
     - [MatchJoinData](#matchjoindata)
-    - [FriendRequestAcceptedData](#friendrequestaccepteddata)
-    - [MatchRequestAcceptedData](#matchrequestaccepteddata)
+    - [RequestAcceptedData](#requestaccepteddata)
+    - [PlayerWonData](#playerwondata)
   - [Events](#events)
     - [Join Server](#join-server)
     - [Join Chat](#join-chat)
@@ -18,6 +18,7 @@
     - [Leave Match](#leave-match)
     - [Friend Request Accepted](#friend-request-accepted)
     - [Match Request Accepted](#match-request-accepted)
+    - [Player Won](#player-won)
 
 <style>
 table th:first-of-type {
@@ -51,19 +52,19 @@ table th:nth-of-type(3) {
 | :-------- | :-------- | :---------- |
 | matchId | string | Id of the match to join |
 
-### FriendRequestAcceptedData
+### RequestAcceptedData
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| userToNotifyId | string | Id of the user that has to be notified that he has a new friend |
-| friendId | string | Id of the user who accepted the friend request |
+| senderId | string | Id of player that sent the request |
+| receiverId | string | Id of player that received the request |
 
-### MatchRequestAcceptedData
+### PlayerWonData
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| player1Id | string | Id of player #1 of the match |
-| player2Id | string | Id of player #2 of the match |
+| winnerId | string | Id of the player that won the game |
+| matchId | string | Id of the match that the player won |
 
 ## Events
 
@@ -76,13 +77,13 @@ table th:nth-of-type(3) {
 ### Join Chat
 
 | Event names | Description | Event Data |
-| :--------- | :---------- | :--------- |
+| :---------- | :---------- | :--------- |
 | chat-joined | When a user joins a chat, he should raise this event to notify the socket.io server. This is necessary to allow socket.io server to create a room for each chat, so that data can be sent just to the users that are currently active on said chat. | With this event, a [ChatJoinData](#chatjoindata) resource is sent, which contains the id of the chat that the user has joined. |
 
 ### Leave Chat
 
 | Event names | Description | Event Data |
-| :--------- | :---------- | :--------- |
+| :---------- | :---------- | :--------- |
 | chat-left | When a user leaves a chat, he should raise this event to notify the socket.io server, so that no more data from that chat is sent to the user | With this event, a [ChatJoinData](#chatjoindata) resource is sent, which contains the id of the chat that the user has left. |
 
 ### Join Match
@@ -94,17 +95,23 @@ table th:nth-of-type(3) {
 ### Leave Match
 
 | Event names | Description | Event Data |
-| :--------- | :---------- | :--------- |
+| :---------- | :---------- | :--------- |
 | match-left | When a user leaves a match, he should raise this event to notify the socket.io server, so that no more data from that match is sent to the user |  With this event, a [MatchJoinData](#matchjoindata) resource is sent, which contains the id of the match that the user has left. |
 
 ### Friend Request Accepted
 
 | Event names | Description | Event Data |
-| :--------- | :---------- | :--------- |
-| friend-request-accepted | This event is raised by a user who has accepted a friend request. The user notifies the server that he has accepted the request, so that the server can notify the sender that he has a new friend. |  With this event, a [FriendRequestAcceptedData](#friendrequestaccepteddata) resource is sent, which contains the id of the user who accepted the request, as well as the id of the sender. |
+| :---------- | :---------- | :--------- |
+| friend-request-accepted | This event is raised by a user who has accepted a friend request. The user notifies the server that he has accepted the request, so that the server can notify the sender that he has a new friend. |  With this event, a [RequestAcceptedData](#requestaccepteddata) resource is sent, which contains the id of the user who accepted the request, as well as the id of the sender. |
 
 ### Match Request Accepted
 
 | Event names | Description | Event Data |
-| :--------- | :---------- | :--------- |
-| match-request-accepted | This event is raised by a user who has accepted a match request. The user notifies the server that he has accepted the request, so that the server can create the match and notify the two players about the game that has started. |  With this event, a [MatchRequestAcceptedData](#matchrequestaccepteddata) resource is sent, which contains the id of the two players involved in the match. |
+| :---------- | :---------- | :--------- |
+| match-request-accepted | This event is raised by a user who has accepted a match request. The user notifies the server that he has accepted the request, so that the server can create the match and notify the two players about the game that has started. |  With this event, a [RequestAcceptedData](#requestaccepteddata) resource is sent, which contains the id of the two players involved in the match. |
+
+### Player Won
+
+| Event names | Description | Event Data |
+| :---------- | :---------- | :--------- |
+| player-won | This event is raised by the user who has won the game. Such event allows the server to know when a player has won the game, in order to perform the necessary game-ending operations and notify the other player/spectators that the match has ended. |  With this event, a [PlayerWonData](#playerwondata) resource is sent, which contains the id of the player who won the match. |

@@ -14,6 +14,7 @@
     - [Ship](#ship)
     - [GridCoordinates](#gridcoordinates)
     - [Shot](#shot)
+    - [MatchTerminated](#matchterminated)
   - [Events](#events)
     - [New Chat Message](#new-chat-message)
     - [Friend Online](#friend-online)
@@ -23,6 +24,7 @@
     - [Player Positioning State Changed](#player-positioning-state-changed)
     - [Positioning Phase Completed](#positioning-phase-completed)
     - [Shot Fired](#shot-fired)
+    - [Match Terminated](#match-terminated)
 
 <style>
 table th:first-of-type {
@@ -99,6 +101,12 @@ table th:nth-of-type(3) {
 | playerId | string | Id of the player that fired the shot |
 | coordinates | [GridCoordinates](#gridcoordinates) | Coordinates where the shot has been fired |
 
+### MatchTerminated
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| reason | string | Reason why the match was terminated (e.g. a player one, one player left the game, etc.) |
+
 ## Events
 
 ### New Chat Message
@@ -148,3 +156,9 @@ table th:nth-of-type(3) {
 | Event name | Description | Event Data |
 | :--------- | :---------- | :--------- |
 | shot-fired | This event is raised by the server when a player queries the api to fire a shot on the opposing side's grid. The player that receives the shot, along with every player that is spectating the match, is notified, so him and the spectators can update their game state accordingly. | With this event, a [Shot](#shot) resource is sent, which contains information about the shot that has been just fired. |
+
+### Match Terminated
+
+| Event name | Description | Event Data |
+| :--------- | :---------- | :--------- |
+| match-terminated | This event is raised by the server when a player wins the game or leaves the game. All the players and spectators of the game are notified of this occurence, so that they know that the match has ended. | With this event, a [MatchTerminated](#matchterminated) resource is sent, which contains the reason why the match was terminated. |
