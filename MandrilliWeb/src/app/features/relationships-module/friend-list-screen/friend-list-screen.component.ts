@@ -4,6 +4,7 @@ import { User } from 'src/app/core/model/user/user';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
 import { Component, OnInit } from '@angular/core';
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 
 @Component({
     selector: 'app-friend-list-screen',
@@ -13,12 +14,15 @@ import { Component, OnInit } from '@angular/core';
 export class FriendListScreenComponent implements OnInit {
     public friends: RelationshipOverview[] = [];
 
-    constructor(private relationshipsClient: RelationshipApi, private userClient: UserApi) {}
+    constructor(
+        private relationshipsClient: RelationshipApi, 
+        private userClient: UserApi, 
+        private userIdProvider: UserIdProvider,
+    ) {}
 
     ngOnInit(): void {
-        let userId: string = localStorage.getItem('id') || '';
-
         try {
+            let userId: string = this.userIdProvider.getUserId();
             this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
                 this.friends = data.map((rel: Relationship) => {
                     let usrnm: string = '';

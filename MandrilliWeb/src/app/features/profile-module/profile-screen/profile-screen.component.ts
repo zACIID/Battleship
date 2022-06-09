@@ -16,12 +16,16 @@ export class ProfileScreenComponent implements OnInit {
     public rank: string = '';
     public stats: UserStats = new UserStats();
 
-    constructor(private userClient: UserApi, private route: ActivatedRoute) {}
+    constructor(
+        private userClient: UserApi,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.userShowedId = params['id'];
         });
+        
         this.getUser();
         this.getUserStats();
 

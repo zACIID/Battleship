@@ -1,5 +1,5 @@
+import { NotificationType } from './../../../core/model/user/notification';
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
-import { UserApi } from './../../../core/api/handlers/user-api';
 import { UserStats } from './../../../core/model/user/user-stats';
 import { User } from './../../../core/model/user/user';
 import { Component, OnInit, Input } from '@angular/core';
@@ -26,7 +26,7 @@ export class StatsOverviewComponent implements OnInit {
         try {
             this.notificationClient
                 .addNotification(this.user.userId, {
-                    type: 'FriendRequest',
+                    type: NotificationType.FriendRequest,
                     sender: userInSessionId,
                 })
                 .subscribe((data) => {

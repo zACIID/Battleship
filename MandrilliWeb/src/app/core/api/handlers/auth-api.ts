@@ -18,6 +18,7 @@ export interface LoginInfo {
 }
 
 export interface Jwt {
+    userId: string;
     /**
      * Value of the Json Web Token, used to authenticate future requests
      */

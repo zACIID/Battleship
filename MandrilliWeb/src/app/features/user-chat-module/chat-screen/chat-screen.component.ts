@@ -6,6 +6,10 @@ import { ChatApi } from './../../../core/api/handlers/chat-api';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/core/model/chat/message';
+import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
+import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
+import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
+import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
 
 @Component({
     selector: 'app-chat-screen',
@@ -19,9 +23,13 @@ export class ChatScreenComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private chatClient: ChatApi,
-        private userClient: UserApi,
-        private chatMessageListener: ChatMessageListener
+        private userIdProvider: UserIdProvider,
+        private chatMessageListener: ChatMessageListener,
+        private joinEmitter: ChatJoinedEmitter,
+        private fleeEmitter: ChatLeftEmitter
     ) {}
+
+    //TODO capire come fare la leave chat e relativa emit
 
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
@@ -30,12 +38,13 @@ export class ChatScreenComponent implements OnInit {
 
         try {
             this.chatClient.getChat(this.chatId).subscribe((data) => {
-                let userInSessionId: string = localStorage.getItem('id') || '';
+                let userInSessionId: string = this.userIdProvider.getUserId();
                 for (let user of data.users) {
                     if (user != userInSessionId) {
                         this.friend = user;
                     }
                 }
+                this.joinEmitter.emit({chatId: data.chatId})
             });
         } catch (err) {
             console.log('An error occurred while retrieving the chat: ' + err);
