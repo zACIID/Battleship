@@ -2,3 +2,8 @@
     table-layout: fixed;
     width: 100%
 }
+
+
+.shoot{
+    border: 2px solid red
+}
