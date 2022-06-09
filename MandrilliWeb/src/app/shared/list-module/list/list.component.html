@@ -24,7 +24,7 @@
 
     <div *ngSwitchDefault>
         <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="showChat(item.chatId)">
-            <p> <strong>{{item.username}}</strong></p>
+            <p> <strong>{{item.friendUsername}}</strong></p>
         </div>
     </div>
 
@@ -37,7 +37,7 @@
 
     <div *ngFor="let item of notificationList">
         <div *ngIf="item.type == 'MatchRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
-            <p> <strong>{{item.username}}</strong> wants to battle you !</p>
+            <p> <strong>{{item.senderUsername}}</strong> wants to battle you !</p>
         </div>
         <!-- TODO What pass as a parameter to acceptBattle or refuseBattle ?? -->
         <button class="button is-success" (click)="accept()">Battle!</button>
@@ -52,7 +52,7 @@
 
     <div *ngFor="let item of notificationList">
         <div *ngIf="item.type == 'FriendRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
-            <p> <strong>{{item.username}}</strong> wants to be your friend !</p>
+            <p> <strong>{{item.senderUsername}}</strong> wants to be your friend !</p>
         </div>
         <button class="button is-success" (click)="accept(item.sender)">Accept</button>
         <button class="button is-danger" (click)="refuse(item.sender)">Refuse</button>

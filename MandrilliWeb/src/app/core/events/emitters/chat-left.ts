@@ -2,10 +2,7 @@ import { Socket } from 'ngx-socket-io';
 import { Injectable } from '@angular/core';
 
 import { Emitter } from './base/emitter';
-
-export interface ChatJoinData {
-    chatId: string;
-}
+import { ChatData } from '../../model/events/chat-data';
 
 /**
  * Class that wraps socket.io functionality to generate a "chat-left" event.
@@ -13,9 +10,9 @@ export interface ChatJoinData {
  * about events of a specific chat.
  */
 Injectable({
-    providedIn: "root"
-})
-export class ChatLeftEmitter extends Emitter<ChatJoinData> {
+    providedIn: 'root',
+});
+export class ChatLeftEmitter extends Emitter<ChatData> {
     public constructor(client: Socket) {
         super(client, `chat-left`);
     }

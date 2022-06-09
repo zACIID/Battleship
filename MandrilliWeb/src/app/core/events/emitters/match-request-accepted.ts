@@ -2,11 +2,7 @@ import { Socket } from 'ngx-socket-io';
 import { Injectable } from '@angular/core';
 
 import { Emitter } from './base/emitter';
-
-export interface MatchRequestAcceptedEventData {
-    player1Id: string;
-    player2Id: string;
-}
+import { MatchRequestAcceptedData } from '../../model/events/match-request-accepted-data';
 
 /**
  * Class that wraps socket.io functionality to generate a "match-request-accepted" event.
@@ -17,7 +13,7 @@ export interface MatchRequestAcceptedEventData {
 Injectable({
     providedIn: 'root',
 });
-export class MatchRequestAcceptedEmitter extends Emitter<MatchRequestAcceptedEventData> {
+export class MatchRequestAcceptedEmitter extends Emitter<MatchRequestAcceptedData> {
     public constructor(client: Socket) {
         super(client, `match-request-accepted`);
     }

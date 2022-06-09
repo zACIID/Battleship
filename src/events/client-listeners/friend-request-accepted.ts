@@ -2,10 +2,10 @@ import { Server, Socket } from 'socket.io';
 import { Types } from 'mongoose';
 
 import { ClientListenerNotifier } from './base/client-listener-notifier';
-import { FriendOnlineEmitter } from '../emitters/friend-online';
-import { AcceptedFriendRequestData } from '../../model/events/accepted-friend-request-data';
-import { FriendOnlineData } from '../../model/events/friend-online-data';
-import { getUserById, UserDocument } from '../../model/user/user';
+import { FriendStatusChangedEmitter } from '../emitters/friend-online';
+import { FriendRequestAcceptedData } from '../../model/events/friend-request-accepted-data';
+import { FriendStatusChangedData } from '../../model/events/friend-status-changed-data';
+import { getUserById, UserDocument, UserStatuses } from '../../model/user/user';
 import { RequestTypes } from '../../model/user/notification';
 
 /**
@@ -16,8 +16,8 @@ import { RequestTypes } from '../../model/user/notification';
  * is online and has done so.
  */
 export class FriendRequestAcceptedListener extends ClientListenerNotifier<
-    AcceptedFriendRequestData,
-    FriendOnlineData
+    FriendRequestAcceptedData,
+    FriendStatusChangedData
 > {
     /**
      * @param client that raised the event
@@ -29,10 +29,13 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
 
     public listen(): Promise<void> {
         const emitterProvider = (
-            eventData: AcceptedFriendRequestData
-        ): Promise<FriendOnlineEmitter[]> => {
+            eventData: FriendRequestAcceptedData
+        ): Promise<FriendStatusChangedEmitter[]> => {
             const emitters = [
-                new FriendOnlineEmitter(this.ioServer, Types.ObjectId(eventData.userToNotifyId)),
+                new FriendStatusChangedEmitter(
+                    this.ioServer,
+                    Types.ObjectId(eventData.userToNotifyId)
+                ),
             ];
 
             return Promise.resolve(emitters);
@@ -41,13 +44,14 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
         // Add the relationship to both users, remove the now old notification
         // from the user that  received the friend request
         const emitDataProvider = async (
-            eventData: AcceptedFriendRequestData
-        ): Promise<FriendOnlineData> => {
+            eventData: FriendRequestAcceptedData
+        ): Promise<FriendStatusChangedData> => {
             await FriendRequestAcceptedListener.createNewRelationship(eventData);
             await FriendRequestAcceptedListener.removeNotification(eventData);
 
             return Promise.resolve({
                 friendId: eventData.friendId,
+                status: UserStatuses.Online,
             });
         };
 
@@ -60,7 +64,7 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
      * @private
      */
     private static async createNewRelationship(
-        eventData: AcceptedFriendRequestData
+        eventData: FriendRequestAcceptedData
     ): Promise<void> {
         const userToNotify: UserDocument = await getUserById(
             Types.ObjectId(eventData.userToNotifyId)
@@ -73,7 +77,7 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<
      * @param eventData
      * @private
      */
-    private static async removeNotification(eventData: AcceptedFriendRequestData): Promise<void> {
+    private static async removeNotification(eventData: FriendRequestAcceptedData): Promise<void> {
         const notifiedUserId: Types.ObjectId = Types.ObjectId(eventData.friendId);
         const notifiedUser: UserDocument = await getUserById(notifiedUserId);
 

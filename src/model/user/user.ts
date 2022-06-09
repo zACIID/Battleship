@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Document, FilterQuery, Model, Schema, SchemaTypes, Types } from 'mongoose';
+import { AnyKeys, Document, FilterQuery, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import {
@@ -23,6 +23,14 @@ export enum UserRoles {
     Admin = 'Admin',
 }
 
+export enum UserStatuses {
+    Offline = 'Offline',
+    Online = 'Online',
+    PrepPhase = 'PrepPhase',
+    InGame = 'InGame',
+    Spectating = 'Spectating',
+}
+
 /**
  * Interface that represents a User of the system.
  */
@@ -31,7 +39,7 @@ export interface User {
     roles: string[];
     pwd_hash: string;
     salt: string;
-    online: boolean;
+    status: UserStatuses;
     stats: UserStats;
     relationships: Relationship[];
     notifications: RequestNotification[];
@@ -162,8 +170,8 @@ export const UserSchema = new Schema<UserDocument>({
     roles: {
         type: [SchemaTypes.String],
         required: true,
-        enum: [UserRoles.Base.valueOf(), UserRoles.Moderator.valueOf(), UserRoles.Admin.valueOf()],
-        default: [UserRoles.Base.valueOf()],
+        enum: UserRoles,
+        default: [UserRoles.Base],
     },
 
     salt: {
@@ -180,8 +188,8 @@ export const UserSchema = new Schema<UserDocument>({
         type: [NotificationSchema],
     },
 
-    online: {
-        type: SchemaTypes.Boolean,
+    status: {
+        type: SchemaTypes.String,
         default: false,
     },
 });
@@ -402,7 +410,7 @@ export async function getUserByUsername(username: string): Promise<UserDocument>
         : Promise.resolve(userdata);
 }
 
-export async function createUser(data): Promise<UserDocument> {
+export async function createUser(data: AnyKeys<UserDocument>): Promise<UserDocument> {
     const u: UserDocument = new UserModel(data);
     await u.save().catch((err) => {
         return Promise.reject(new Error('User already exists'));

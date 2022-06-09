@@ -2,10 +2,7 @@ import { Socket } from 'ngx-socket-io';
 import { Injectable } from '@angular/core';
 
 import { Emitter } from './base/emitter';
-
-export interface MatchJoinData {
-    matchId: string;
-}
+import { MatchData } from '../../model/events/match-data';
 
 /**
  * Class that wraps socket.io functionality to generate a "match-joined" event.
@@ -13,9 +10,9 @@ export interface MatchJoinData {
  * i.e. shots fired, changes of player state, etc.
  */
 Injectable({
-    providedIn: "root"
-})
-export class MatchJoinedEmitter extends Emitter<MatchJoinData> {
+    providedIn: 'root',
+});
+export class MatchJoinedEmitter extends Emitter<MatchData> {
     public constructor(client: Socket) {
         super(client, `match-joined`);
     }

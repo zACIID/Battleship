@@ -2,8 +2,8 @@ import { getRank } from './../../../core/model/user/elo-rankings';
 import { UserOverview } from './../../../core/model/user/user-overview';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
-import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { Component, OnInit } from '@angular/core';
+import { UserStatus } from '../../../core/model/user/user';
 
 @Component({
     selector: 'app-play-together-screen',
@@ -11,46 +11,34 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./play-together-screen.component.css'],
 })
 export class PlayTogetherScreenComponent implements OnInit {
-
     public friends: UserOverview[] = [];
 
-    constructor(
-        private relationshipClient: RelationshipApi,
-        private userClient: UserApi
-    ) {}
+    constructor(private relationshipClient: RelationshipApi, private userClient: UserApi) {}
 
     ngOnInit(): void {
-        let userId: string = localStorage.getItem('id') || "";
-        try{
+        let userId: string = localStorage.getItem('id') || '';
+        try {
             // Retrieving only online friends
             this.relationshipClient.getRelationships(userId).subscribe((relationships) => {
-                
-                for(let relation of relationships){
+                for (let relation of relationships) {
                     this.userClient.getUser(relation.friendId).subscribe((friend) => {
-
-                        if(friend.online){
-                            // TODO wait for friend.elo otherwise i have to get userStats
+                        if (friend.status === UserStatus.Online) {
                             this.friends.push({
                                 userId: friend.userId,
                                 username: friend.username,
                                 elo: friend.elo,
-                                rank: getRank(friend.elo)
+                                rank: getRank(friend.elo),
                             });
-
                         }
-
-                    })
+                    });
                 }
-
-            })
-        }catch(err){
-            console.log("An error occured while retrieving online friends list: " + err);
+            });
+        } catch (err) {
+            console.log('An error occurred while retrieving online friends list: ' + err);
         }
     }
 
-
-
-    public num_online(){
+    public num_online() {
         return this.friends.length;
     }
 }

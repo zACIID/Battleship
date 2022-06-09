@@ -2,10 +2,7 @@ import { Socket } from 'ngx-socket-io';
 import { Injectable } from '@angular/core';
 
 import { Emitter } from './base/emitter';
-
-interface PlayerWonEventData {
-    playerId: string;
-}
+import { PlayerWonData } from '../../model/events/player-won-data';
 
 /**
  * Class that wraps socket.io functionality to generate a "player-won" event.
@@ -16,7 +13,7 @@ interface PlayerWonEventData {
 Injectable({
     providedIn: 'root',
 });
-export class PlayerWonEmitter extends Emitter<PlayerWonEventData> {
+export class PlayerWonEmitter extends Emitter<PlayerWonData> {
     public constructor(client: Socket) {
         super(client, `match-request-accepted`);
     }

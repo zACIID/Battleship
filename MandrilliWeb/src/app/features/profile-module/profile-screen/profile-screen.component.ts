@@ -1,7 +1,7 @@
 import { UserStats } from './../../../core/model/user/user-stats';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UserApi } from '../../../core/api/handlers/user-api'
+import { UserApi } from '../../../core/api/handlers/user-api';
 import { User } from '../../../core/model/user/user';
 
 @Component({
@@ -10,59 +10,48 @@ import { User } from '../../../core/model/user/user';
     styleUrls: ['./profile-screen.component.css'],
 })
 export class ProfileScreenComponent implements OnInit {
-
-
     public myProfile: boolean = false;
     public user: User = new User();
-    private userShowedId: string = "";
-    public rank: string = "";
+    private userShowedId: string = '';
+    public rank: string = '';
     public stats: UserStats = new UserStats();
 
-    constructor(
-        private userClient: UserApi,
-        private route: ActivatedRoute
-    ) { }
+    constructor(private userClient: UserApi, private route: ActivatedRoute) {}
 
     ngOnInit(): void {
-
-        this.route.params.subscribe((params => {
+        this.route.params.subscribe((params) => {
             this.userShowedId = params['id'];
-        }));
+        });
         this.getUser();
         this.getUserStats();
 
-        let userInSessionId = localStorage.getItem('id') || "";
+        let userInSessionId = localStorage.getItem('id') || '';
 
-        if (userInSessionId === this.userShowedId){
+        if (userInSessionId === this.userShowedId) {
             this.myProfile = true;
         }
-
     }
 
-    public getUser() : void {
+    public getUser(): void {
         try {
             this.userClient.getUser(this.userShowedId).subscribe((user: User) => {
                 this.user = user;
                 // TODO a chi serve modificare il campo online in questo modo ??  -agenty atmosferici
-                this.user.online = true;
+                // this.user.status = true; TODO a chi serve?? -paolo
             });
-        } catch(err) {
-            console.log("An error occurred retrieving the user: " + err);
+        } catch (err) {
+            console.log('An error occurred retrieving the user: ' + err);
         }
     }
 
-
-    public getUserStats() : void {
+    public getUserStats(): void {
         try {
-
-            if(!this.user) throw new Error("User is not defined");
+            if (!this.user) throw new Error('User is not defined');
             this.userClient.getStats(this.user.userId).subscribe((stat: UserStats) => {
                 this.stats = stat;
             });
-        } catch(err) {
-            console.log("An error occurred while retrieving user stats: " + err);
+        } catch (err) {
+            console.log('An error occurred while retrieving user stats: ' + err);
         }
     }
-
-    
-}   
+}

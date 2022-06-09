@@ -4,9 +4,16 @@ import jsonwebtoken from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { Strategy } from 'passport-local';
 
-import { createUser, getUserByUsername, User, UserDocument, UserModel } from '../model/user/user';
-import { Types } from 'mongoose';
-import { FriendOnlineEmitter } from '../events/emitters/friend-online';
+import {
+    createUser,
+    getUserByUsername,
+    User,
+    UserDocument,
+    UserModel,
+    UserStatuses,
+} from '../model/user/user';
+import { AnyKeys, Types } from 'mongoose';
+import { FriendStatusChangedEmitter } from '../events/emitters/friend-online';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';
 import { AuthenticatedRequest } from './utils/authenticated-request';
@@ -106,15 +113,19 @@ router.post(
 );
 
 const notifyFriends = async (username: string) => {
-    const userOnline: UserDocument = await UserModel.findOne({ username: username });
-    const friendsIdsToNotify: Types.ObjectId[] = userOnline.relationships.map((rel) => {
+    const userWithUpdatedStatus: UserDocument = await UserModel.findOne({ username: username });
+    const friendsIdsToNotify: Types.ObjectId[] = userWithUpdatedStatus.relationships.map((rel) => {
         return rel.friendId;
     });
 
     friendsIdsToNotify.forEach((toNotifyId: Types.ObjectId) => {
-        const notifier: FriendOnlineEmitter = new FriendOnlineEmitter(ioServer, toNotifyId);
+        const notifier: FriendStatusChangedEmitter = new FriendStatusChangedEmitter(
+            ioServer,
+            toNotifyId
+        );
         notifier.emit({
-            friendId: userOnline._id,
+            friendId: userWithUpdatedStatus._id,
+            status: userWithUpdatedStatus.status,
         });
     });
 };
@@ -129,9 +140,9 @@ interface SignUpRequest extends Request {
 router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
     try {
         // A user that registers through this endpoint becomes online right away
-        const userData = {
+        const userData: AnyKeys<UserDocument> = {
             username: req.body.username,
-            online: true,
+            status: UserStatuses.Online,
         };
         const newUser: UserDocument = await createUser(userData);
 
@@ -141,7 +152,7 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
             userId: newUser._id,
             username: newUser.username,
             roles: newUser.roles,
-            online: newUser.online,
+            status: newUser.status,
         });
     } catch (err) {
         if (err.message === 'User already exists') {

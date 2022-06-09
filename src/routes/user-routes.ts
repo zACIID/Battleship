@@ -53,7 +53,7 @@ router.get(
                 userId: user._id,
                 username: user.username,
                 roles: user.roles,
-                online: user.online,
+                status: user.status,
                 elo: user.stats.elo,
             });
         } catch (err) {
@@ -241,21 +241,19 @@ router.get(
     '/users',
     authenticateToken,
     async (req: GetMultipleUsersRequest, res: UserEndpointResponse) => {
-        let users: usr.UserDocument[];
-
         try {
             const userIdsQParam: string[] = (req.query.ids as string).split(',');
             const userObjIds: Types.ObjectId[] = userIdsQParam.map((uId) => {
                 return retrieveId(uId);
             });
 
-            users = await usr.getUsers(userObjIds);
+            const users: usr.UserDocument[] = await usr.getUsers(userObjIds);
             const results = users.map((u: usr.UserDocument) => {
                 return {
                     userId: u._id,
                     username: u.username,
                     roles: u.roles,
-                    online: u.online,
+                    online: u.status,
                     elo: u.stats.elo,
                 };
             });

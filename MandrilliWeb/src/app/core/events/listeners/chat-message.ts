@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 
 import { ServerListener } from './base/server-listener';
-import { ApiMessage } from '../../model/api/chat/api-message';
-
-interface ChatMessageEventData extends ApiMessage {}
+import { ChatMessage } from '../../model/events/chat-message';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -15,7 +13,7 @@ interface ChatMessageEventData extends ApiMessage {}
 Injectable({
     providedIn: 'root',
 });
-export class ChatMessageListener extends ServerListener<ChatMessageEventData> {
+export class ChatMessageListener extends ServerListener<ChatMessage> {
     constructor(client: Socket) {
         super(client, 'chat-message');
     }

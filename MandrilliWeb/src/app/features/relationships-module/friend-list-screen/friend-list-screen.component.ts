@@ -11,45 +11,30 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./friend-list-screen.component.css'],
 })
 export class FriendListScreenComponent implements OnInit {
-
-
     public friends: RelationshipOverview[] = [];
 
-
-    constructor(
-        private relationshipsClient: RelationshipApi,
-        private userClient: UserApi
-    ) {}
-
+    constructor(private relationshipsClient: RelationshipApi, private userClient: UserApi) {}
 
     ngOnInit(): void {
-        
-        let userId: string = localStorage.getItem('id') || "";
-        
-        try{
+        let userId: string = localStorage.getItem('id') || '';
+
+        try {
             this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
-
-                this.friends = data.map( (rel: Relationship) => {
-
-                    let usrnm: string = "";
-                    this.userClient.getUser(rel.friendId).subscribe((x: User) =>
-                        usrnm = x.username 
-                    );
+                this.friends = data.map((rel: Relationship) => {
+                    let usrnm: string = '';
+                    this.userClient
+                        .getUser(rel.friendId)
+                        .subscribe((x: User) => (usrnm = x.username));
 
                     return {
                         friendId: rel.friendId,
                         chatId: rel.friendId,
-                        username: usrnm
+                        friendUsername: usrnm,
                     };
-                })
-
-            })
+                });
+            });
+        } catch (err) {
+            console.log('An error occurred while retrieving the friends list: ' + err);
         }
-        catch(err){
-            console.log("An error occurred while retrieving the friends list: " + err);
-        }
-       
     }
-
-
 }

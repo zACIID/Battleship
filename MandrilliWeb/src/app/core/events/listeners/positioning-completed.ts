@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 
 import { ServerListener } from './base/server-listener';
-
-export interface GenericEventMessage {
-    message: string;
-}
+import { GenericMessage } from '../../model/events/generic-message';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -15,9 +12,9 @@ export interface GenericEventMessage {
  * can start.
  */
 Injectable({
-    providedIn: "root"
-})
-export class PositioningCompletedListener extends ServerListener<GenericEventMessage> {
+    providedIn: 'root',
+});
+export class PositioningCompletedListener extends ServerListener<GenericMessage> {
     constructor(client: Socket) {
         super(client, 'positioning-completed');
     }

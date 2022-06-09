@@ -3,8 +3,7 @@ import { Types } from 'mongoose';
 
 import { ClientListener } from './base/client-listener';
 import { UserData } from '../../model/events/user-data';
-import { getUserById, UserDocument } from '../../model/user/user';
-import { on } from 'cluster';
+import { getUserById, UserDocument, UserStatuses } from '../../model/user/user';
 
 /**
  * Class that wraps Socket.io functionality to listen to a 'server-joined' client event.
@@ -30,8 +29,7 @@ export class ServerJoinedListener extends ClientListener<UserData> {
             this.client.on('disconnect', async () => {
                 await ServerJoinedListener.setUserOffline(joinData.userId);
 
-                // TODO friendOffline emitter -> cambiare friend-online event in
-                //  friend-online-status-changed e passare valore online
+                // TODO friend-status-changed
             });
 
             return Promise.resolve();
@@ -44,7 +42,7 @@ export class ServerJoinedListener extends ClientListener<UserData> {
      * @private
      */
     private static async setUserOnline(userId: string): Promise<void> {
-        await ServerJoinedListener.setUserOnlineStatus(userId, true);
+        await ServerJoinedListener.setUserOnlineStatus(userId, UserStatuses.Online);
     }
 
     /**
@@ -53,12 +51,12 @@ export class ServerJoinedListener extends ClientListener<UserData> {
      * @private
      */
     private static async setUserOffline(userId: string): Promise<void> {
-        await ServerJoinedListener.setUserOnlineStatus(userId, false);
+        await ServerJoinedListener.setUserOnlineStatus(userId, UserStatuses.Offline);
     }
 
-    private static async setUserOnlineStatus(userId: string, online: boolean): Promise<void> {
+    private static async setUserOnlineStatus(userId: string, status: UserStatuses): Promise<void> {
         const user: UserDocument = await getUserById(Types.ObjectId(userId));
-        user.online = online;
+        user.status = status;
 
         await user.save();
     }

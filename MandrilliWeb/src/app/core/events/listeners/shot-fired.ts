@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 
 import { ServerListener } from './base/server-listener';
-import { Shot } from '../../model/api/match/shot';
-
-export interface ShotFiredEventData extends Shot {
-}
+import { ShotData } from '../../model/events/shot-data';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -15,9 +12,9 @@ export interface ShotFiredEventData extends Shot {
  * the fired shot.
  */
 Injectable({
-    providedIn: "root"
-})
-export class ShotFiredListener extends ServerListener<ShotFiredEventData> {
+    providedIn: 'root',
+});
+export class ShotFiredListener extends ServerListener<ShotData> {
     constructor(client: Socket) {
         super(client, 'shot-fired');
     }

@@ -8,7 +8,7 @@ import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { NotificationReceivedEmitter } from '../events/emitters/notification-received';
 import { ioServer } from '../index';
 import { AuthenticatedRequest } from './utils/authenticated-request';
-import { Notification } from '../model/events/notification';
+import { NotificationData } from '../model/events/notification-data';
 import { NotificationDeletedEmitter } from '../events/emitters/notification-deleted';
 import { Emitter } from '../events/emitters/base/emitter';
 
@@ -80,8 +80,8 @@ router.post(
             // Notify the user of the new notification
             const notifier = new NotificationReceivedEmitter(ioServer, userId);
 
-            const notificationData: Notification = {
-                type: reqType.valueOf(),
+            const notificationData: NotificationData = {
+                type: reqType,
                 sender: senderObjId.toString(),
             };
             notifier.emit(notificationData);
@@ -127,8 +127,8 @@ router.delete(
             // Notify the user of the new notification
             const notifier = new NotificationDeletedEmitter(ioServer, userId);
 
-            const notificationData: Notification = {
-                type: reqType.valueOf(),
+            const notificationData: NotificationData = {
+                type: reqType,
                 sender: senderObjId.toString(),
             };
             notifier.emit(notificationData);

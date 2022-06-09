@@ -4,7 +4,6 @@ import { Types } from 'mongoose';
 import {
     getMatchById,
     MatchDocument,
-    createMatch,
     updateMatchStats,
     MatchModel,
     getMatchByUserId,

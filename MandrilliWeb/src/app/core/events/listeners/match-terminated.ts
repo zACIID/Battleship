@@ -2,19 +2,7 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 
 import { ServerListener } from './base/server-listener';
-
-/**
- * Enumeration that defines all the possible reasons why a match could terminate
- */
-export enum MatchTerminatedReason {
-    PlayerLeftTheGame = 'A player has left the game',
-    Player1Won = 'Player 1 has won the game',
-    Player2Won = 'Player 2 has won the game',
-}
-
-export interface MatchTerminatedData {
-    reason: MatchTerminatedReason;
-}
+import { MatchTerminatedData } from '../../model/events/match-terminated-data';
 
 /**
  * Class that wraps Socket.io functionality to listen

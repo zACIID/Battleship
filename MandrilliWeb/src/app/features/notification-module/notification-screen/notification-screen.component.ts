@@ -1,10 +1,9 @@
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { NotificationOverview } from './../../../core/model/user/notification-overview';
 import { FriendRequestAcceptedEmitter } from './../../../core/events/emitters/friend-request-accepted';
-import { Message } from './../../../core/model/chat/message';
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
-import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
 import { Component, OnInit } from '@angular/core';
+import { NotificationType } from '../../../core/model/user/notification';
 
 @Component({
     selector: 'app-notification-screen',
@@ -12,95 +11,76 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./notification-screen.component.css'],
 })
 export class NotificationScreenComponent implements OnInit {
-
-    public userId: string = ""
+    public userId: string = '';
     public friendNotifications: NotificationOverview[] = [];
     public battleNotifications: NotificationOverview[] = [];
 
-
     // TODO resolve NullInjectorError on FriendRequestAcceptedEmitter
     constructor(
-        private notificationClient: NotificationApi,
-        private userClient: UserApi,
+        private notificationApi: NotificationApi,
+        private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter
     ) {}
 
     ngOnInit(): void {
-        this.userId = localStorage.getItem('id') || "";
+        this.userId = localStorage.getItem('id') || '';
 
-        try{
-            this.notificationClient.getNotifications(this.userId).subscribe(data => {
-                for(let not of data){
-                    if(not.type === "FriendRequest"){
-
-
-                        this.userClient.getUser(not.sender).subscribe( usr => {
+        try {
+            this.notificationApi.getNotifications(this.userId).subscribe((data) => {
+                for (let not of data) {
+                    if (not.type === NotificationType.FriendRequest) {
+                        this.userApi.getUser(not.sender).subscribe((usr) => {
                             usr.username;
-                            this.friendNotifications.push({ 
+                            this.friendNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
-                                username: usr.username
+                                senderUsername: usr.username,
                             });
                         });
-                        
-                    }
-                    else{
-
-                        this.userClient.getUser(not.sender).subscribe( usr => {
+                    } else {
+                        this.userApi.getUser(not.sender).subscribe((usr) => {
                             usr.username;
-                            this.battleNotifications.push({ 
+                            this.battleNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
-                                username: usr.username
+                                senderUsername: usr.username,
                             });
                         });
-
                     }
                 }
             });
-        }
-        catch(err){
-
-        }
-
+        } catch (err) {}
     }
 
-
-    public acceptFriend(friendId: string){
-        
+    public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
             userToNotifyId: friendId,
-            friendId: this.userId
-        })
-
+            friendId: this.userId,
+        });
     }
 
-    public refuseFriend(friendId: string){
-        try{
-            this.notificationClient.removeNotification(this.userId, {type: "FriendRequest", sender: friendId});
-        }
-        catch(err){
-            console.log("error removing friend notification: " + err);
+    public refuseFriend(friendId: string) {
+        try {
+            this.notificationApi.removeNotification(this.userId, {
+                type: NotificationType.FriendRequest,
+                sender: friendId,
+            });
+        } catch (err) {
+            console.log('error removing friend notification: ' + err);
         }
     }
-
-
 
     // TODO to implement
-    public acceptBattle(friendId: string){
-        
-    }
+    public acceptBattle(friendId: string) {}
 
-    public refuseBattle(friendId: string){
-        
-        try{
-            this.notificationClient.removeNotification(this.userId, {type: "BattleRequest", sender: friendId});
+    public refuseBattle(friendId: string) {
+        try {
+            this.notificationApi.removeNotification(this.userId, {
+                type: NotificationType.MatchRequest,
+                sender: friendId,
+            });
+        } catch (err) {
+            console.log('error removing battle notification: ' + err);
         }
-        catch(err){
-            console.log("error removing battle notification: " + err);
-        }
-
-
     }
-
 }

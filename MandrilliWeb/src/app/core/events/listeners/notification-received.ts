@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 
 import { ServerListener } from './base/server-listener';
-
-export interface NotificationEventData extends Notification {}
+import { NotificationData } from '../../model/events/notification-data';
 
 /**
  * Class that wraps Socket.io functionality to listen
@@ -14,7 +13,7 @@ export interface NotificationEventData extends Notification {}
 Injectable({
     providedIn: 'root',
 });
-export class NotificationReceivedListener extends ServerListener<NotificationEventData> {
+export class NotificationReceivedListener extends ServerListener<NotificationData> {
     constructor(client: Socket) {
         super(client, 'notification-received');
     }

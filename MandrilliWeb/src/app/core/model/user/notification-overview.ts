@@ -1,20 +1,8 @@
-export interface NotificationOverview {
-    
-    /**
-     * type of the notification
-     */
-    type: string;
+import { Notification } from './notification';
 
-
-    /**
-     * Id of the user that generated the notification
-     */
-    sender: string;
-
-
+export interface NotificationOverview extends Notification {
     /**
      * username of the sender
      */
-    username: string;
-
+    senderUsername: string;
 }

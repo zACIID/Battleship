@@ -1,4 +1,4 @@
-export interface StateChangedData {
+export interface PlayerStateChangedData {
     /**
      * Id of the player that changed his state
      */
