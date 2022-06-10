@@ -8,9 +8,9 @@ import { MatchData } from '../../model/events/match-data';
  * This allows the client to notify the server that it should stop sending data
  * about events of a specific match.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class MatchLeftEmitter extends Emitter<MatchData> {
     public constructor(client: Socket) {
         super(client, `match-left`);

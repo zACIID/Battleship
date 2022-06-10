@@ -9,9 +9,9 @@ import { MatchData } from '../../model/events/match-data';
  * This allows the client to listen for events about a specific match,
  * i.e. shots fired, changes of player state, etc.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class MatchJoinedEmitter extends Emitter<MatchData> {
     public constructor(client: Socket) {
         super(client, `match-joined`);

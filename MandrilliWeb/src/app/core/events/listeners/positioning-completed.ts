@@ -11,9 +11,9 @@ import { GenericMessage } from '../../model/events/generic-message';
  * have completed their positioning and the actual game phase
  * can start.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class PositioningCompletedListener extends ServerListener<GenericMessage> {
     constructor(client: Socket) {
         super(client, 'positioning-completed');

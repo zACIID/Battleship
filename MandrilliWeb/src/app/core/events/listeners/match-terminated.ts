@@ -12,9 +12,9 @@ import { MatchTerminatedData } from '../../model/events/match-terminated-data';
  * The server sends a message containing the reason the match was terminated,
  * which could be either that one player has left the match or one player has won.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class MatchTerminatedListener extends ServerListener<MatchTerminatedData> {
     constructor(client: Socket) {
         super(client, 'match-terminated');

@@ -10,9 +10,9 @@ import { NotificationData } from '../../model/events/notification-data';
  * Such event allows the user to be notified when a new request
  * is sent to him.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class NotificationReceivedListener extends ServerListener<NotificationData> {
     constructor(client: Socket) {
         super(client, 'notification-received');

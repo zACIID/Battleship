@@ -9,9 +9,9 @@ import { ChatData } from '../../model/events/chat-data';
  * This allows the client to listen for events about a specific chat,
  * i.e. listening to messages of the chat he joined.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class ChatJoinedEmitter extends Emitter<ChatData> {
     public constructor(client: Socket) {
         super(client, `chat-joined`);

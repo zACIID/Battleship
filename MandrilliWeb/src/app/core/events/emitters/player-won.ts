@@ -10,9 +10,9 @@ import { PlayerWonData } from '../../model/events/player-won-data';
  * update the game state accordingly and notify players and spectators that
  * the match has ended.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class PlayerWonEmitter extends Emitter<PlayerWonData> {
     public constructor(client: Socket) {
         super(client, `player-won`);

@@ -16,7 +16,7 @@ export class LoginScreenComponent implements OnInit {
         private accessTokenStorage: JwtStorage,
         private userIdStorage: UserIdStorage,
         private router: Router,
-        private emitter: ServerJoinedEmitter
+        private serverJoinedEmitter: ServerJoinedEmitter
     ) {}
 
     ngOnInit(): void {}
@@ -31,7 +31,7 @@ export class LoginScreenComponent implements OnInit {
             this.authClient.login(loginInfo).subscribe((data: AuthResult) => {
                 this.accessTokenStorage.store(data.jwt);
                 this.userIdStorage.store(data.userId);
-                this.emitter.emit({ userId: data.userId });
+                this.serverJoinedEmitter.emit({ userId: data.userId });
                 this.router.navigate(['/homepage']);
             });
         } catch (err) {

@@ -11,9 +11,9 @@ import { MatchData } from '../../model/events/match-data';
  * a new match for him. This can happen either when another user accepts a match
  * request or when the matchmaking engine finds a suitable pair of players for a game.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class MatchFoundListener extends ServerListener<MatchData> {
     constructor(client: Socket) {
         super(client, 'match-found');

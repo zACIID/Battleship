@@ -10,9 +10,9 @@ import { NotificationData } from '../../model/events/notification-data';
  * Such event allows the user to be notified when one of his
  * notification was deleted by the server.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class NotificationDeletedEvent extends ServerListener<NotificationData> {
     constructor(client: Socket) {
         super(client, 'notification-deleted');

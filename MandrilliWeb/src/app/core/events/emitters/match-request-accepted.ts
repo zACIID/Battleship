@@ -10,9 +10,9 @@ import { RequestAcceptedData } from '../../model/events/request-accepted-data';
  * so that the server can arrange the match and notify the two players
  * about the game that has started.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class MatchRequestAcceptedEmitter extends Emitter<RequestAcceptedData> {
     public constructor(client: Socket) {
         super(client, `match-request-accepted`);

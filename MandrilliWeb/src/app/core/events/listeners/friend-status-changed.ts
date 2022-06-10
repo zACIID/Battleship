@@ -10,9 +10,9 @@ import { FriendStatusChangedData } from '../../model/events/friend-status-change
  * Such event allows the client to get notified by the server when
  * one of the user's friends changes his status.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class FriendStatusChangedListener extends ServerListener<FriendStatusChangedData> {
     constructor(client: Socket) {
         super(client, 'friend-status-changed');

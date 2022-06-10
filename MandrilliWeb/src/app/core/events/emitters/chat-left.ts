@@ -9,9 +9,9 @@ import { ChatData } from '../../model/events/chat-data';
  * This allows the client to notify the server that it should stop sending data
  * about events of a specific chat.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class ChatLeftEmitter extends Emitter<ChatData> {
     public constructor(client: Socket) {
         super(client, `chat-left`);

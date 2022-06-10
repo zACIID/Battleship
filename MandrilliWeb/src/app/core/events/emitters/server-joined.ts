@@ -9,9 +9,9 @@ import { UserData } from '../../model/events/user-data';
  * It also allows the server to detect and update the status of a user,
  * for example setting it online or offline.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class ServerJoinedEmitter extends Emitter<UserData> {
     public constructor(client: Socket) {
         super(client, `server-joined`);

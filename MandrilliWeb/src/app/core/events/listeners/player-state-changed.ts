@@ -11,9 +11,9 @@ import { PlayerStateChangedData } from '../../model/events/player-state-changed-
  * match changes his "ready" state, which defines if he has completed
  * his positioning phase or not.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class PlayerStateChangedListener extends ServerListener<PlayerStateChangedData> {
     constructor(client: Socket) {
         super(client, 'player-state-changed');

@@ -11,9 +11,9 @@ import { ShotData } from '../../model/events/shot-data';
  * during the match, with the server sending information about
  * the fired shot.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class ShotFiredListener extends ServerListener<ShotData> {
     constructor(client: Socket) {
         super(client, 'shot-fired');

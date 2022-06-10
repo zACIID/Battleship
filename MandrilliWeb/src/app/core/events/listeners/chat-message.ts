@@ -10,9 +10,9 @@ import { ChatMessage } from '../../model/events/chat-message';
  * Such event allows the user to be notified when new messages
  * are written to the chat(s) he is active in.
  */
-Injectable({
+@Injectable({
     providedIn: 'root',
-});
+})
 export class ChatMessageListener extends ServerListener<ChatMessage> {
     constructor(client: Socket) {
         super(client, 'chat-message');
