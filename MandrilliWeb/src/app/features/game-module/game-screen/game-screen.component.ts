@@ -6,6 +6,7 @@ import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 import { Match } from 'src/app/core/model/match/match';
 import { ActivatedRoute } from '@angular/router';
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
+import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
 
 @Component({
     selector: 'app-game-screen',
@@ -24,17 +25,16 @@ export class GameScreenComponent implements OnInit {
         private matchClient: MatchApi,
     ) {}
 
-    ngOnInit(): void {}
-
-    
-    private getMatch(){
+    ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.match.matchId = params['id'];
         });
         this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
             this.match = data
         })
+        this.joinMatch()
     }
+
 
     public doMove(){
         //depends on how gwends wants to retrieve user command 
@@ -59,5 +59,9 @@ export class GameScreenComponent implements OnInit {
         } else {
             throw new Error('Match has not been set');
         }
+    }
+
+    private pollingOpponets() {
+        
     }
 }
