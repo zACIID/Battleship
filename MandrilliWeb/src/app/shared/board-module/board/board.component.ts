@@ -12,11 +12,12 @@ export class BoardComponent implements OnInit {
     
     @Input () state?: BattleshipGrid;
     @Input () triggerUpdate: number = 0;
+    
 
-    constructor(@Inject(DOCUMENT) document: Document) {}
+    constructor() {}
 
     ngOnInit(): void {
-        console.log(this.state);
+
         if(this.state){
             for(let ship of this.state.ships){
 
@@ -49,9 +50,19 @@ export class BoardComponent implements OnInit {
 
 
     ngOnChanges(): void{
-        console.log(this.triggerUpdate);
-        console.log(this.state);
         this.ngOnInit();
+        
+        if(this.triggerUpdate == -1){
+            
+            for(let i = 0; i < 10; i++){
+                for(let j = 0; j < 10; j++){
+                    let square: HTMLElement | null = document.getElementById(i.toString() + j.toString());
+                    if(square){
+                        square.innerText = ""
+                    }
+                }
+            }
+        }
     }
 
 }

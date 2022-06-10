@@ -7,3 +7,8 @@
 .shoot{
     border: 2px solid red
 }
+
+
+.boardLabel{
+    border: 3px solid gray
+}

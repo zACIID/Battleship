@@ -12,9 +12,13 @@
                 <div class="board-height">
                     <board [state]="grid" [triggerUpdate]="trigger"></board>
                 </div>
-                <div class="width-80 margin-auto mt-5">
-                    <button class="button width-40 is-medium is-success mr-6" disabled>Battle</button>
-                    <button class="button width-40 is-medium is-primary is-outlined">Random Deploy</button>
+                <div  class="width-80 margin-auto has-text-centered mt-0 height-20px mb-4">
+                    <p *ngIf="positioningError.error" class="has-text-danger is-size-5">{{positioningError.errorMessage}}</p>
+                </div>
+                <div class=" is-flex margin-auto">
+                    <button class="button width-40 is-medium is-success mr-2" [disabled]="!ready">Battle</button>
+                    <button class="button width-40 is-medium is-primary is-outlined mr-2">Random Deploy</button>
+                    <button class="button width-40 is-medium is-primary is-outlined" (click)="reset()">Reset</button>
                 </div>
                 
 
@@ -33,7 +37,7 @@
                     <div class="column ">
                         <div class="columns mb-0">
                             <div class="column">
-                                <strong class="has-weight-semibold mb-1">Carrier - 5 x 1</strong>
+                                <strong class="has-weight-semibold mb-1">Carrier - {{carrierCount}} left</strong>
                             
                                 <div>
                                     
@@ -47,7 +51,7 @@
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
-                                <button class="button is-info" alt="Deploy" (click)="deploy('Carrier', rowCarrier.value, colCarrier.value, carrierVertical.checked)">D</button>
+                                <button [disabled]="carrierCount == 0"  class="button is-info" alt="Deploy" (click)="deploy('Carrier', rowCarrier.value, colCarrier.value, carrierVertical.checked)">D</button>
                             </div>
                         </div>
                         <div class="is-flex">
@@ -70,21 +74,21 @@
                     <div class="column ">
                         <div class="columns mb-0">
                             <div class="column">
-                                <strong class="has-weight-semibold mb-1">battleship - 4 x 1</strong>
+                                <strong class="has-weight-semibold mb-1">Battleship - {{battleshipCount}} left</strong>
                             
                                 <div>
                                     
                                     <label class="radio mr-3">
-                                        <input type="radio" name="direction" value="vertical" checked #battleshipVertical >Vertical
+                                        <input type="radio" name="battleshipDirection" value="vertical" checked #battleshipVertical >Vertical
                                     </label>
                                     <label class="radio">
-                                        <input type="radio" name="direction" value="horizontal">Horizontal
+                                        <input type="radio" name="battleshipDirection" value="horizontal">Horizontal
                                     </label>
                                     
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
-                                <button class="button is-info" alt="Deploy" (click)="deploy('Battleship', rowBattleship.value, colBattleship.value, battleshipVertical.checked)">D</button>
+                                <button [disabled]="battleshipCount == 0" class="button is-info" alt="Deploy" (click)="deploy('Battleship', rowBattleship.value, colBattleship.value, battleshipVertical.checked)">D</button>
                             </div>
                         </div>
                         <div class="is-flex">
@@ -107,21 +111,21 @@
                     <div class="column ">
                         <div class="columns mb-0">
                             <div class="column">
-                                <strong class="has-weight-semibold mb-1">Cruiser - 3 x 1</strong>
+                                <strong class="has-weight-semibold mb-1">Cruiser - {{cruiserCount}} left</strong>
                             
                                 <div>
                                     
                                     <label class="radio mr-3">
-                                        <input type="radio" name="direction" value="vertical" checked #cruiserVertical >Vertical
+                                        <input type="radio" name="cruiserDirection" value="vertical" checked #cruiserVertical >Vertical
                                     </label>
                                     <label class="radio">
-                                        <input type="radio" name="direction" value="horizontal" >Horizontal
+                                        <input type="radio" name="cruiserDirection" value="horizontal" >Horizontal
                                     </label>
                                     
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
-                                <button class="button is-info" alt="Deploy" (click)="deploy('Cruiser', rowCruiser.value, colCruiser.value, cruiserVertical.checked)">D</button>
+                                <button [disabled]="cruiserCount == 0" class="button is-info" alt="Deploy" (click)="deploy('Cruiser', rowCruiser.value, colCruiser.value, cruiserVertical.checked)">D</button>
                             </div>
                         </div>
                         <div class="is-flex">
@@ -144,21 +148,21 @@
                     <div class="column">
                         <div class="columns mb-0">
                             <div class="column">
-                                <strong class="has-weight-semibold mb-1">Destroyer - 2 x 1</strong>
+                                <strong class="has-weight-semibold mb-1">Destroyer - {{destroyerCount}} left</strong>
                             
                                 <div>
                                     
                                     <label class="radio mr-3">
-                                        <input type="radio" name="direction" value="vertical" checked #destroyerVertical>Vertical
+                                        <input type="radio" name="destroyerDirection" value="vertical" checked #destroyerVertical>Vertical
                                     </label>
                                     <label class="radio">
-                                        <input type="radio" name="direction" value="horizontal">Horizontal
+                                        <input type="radio" name="destroyerDirection" value="horizontal">Horizontal
                                     </label>
                                     
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
-                                <button class="button is-info" alt="Deploy" (click)="deploy('Destroyer', rowDestroyer.value, colDestroyer.value, destroyerVertical.checked)">D</button>
+                                <button [disabled]="destroyerCount == 0" class="button is-info" alt="Deploy" (click)="deploy('Destroyer', rowDestroyer.value, colDestroyer.value, destroyerVertical.checked)">D</button>
                             </div>
                         </div>
                         <div class="is-flex">
@@ -196,8 +200,10 @@
 
         </div>
         
-        <div class="chat-height p-4">
-            <chat-body></chat-body>
+        <div class="chat-height p-4 mt-6">
+            <div class="box has-background-light has-text-centered">
+                <strong class="is-size-4 has-weight-bold">Chat will be available after the preparation phase</strong>
+            </div>
         </div>
 
     </div>
