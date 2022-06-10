@@ -29,6 +29,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
     public opponentReady: boolean = false;
     private userId: string = ""
     private matchId: string = ""
+    public allowRandomDeploy: boolean = false;
 
     public carrierCount: number = 1;
     public battleshipCount: number = 2;
@@ -80,6 +81,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
     }
 
     private parseCoord(coord: string): number{
+        
         coord = coord.toUpperCase();
         switch(coord){
             case 'A': return 0; 
@@ -134,12 +136,12 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
         let startingRow = this.parseCoord(row);
         let startingCol = this.parseCoord(col);
-
+        console.log(this.isValidCoords(startingRow, startingCol))
         if(this.isValidCoords(startingRow, startingCol)){
 
             let coords: GridCoordinates[] = [];
 
-            if(vertical && this.isValidCoords(startingRow+length, startingCol)){
+            if(vertical && this.isValidCoords(startingRow + (length-1), startingCol)){
                 
                 let invalidPosition = false;
                 for(let i = 0; i < length; i++){
@@ -165,7 +167,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     return false;
                 }
             }
-            else if(!vertical && this.isValidCoords(startingRow, startingCol+length)){
+            else if(!vertical && this.isValidCoords(startingRow, startingCol + (length - 1))){
 
                 let invalidPosition = false;
                 for(let i = 0; i < length ; i++){
@@ -191,7 +193,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     return false;
                 }
             }
-            
         }
         
         this.positioningError.error = true;
@@ -209,12 +210,14 @@ export class PreparationPhaseScreenComponent implements OnInit {
             case "Destroyer": this.destroyerCount--; break;
         }
 
+        this.allowRandomDeploy=true;
         if(this.carrierCount == 0 && this.battleshipCount == 0 && this.cruiserCount == 0 && this.destroyerCount == 0){
             this.ready = true;
         }
     }
 
     public reset(){
+        this.allowRandomDeploy = false;
         this.grid = new BattleshipGrid;
         this.ready = false;
         this.trigger = -1;

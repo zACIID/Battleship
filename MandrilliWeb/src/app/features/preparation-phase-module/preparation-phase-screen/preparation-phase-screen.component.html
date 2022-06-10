@@ -17,8 +17,8 @@
                 </div>
                 <div class=" is-flex margin-auto">
                     <button id="ready-button" class="button width-40 is-medium is-success mr-2" [disabled]="!ready" (click)="beReady()">Battle</button>
-                    <button id="random-deploy-button" class="button width-40 is-medium is-primary is-outlined mr-2" (click)="randomDeploy()" [disabled]="ready">Random Deploy</button>
-                    <button id="reset-button" class="button width-40 is-medium is-primary is-outlined" (click)="reset()">Reset</button>
+                    <button id="random-deploy-button" class="button width-40 is-medium is-primary is-outlined mr-2" (click)="randomDeploy()" [disabled]="allowRandomDeploy">Random Deploy</button>
+                    <button id="reset-button" class="button width-40 is-medium is-primary is-outlined"  (click)="reset()">Reset</button>
                 </div>
                 
 

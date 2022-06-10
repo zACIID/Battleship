@@ -13,7 +13,8 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'game/:id',
+        //TODO add :id parameter after the end of the graphical debugging process -> 
+        path: 'game',
         loadChildren: () => import('./features/game-module/game.module').then((m) => m.GameModule),
     },
     {
@@ -57,7 +58,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'preparation-phase',
+        path: 'preparation-phase/:id',
         loadChildren: () =>
             import('./features/preparation-phase-module/preparation-phase.module').then(
                 (m) => m.PreparationPhaseModule
@@ -93,7 +94,7 @@ const routes: Routes = [
             import('./features/user-chat-module/user-chat.module').then((m) => m.UserChatModule),
     },
     {
-        path: '',
+        path: '**',
         redirectTo: '/authentication/login',
         pathMatch: 'full',
     },
