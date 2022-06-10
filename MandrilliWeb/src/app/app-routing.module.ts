@@ -57,7 +57,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'preparation-phase/:id',
+        path: 'preparation-phase',
         loadChildren: () =>
             import('./features/preparation-phase-module/preparation-phase.module').then(
                 (m) => m.PreparationPhaseModule
