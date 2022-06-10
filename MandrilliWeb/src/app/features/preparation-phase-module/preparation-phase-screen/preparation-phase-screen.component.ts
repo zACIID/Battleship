@@ -30,10 +30,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
     public cruiserCount: number = 3;
     public destroyerCount: number = 5;
 
-    public ready: boolean = false;
-
-
-    constructor() {}
 
     constructor(
         private route: ActivatedRoute,
@@ -54,7 +50,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
         if(!isNaN(row) && !isNaN(col)){
             if ((row <= 9 && row >= 0 ) && (col <= 9 && col >= 0)){
 
-                
                 for(let ship of this.grid.ships){
                     for(let coord of ship.coordinates)
                         if(coord.row == row && coord.col == col){
@@ -121,10 +116,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     }
 
                     let newShip: Ship = {coordinates: coords, type: shipType};
-
                     this.grid.ships.push(newShip);
                     this.trigger++;
-
                     this.decreaseCount(shipType);
                     
                 }
@@ -132,11 +125,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     this.positioningError.error = true;
                     this.positioningError.errorMessage  =  shipType + this.positioningError.errorMessage;
                 }
-                
-
             }
             else if(!vertical && this.isValidCoords(startingRow, startingCol+length)){
-
 
                 let invalidPosition = false;
                 for(let i = 0; i < length ; i++){
@@ -151,10 +141,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     }
 
                     let newShip: Ship = {coordinates: coords, type: shipType};
-
                     this.grid.ships.push(newShip);
                     this.trigger++;
-
                     this.decreaseCount(shipType);
                     
                 }
@@ -162,7 +150,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     this.positioningError.error = true;
                     this.positioningError.errorMessage  =  shipType + this.positioningError.errorMessage;
                 }
-
             }
             
         }
@@ -175,22 +162,10 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     private decreaseCount(shipType: string): void{
         switch(shipType){
-            case "Carrier": {
-                this.carrierCount--;
-                break;
-            }
-            case "Battleship": {
-                this.battleshipCount--;
-                break;
-            }
-            case "Cruiser": {
-                this.cruiserCount--;
-                break;
-            }
-            case "Destroyer": {
-                this.destroyerCount--;
-                break;
-            }
+            case "Carrier": this.carrierCount--; break;
+            case "Battleship": this.battleshipCount--; break;
+            case "Cruiser": this.cruiserCount--; break;
+            case "Destroyer": this.destroyerCount--; break;
         }
 
         if(this.carrierCount == 0 && this.battleshipCount == 0 && this.cruiserCount == 0 && this.destroyerCount == 0){
@@ -200,6 +175,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     public reset(){
         this.grid = new BattleshipGrid;
+        this.ready = false;
         this.trigger = -1;
         this.carrierCount = 1;
         this.battleshipCount = 2;
