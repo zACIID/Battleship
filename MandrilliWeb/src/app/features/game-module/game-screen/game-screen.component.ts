@@ -4,9 +4,11 @@ import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 import { Match } from 'src/app/core/model/match/match';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
+import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
+import { ShotData } from 'src/app/core/model/events/shot-data';
 
 @Component({
     selector: 'app-game-screen',
@@ -23,16 +25,19 @@ export class GameScreenComponent implements OnInit {
         private fleeWinnerEmitter: PlayerWonEmitter,
         private userIdProvider: UserIdProvider,
         private matchClient: MatchApi,
+        private router: Router, 
+        private shotListener: ShotFiredListener
     ) {}
 
     ngOnInit(): void {
-        this.route.params.subscribe((params) => {
+        let obs = this.route.params.subscribe((params) => {
             this.match.matchId = params['id'];
         });
-        this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
+        obs.add(this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
             this.match = data
-        })
+        }))
         this.joinMatch()
+        this.shotListener.listen(this.pollingOpponetHits)
     }
 
 
@@ -61,7 +66,7 @@ export class GameScreenComponent implements OnInit {
         }
     }
 
-    private pollingOpponets() {
-        
+    private pollingOpponetHits(data: ShotData) {
+        this.match.player1.grid.shotsReceived.push({row: data.coordinates.row, col: data.coordinates.col})
     }
 }
