@@ -23,7 +23,7 @@ export class NotificationScreenComponent implements OnInit {
         private notificationApi: NotificationApi,
         private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter,
-        private userIdProvider: UserIdProvider
+        private userIdProvider: UserIdProvider,
     ) {}
 
     ngOnInit(): void {
@@ -51,14 +51,14 @@ export class NotificationScreenComponent implements OnInit {
                         });
                     }
                 }
-            });
+            }); 
         } catch (err) {}
     }
 
     public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
-            receiverId: this.userId,
-            senderId: friendId,
+            receiverId: friendId,
+            senderId: this.userId,
         });
     }
 
