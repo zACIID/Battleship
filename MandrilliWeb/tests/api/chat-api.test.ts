@@ -34,12 +34,18 @@ describe('Get Chat', () => {
     test('Get Chat Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
 
+        // TODO error: jwt malformed
         const chatObs: Observable<Chat> = chatApi.getChat(setupData.insertedData.chatId);
         chatObs.subscribe((chat: Chat) => {
             expect(chat).toBeTruthy();
 
-            // TODO capire come estrarre properties da Chat per poterle confrontare
-            expect(chat).toHaveProperty('some-prop');
+            expect(chat).toEqual(
+                expect.objectContaining<Chat>({
+                    chatId: expect.any(String),
+                    messages: expect.any(Array),
+                    users: expect.any(Array),
+                })
+            );
 
             done();
         });
@@ -48,7 +54,7 @@ describe('Get Chat', () => {
     it('Get Chat Should Throw', () => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
 
-        expect(chatApi.getChat('wrong-chat-id')).toThrow();
+        expect(async () => await firstValueFrom(chatApi.getChat('wrong-chat-id'))).toThrow();
     });
 });
 

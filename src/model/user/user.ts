@@ -310,6 +310,8 @@ UserSchema.methods.addRelationshipSymmetrically = async function (
                 return true;
             }
         }
+
+        return false;
     };
 
     // TODO friendId could be set to unique to avoid this check

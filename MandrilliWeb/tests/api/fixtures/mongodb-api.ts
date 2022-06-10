@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
+// https://stackoverflow.com/questions/42677387/jest-returns-network-error-when-doing-an-authenticated-request-with-axios
+axios.defaults.adapter = require('axios/lib/adapters/http');
+
 import * as dbUser from '../../../../src/model/user/user';
 import * as dbMatch from '../../../../src/model/match/match';
 import * as dbChat from '../../../../src/model/chat/chat';
@@ -22,7 +25,8 @@ export interface MongoDpApiCredentials {
 }
 
 export const getApiCredentials = async (): Promise<MongoDpApiCredentials> => {
-    const reqUrl: string = `${environment.apiBaseUrl}/testing/mongoDbApi/credentials`;
+    const reqUrl: string = `${environment.apiBaseUrl}/api/testing/mongoDbApi/credentials`;
+
     const res: AxiosResponse<MongoDpApiCredentials> = await axios.get<MongoDpApiCredentials>(
         reqUrl
     );
@@ -66,6 +70,14 @@ export interface MongoDbFilterReq extends MongoDbReqBody {
     filter: FilterQuery<Document>;
 
     // There could be other fields, but these are sufficient for my purposes
+}
+
+/**
+ * Wrapper for actual ObjectIds that needs to be sent in order to tell
+ * the MongoDb Data Api that the value is indeed an ObjectId
+ */
+interface RequestObjectId {
+    $oid: string | Types.ObjectId;
 }
 
 export interface MongoDbSingleInsertResponse {
@@ -117,7 +129,7 @@ export class MongoDbApi {
         _id: string
     ): Promise<T> {
         const filter: FilterQuery<Document> = {
-            _id: Types.ObjectId(_id),
+            _id: MongoDbApi.convertToRequestObjId(_id),
         };
 
         return await this.getDocument<T>(filter, collectionName);
@@ -238,7 +250,7 @@ export class MongoDbApi {
     public async deleteUser(_id: string): Promise<void> {
         return await this.deleteDocument(
             {
-                _id: _id,
+                _id: MongoDbApi.convertToRequestObjId(_id),
             },
             dbCollectionNames.userCollection
         );
@@ -251,7 +263,7 @@ export class MongoDbApi {
     public async deleteChat(_id: string): Promise<void> {
         return await this.deleteDocument(
             {
-                _id: _id,
+                _id: MongoDbApi.convertToRequestObjId(_id),
             },
             dbCollectionNames.chatCollection
         );
@@ -264,7 +276,7 @@ export class MongoDbApi {
     public async deleteMatch(_id: string): Promise<void> {
         return await this.deleteDocument(
             {
-                _id: _id,
+                _id: MongoDbApi.convertToRequestObjId(_id),
             },
             dbCollectionNames.matchCollection
         );
@@ -321,6 +333,8 @@ export class MongoDbApi {
                 headers: reqHeaders,
             };
 
+            MongoDbApi.logRequest(reqParams);
+
             const res = await axios.post<R>(url, reqData, axiosReqConfig);
             return res.data;
         } catch (err) {
@@ -331,5 +345,16 @@ export class MongoDbApi {
 
             throw err;
         }
+    }
+
+    private static logRequest(reqParams: MongoDbReqParams) {
+        console.log('[MongoDbApi] Request sent:');
+        console.log(reqParams);
+    }
+
+    private static convertToRequestObjId(objId: string | Types.ObjectId): RequestObjectId {
+        return {
+            $oid: objId,
+        };
     }
 }

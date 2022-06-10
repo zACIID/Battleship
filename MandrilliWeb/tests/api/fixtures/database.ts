@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 import {
     getApiCredentials,
     MongoDbApi,
@@ -6,25 +8,8 @@ import {
 } from './mongodb-api';
 import { User, UserRoles, UserStatus } from '../../../../src/model/user/user';
 import { Chat } from '../../../../src/model/chat/chat';
-import { Types } from 'mongoose';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
-
-/**
- * This is some bcrypt digests for a known (clear) password.
- * This is useful to insert such values when creating a user
- * and to know how to authenticate with it.
- */
-export const knownBcryptDigest = {
-    pwdHash: '',
-    pwdSalt: '',
-    clearPassword: '',
-};
-
-/**
- * This is the password that should be used when authenticating
- * to the server api
- */
-export const apiAuthPassword = knownBcryptDigest.clearPassword;
+import { apiAuthPassword, knownBcryptDigest } from './authentication';
 
 /**
  * Returns data that represents a user in the db.

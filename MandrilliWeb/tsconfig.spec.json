@@ -3,7 +3,10 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "./out-tsc/spec",
-        "types": ["jest", "@types/jest"]
+        "types": ["jest", "@types/jest"],
+
+        // This is needed because we didn't write the server code with strict enabled
+        "strict": false
     },
     "include": [
         "src/**/*.d.ts",

@@ -1,9 +1,8 @@
+import { firstValueFrom, Observable } from 'rxjs';
+
 import { JwtStorage } from '../../../src/app/core/api/jwt-auth/jwt-storage';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { LoginInfo, AuthApi, AuthResult } from '../../../src/app/core/api/handlers/auth-api';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, Observable } from 'rxjs';
-import { Jwt } from 'jsonwebtoken';
 
 /**
  * Class that provides jwt storage and provider stubs.
@@ -48,6 +47,23 @@ export class JwtStubProvider {
         };
     }
 }
+
+/**
+ * This is some bcrypt digests for a known (clear) password.
+ * This is useful to insert such values when creating a user
+ * and to know how to authenticate with it.
+ */
+export const knownBcryptDigest = {
+    pwdHash: '$2b$10$u4YAbPtjj2oCbZWKgFi1NuTqpvHlj2.A7ATGkEy8PM5eSCbZdK/Da',
+    pwdSalt: '$2b$10$u4YAbPtjj2oCbZWKgFi1Nu',
+    clearPassword: 'test',
+};
+
+/**
+ * This is the password that should be used when authenticating
+ * to the server api
+ */
+export const apiAuthPassword = knownBcryptDigest.clearPassword;
 
 export const authenticate = async (
     authApi: AuthApi,
