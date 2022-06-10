@@ -3,13 +3,14 @@ import { getRank } from './../../../core/model/user/elo-rankings';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { UserOverview } from './../../../core/model/user/user-overview';
 import { ChatApi } from './../../../core/api/handlers/chat-api';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouteReuseStrategy } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Message } from 'src/app/core/model/chat/message';
 import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-chat-screen',
@@ -23,20 +24,20 @@ export class ChatScreenComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private chatClient: ChatApi,
-        private userIdProvider: UserIdProvider,
         private chatMessageListener: ChatMessageListener,
         private joinEmitter: ChatJoinedEmitter,
-        private fleeEmitter: ChatLeftEmitter
+        private fleeEmitter: ChatLeftEmitter,
+        private userIdProvider: UserIdProvider,
+        private router: Router
     ) {}
 
-    //TODO capire come fare la leave chat e relativa emit
 
     ngOnInit(): void {
-        this.route.params.subscribe((params) => {
-            this.chatId = params['id'];
-        });
-
         try {
+            this.route.params.subscribe((params) => {
+                this.chatId = params['id'];
+            });
+
             this.chatClient.getChat(this.chatId).subscribe((data) => {
                 let userInSessionId: string = this.userIdProvider.getUserId();
                 for (let user of data.users) {
@@ -56,5 +57,10 @@ export class ChatScreenComponent implements OnInit {
                 this.chatId = params['id'];
             });
         });
+    }
+
+    public leaveChat(){
+        this.fleeEmitter.emit({chatId: this.chatId})
+        this.router.navigate(["/relationships"])
     }
 }

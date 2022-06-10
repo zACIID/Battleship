@@ -11,7 +11,7 @@
                 <div class="column">
                     <player-info [userId]="friend"></player-info>
                 </div>
-                <div class="column is-one-quarter pointer" [routerLink]="['/homepage']">
+                <div class="column is-one-quarter pointer" (click)="leaveChat()">
                     <div class="box has-background-light pointer">
                         <div class="has-text-centered">
                             <strong>BACK</strong>

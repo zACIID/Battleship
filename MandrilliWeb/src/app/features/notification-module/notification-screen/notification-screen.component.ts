@@ -6,6 +6,9 @@ import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { Component, OnInit } from '@angular/core';
 import { NotificationType } from '../../../core/model/user/notification';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
+import { NotificationReceivedListener } from 'src/app/core/events/listeners/notification-received';
+import { NotificationData } from 'src/app/core/model/events/notification-data';
+import { NotificationDeletedEvent } from 'src/app/core/events/listeners/notification-deleted';
 
 @Component({
     selector: 'app-notification-screen',
@@ -24,6 +27,8 @@ export class NotificationScreenComponent implements OnInit {
         private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter,
         private userIdProvider: UserIdProvider,
+        private notificationListener: NotificationReceivedListener, 
+        private notificationDelListener: NotificationDeletedEvent 
     ) {}
 
     ngOnInit(): void {
@@ -52,7 +57,27 @@ export class NotificationScreenComponent implements OnInit {
                     }
                 }
             }); 
-        } catch (err) {}
+        } catch (err) {
+            console.log(err)
+        }
+        this.notificationListener.listen(this.pollingNotifications)
+        this.notificationDelListener.listen(this.pollingDeletedNotifications)
+    }
+
+    private pollingNotifications(notification: NotificationData){
+        this.userApi.getUser(notification.sender).subscribe((user) => {
+            this.friendNotifications.push({
+                type: notification.type,
+                sender: notification.sender,
+                senderUsername: user.username,
+            });
+        })
+    }
+
+    private pollingDeletedNotifications(notification: NotificationData) {
+        this.friendNotifications = this.friendNotifications.filter((not) => {
+            return notification.sender === not.sender && notification.type === not.type
+        })
     }
 
     public acceptFriend(friendId: string) {
@@ -90,4 +115,6 @@ export class NotificationScreenComponent implements OnInit {
             console.log('error removing battle notification: ' + err);
         }
     }
+
+    
 }

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatchFoundListener } from 'src/app/core/events/listeners/match-found';
 
 @Component({
     selector: 'app-game-mode-screen',
@@ -6,7 +8,17 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./game-mode-screen.component.css'],
 })
 export class GameModeScreenComponent implements OnInit {
-    constructor() {}
+    constructor(
+        private matchListener: MatchFoundListener, 
+        private router: Router    
+    ) {}
 
     ngOnInit(): void {}
+
+    public startMatchMaking() {
+        this.matchListener.listen((data) => {
+            let reqpath = 'Observer/' + data.matchId
+            this.router.navigate([reqpath])
+        })
+    }
 }
