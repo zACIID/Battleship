@@ -9,6 +9,9 @@ import { PositioningCompletedListener } from 'src/app/core/events/listeners/posi
 import { GenericMessage } from 'src/app/core/model/events/generic-message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
+import { MatchApi } from 'src/app/core/api/handlers/match-api';
+import { Match } from 'src/app/core/model/match/match';
+import { concat } from 'rxjs/internal/observable/concat';
 
 @Component({
     selector: 'app-preparation-phase-screen',
@@ -24,6 +27,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
     public trigger: number = 0;
     public ready: boolean = false;
     public opponentReady: boolean = false;
+    private userId: string = ""
+    private matchId: string = ""
 
     public carrierCount: number = 1;
     public battleshipCount: number = 2;
@@ -36,12 +41,21 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private playerStateListener: PlayerStateChangedListener,
         private playersReadyListener: PositioningCompletedListener,
         private userIdProvider: UserIdProvider,
-        private router: Router
+        private router: Router,
+        private matchClient: MatchApi
     ) {}
 
     ngOnInit(): void {
-        this.playerStateListener.listen(this.pollingReadyRequest)
-        this.playersReadyListener.listen(this.pollingFullReadyRequest)
+        try{
+            this.userId = this.userIdProvider.getUserId()
+            this.route.params.subscribe((param) => {
+                this.matchId = param["matchId"]
+            })
+            this.playerStateListener.listen(this.pollingReadyRequest)
+            this.playersReadyListener.listen(this.pollingFullReadyRequest)
+        } catch(err){
+            console.log("MORE")
+        }
     }
 
 
@@ -185,14 +199,10 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     public beReady() {
         try {
-            let userId: string = this.userIdProvider.getUserId() 
-            let matchId: string
-            if (!this.ready) {
-                this.route.params.subscribe((param) => {
-                    matchId = param.matchId
-                })
-            }
-            
+            concat(this.matchClient.updatePlayerGrid(this.matchId, this.userId, this.grid),
+                this.matchClient.setReadyState(this.matchId, this.userId, true)).subscribe()
+            let btn: HTMLButtonElement | null = <HTMLButtonElement> document.getElementById("ready-button")
+            if (btn) btn.disabled = true
         } catch(err) {
             console.log(err)
         }
@@ -204,14 +214,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
     }
 
     private pollingFullReadyRequest(data: GenericMessage) : void {
-        console.log(data.message)
-        // TO DO: add where we goin
-        this.router.navigate([""])
+        const path: string = "/game/" + this.matchId
+        this.router.navigate([path])
     }
-
-    private startMatch() {
-
-    }
-
 
 }

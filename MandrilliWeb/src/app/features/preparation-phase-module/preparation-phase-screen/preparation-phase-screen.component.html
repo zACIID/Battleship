@@ -16,7 +16,7 @@
                     <p *ngIf="positioningError.error" class="has-text-danger is-size-5">{{positioningError.errorMessage}}</p>
                 </div>
                 <div class=" is-flex margin-auto">
-                    <button class="button width-40 is-medium is-success mr-2" [disabled]="!ready">Battle</button>
+                    <button id="ready-button" class="button width-40 is-medium is-success mr-2" [disabled]="!ready" (click)="beReady()">Battle</button>
                     <button class="button width-40 is-medium is-primary is-outlined mr-2">Random Deploy</button>
                     <button class="button width-40 is-medium is-primary is-outlined" (click)="reset()">Reset</button>
                 </div>
