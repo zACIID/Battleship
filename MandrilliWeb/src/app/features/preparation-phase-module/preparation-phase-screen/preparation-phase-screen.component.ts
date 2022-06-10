@@ -3,6 +3,12 @@ import { GridCoordinates } from './../../../core/model/match/coordinates';
 import { Ship } from './../../../core/model/match/ship';
 import { BattleshipGrid } from './../../../core/model/match/battleship-grid';
 import { Component, OnInit } from '@angular/core';
+import { PlayerStateChangedListener } from 'src/app/core/events/listeners/player-state-changed';
+import { PlayerStateChangedData } from 'src/app/core/model/events/player-state-changed-data';
+import { PositioningCompletedListener } from 'src/app/core/events/listeners/positioning-completed';
+import { GenericMessage } from 'src/app/core/model/events/generic-message';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 
 @Component({
     selector: 'app-preparation-phase-screen',
@@ -16,6 +22,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
     public grid: BattleshipGrid = new BattleshipGrid();
     public positioningError: HtmlErrorMessage = new HtmlErrorMessage();
     public trigger: number = 0;
+    public ready: boolean = false;
+    public opponentReady: boolean = false;
 
     public carrierCount: number = 1;
     public battleshipCount: number = 2;
@@ -27,7 +35,18 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit(): void {}
+    constructor(
+        private route: ActivatedRoute,
+        private playerStateListener: PlayerStateChangedListener,
+        private playersReadyListener: PositioningCompletedListener,
+        private userIdProvider: UserIdProvider,
+        private router: Router
+    ) {}
+
+    ngOnInit(): void {
+        this.playerStateListener.listen(this.pollingReadyRequest)
+        this.playersReadyListener.listen(this.pollingFullReadyRequest)
+    }
 
 
     private isValidCoords(row: number, col: number): boolean{
@@ -187,5 +206,36 @@ export class PreparationPhaseScreenComponent implements OnInit {
         this.cruiserCount = 3;
         this.destroyerCount = 5;
     }
+
+    public beReady() {
+        try {
+            let userId: string = this.userIdProvider.getUserId() 
+            let matchId: string
+            if (!this.ready) {
+                this.route.params.subscribe((param) => {
+                    matchId = param.matchId
+                })
+            }
+            
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
+    private pollingReadyRequest(data: PlayerStateChangedData) : void {
+        this.opponentReady = data.isReady
+        this.opponentsId = data.playerId
+    }
+
+    private pollingFullReadyRequest(data: GenericMessage) : void {
+        console.log(data.message)
+        // TO DO: add where we goin
+        this.router.navigate([""])
+    }
+
+    private startMatch() {
+
+    }
+
 
 }
