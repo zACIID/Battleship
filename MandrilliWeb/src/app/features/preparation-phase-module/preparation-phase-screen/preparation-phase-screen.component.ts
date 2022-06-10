@@ -1,3 +1,4 @@
+import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { MatchApi } from './../../../core/api/handlers/match-api';
 import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from './../../../core/model/match/coordinates';
@@ -10,8 +11,6 @@ import { PositioningCompletedListener } from 'src/app/core/events/listeners/posi
 import { GenericMessage } from 'src/app/core/model/events/generic-message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { MatchApi } from 'src/app/core/api/handlers/match-api';
-import { Match } from 'src/app/core/model/match/match';
 import { concat } from 'rxjs/internal/observable/concat';
 
 @Component({
@@ -43,7 +42,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private playersReadyListener: PositioningCompletedListener,
         private userIdProvider: UserIdProvider,
         private router: Router,
-        private matchClient: MatchApi
+        private matchClient: MatchApi,
+        private fleeMatchEmitter: MatchLeftEmitter,
     ) {}
 
     ngOnInit(): void {
@@ -55,7 +55,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
             this.playerStateListener.listen(this.pollingReadyRequest)
             this.playersReadyListener.listen(this.pollingFullReadyRequest)
         } catch(err){
-            console.log("MORE")
+            console.log("An error occurred while retrieving the match from the url")
         }
     }
 
@@ -107,8 +107,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     public randomDeploy(){
 
-        this.reset();
-        console.log(this.trigger);
         while(! this.deploy("Carrier", this.randomInteger().toString(), this.randomInteger().toString(), this.randomBool() )){ }
 
         for(let i = 0; i < 2; i++){
@@ -229,22 +227,45 @@ export class PreparationPhaseScreenComponent implements OnInit {
     public beReady() {
         try {
             concat(this.matchClient.updatePlayerGrid(this.matchId, this.userId, this.grid),
-                this.matchClient.setReadyState(this.matchId, this.userId, true)).subscribe()
-            let btn: HTMLButtonElement | null = <HTMLButtonElement> document.getElementById("ready-button")
-            if (btn) btn.disabled = true
+                this.matchClient.setReadyState(this.matchId, this.userId, true)).subscribe();
+
+            // Disabling battle button
+            let battleBtn: HTMLButtonElement | null = <HTMLButtonElement> document.getElementById("ready-button");
+            if (battleBtn) battleBtn.disabled = true;
+
+            // Disabling random deployment button
+            let randomBtn: HTMLButtonElement | null = <HTMLButtonElement> document.getElementById("random-deploy-button");
+            if (randomBtn) randomBtn.disabled = true;
+
+            // Disabling reset button
+            let resetBtn: HTMLButtonElement | null = <HTMLButtonElement> document.getElementById("reset-button");
+            if (resetBtn) resetBtn.disabled = true;
+
+            this.positioningError.error = true;
+            this.positioningError.errorMessage = "Match is starting soon ...";
+
         } catch(err) {
-            console.log(err)
+            console.log("An error occurred while starting the match: " + err);
         }
     }
 
     private pollingReadyRequest(data: PlayerStateChangedData) : void {
+        console.log("Player is ready");
         this.opponentReady = data.isReady
         this.opponentsId = data.playerId
     }
 
     private pollingFullReadyRequest(data: GenericMessage) : void {
         const path: string = "/game/" + this.matchId
-        this.router.navigate([path])
+        this.router.navigate([path]);
     }
+
+
+    public leaveMatch() {
+        if (this.matchId) this.fleeMatchEmitter.emit({ matchId: this.matchId });
+        else throw new Error('Error while leaving the match');
+        this.router.navigate(["/homepage"]);
+    }
+
 
 }
