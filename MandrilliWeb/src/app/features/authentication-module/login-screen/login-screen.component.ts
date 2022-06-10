@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthApi, LoginInfo, Jwt } from '../../../core/api/handlers/auth-api';
+import { AuthApi, LoginInfo, AuthResult } from '../../../core/api/handlers/auth-api';
 import { JwtStorage } from '../../../core/api/jwt-auth/jwt-storage';
 import { UserIdStorage } from '../../../core/api/userId-auth/userId-storage';
 import { Router } from '@angular/router';
 import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
-
 
 @Component({
     selector: 'app-login-screen',
@@ -28,12 +27,12 @@ export class LoginScreenComponent implements OnInit {
                 username: username,
                 password: password,
             };
-            
-            this.authClient.login(loginInfo).subscribe((data: Jwt) => {
-                this.accessTokenStorage.store(data.token);
-                this.userIdStorage.store(data.userId)
-                this.emitter.emit({userId: data.userId})
-                this.router.navigate(["/homepage"]);
+
+            this.authClient.login(loginInfo).subscribe((data: AuthResult) => {
+                this.accessTokenStorage.store(data.jwt);
+                this.userIdStorage.store(data.userId);
+                this.emitter.emit({ userId: data.userId });
+                this.router.navigate(['/homepage']);
             });
         } catch (err) {
             console.log('An error occurred while logging in: ' + err);

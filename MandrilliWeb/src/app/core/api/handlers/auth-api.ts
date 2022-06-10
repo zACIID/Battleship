@@ -17,12 +17,16 @@ export interface LoginInfo {
     password: string;
 }
 
-export interface Jwt {
+export interface AuthResult {
+    /**
+     * Id of the user that authenticated
+     */
     userId: string;
+
     /**
      * Value of the Json Web Token, used to authenticate future requests
      */
-    token: string;
+    jwt: string;
 }
 
 /**
@@ -36,10 +40,15 @@ export class AuthApi extends BaseApi {
         super(httpClient);
     }
 
-    public login(credentials: LoginInfo): Observable<Jwt> {
+    // TODO change and make it return a Promise<void>
+    //  here the jwt should be awaited and then set inside the (injected) JwtStorage
+    //  any update here should be reflected in the login component
+    public login(credentials: LoginInfo): Observable<AuthResult> {
         const reqPath: string = `${this.baseUrl}/api/auth/signin`;
 
-        return this.httpClient.post<Jwt>(reqPath, credentials).pipe(catchError(this.handleError));
+        return this.httpClient
+            .post<AuthResult>(reqPath, credentials)
+            .pipe(catchError(this.handleError));
     }
 
     public register(credentials: LoginInfo): Observable<User> {
