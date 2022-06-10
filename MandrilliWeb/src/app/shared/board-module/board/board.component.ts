@@ -12,11 +12,13 @@ export class BoardComponent implements OnInit {
     
     @Input () state?: BattleshipGrid;
     @Input () triggerUpdate: number = 0;
-    
+    @Input () small: boolean = false;
 
     constructor() {}
 
     ngOnInit(): void {
+
+        
 
         if(this.state){
             for(let ship of this.state.ships){

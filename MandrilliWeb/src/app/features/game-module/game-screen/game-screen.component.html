@@ -13,14 +13,14 @@
                     <div clas="column is-half">
 
 
-                        <div class="box mb-1 height-70px">
+                        <div class="box mb-1 height-65px">
                             <figure class="image">
                                 <img class="remaining-ships-height" src="assets/images/destroyer.png">
                             </figure>
                             <p class="has-weight-semibold mb-1">Destroyer - 1 remaining</p>
                         </div>
 
-                        <div class="box height-70px">
+                        <div class="box height-65px">
                             <figure class="image">
                                 <img class="remaining-ships-height" src="assets/images/cruiser.png">
                             </figure>
@@ -31,14 +31,14 @@
 
                     <div clas="column is-half">
 
-                        <div class="box mb-1 height-70px">
+                        <div class="box mb-1 height-65px">
                             <figure class="image">
                                 <img class="remaining-ships-height" src="assets/images/battleship.png">
                             </figure>
                             <p class="has-weight-semibold mb-1">Battleship - 1 remaining</p>
                         </div>
 
-                        <div class="box height-70px">
+                        <div class="box height-65px">
                             <figure class="image">
                                 <img class="remaining-ships-height" src="assets/images/carrier.png">
                             </figure>
@@ -49,12 +49,15 @@
 
 
                 </div>
-                <enemy-board></enemy-board>
+                <div class="width-80 margin-auto">
+                    <board [small]="true"></board>
+                </div>
+                
                 
             </div>
             <div class="column is-half">
 
-                <player-board></player-board>
+                <board></board>
 
                 <!-- To set to your turn -->
                 <div class="box has-background-primary mt-3"><p class="has-text-light has-text-centered">Opponent's turn</p></div>

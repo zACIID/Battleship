@@ -9,14 +9,12 @@ import { CommonModule } from '@angular/common';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { RemainingShipComponent } from './remaining-ship/remaining-ship.component';
 import { EnemyBoardComponent } from './enemy-board/enemy-board.component';
-import { PlayerBoardComponent } from './player-board/player-board.component';
 
 @NgModule({
     declarations: [
         GameScreenComponent,
         RemainingShipComponent,
         EnemyBoardComponent,
-        PlayerBoardComponent,
     ],
     imports: [
         CommonModule,
