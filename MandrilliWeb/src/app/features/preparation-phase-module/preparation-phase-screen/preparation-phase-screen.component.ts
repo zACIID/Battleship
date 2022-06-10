@@ -1,3 +1,4 @@
+import { MatchApi } from './../../../core/api/handlers/match-api';
 import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from './../../../core/model/match/coordinates';
 import { Ship } from './../../../core/model/match/ship';
@@ -71,7 +72,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
                             return false
                         }   
                 }
-                
                 return true;
             }
         }
@@ -94,10 +94,36 @@ export class PreparationPhaseScreenComponent implements OnInit {
             case 'J': return 9; 
             default: return Number(coord) - 1;
         }
-
     }
 
-    public deploy(shipType: string, row: string, col: string, vertical: boolean): void{
+    private randomInteger(): number{
+        let min = 0;
+        let max = 9;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    private randomBool(): boolean{
+        return Math.floor(Math.random() * (2)) == 0 ? true : false;
+    }
+
+    public randomDeploy(){
+
+        this.reset();
+        console.log(this.trigger);
+        while(! this.deploy("Carrier", this.randomInteger().toString(), this.randomInteger().toString(), this.randomBool() )){ }
+
+        for(let i = 0; i < 2; i++){
+            while(! this.deploy("Battleship", this.randomInteger().toString(), this.randomInteger().toString(), this.randomBool() )){ }
+        }
+        for(let i = 0; i < 3; i++){
+            while(! this.deploy("Cruiser", this.randomInteger().toString(), this.randomInteger().toString(), this.randomBool() )){ }
+        }
+        for(let i = 0; i < 5; i++){
+            while(! this.deploy("Destroyer", this.randomInteger().toString(), this.randomInteger().toString(), this.randomBool() )){ }
+        }
+    }
+
+
+    public deploy(shipType: string, row: string, col: string, vertical: boolean): boolean{
         this.positioningError.error = false;
         let length: number = 0;
         
@@ -133,11 +159,12 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     this.grid.ships.push(newShip);
                     this.trigger++;
                     this.decreaseCount(shipType);
-                    
+                    return true;
                 }
                 else{
                     this.positioningError.error = true;
                     this.positioningError.errorMessage  =  shipType + this.positioningError.errorMessage;
+                    return false;
                 }
             }
             else if(!vertical && this.isValidCoords(startingRow, startingCol+length)){
@@ -158,19 +185,21 @@ export class PreparationPhaseScreenComponent implements OnInit {
                     this.grid.ships.push(newShip);
                     this.trigger++;
                     this.decreaseCount(shipType);
-                    
+                    return true;
                 }
                 else{
                     this.positioningError.error = true;
                     this.positioningError.errorMessage  =  shipType + this.positioningError.errorMessage;
+                    return false;
                 }
             }
             
         }
-        else {
-            this.positioningError.error = true;
-            this.positioningError.errorMessage  =  shipType + this.positioningError.errorMessage;
-        }
+        
+        this.positioningError.error = true;
+        this.positioningError.errorMessage  =  shipType + this.positioningError.errorMessage;
+        return false;
+        
 
     }
 
