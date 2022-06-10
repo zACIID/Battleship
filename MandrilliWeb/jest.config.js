@@ -1,5 +1,4 @@
 module.exports = {
-    verbose: true,
     preset: 'jest-preset-angular',
     testEnvironment: 'jsdom',
     roots: ['./tests', './src', '../src'],

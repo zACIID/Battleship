@@ -26,7 +26,7 @@ export interface AuthResult {
     /**
      * Value of the Json Web Token, used to authenticate future requests
      */
-    jwt: string;
+    token: string;
 }
 
 /**
@@ -47,7 +47,7 @@ export class AuthApi extends BaseApi {
         const reqPath: string = `${this.baseUrl}/api/auth/signin`;
 
         return this.httpClient
-            .post<AuthResult>(reqPath, credentials)
+            .post<AuthResult>(reqPath, credentials, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 

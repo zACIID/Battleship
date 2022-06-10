@@ -77,6 +77,9 @@ app.use(function (req, res, next) {
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
 /* Express Requests and Responses logger */
+expressWinston.requestWhitelist.push('body');
+expressWinston.responseWhitelist.push('body');
+
 app.use(
     expressWinston.logger({
         transports: [new winston.transports.Console()],

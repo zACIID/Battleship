@@ -17,6 +17,14 @@ interface AddUserResponse {
 }
 
 /**
+ * Interface that represents a response from the Get Messages endpoint
+ */
+interface GetMessagesResponse {
+    messages: ApiMessage[];
+    nextPage: string;
+}
+
+/**
  * Class that handles communication with chat-related endpoints
  */
 @Injectable({
@@ -27,6 +35,10 @@ export class ChatApi extends BaseAuthenticatedApi {
         super(httpClient, accessTokenProvider);
     }
 
+    /**
+     * Retrieves the specified chat
+     * @param chatId id of the chat to retrieve
+     */
     public getChat(chatId: string): Observable<Chat> {
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}`;
 
@@ -38,6 +50,10 @@ export class ChatApi extends BaseAuthenticatedApi {
         );
     }
 
+    /**
+     * Deletes the specified chat
+     * @param chatId id of the chat to delete
+     */
     public deleteChat(chatId: string): Observable<void> {
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}`;
 
@@ -46,20 +62,43 @@ export class ChatApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    public getMessages(chatId: string, skip: number, limit: number): Observable<Message[]> {
-        const queryParams: string = `skip=${skip}&limit=${limit}`;
-        const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/messages?${queryParams}`;
+    /**
+     * Retrieves the specified set of messages from the chat.
+     * Skip and limit are used to handle the pagination of messages, which are
+     * ordered based on the most recent.
+     * @param chatId id of the chat to get the messages from
+     * @param skip number of the messages, from the start, to skip
+     * @param limit number of messages to retrieve
+     */
+    public getMessages(chatId: string, skip?: number, limit?: number): Observable<Message[]> {
+        /** TODO here pagination of requests is not handled well:
+         *      if skip and limit are over the constraints (skip >= 0, 0 <= limit <= 500),
+         *      the api returns an error.
+         *      Also, if more than 500 messages are requested, multiple requests
+         *      that make use of skip and limit are not performed
+         */
 
-        return this.httpClient.get<ApiMessage[]>(reqPath, this.createRequestOptions()).pipe(
+        // Add query only if both skip and limit are defined
+        const areQueryParamsUndefined: boolean = !skip || !limit;
+        const query: string = !areQueryParamsUndefined ? `?skip=${skip}&limit=${limit}` : '';
+
+        const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/messages${query}`;
+
+        return this.httpClient.get<GetMessagesResponse>(reqPath, this.createRequestOptions()).pipe(
             catchError(this.handleError),
-            map<ApiMessage[], Message[]>((messages: ApiMessage[]) => {
-                return messages.map((m: ApiMessage) => {
+            map<GetMessagesResponse, Message[]>((res: GetMessagesResponse) => {
+                return res.messages.map((m: ApiMessage) => {
                     return toMessage(m);
                 });
             })
         );
     }
 
+    /**
+     * Adds the specified message to the chat and returns it as proof that it was added.
+     * @param chatId id of the chat to add the message to
+     * @param message message to add
+     */
     public addMessage(chatId: string, message: Message): Observable<Message> {
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/users`;
         const reqBody: ApiMessage = toApiMessage(message);
@@ -72,14 +111,29 @@ export class ChatApi extends BaseAuthenticatedApi {
         );
     }
 
-    public addUser(chatId: string, userId: string): Observable<AddUserResponse> {
+    /**
+     * Adds the specified user to the chat and returns the userId as proof that it was added.
+     * @param chatId id of the chat to add the user to
+     * @param userId id of the user to add
+     */
+    public addUser(chatId: string, userId: string): Observable<string> {
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/users`;
 
         return this.httpClient
             .post<AddUserResponse>(reqPath, userId, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .pipe(
+                catchError(this.handleError),
+                map<AddUserResponse, string>((res: AddUserResponse) => {
+                    return res.userId;
+                })
+            );
     }
 
+    /**
+     * Removes the specified user from the chat
+     * @param chatId id of the chat to remove the user from
+     * @param userId id of the user to remove
+     */
     public removeUser(chatId: string, userId: string): Observable<void> {
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/users/${userId}`;
 

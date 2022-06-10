@@ -29,7 +29,7 @@ export class LoginScreenComponent implements OnInit {
             };
 
             this.authClient.login(loginInfo).subscribe((data: AuthResult) => {
-                this.accessTokenStorage.store(data.jwt);
+                this.accessTokenStorage.store(data.token);
                 this.userIdStorage.store(data.userId);
                 this.serverJoinedEmitter.emit({ userId: data.userId });
                 this.router.navigate(['/homepage']);

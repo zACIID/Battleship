@@ -102,6 +102,6 @@ export const teardownDbChatApiTesting = async (
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 
-    await mongoDbApi.deleteChat(setupData.insertedData.chatId);
+    await mongoDbApi.emptyChatCollection();
     await mongoDbApi.deleteUser(setupData.insertedData.userId);
 };

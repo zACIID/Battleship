@@ -24,11 +24,7 @@ export class JwtStubProvider {
         setToken.bind(this);
 
         return {
-            store(token: string) {
-                setToken(token);
-
-                console.log('[JwtStorageStub] Token set!');
-            },
+            store: setToken,
         };
     }
 
@@ -39,11 +35,7 @@ export class JwtStubProvider {
         getToken.bind(this);
 
         return {
-            getToken() {
-                console.log('[JwtStorageStub] Token retrieved!');
-
-                return getToken();
-            },
+            getToken: getToken,
         };
     }
 }
@@ -79,7 +71,7 @@ export const authenticate = async (
     const jwtProviderStub: JwtProvider = stubProvider.getJwtProviderStub();
 
     // Set the token so that the provider can retrieve it
-    jwtStorageStub.store(authRes.jwt);
+    jwtStorageStub.store(authRes.token);
 
     // Return the provider, so it can be injected into the services
     // that require it

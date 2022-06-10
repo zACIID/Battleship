@@ -86,9 +86,11 @@ export interface MongoDbSingleInsertResponse {
 
 export class MongoDbApi {
     private readonly _credentials: MongoDpApiCredentials;
+    private readonly _verbose: boolean;
 
-    public constructor(credentials: MongoDpApiCredentials) {
+    public constructor(credentials: MongoDpApiCredentials, verbose: boolean = false) {
         this._credentials = credentials;
+        this._verbose = verbose;
     }
 
     /*
@@ -333,7 +335,7 @@ export class MongoDbApi {
                 headers: reqHeaders,
             };
 
-            MongoDbApi.logRequest(reqParams);
+            this.logRequest(reqParams);
 
             const res = await axios.post<R>(url, reqData, axiosReqConfig);
             return res.data;
@@ -347,7 +349,12 @@ export class MongoDbApi {
         }
     }
 
-    private static logRequest(reqParams: MongoDbReqParams) {
+    private logRequest(reqParams: MongoDbReqParams) {
+        // Do not log if not verbose
+        if (!this._verbose) {
+            return;
+        }
+
         console.log('[MongoDbApi] Request sent:');
         console.log(reqParams);
     }

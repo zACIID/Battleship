@@ -1,3 +1,3 @@
 import 'jest-preset-angular/setup-jest';
 
-jest.setTimeout(15000);
+jest.setTimeout(7500);
