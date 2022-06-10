@@ -1,3 +1,4 @@
+import { BattleshipGrid } from './../../../core/model/match/battleship-grid';
 import { Component, OnInit } from '@angular/core';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
@@ -16,7 +17,13 @@ import { ShotData } from 'src/app/core/model/events/shot-data';
 })
 export class GameScreenComponent implements OnInit {
 
-    private match: Match = new Match()
+    public userInSessionId: string = "";
+    private match: Match = new Match();
+    public playerGrid: BattleshipGrid = new BattleshipGrid();
+    public opponentGrid: BattleshipGrid = new BattleshipGrid();
+    public opponentsId: string = "";
+    public chatId: string = "";
+
     constructor(
         private route: ActivatedRoute,
         private joinMatchEmitter: MatchJoinedEmitter,
@@ -29,26 +36,50 @@ export class GameScreenComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        let obs = this.route.params.subscribe((params) => {
-            this.match.matchId = params['id'];
-        });
-        obs.add(this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
-            this.match = data
-        }))
-        this.joinMatch()
-        this.shotListener.listen(this.pollingOpponetHits)
+
+
+        try{
+            this.userInSessionId = this.userIdProvider.getUserId()
+
+            let obs = this.route.params.subscribe((params) => {
+                this.match.matchId = params['id'];
+            });
+
+            obs.add(this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
+                this.match = data;
+
+                if(data.player1.playerId === this.userInSessionId){
+                    this.playerGrid = data.player1.grid;
+                    this.opponentGrid = data.player2.grid;
+                    this.opponentsId = data.player2.playerId;
+                }
+                else{
+                    this.playerGrid = data.player2.grid;
+                    this.opponentGrid = data.player1.grid;
+                    this.opponentsId = data.player1.playerId;
+                }
+                this.chatId = data.playersChat;
+
+            }))
+
+            this.joinMatch();
+            this.shotListener.listen(this.pollingOpponetHits);
+        }
+        catch(err){
+            console.log("An error occurred while initializing the game screen: " + err);
+        }
     }
 
 
-    public doMove(){
+    public shot(row: string, col: string){
         //depends on how gwends wants to retrieve user command 
     }
 
-    private leaveMatch() {
-        const path: string = "/match-results/" + this.match.matchId
+    public leaveMatch() {
+        const path: string = "/match-results/" + this.match.matchId;
         if (this.match.matchId) this.fleeMatchEmitter.emit({ matchId: this.match.matchId });
         else throw new Error('MatchId not found');
-        this.router.navigate([path])
+        this.router.navigate([path]);
     }
 
     private joinMatch() {
@@ -68,7 +99,7 @@ export class GameScreenComponent implements OnInit {
     }
 
     private pollingOpponetHits(data: ShotData) {
-        this.match.player1.grid.shotsReceived.push({row: data.coordinates.row, col: data.coordinates.col})
+        this.match.player1.grid.shotsReceived.push({row: data.coordinates.row, col: data.coordinates.col});
     }
 
     private win() {}
