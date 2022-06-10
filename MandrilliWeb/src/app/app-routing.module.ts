@@ -13,7 +13,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'game',
+        path: 'game/:id',
         loadChildren: () => import('./features/game-module/game.module').then((m) => m.GameModule),
     },
     {

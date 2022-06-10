@@ -23,7 +23,7 @@ export class NotificationScreenComponent implements OnInit {
         private notificationApi: NotificationApi,
         private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter,
-        private userIdProvider: UserIdProvider
+        private userIdProvider: UserIdProvider,
     ) {}
 
     ngOnInit(): void {
@@ -33,7 +33,6 @@ export class NotificationScreenComponent implements OnInit {
                 for (let not of data) {
                     if (not.type === NotificationType.FriendRequest) {
                         this.userApi.getUser(not.sender).subscribe((usr) => {
-                            usr.username; //TODO che serve?
                             this.friendNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
@@ -42,7 +41,7 @@ export class NotificationScreenComponent implements OnInit {
                         });
                     } else {
                         this.userApi.getUser(not.sender).subscribe((usr) => {
-                            usr.username; // TODO a cosa serve?
+                            usr.username;
                             this.battleNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
@@ -51,14 +50,14 @@ export class NotificationScreenComponent implements OnInit {
                         });
                     }
                 }
-            });
+            }); 
         } catch (err) {}
     }
 
     public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
-            receiverId: this.userId,
-            senderId: friendId,
+            receiverId: friendId,
+            senderId: this.userId,
         });
     }
 
