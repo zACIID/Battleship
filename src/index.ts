@@ -8,6 +8,8 @@ import cors from 'cors';
 import * as io from 'socket.io';
 import mongoose = require('mongoose');
 import filter = require('content-filter');
+import winston = require('winston');
+import expressWinston = require('express-winston');
 import chalk from 'chalk';
 
 import { registerRoutes } from './routes/utils/register-routes';
@@ -25,9 +27,14 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 export const app: Express = express();
 
+/* Endpoints base url */
+export const API_BASE_URL: string = process.env.API_BASE_URL;
+
+/* True if testing, false otherwise. Allows other modules to know if we're in testing mode */
+export const IS_TESTING_MODE: boolean = process.env.TEST === 'true';
+
 // If testing, set test db uri, else use the other
-export const isTesting: boolean = process.env.TEST === 'true';
-const dbUri: string = isTesting ? process.env.TEST_DB_URI : process.env.DB_URI;
+const dbUri: string = IS_TESTING_MODE ? process.env.TEST_DB_URI : process.env.DB_URI;
 const serverPort: number = parseInt(process.env.PORT, 10);
 
 /* Database Connection */
@@ -46,16 +53,7 @@ mongoose
     });
 
 const httpServer: http.Server = http.createServer(app);
-
 httpServer.listen(serverPort, () => console.log(`HTTP Server started on port ${serverPort}`));
-
-// Logging functionality to understand what requests arrive to the server
-httpServer.addListener('request', (req: Request) => {
-    console.log(chalk.magenta.bold(`Request received: ${req.method} ${req.url}`));
-
-    // inspect replaces circular references in the json with [Circular]
-    console.log(chalk.yellow(inspect(req.body)));
-});
 
 /* Allows server to respond to a particular request that asks which request options it accepts */
 app.use(cors());
@@ -78,8 +76,24 @@ app.use(function (req, res, next) {
 /* Sanitize input to avoid NoSQL injections */
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
-/* Endpoints base url */
-export const API_BASE_URL: string = process.env.API_BASE_URL;
+/* Express Requests and Responses logger */
+app.use(
+    expressWinston.logger({
+        transports: [new winston.transports.Console()],
+        format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.json(),
+            winston.format.prettyPrint({
+                colorize: true,
+            })
+        ),
+        meta: true, // Enable logging of metadata
+        msg: 'HTTP {{req.method}} {{req.url}} | {{res.statusCode}} {{res.responseTime}}ms',
+    })
+);
+
+/* Register express routes */
+registerRoutes(app);
 
 /* Socket.io server setup */
 export const ioServer: io.Server = new io.Server(httpServer);
@@ -136,9 +150,6 @@ ioServer.on('connection', async function (client) {
     const playerWon: PlayerWonListener = new PlayerWonListener(client, ioServer);
     playerWon.listen();
 });
-
-/* Register express routes */
-registerRoutes(app);
 
 /* Start the matchmaking engine and tell him to try to look
  * for match arrangements every 5 seconds

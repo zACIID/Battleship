@@ -10,7 +10,7 @@ import { router as notificationRouter } from '../notification-routes';
 import { router as userRouter } from '../user-routes';
 import { router as relRouter } from '../relationship-routes';
 import { router as mongoDbApiRouter } from '../frontend-integration-testing/mongodb-api-routes';
-import { API_BASE_URL, isTesting } from '../../index';
+import { API_BASE_URL, IS_TESTING_MODE } from '../../index';
 
 export const registerRoutes = (app: Express) => {
     app.use(API_BASE_URL, authRouter);
@@ -23,7 +23,7 @@ export const registerRoutes = (app: Express) => {
     app.use(API_BASE_URL, relRouter);
     app.use(API_BASE_URL, userRouter);
 
-    if (isTesting) {
+    if (IS_TESTING_MODE) {
         app.use(API_BASE_URL, mongoDbApiRouter);
     }
 };
