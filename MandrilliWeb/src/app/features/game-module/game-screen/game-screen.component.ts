@@ -6,7 +6,6 @@ import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 import { Match } from 'src/app/core/model/match/match';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
-import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { ShotData } from 'src/app/core/model/events/shot-data';
 
@@ -46,8 +45,10 @@ export class GameScreenComponent implements OnInit {
     }
 
     private leaveMatch() {
+        const path: string = "/match-results/" + this.match.matchId
         if (this.match.matchId) this.fleeMatchEmitter.emit({ matchId: this.match.matchId });
         else throw new Error('MatchId not found');
+        this.router.navigate([path])
     }
 
     private joinMatch() {
@@ -69,4 +70,6 @@ export class GameScreenComponent implements OnInit {
     private pollingOpponetHits(data: ShotData) {
         this.match.player1.grid.shotsReceived.push({row: data.coordinates.row, col: data.coordinates.col})
     }
+
+    private win() {}
 }
