@@ -44,7 +44,7 @@ export interface ChatApiTestingSetupData extends SetupData {
  */
 export const setupDbChatApiTesting = async (): Promise<ChatApiTestingSetupData> => {
     const insertedUser: InsertedUser = await insertUser();
-    const insertedChat: InsertedChat = await insertChat([insertedUser.userId]);
+    const insertedChat: InsertedChat = await insertChat([insertedUser.userId as string]);
 
     return {
         apiAuthCredentials: {

@@ -91,7 +91,7 @@ describe('Add Moderator', () => {
 
 
 describe('BanUser', () => {
-    test('BanUserShould Return Non-Empty Response With Correct Fields', (done) => {
+    test('BanUserShould Return Empty Response', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
         modApi.banUser(usefullUser1.userData.username)
         .subscribe({
@@ -107,7 +107,6 @@ describe('BanUser', () => {
         modApi.banUser(usefullUser2.userData.username).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
-
                 done();
             },
             complete: () => {
@@ -121,7 +120,6 @@ describe('BanUser', () => {
         modApi.banUser("Non existing username").subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
-
                 done();
             },
             complete: () => {
