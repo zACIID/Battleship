@@ -18,7 +18,7 @@ export class ModeratorApi extends BaseAuthenticatedApi {
 
     public addModerator(moderatorId: string, newModInfo: LoginInfo): Observable<User> {
         const reqPath: string = `${this.baseUrl}/api/moderators/${moderatorId}/additions`;
-
+        // TODO add moderator with newModInfo.status.temporary = true 
         return this.httpClient
             .post<User>(reqPath, newModInfo, this.createRequestOptions())
             .pipe(catchError(this.handleError));

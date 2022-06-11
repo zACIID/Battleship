@@ -1,3 +1,4 @@
+import { UserApi } from './../../../core/api/handlers/user-api';
 import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { Component, OnInit } from '@angular/core';
 import { AuthApi, LoginInfo, AuthResult } from '../../../core/api/handlers/auth-api';
@@ -20,6 +21,7 @@ export class LoginScreenComponent implements OnInit {
         private accessTokenStorage: JwtStorage,
         private userIdStorage: UserIdStorage,
         private router: Router,
+        private userClient: UserApi,
         private serverJoinedEmitter: ServerJoinedEmitter
     ) {}
 
@@ -36,8 +38,22 @@ export class LoginScreenComponent implements OnInit {
                 this.accessTokenStorage.store(data.jwt);
                 this.userIdStorage.store(data.userId);
                 this.serverJoinedEmitter.emit({ userId: data.userId });
-                // Add if -> if the username contains #temporary# then i should navigate to another page
-                this.router.navigate(['/homepage']);
+
+                /* TODO de-comment when status.temporary will be properly added
+                this.userClient.getUser(data.userId).subscribe((user) => {
+
+                    
+                    if(user.status.temporary){
+                        this.router.navigate(['/moderator-credentials']);
+                    }
+                    else{
+                        this.router.navigate(['/homepage']);
+                    }
+                    
+                })
+                */
+                
+                
             });
         } catch (err: any) {
             this.userMessage.error = true;
