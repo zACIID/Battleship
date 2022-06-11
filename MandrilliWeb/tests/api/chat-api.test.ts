@@ -7,14 +7,12 @@ import { authenticate } from './fixtures/authentication';
 import { injectHttpClient } from './fixtures/http-client';
 import {
     ChatApiTestingSetupData,
-    deleteUser,
-    InsertedUser,
-    insertUser,
     setupDbChatApiTesting,
     teardownDbChatApiTesting,
-} from './fixtures/database';
+} from './fixtures/database/chats';
 import { Chat } from '../../src/app/core/model/chat/chat';
 import { Message } from '../../src/app/core/model/chat/message';
+import { deleteUser, InsertedUser, insertUser } from './fixtures/database/users';
 
 let httpClient: HttpClient;
 let setupData: ChatApiTestingSetupData;
@@ -108,33 +106,7 @@ describe('Get Messages', () => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
 
-        chatApi.getMessages(chat.chatId).subscribe({
-            next: (messages: Message[]) => {
-                // Expect non-empty response
-                expect(messages).toBeTruthy();
-
-                // Expect an object with the correct fields
-                messages.forEach((m: Message) => {
-                    expect(m).toEqual(
-                        expect.objectContaining<Message>({
-                            author: expect.any(String),
-                            timestamp: expect.any(Date),
-                            content: expect.any(String),
-                        })
-                    );
-                });
-            },
-            complete: () => {
-                done();
-            },
-        });
-    });
-
-    test('[Skip & Limit] Get Messages Should Return Non-Empty Response With Correct Fields', (done) => {
-        const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
-        const { chat } = setupData.insertedData;
-
-        chatApi.getMessages(chat.chatId, 0, 50).subscribe({
+        chatApi.getMessages(chat.chatId, 0, 10).subscribe({
             next: (messages: Message[]) => {
                 // Expect non-empty response
                 expect(messages).toBeTruthy();
@@ -236,7 +208,7 @@ describe('Add User', () => {
 
     test('Add User Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
-        const { user, chat } = setupData.insertedData;
+        const { chat } = setupData.insertedData;
 
         chatApi.addUser(chat.chatId, newUser.userId).subscribe({
             next: (resUserId: string) => {
@@ -254,7 +226,7 @@ describe('Add User', () => {
 
     test('Add User Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
-        const { user, chat } = setupData.insertedData;
+        const { user } = setupData.insertedData;
 
         chatApi.addUser(wrongChatId, user.userId).subscribe({
             error: (err: Error) => {
@@ -283,7 +255,7 @@ describe('Remove User', () => {
 
     test('Remove User Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
-        const { user, chat } = setupData.insertedData;
+        const { user } = setupData.insertedData;
 
         chatApi.removeUser(wrongChatId, user.userId).subscribe({
             error: (err: Error) => {
