@@ -23,8 +23,7 @@ beforeEach(async () => {
     httpClient = injectHttpClient();
     setupData = await setupDbChatApiTesting();
 
-    const authApi: AuthApi = new AuthApi(httpClient);
-    jwtProvider = await authenticate(authApi, setupData.apiAuthCredentials);
+    jwtProvider = await authenticate(setupData.apiAuthCredentials);
 });
 
 afterEach(async () => {

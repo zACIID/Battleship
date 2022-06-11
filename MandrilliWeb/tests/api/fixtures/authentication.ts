@@ -3,6 +3,8 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { JwtStorage } from '../../../src/app/core/api/jwt-auth/jwt-storage';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { LoginInfo, AuthApi, AuthResult } from '../../../src/app/core/api/handlers/auth-api';
+import axios, { AxiosResponse } from 'axios';
+import { environment } from '../../../src/environments/environment';
 
 /**
  * Class that provides jwt storage and provider stubs.
@@ -57,15 +59,12 @@ export const knownBcryptDigest = {
  */
 export const apiAuthPassword = knownBcryptDigest.clearPassword;
 
-// TODO since tests should be isolated, this function should use axios
-//  instead of a service that is being tested
-export const authenticate = async (
-    authApi: AuthApi,
-    credentials: LoginInfo
-): Promise<JwtProvider> => {
+export const authenticate = async (credentials: LoginInfo): Promise<JwtProvider> => {
     // Await the authentication response
-    const authObs: Observable<AuthResult> = await authApi.login(credentials);
-    const authRes: AuthResult = await firstValueFrom(authObs);
+    const reqUrl: string = `${environment.apiBaseUrl}/api/auth/signin`;
+
+    const authRes: AxiosResponse<AuthResult> = await axios.post<AuthResult>(reqUrl, credentials);
+    const authData: AuthResult = authRes.data;
 
     // Create the storage and provider for the jwt
     const stubProvider: JwtStubProvider = new JwtStubProvider();
@@ -73,7 +72,7 @@ export const authenticate = async (
     const jwtProviderStub: JwtProvider = stubProvider.getJwtProviderStub();
 
     // Set the token so that the provider can retrieve it
-    jwtStorageStub.store(authRes.token);
+    jwtStorageStub.store(authData.token);
 
     // Return the provider, so it can be injected into the services
     // that require it
