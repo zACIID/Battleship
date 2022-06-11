@@ -1,9 +1,7 @@
 import { User } from './../../../core/model/user/user';
 import { MatchOverview } from './../../../core/model/match/match-overview';
-import { PlayerState } from './../../../core/model/match/player-state';
-
 import { UserApi } from './../../../core/api/handlers/user-api';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Match } from '../../../core/model/match/match';
 import { MatchApi } from '../../../core/api/handlers/match-api';
 

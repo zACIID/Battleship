@@ -24,12 +24,11 @@ export class ModeratorApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    // TODO modify banUser in order to accept the username of the banned user
-    public banUser(moderatorId: string, banId: string): Observable<void> {
+    public banUser(moderatorId: string, username: string): Observable<void> {
         const reqPath: string = `${this.baseUrl}/api/moderators/${moderatorId}/bans`;
 
         return this.httpClient
-            .post<void>(reqPath, banId, this.createRequestOptions())
+            .post<void>(reqPath, username, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 }

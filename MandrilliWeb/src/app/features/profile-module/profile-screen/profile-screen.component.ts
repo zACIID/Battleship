@@ -1,6 +1,6 @@
 import { UserStats } from './../../../core/model/user/user-stats';
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
 import { User } from '../../../core/model/user/user';
 

@@ -1,6 +1,5 @@
 import { BattleshipGrid } from './../../../core/model/match/battleship-grid';
-import { Component, Input, OnInit, Inject    } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'board',

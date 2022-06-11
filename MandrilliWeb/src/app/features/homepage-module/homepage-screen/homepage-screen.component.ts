@@ -1,6 +1,3 @@
-import { getRank } from './../../../core/model/user/elo-rankings';
-import { UserStats } from './../../../core/model/user/user-stats';
-import { User } from './../../../core/model/user/user';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { UserOverview } from './../../../core/model/user/user-overview';
 import { Component, OnInit } from '@angular/core';

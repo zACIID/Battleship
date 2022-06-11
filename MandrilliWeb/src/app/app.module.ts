@@ -2,13 +2,12 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 
 const sIoConfig: SocketIoConfig = {
-    url: environment.apiBaseUrl, // TODO capire se questo url va bene
+    url: environment.apiBaseUrl,
     options: {},
 };
 
