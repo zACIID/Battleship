@@ -39,6 +39,7 @@ router.post(
                     username: newMod.username,
                     roles: newMod.roles,
                     status: newMod.status,
+                    elo: newMod.stats.elo,
                 });
             } else
                 return res.status(403).json({

@@ -153,6 +153,7 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
             username: newUser.username,
             roles: newUser.roles,
             status: newUser.status,
+            elo: newUser.stats.elo,
         });
     } catch (err) {
         if (err.message === 'User already exists') {

@@ -1,58 +1,58 @@
 import { HttpClient } from '@angular/common/http';
-import { apiAuthPassword } from '../api/fixtures/authentication'
-import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
-import { AuthApi } from '../../src/app/core/api/handlers/auth-api';
+
+import { apiAuthPassword } from './fixtures/authentication';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { authenticate } from './fixtures/authentication';
 import { injectHttpClient } from './fixtures/http-client';
-import {
-    ChatApiTestingSetupData,
-    setupDbChatApiTesting,
-    teardownDbChatApiTesting,
-} from './fixtures/database/chats';
-import { Chat } from '../../src/app/core/model/chat/chat';
-import { Message } from '../../src/app/core/model/chat/message';
 import { deleteUser, InsertedUser, insertUser } from './fixtures/database/users';
 import { insertModerator } from './fixtures/database/moderator';
-import { ModeratorApi } from 'src/app/core/api/handlers/moderator-api';
-import { User, UserStatus } from 'src/app/core/model/user/user';
-
-
+import { ModeratorApi } from '../../src/app/core/api/handlers/moderator-api';
+import { User, UserStatus } from '../../src/app/core/model/user/user';
 
 let httpClient: HttpClient;
 let moderator: InsertedUser;
 let jwtProviderModerator: JwtProvider;
 let jwtProviderFakeModerator: JwtProvider;
 let fakeModerator: InsertedUser;
-let usefullUser1: InsertedUser;
-let usefullUser2: InsertedUser;
+let usefulUser1: InsertedUser;
+let usefulUser2: InsertedUser;
 
 beforeEach(async () => {
     httpClient = injectHttpClient();
+
     moderator = await insertModerator();
-    const authApi: AuthApi = new AuthApi(httpClient);
-    fakeModerator = await insertUser()
-    usefullUser1 = await insertUser()
-    usefullUser2 = await insertUser()
-    jwtProviderFakeModerator = await authenticate(authApi, 
-        {username: fakeModerator.userData.username, password: apiAuthPassword})
-    jwtProviderModerator = await authenticate(authApi, 
-        {username: moderator.userData.username, password: apiAuthPassword}
-    );
+    fakeModerator = await insertUser();
+
+    usefulUser1 = await insertUser();
+    usefulUser2 = await insertUser();
+
+    jwtProviderFakeModerator = await authenticate({
+        username: fakeModerator.userData.username,
+        password: apiAuthPassword,
+    });
+    jwtProviderModerator = await authenticate({
+        username: moderator.userData.username,
+        password: apiAuthPassword,
+    });
 });
 
 afterEach(async () => {
     await deleteUser(moderator.userId);
-    await deleteUser(fakeModerator.userId)
+    await deleteUser(fakeModerator.userId);
 });
 
 describe('Add Moderator', () => {
+    let newMod: User;
+
     test('AddModerator Should Return Non-Empty Response With Correct Fields', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
+        let newMod: User;
 
-        modApi.addModerator({username: "Huentas", password: apiAuthPassword})
-        .subscribe({
+        modApi.addModerator({ username: 'Huentas', password: apiAuthPassword }).subscribe({
             next: (user: User) => {
+                // Save for teardown
+                newMod = user;
+
                 // Expect non-empty response
                 expect(user).toBeTruthy();
 
@@ -61,13 +61,16 @@ describe('Add Moderator', () => {
                     expect.objectContaining<User>({
                         userId: expect.any(String),
                         username: expect.any(String),
-                        roles: expect.any([String]),
-                        status: expect.any(UserStatus),
+                        roles: expect.any(Array),
+                        status: expect.any(String),
                         elo: expect.any(Number),
                     })
                 );
             },
-            complete: () => {
+            complete: async () => {
+                // Teardown new mod
+                await deleteUser(newMod.userId);
+
                 done();
             },
         });
@@ -76,7 +79,7 @@ describe('Add Moderator', () => {
     test('Add moderator Should Throw', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderFakeModerator);
 
-        modApi.addModerator({username: "Huentas", password: apiAuthPassword}).subscribe({
+        modApi.addModerator({ username: 'Huentas', password: apiAuthPassword }).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
 
@@ -89,12 +92,11 @@ describe('Add Moderator', () => {
     });
 });
 
-
 describe('BanUser', () => {
     test('BanUserShould Return Empty Response', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
-        modApi.banUser(usefullUser1.userData.username)
-        .subscribe({
+
+        modApi.banUser(usefulUser1.userData.username).subscribe({
             next: () => {},
             complete: () => {
                 done();
@@ -104,7 +106,8 @@ describe('BanUser', () => {
 
     test('BanUser Should Throw', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderFakeModerator);
-        modApi.banUser(usefullUser2.userData.username).subscribe({
+
+        modApi.banUser(usefulUser2.userData.username).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();
@@ -117,7 +120,7 @@ describe('BanUser', () => {
 
     test('BanUser Should Throw 2', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
-        modApi.banUser("Non existing username").subscribe({
+        modApi.banUser('Non existing username').subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();

@@ -34,8 +34,8 @@ export const getUserData = (): User => {
 };
 
 export interface InsertedUser {
-    userId?: string;
-    userData?: User;
+    userId: string;
+    userData: User;
 }
 
 export const insertUser = async (): Promise<InsertedUser> => {
