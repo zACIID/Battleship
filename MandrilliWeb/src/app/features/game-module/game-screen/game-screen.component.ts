@@ -27,6 +27,7 @@ export class GameScreenComponent implements OnInit {
     public chatId: string = "";
     private shipsCoordinates: GridCoordinates[] = [];
     public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
+    public playerTurn: boolean = false;
 
 
     constructor(
@@ -67,6 +68,20 @@ export class GameScreenComponent implements OnInit {
 
             }))
 
+            let rnd: number = Math.floor( Math.random() * 1000 );
+
+            if(rnd % 2 == 0){
+                if (this.match.player1.playerId === this.userInSessionId)
+                    this.playerTurn = true;
+                else this.playerTurn = false;
+            }
+            else {
+                if (this.match.player2.playerId === this.userInSessionId)
+                    this.playerTurn = true;
+                else this.playerTurn = false;
+            }
+
+
             for(let ships of this.playerGrid.ships){
                 for(let coord of ships.coordinates){
                     this.shipsCoordinates.push(coord);
@@ -84,6 +99,9 @@ export class GameScreenComponent implements OnInit {
 
     public shot(row: string, col: string){
         //TODO -> parse coords, check if valids and fire a shot on match api -> implements turn
+
+
+        this.playerTurn = false;
     }
 
     public leaveMatch() {
@@ -125,6 +143,8 @@ export class GameScreenComponent implements OnInit {
         if(this.shipsCoordinates.length === 0){
             this.lostAndSauced();
         }
+
+        this.playerTurn = true;
     }
 
     private win() {}

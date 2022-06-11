@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="column"> 
-                        <button class="button is-medium is-danger" (click)="shot(rowShot.value, colShot.value)">Fire!</button>
+                        <button class="button is-medium is-danger" (click)="shot(rowShot.value, colShot.value)" [disabled]="!playerTurn">Fire!</button>
                     </div>
                     
                 </div>
