@@ -63,7 +63,7 @@ export class GameScreenComponent implements OnInit {
             }))
 
             this.joinMatch();
-            this.shotListener.listen(this.pollingOpponetHits);
+            this.shotListener.listen(this.pollingOpponentHits);
         }
         catch(err){
             console.log("An error occurred while initializing the game screen: " + err);
@@ -98,7 +98,7 @@ export class GameScreenComponent implements OnInit {
         }
     }
 
-    private pollingOpponetHits(data: ShotData) {
+    private pollingOpponentHits(data: ShotData) {
         if(this.match.player1.playerId !== this.userInSessionId) {
             this.match.player1.grid.shotsReceived.push(data.coordinates);
         }
