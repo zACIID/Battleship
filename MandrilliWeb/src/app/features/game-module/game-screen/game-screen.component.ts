@@ -96,11 +96,47 @@ export class GameScreenComponent implements OnInit {
         }
     }
 
+    private isValidCoords(row: number, col: number): boolean{
+        
+        if(!isNaN(row) && !isNaN(col)){
+            if ((row <= 9 && row >= 0 ) && (col <= 9 && col >= 0)){
+
+                return true;
+            }
+        }
+        this.userMessage.errorMessage = "Fire position is invalid: out of bound";
+        return false;
+    }
+
+
+    private parseCoord(coord: string): number{
+        coord = coord.toUpperCase();
+        switch(coord){
+            case 'A': return 0; 
+            case 'B': return 1; 
+            case 'C': return 2; 
+            case 'D': return 3; 
+            case 'E': return 4; 
+            case 'F': return 5; 
+            case 'G': return 6; 
+            case 'H': return 7; 
+            case 'I': return 8; 
+            case 'J': return 9; 
+            default: return Number(coord) - 1;
+        }
+    }
+
 
     public shot(row: string, col: string){
-        //TODO -> parse coords, check if valids and fire a shot on match api -> implements turn
 
+        this.userMessage.error = false;
+        let shotRow: number = this.parseCoord(row);
+        let shotCol: number = this.parseCoord(col);
 
+        if(this.isValidCoords(shotRow, shotCol)){
+            this.matchClient.fireShot(this.match.matchId, {playerId: this.userInSessionId, coordinates:{row: shotRow, col: shotCol}});
+        }
+    
         this.playerTurn = false;
     }
 
@@ -147,5 +183,4 @@ export class GameScreenComponent implements OnInit {
         this.playerTurn = true;
     }
 
-    private win() {}
 }
