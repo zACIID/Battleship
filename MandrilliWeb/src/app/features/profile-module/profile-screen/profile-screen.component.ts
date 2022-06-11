@@ -10,7 +10,9 @@ import { User } from '../../../core/model/user/user';
     styleUrls: ['./profile-screen.component.css'],
 })
 export class ProfileScreenComponent implements OnInit {
+
     public myProfile: boolean = false;
+    public isUserModerator: boolean = false;
     public user: User = new User();
     private userShowedId: string = '';
     public rank: string = '';
@@ -28,7 +30,7 @@ export class ProfileScreenComponent implements OnInit {
         
         this.getUser();
         this.getUserStats();
-
+        this.isUserModerator = this.user.roles.includes("Moderator")  ? true : false;
         let userInSessionId = localStorage.getItem('id') || '';
 
         if (userInSessionId === this.userShowedId) {
