@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 
 import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
-import { AuthApi } from '../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { authenticate } from './fixtures/authentication';
 import { injectHttpClient } from './fixtures/http-client';
