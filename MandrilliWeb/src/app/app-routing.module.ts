@@ -37,6 +37,13 @@ const routes: Routes = [
             ),
     },
     {
+        path: 'moderator-credentials',
+        loadChildren: () =>
+            import('./features/moderator-credentials-module/moderator-credentials.module').then(
+                (m) => m.ModeratorCredentialsModule
+            ),
+    },
+    {
         path: 'notification',
         loadChildren: () =>
             import('./features/notification-module/notification.module').then(
