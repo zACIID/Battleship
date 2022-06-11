@@ -16,8 +16,8 @@ export class ModeratorApi extends BaseAuthenticatedApi {
         super(httpClient, accessTokenProvider);
     }
 
-    public addModerator(moderatorId: string, newModInfo: LoginInfo): Observable<User> {
-        const reqPath: string = `${this.baseUrl}/api/moderators/${moderatorId}/additions`;
+    public addModerator(newModInfo: LoginInfo): Observable<User> {
+        const reqPath: string = `${this.baseUrl}/api/moderators/additions`;
 
         return this.httpClient
             .post<User>(reqPath, newModInfo, this.createRequestOptions())
@@ -25,11 +25,11 @@ export class ModeratorApi extends BaseAuthenticatedApi {
     }
 
     // TODO modify banUser in order to accept the username of the banned user
-    public banUser(moderatorId: string, banId: string): Observable<void> {
-        const reqPath: string = `${this.baseUrl}/api/moderators/${moderatorId}/bans`;
+    public banUser(username: string): Observable<void> {
+        const reqPath: string = `${this.baseUrl}/api/moderators/bans`;
 
         return this.httpClient
-            .post<void>(reqPath, banId, this.createRequestOptions())
+            .post<void>(reqPath, {username: username}, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 }
