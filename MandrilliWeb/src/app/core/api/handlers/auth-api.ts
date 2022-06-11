@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, tap } from 'rxjs';
 
 import { BaseApi } from './base/base-api';
 import { User } from '../../model/user/user';
+import { JwtStorage } from '../jwt-auth/jwt-storage';
+import { UserIdStorage } from '../userId-auth/userId-storage';
 
 export interface LoginInfo {
     /**
@@ -36,19 +38,30 @@ export interface AuthResult {
     providedIn: 'root',
 })
 export class AuthApi extends BaseApi {
-    public constructor(httpClient: HttpClient) {
+    public constructor(
+        httpClient: HttpClient,
+        private readonly jwtStorage: JwtStorage,
+        private readonly userIdStorage: UserIdStorage
+    ) {
         super(httpClient);
+
+        this.jwtStorage = jwtStorage;
     }
 
-    // TODO change and make it return a Promise<void>
-    //  here the jwt should be awaited and then set inside the (injected) JwtStorage
-    //  any update here should be reflected in the login component
     public login(credentials: LoginInfo): Observable<AuthResult> {
         const reqPath: string = `${this.baseUrl}/api/auth/signin`;
 
         return this.httpClient
             .post<AuthResult>(reqPath, credentials, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .pipe(
+                catchError(this.handleError),
+                tap((authRes: AuthResult): AuthResult => {
+                    this.jwtStorage.store(authRes.token);
+                    this.userIdStorage.store(authRes.userId);
+
+                    return authRes;
+                })
+            );
     }
 
     public register(credentials: LoginInfo): Observable<User> {

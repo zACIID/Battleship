@@ -23,6 +23,8 @@ export class JwtStubProvider {
         const setToken = (token: string) => {
             this.accessToken = token;
         };
+        // It's important to bind because this function will be called
+        // with a different context than this instance
         setToken.bind(this);
 
         return {
@@ -34,6 +36,8 @@ export class JwtStubProvider {
         const getToken = (): string => {
             return this.accessToken;
         };
+        // It's important to bind because this function will be called
+        // with a different context than this instance
         getToken.bind(this);
 
         return {
