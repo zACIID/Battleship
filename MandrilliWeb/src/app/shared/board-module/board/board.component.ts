@@ -20,6 +20,14 @@ export class BoardComponent implements OnInit {
         if(this.state){
             for(let ship of this.state.ships){
 
+                let backgroundColor: string = ""; 
+                switch(ship.type){
+                    case "Carrier": backgroundColor = "carrier-back-color"; break;
+                    case "Battleship": backgroundColor = "battleship-back-color"; break;
+                    case "Cruiser": backgroundColor = "cruiser-back-color"; break;
+                    case "Destroyer": backgroundColor = "destroyer-back-color"; break;
+                }
+                
                 for(let cell of ship.coordinates){
 
                     let id: string = cell.row.toString() + cell.col.toString(); 
@@ -27,7 +35,7 @@ export class BoardComponent implements OnInit {
                     let square: HTMLElement | null = document.getElementById(id);
                     
                     if(square){
-                        square.innerText = "X"
+                        square.classList.add(backgroundColor);
                     }
 
                 }
@@ -37,7 +45,7 @@ export class BoardComponent implements OnInit {
                 let id: string = shot.row.toString() + shot.col.toString(); 
                 let square: HTMLElement | null = document.getElementById(id);
                 if(square){
-                    square?.classList.add("fire")
+                    square?.classList.add("fire");
                 }
             }
 
@@ -57,7 +65,7 @@ export class BoardComponent implements OnInit {
                 for(let j = 0; j < 10; j++){
                     let square: HTMLElement | null = document.getElementById(i.toString() + j.toString());
                     if(square){
-                        square.innerText = ""
+                        square.className = "";
                     }
                 }
             }

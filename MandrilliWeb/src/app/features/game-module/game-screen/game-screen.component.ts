@@ -1,3 +1,5 @@
+import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
+import { GridCoordinates } from './../../../../../../src/model/match/state/grid-coordinates';
 import { BattleshipGrid } from './../../../core/model/match/battleship-grid';
 import { Component, OnInit } from '@angular/core';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
@@ -23,6 +25,9 @@ export class GameScreenComponent implements OnInit {
     public opponentGrid: BattleshipGrid = new BattleshipGrid();
     public opponentsId: string = "";
     public chatId: string = "";
+    private shipsCoordinates: GridCoordinates[] = [];
+    public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
+
 
     constructor(
         private route: ActivatedRoute,
@@ -36,7 +41,6 @@ export class GameScreenComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-
 
         try{
             this.userInSessionId = this.userIdProvider.getUserId()
@@ -52,6 +56,7 @@ export class GameScreenComponent implements OnInit {
                     this.playerGrid = data.player1.grid;
                     this.opponentGrid = data.player2.grid;
                     this.opponentsId = data.player2.playerId;
+
                 }
                 else{
                     this.playerGrid = data.player2.grid;
@@ -61,6 +66,12 @@ export class GameScreenComponent implements OnInit {
                 this.chatId = data.playersChat;
 
             }))
+
+            for(let ships of this.playerGrid.ships){
+                for(let coord of ships.coordinates){
+                    this.shipsCoordinates.push(coord);
+                }
+            }
 
             this.joinMatch();
             this.shotListener.listen(this.pollingOpponentHits);
@@ -72,7 +83,7 @@ export class GameScreenComponent implements OnInit {
 
 
     public shot(row: string, col: string){
-        //depends on how gwends wants to retrieve user command 
+        //TODO -> parse coords, check if valids and fire a shot on match api -> implements turn
     }
 
     public leaveMatch() {
@@ -87,12 +98,17 @@ export class GameScreenComponent implements OnInit {
         else throw new Error('MatchId not found');
     }
 
-    private saucingObservers() {
+    private lostAndSauced() {
         if (this.match !== undefined) {
             this.fleeWinnerEmitter.emit({
-                winnerId: this.userIdProvider.getUserId(),
+                winnerId: this.opponentsId,
                 matchId: this.match.matchId,
             });
+
+            this.fleeMatchEmitter.emit({
+                matchId: this.match.matchId
+            })
+            
         } else {
             throw new Error('Match has not been set');
         }
@@ -103,6 +119,12 @@ export class GameScreenComponent implements OnInit {
             this.match.player1.grid.shotsReceived.push(data.coordinates);
         }
         else this.match.player2.grid.shotsReceived.push(data.coordinates);
+
+        this.shipsCoordinates = this.shipsCoordinates.filter((e) => (e.row !== data.coordinates.row && e.col !== data.coordinates.col));
+
+        if(this.shipsCoordinates.length === 0){
+            this.lostAndSauced();
+        }
     }
 
     private win() {}

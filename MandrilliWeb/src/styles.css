@@ -88,9 +88,45 @@
 
 
 .fire{
-  border: 2px solid red
+  border: 2px solid #ef233c;
+  background-color: #ef233c;
 }
 
 .water{
-  border: 2px solid blue
+  border: 2px solid #5465ff;
+  background-color: #5465ff;
+}
+
+
+.carrier-color{
+  color: #bfcc94
+}
+
+.carrier-back-color{
+  background-color: #bfcc94;
+}
+
+.battleship-color{
+  color: #b4cded
+}
+
+.battleship-back-color{
+  background-color: #b4cded;
+}
+
+
+.cruiser-color{
+  color:#4d6a6d
+}
+
+.cruiser-back-color{
+  background-color: #4d6a6d;
+}
+
+.destroyer-color{
+  color: #710627
+}
+
+.destroyer-back-color{
+  background-color: #710627
 }

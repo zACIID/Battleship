@@ -54,17 +54,18 @@
                 </div>
                 
                 
+                
             </div>
             <div class="column is-half">
 
                 <board [state]="playerGrid"></board>
 
                 <!-- To set to your turn -->
-                <div class="box has-background-primary mt-3 has-text-centered">
+                <div class="box has-background-primary mt-2 has-text-centered">
                     <strong class="has-text-light has-weight-bold">Opponent's turn</strong>
                 </div>
 
-                <div class ="columns width-80 margin-auto">
+                <div class ="columns width-80 margin-auto mt-0">
                     <div class="column is-one-third ">
                         <input type="text" class="input is-small" #rowShot> Insert row
                     </div>
@@ -76,7 +77,14 @@
                     <div class="column"> 
                         <button class="button is-medium is-danger" (click)="shot(rowShot.value, colShot.value)">Fire!</button>
                     </div>
+                    
                 </div>
+
+                <div  class="width-80 margin-auto has-text-centered ">
+                    <p  *ngIf="userMessage.error" class="has-text-danger is-size-5">{{userMessage.errorMessage}}</p>
+                </div>
+
+                
 
             </div>
 
