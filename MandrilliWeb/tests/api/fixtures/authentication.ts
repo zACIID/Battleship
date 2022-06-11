@@ -57,6 +57,8 @@ export const knownBcryptDigest = {
  */
 export const apiAuthPassword = knownBcryptDigest.clearPassword;
 
+// TODO since tests should be isolated, this function should use axios
+//  instead of a service that is being tested
 export const authenticate = async (
     authApi: AuthApi,
     credentials: LoginInfo
