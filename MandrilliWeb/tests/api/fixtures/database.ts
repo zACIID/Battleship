@@ -40,12 +40,12 @@ export const getUserData = (): User => {
 /**
  * Returns data that represents a chat in the db
  */
-export const getChatData = (userId: Types.ObjectId): Chat => {
+export const getChatData = (userIds: string[]): Chat => {
     return {
-        users: [userId],
+        users: userIds.map((uId) => Types.ObjectId(uId)),
         messages: [
             {
-                author: userId,
+                author: Types.ObjectId(userIds[0]),
                 timestamp: new Date(),
                 content: 'content',
             },
@@ -58,12 +58,20 @@ export interface SetupData {
     insertedData: Object;
 }
 
+export interface InsertedChat {
+    chatId: string;
+    chatData: Chat;
+}
+
+export interface InsertedUser {
+    userId: string;
+    userData: User;
+}
+
 export interface ChatApiTestingSetupData extends SetupData {
     insertedData: {
-        chatId: string;
-        chatData: Chat;
-        userId: string;
-        userData: User;
+        chat: InsertedChat;
+        user: InsertedUser;
     };
 }
 
@@ -71,6 +79,22 @@ export interface ChatApiTestingSetupData extends SetupData {
  * Sets up the db for chat api testing and returns the setup data
  */
 export const setupDbChatApiTesting = async (): Promise<ChatApiTestingSetupData> => {
+    const insertedUser: InsertedUser = await insertUser();
+    const insertedChat: InsertedChat = await insertChat([insertedUser.userId]);
+
+    return {
+        apiAuthCredentials: {
+            username: insertedUser.userData.username,
+            password: apiAuthPassword,
+        },
+        insertedData: {
+            user: insertedUser,
+            chat: insertedChat,
+        },
+    };
+};
+
+export const insertUser = async (): Promise<InsertedUser> => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 
@@ -78,21 +102,30 @@ export const setupDbChatApiTesting = async (): Promise<ChatApiTestingSetupData> 
     const insertUserRes: MongoDbSingleInsertResponse = await mongoDbApi.insertUser(userData);
     const userId: string = insertUserRes.insertedId;
 
-    const chatData: Chat = getChatData(Types.ObjectId(userId));
+    return {
+        userId: userId,
+        userData: userData,
+    };
+};
+
+export const deleteUser = async (userId: string): Promise<void> => {
+    const apiCred: MongoDpApiCredentials = await getApiCredentials();
+    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+
+    await mongoDbApi.deleteUser(userId);
+};
+
+export const insertChat = async (chatUserIds: string[]): Promise<InsertedChat> => {
+    const apiCred: MongoDpApiCredentials = await getApiCredentials();
+    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+
+    const chatData: Chat = getChatData(chatUserIds);
     const insertedChatRes: MongoDbSingleInsertResponse = await mongoDbApi.insertChat(chatData);
     const chatId: string = insertedChatRes.insertedId;
 
     return {
-        apiAuthCredentials: {
-            username: userData.username,
-            password: apiAuthPassword,
-        },
-        insertedData: {
-            userId: userId,
-            userData: userData,
-            chatId: chatId,
-            chatData: chatData,
-        },
+        chatId: chatId,
+        chatData: chatData,
     };
 };
 
@@ -103,5 +136,5 @@ export const teardownDbChatApiTesting = async (
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 
     await mongoDbApi.emptyChatCollection();
-    await mongoDbApi.deleteUser(setupData.insertedData.userId);
+    await deleteUser(setupData.insertedData.user.userId);
 };

@@ -100,7 +100,7 @@ export class ChatApi extends BaseAuthenticatedApi {
      * @param message message to add
      */
     public addMessage(chatId: string, message: Message): Observable<Message> {
-        const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/users`;
+        const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/messages`;
         const reqBody: ApiMessage = toApiMessage(message);
 
         return this.httpClient.post<ApiMessage>(reqPath, reqBody, this.createRequestOptions()).pipe(
@@ -118,9 +118,12 @@ export class ChatApi extends BaseAuthenticatedApi {
      */
     public addUser(chatId: string, userId: string): Observable<string> {
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/users`;
+        const reqBody = {
+            userId: userId,
+        };
 
         return this.httpClient
-            .post<AddUserResponse>(reqPath, userId, this.createRequestOptions())
+            .post<AddUserResponse>(reqPath, reqBody, this.createRequestOptions())
             .pipe(
                 catchError(this.handleError),
                 map<AddUserResponse, string>((res: AddUserResponse) => {

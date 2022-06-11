@@ -3,7 +3,7 @@
  * @param d date to convert
  */
 export const toUnixSeconds = (d: Date): number => {
-    return d.getTime() / 1000;
+    return Math.floor(d.getTime() / 1000);
 };
 
 export const fromUnixSeconds = (unixSeconds: number): Date => {

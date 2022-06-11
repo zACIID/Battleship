@@ -24,14 +24,23 @@ export interface MongoDpApiCredentials {
     dbName: string;
 }
 
+let apiCredentials: MongoDpApiCredentials | null = null;
 export const getApiCredentials = async (): Promise<MongoDpApiCredentials> => {
-    const reqUrl: string = `${environment.apiBaseUrl}/api/testing/mongoDbApi/credentials`;
+    // Send the request only if necessary
+    // Credentials are static, so there's no need to flood the server with requests
+    if (apiCredentials !== null) {
+        return apiCredentials;
+    } else {
+        const reqUrl: string = `${environment.apiBaseUrl}/api/testing/mongoDbApi/credentials`;
 
-    const res: AxiosResponse<MongoDpApiCredentials> = await axios.get<MongoDpApiCredentials>(
-        reqUrl
-    );
+        const res: AxiosResponse<MongoDpApiCredentials> = await axios.get<MongoDpApiCredentials>(
+            reqUrl
+        );
 
-    return res.data;
+        apiCredentials = res.data;
+
+        return apiCredentials;
+    }
 };
 
 interface MongoDbReqParams {
