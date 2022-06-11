@@ -37,7 +37,7 @@ export enum UserStatus {
 export interface User {
     username: string;
     roles: string[];
-    pwdHash: string;
+    pwd_hash: string;
     salt: string;
     status: UserStatus;
     stats: UserStats;
@@ -179,7 +179,7 @@ export const UserSchema = new Schema<UserDocument>({
         required: false,
     },
 
-    pwdHash: {
+    pwd_hash: {
         type: SchemaTypes.String,
         required: false,
     },
@@ -249,7 +249,7 @@ UserSchema.methods.setPassword = async function (pwd: string): Promise<UserDocum
         );
 
     this.salt = salt;
-    this.pwdHash = pwdHash;
+    this.pwd_hash = pwdHash;
     return this.save();
 };
 
@@ -260,7 +260,7 @@ UserSchema.methods.validatePassword = async function (pwd: string): Promise<bool
             Promise.reject(new Error('Error with password encryption: ' + error.message))
         );
 
-    return this.pwdHash === hashedPw;
+    return this.pwd_hash === hashedPw;
 };
 
 /* METHODS FOR ROLES MANIPULATION  */

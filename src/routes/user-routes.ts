@@ -253,7 +253,7 @@ router.get(
                     userId: u._id,
                     username: u.username,
                     roles: u.roles,
-                    online: u.status,
+                    status: u.status,
                     elo: u.stats.elo,
                 };
             });

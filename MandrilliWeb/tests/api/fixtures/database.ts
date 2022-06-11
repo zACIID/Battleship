@@ -19,7 +19,7 @@ import { apiAuthPassword, knownBcryptDigest } from './authentication';
 export const getUserData = (): User => {
     return {
         username: `username-${Date.now()}`,
-        pwdHash: knownBcryptDigest.pwdHash,
+        pwd_hash: knownBcryptDigest.pwdHash,
         salt: knownBcryptDigest.pwdSalt,
         roles: [UserRoles.Base],
         status: UserStatus.Online,
