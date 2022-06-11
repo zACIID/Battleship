@@ -99,7 +99,10 @@ export class GameScreenComponent implements OnInit {
     }
 
     private pollingOpponetHits(data: ShotData) {
-        this.match.player1.grid.shotsReceived.push({row: data.coordinates.row, col: data.coordinates.col});
+        if(this.match.player1.playerId !== this.userInSessionId) {
+            this.match.player1.grid.shotsReceived.push(data.coordinates);
+        }
+        else this.match.player2.grid.shotsReceived.push(data.coordinates);
     }
 
     private win() {}
