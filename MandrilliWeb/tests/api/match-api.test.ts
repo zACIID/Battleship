@@ -74,8 +74,11 @@ let gridUpdate: BattleshipGrid = {
 
 beforeEach(async () => {
     httpClient = injectHttpClient()
+
     setupData = await createNMatch()
+
     userWithNoMatch = await insertUser()
+    
     jwtProvider = await authenticate({
         username: setupData.userInfo.username,
         password: apiAuthPassword
