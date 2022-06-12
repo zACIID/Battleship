@@ -111,8 +111,6 @@ describe('Match Request Accepted', () => {
         // Check that the event returns a valid matchId
         // and terminate the test only if both events are fired
         const assertMatchFoundEvent = (eventData: MatchData) => {
-            senderEventFired = true;
-
             // Match id could be any string
             expect(eventData.matchId).toEqual(expect.any(String));
 
@@ -125,8 +123,16 @@ describe('Match Request Accepted', () => {
         const senderMatchFoundListener: MatchFoundListener = new MatchFoundListener(senderClient);
         const recMatchFoundListener: MatchFoundListener = new MatchFoundListener(receiverClient);
 
-        senderMatchFoundListener.listen(assertMatchFoundEvent);
-        recMatchFoundListener.listen(assertMatchFoundEvent);
+        senderMatchFoundListener.listen((eventData: MatchData) => {
+            senderEventFired = true;
+
+            assertMatchFoundEvent(eventData);
+        });
+        recMatchFoundListener.listen((eventData: MatchData) => {
+            receiverEventFired = true;
+
+            assertMatchFoundEvent(eventData);
+        });
 
         // Accept the match request
         const matchReqEmitter: MatchRequestAcceptedEmitter = new MatchRequestAcceptedEmitter(

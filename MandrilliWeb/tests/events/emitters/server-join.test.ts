@@ -52,6 +52,6 @@ describe('Join Server', () => {
     test('Event Name Should Be "server-joined"', () => {
         const serverJoinedEmitter: ServerJoinedEmitter = new ServerJoinedEmitter(client);
 
-        expect(serverJoinedEmitter.eventName).toBe('server-joined');
+        expect(serverJoinedEmitter.eventName).toEqual('server-joined');
     });
 });

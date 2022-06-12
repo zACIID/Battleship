@@ -53,7 +53,7 @@ describe('Join Chat', () => {
     test('Event Name Should Be "chat-joined"', () => {
         const chatJoinedEmitter: ChatJoinedEmitter = new ChatJoinedEmitter(client);
 
-        expect(chatJoinedEmitter.eventName).toBe('chat-joined');
+        expect(chatJoinedEmitter.eventName).toEqual('chat-joined');
     });
 });
 
@@ -75,6 +75,6 @@ describe('Join And Leave Chat', () => {
     test('Event Name Should Be "chat-left"', () => {
         const chatLeftEmitter: ChatLeftEmitter = new ChatLeftEmitter(client);
 
-        expect(chatLeftEmitter.eventName).toBe('chat-left');
+        expect(chatLeftEmitter.eventName).toEqual('chat-left');
     });
 });
