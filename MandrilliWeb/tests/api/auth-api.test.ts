@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 
-import { injectHttpClient } from './fixtures/http-client';
+import { injectHttpClient } from '../fixtures/http-client';
 import { AuthApi, AuthResult, LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { JwtStorage } from '../../src/app/core/api/jwt-auth/jwt-storage';
@@ -8,11 +8,12 @@ import { UserIdStorage } from '../../src/app/core/api/userId-auth/userId-storage
 import {
     apiAuthPassword,
     authenticate,
+    getCredentialsForUser,
     JwtStubProvider,
     UserIdStubProvider,
-} from './fixtures/authentication';
-import { deleteUser, InsertedUser, insertUser } from './fixtures/database/users';
-import { SetupData } from './fixtures/utils';
+} from '../fixtures/authentication';
+import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
+import { SetupData } from '../fixtures/utils';
 import { User } from '../../src/app/core/model/user/user';
 
 interface AuthTestingSetupData extends SetupData {
@@ -21,20 +22,24 @@ interface AuthTestingSetupData extends SetupData {
     };
 }
 
+/**
+ * Insert a user in the db, which will be used to authenticate with the api
+ */
 const setupAuthApiTesting = async (): Promise<AuthTestingSetupData> => {
     const insertedUser: InsertedUser = await insertUser();
 
     return {
-        apiAuthCredentials: {
-            username: insertedUser.userData.username,
-            password: apiAuthPassword,
-        },
+        apiAuthCredentials: getCredentialsForUser(insertedUser.userData.username),
         insertedData: {
             user: insertedUser,
         },
     };
 };
 
+/**
+ * Deletes the user inserted in the setup
+ * @param setupData
+ */
 const teardownAuthApiTesting = async (setupData: AuthTestingSetupData): Promise<void> => {
     await deleteUser(setupData.insertedData.user.userId);
 };
