@@ -5,14 +5,14 @@ import { authenticate, getCredentialsForUser } from '../fixtures/authentication'
 import { injectHttpClient } from '../fixtures/http-client';
 import { InsertedUser, insertUser } from '../fixtures/database/users';
 import { UserMatches, teardownDbMatchApiTesting, createNMatch } from '../fixtures/database/matches';
-import { MatchApi } from 'src/app/core/api/handlers/match-api';
-import { Match } from 'src/app/core/model/match/match';
-import { PlayerState } from 'src/app/core/model/match/player-state';
-import { MatchStats } from 'src/app/core/model/match/match-stats';
-import { Shot } from 'src/app/core/model/api/match/shot';
-import { GridCoordinates } from 'src/app/core/model/match/coordinates';
-import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
-import { Ship } from 'src/app/core/model/match/ship';
+import { MatchApi } from '../../src/app/core/api/handlers/match-api';
+import { Match } from '../../src/app/core/model/match/match';
+import { PlayerState } from '../../src/app/core/model/match/player-state';
+import { MatchStats } from '../../src/app/core/model/match/match-stats';
+import { Shot } from '../../src/app/core/model/api/match/shot';
+import { GridCoordinates } from '../../src/app/core/model/match/coordinates';
+import { BattleshipGrid } from '../../src/app/core/model/match/battleship-grid';
+import { Ship } from '../../src/app/core/model/match/ship';
 import { MatchStatsUpdate } from '../../src/app/core/model/api/match/match-stats-update';
 
 let httpClient: HttpClient;
