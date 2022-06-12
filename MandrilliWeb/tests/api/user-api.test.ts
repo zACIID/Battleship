@@ -1,13 +1,13 @@
-import { InsertedUser, insertUser } from '../fixtures/database/users'
+import { InsertedUser, insertUser } from '../fixtures/database/users';
 import { HttpClient } from '@angular/common/http';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { apiAuthPassword, authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
-import { LoginInfo } from 'src/app/core/api/handlers/auth-api';
+import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { deleteUser } from '../../../src/model/user/user';
-import { ModeratorApi } from 'src/app/core/api/handlers/moderator-api';
-import { UserApi, UsernameUpdate } from 'src/app/core/api/handlers/user-api';
-import { User } from 'src/app/core/model/user/user';
+import { ModeratorApi } from '../../src/app/core/api/handlers/moderator-api';
+import { UserApi, UsernameUpdate } from '../../src/app/core/api/handlers/user-api';
+import { User } from '../../src/app/core/model/user/user';
 
 let httpClient: HttpClient;
 let mainUser: InsertedUser;
@@ -15,17 +15,17 @@ let fakeUser: InsertedUser;
 let jwtProviderMainUser: JwtProvider;
 let jwtProviderFakeUser: JwtProvider;
 let jwtProviderUsefullUser: JwtProvider;
-let wrongUserId: string = ""
+let wrongUserId: string = '';
 let usefulUser1: InsertedUser;
-let wrongPassword: string
-let wrongUsername: string
+let wrongPassword: string;
+let wrongUsername: string;
 
 beforeEach(async () => {
     httpClient = injectHttpClient();
 
-    mainUser = await insertUser()
-    fakeUser = await insertUser()
-    usefulUser1 = await insertUser()
+    mainUser = await insertUser();
+    fakeUser = await insertUser();
+    usefulUser1 = await insertUser();
 
     const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
     jwtProviderMainUser = await authenticate(modCred);
@@ -38,10 +38,9 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    deleteUser(mainUser)
-    deleteUser(fakeUser)
+    deleteUser(mainUser);
+    deleteUser(fakeUser);
 });
-
 
 describe('Get User', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
@@ -83,7 +82,7 @@ describe('Get User', () => {
     });
 });
 
-describe('Get Multiple User', () => {
+describe('Get Multiple Users', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.getMultipleUsers([mainUser.userId, fakeUser.userId]).subscribe({
@@ -93,13 +92,15 @@ describe('Get Multiple User', () => {
 
                 // Expect an object with the correct fields
                 expect(users).toEqual(
-                    expect.objectContaining<User[]>([{
-                        userId: expect.any(String),
-                        username: expect.any(String),
-                        roles: expect.any(Array),
-                        status: expect.any(String),
-                        elo: expect.any(Number),
-                    }])
+                    expect.objectContaining<User[]>([
+                        {
+                            userId: expect.any(String),
+                            username: expect.any(String),
+                            roles: expect.any(Array),
+                            status: expect.any(String),
+                            elo: expect.any(Number),
+                        },
+                    ])
                 );
             },
             complete: async () => {
@@ -166,7 +167,7 @@ describe('Delete User', () => {
 describe('Update Password', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
-        userApi.updatePassword(mainUser.userId, "ayo").subscribe({
+        userApi.updatePassword(mainUser.userId, 'ayo').subscribe({
             next: (nun: void) => {},
             complete: async () => {
                 done();
@@ -177,7 +178,7 @@ describe('Update Password', () => {
     //wrong userId
     test('Should Throw - No Moderator Privileges', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
-        userApi.updatePassword(wrongUserId, "ayo").subscribe({
+        userApi.updatePassword(wrongUserId, 'ayo').subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();
@@ -206,7 +207,7 @@ describe('Update Password', () => {
 describe('Update Username', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
-        userApi.updateUsername(mainUser.userId, "ayo").subscribe({
+        userApi.updateUsername(mainUser.userId, 'ayo').subscribe({
             next: (userData: UsernameUpdate) => {
                 // Expect non-empty response
                 expect(userData).toBeTruthy();
@@ -227,7 +228,7 @@ describe('Update Username', () => {
     //wrong userId
     test('Should Throw - No Moderator Privileges', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
-        userApi.updatePassword(wrongUserId, "ayo").subscribe({
+        userApi.updatePassword(wrongUserId, 'ayo').subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();
@@ -252,4 +253,3 @@ describe('Update Username', () => {
         });
     });
 });
-
