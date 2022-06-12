@@ -1,13 +1,8 @@
 import { ChatMessageListener } from './../../../core/events/listeners/chat-message';
-import { getRank } from './../../../core/model/user/elo-rankings';
-import { UserApi } from './../../../core/api/handlers/user-api';
-import { UserOverview } from './../../../core/model/user/user-overview';
 import { ChatApi } from './../../../core/api/handlers/chat-api';
-import { ActivatedRoute, RouteReuseStrategy } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { Message } from 'src/app/core/model/chat/message';
 import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
-import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
 import { Router } from '@angular/router';

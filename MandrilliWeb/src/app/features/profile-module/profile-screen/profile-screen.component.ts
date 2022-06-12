@@ -1,6 +1,7 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { UserStats } from './../../../core/model/user/user-stats';
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
 import { User } from '../../../core/model/user/user';
 
@@ -10,7 +11,9 @@ import { User } from '../../../core/model/user/user';
     styleUrls: ['./profile-screen.component.css'],
 })
 export class ProfileScreenComponent implements OnInit {
+
     public myProfile: boolean = false;
+    public isUserModerator: boolean = false;
     public user: User = new User();
     private userShowedId: string = '';
     public rank: string = '';
@@ -18,7 +21,8 @@ export class ProfileScreenComponent implements OnInit {
 
     constructor(
         private userClient: UserApi,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private userIdProvider: UserIdProvider
     ) {}
 
     ngOnInit(): void {
@@ -28,8 +32,8 @@ export class ProfileScreenComponent implements OnInit {
         
         this.getUser();
         this.getUserStats();
-
-        let userInSessionId = localStorage.getItem('id') || '';
+        this.isUserModerator = this.user.roles.includes("Moderator")  ? true : false;
+        let userInSessionId = this.userIdProvider.getUserId();
 
         if (userInSessionId === this.userShowedId) {
             this.myProfile = true;

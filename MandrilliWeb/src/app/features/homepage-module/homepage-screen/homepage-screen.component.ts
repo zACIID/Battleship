@@ -1,7 +1,4 @@
-import { getRank } from './../../../core/model/user/elo-rankings';
-import { UserStats } from './../../../core/model/user/user-stats';
-import { User } from './../../../core/model/user/user';
-import { UserApi } from './../../../core/api/handlers/user-api';
+import { UserIdProvider } from './../../../core/api/userId-auth/userId-provider';
 import { UserOverview } from './../../../core/model/user/user-overview';
 import { Component, OnInit } from '@angular/core';
 
@@ -11,12 +8,14 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./homepage-screen.component.css'],
 })
 export class HomepageScreenComponent implements OnInit {
+    
     public user: UserOverview = new UserOverview();
-    public userId: string = '';
+    public userInSessionId: string = '';
 
-    constructor(private userClient: UserApi) {}
+    constructor(
+        private userIdProvider: UserIdProvider) {}
 
     ngOnInit(): void {
-        this.userId = localStorage.getItem('id') || '';
+        this.userInSessionId = this.userIdProvider.getUserId();
     }
 }

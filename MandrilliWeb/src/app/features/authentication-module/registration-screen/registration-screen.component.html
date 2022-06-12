@@ -38,7 +38,7 @@
             </div>
             <div class="column">
                 
-                <input class="input is-medium" type="text" placeholder="Insert password" #password>
+                <input class="input is-medium" type="password" placeholder="Insert password" #password>
             
             </div>
         </div>
@@ -48,6 +48,11 @@
             </div>
             <div class="column">
                 <button class="button is-primary is-size-5" (click)="signup(username.value, password.value)">Register</button>
+
+                <div  class="width-80 margin-auto has-text-centered height-20px">
+                    <p *ngIf="userMessage.error" class="has-text-danger is-size-5">{{userMessage.errorMessage}}</p>
+                </div>
+
             </div>
         </div>
 

@@ -18,13 +18,12 @@ export class ModeratorApi extends BaseAuthenticatedApi {
 
     public addModerator(newModInfo: LoginInfo): Observable<User> {
         const reqPath: string = `${this.baseUrl}/api/moderators/additions`;
-
+        // TODO add moderator with newModInfo.status.temporary = true 
         return this.httpClient
             .post<User>(reqPath, newModInfo, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 
-    // TODO modify banUser in order to accept the username of the banned user
     public banUser(username: string): Observable<void> {
         const reqPath: string = `${this.baseUrl}/api/moderators/bans`;
 

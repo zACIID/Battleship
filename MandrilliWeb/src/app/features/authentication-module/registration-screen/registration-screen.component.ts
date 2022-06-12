@@ -1,9 +1,8 @@
+import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserApi } from '../../../core/api/handlers/user-api';
 import { User } from '../../../core/model/user/user';
 import { AuthApi } from '../../../core/api/handlers/auth-api';
-import { LoginInfo } from '../../../core/api/handlers/auth-api';
 
 @Component({
     selector: 'app-registration-screen',
@@ -11,7 +10,14 @@ import { LoginInfo } from '../../../core/api/handlers/auth-api';
     styleUrls: ['./registration-screen.component.css'],
 })
 export class RegistrationScreenComponent implements OnInit {
-    constructor(private authClient: AuthApi, private router: Router) {}
+
+    public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
+
+
+    constructor(
+        private authClient: AuthApi,
+        private router: Router
+    ) {}
 
     ngOnInit(): void {}
 
@@ -21,7 +27,9 @@ export class RegistrationScreenComponent implements OnInit {
                 localStorage.setItem('id', data.userId);
                 this.router.navigate(['/homepage']);
             });
-        } catch (err) {
+        } catch (err: any) {
+            this.userMessage.error = true;
+            this.userMessage.errorMessage = err;
             console.log('An error occurred while signin up: ' + err);
         }
     }

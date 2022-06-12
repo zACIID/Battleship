@@ -1,9 +1,8 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { User } from './../../../core/model/user/user';
 import { MatchOverview } from './../../../core/model/match/match-overview';
-import { PlayerState } from './../../../core/model/match/player-state';
-
 import { UserApi } from './../../../core/api/handlers/user-api';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Match } from '../../../core/model/match/match';
 import { MatchApi } from '../../../core/api/handlers/match-api';
 
@@ -15,7 +14,11 @@ import { MatchApi } from '../../../core/api/handlers/match-api';
 export class HistorySidebarComponent implements OnInit {
     public matchHistory: MatchOverview[] = [];
 
-    constructor(private matchClient: MatchApi, private userClient: UserApi) {}
+    constructor(
+        private matchClient: MatchApi,
+        private userClient: UserApi,
+        private userIdProvider: UserIdProvider    
+    ) {}
 
     ngOnInit(): void {
         this.get10UserMatch();
@@ -23,7 +26,7 @@ export class HistorySidebarComponent implements OnInit {
 
     public get10UserMatch(): void {
         try {
-            let userId = localStorage.getItem('id') || '';
+            let userId = this.userIdProvider.getUserId();
             let matches: Match[];
             this.matchClient.getUserMatches(userId).subscribe((match: Match[]) => {
                 matches = [...match];

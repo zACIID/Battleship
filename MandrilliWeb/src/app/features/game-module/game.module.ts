@@ -7,16 +7,12 @@ import { ChatModule } from './../../shared/chat-module/chat.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameScreenComponent } from './game-screen/game-screen.component';
-import { RemainingShipComponent } from './remaining-ship/remaining-ship.component';
-import { EnemyBoardComponent } from './enemy-board/enemy-board.component';
-import { PlayerBoardComponent } from './player-board/player-board.component';
+import { OpponentBoardComponent } from './opponent-board/opponent-board.component';
 
 @NgModule({
     declarations: [
         GameScreenComponent,
-        RemainingShipComponent,
-        EnemyBoardComponent,
-        PlayerBoardComponent,
+        OpponentBoardComponent
     ],
     imports: [
         CommonModule,

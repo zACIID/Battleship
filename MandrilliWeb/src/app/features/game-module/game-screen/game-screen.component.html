@@ -49,29 +49,42 @@
 
 
                 </div>
-                <enemy-board></enemy-board>
+                <div class="width-80 margin-auto">
+                    <opponent-board [state]="opponentGrid"></opponent-board>
+                </div>
+                
+                
                 
             </div>
             <div class="column is-half">
 
-                <player-board></player-board>
+                <board [state]="playerGrid"></board>
 
                 <!-- To set to your turn -->
-                <div class="box has-background-primary mt-3"><p class="has-text-light has-text-centered">Opponent's turn</p></div>
+                <div class="box has-background-primary mt-2 has-text-centered">
+                    <strong class="has-text-light has-weight-bold">Opponent's turn</strong>
+                </div>
 
-                <div class ="columns width-80 margin-auto">
+                <div class ="columns width-80 margin-auto mt-0">
                     <div class="column is-one-third ">
-                        <input type="text" class="input is-small"> Insert row
+                        <input type="text" class="input is-small" #rowShot> Insert row
                     </div>
                     
                     <div class="column is-one-third"> 
-                        <input type="text" class="input is-small"> Insert column
+                        <input type="text" class="input is-small" #colShot> Insert column
                     </div>
 
                     <div class="column"> 
-                        <button class="button is-medium is-danger">Fire!</button>
+                        <button class="button is-medium is-danger" (click)="shot(rowShot.value, colShot.value)" [disabled]="!playerTurn">Fire!</button>
                     </div>
+                    
                 </div>
+
+                <div  class="width-80 margin-auto has-text-centered ">
+                    <p  *ngIf="userMessage.error" class="has-text-danger is-size-5">{{userMessage.errorMessage}}</p>
+                </div>
+
+                
 
             </div>
 
@@ -87,11 +100,11 @@
         <div class="columns">
 
             <div class="column mr-3">
-                <player-info></player-info>
+                <player-info [userId]="opponentsId"></player-info>
             </div>
 
             <div class="column is-one-quarter">
-                <div class="box has-background-primary pointer height-100 columns">
+                <div class="box has-background-primary pointer height-100 columns" (click)="leaveMatch()">
                     <div class="has-text-centered">
                         <strong class="is-size-5 has-weight-semibold has-text-danger">Quit Game</strong>
                     </div>
@@ -101,7 +114,7 @@
         </div>
         
         <div class="chat-height p-4">
-            <chat-body></chat-body>
+            <chat-body [chatId]="chatId"></chat-body>
         </div>
 
     
