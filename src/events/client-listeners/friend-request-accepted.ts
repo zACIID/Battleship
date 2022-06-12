@@ -9,7 +9,7 @@ import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { RequestAcceptedData } from '../../model/events/request-accepted-data';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'friend-request-accepted' client event.
  * Such event happens when a user accepts a friend request.
  * The user that sent the request is then notified that his new friend

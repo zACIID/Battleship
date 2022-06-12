@@ -7,7 +7,7 @@ import { Types } from 'mongoose';
 import { MatchTerminatedReason } from '../../model/events/match-terminated-data';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'player-won' client event.
  * Such event allows the server to know when a player has won the game,
  * in order to perform the necessary game-ending operations and notify

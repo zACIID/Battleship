@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import { Emitter } from './emitter';
 
 /**
- * Abstract class that wraps Socket.io emitter functionality
+ * Abstract class that wraps socket.io emitter functionality
  * for server-emitted events to a specific set of clients.
  */
 export class RoomEmitter<T> extends Emitter<T> {

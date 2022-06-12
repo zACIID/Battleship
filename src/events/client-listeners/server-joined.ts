@@ -8,7 +8,7 @@ import { FriendStatusChangedEmitter } from '../emitters/friend-status-changed';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 
 /**
- * Class that wraps Socket.io functionality to listen to a 'server-joined' client event.
+ * Class that wraps socket.io functionality to listen to a 'server-joined' client event.
  * Such event creates a room for the client based on the
  * userId that the login has been made with, which allows the server
  * to send events specifically to the user.

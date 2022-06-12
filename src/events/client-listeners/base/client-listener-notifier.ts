@@ -3,7 +3,7 @@ import { ClientListener } from './client-listener';
 
 /**
  * Abstract class that wraps functionality used to listen
- * to client-emitted Socket.io events and emit events based
+ * to client-emitted socket.io events and emit events based
  * on the listened data
  */
 export abstract class ClientListenerNotifier<T> extends ClientListener<T> {

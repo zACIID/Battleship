@@ -12,7 +12,7 @@ import { MatchData } from '../../model/events/match-data';
  */
 export class MatchFoundEmitter extends RoomEmitter<MatchData> {
     /**
-     * @param ioServer Socket.io server instance
+     * @param ioServer socket.io server instance
      * @param playerId id of the user that has to be notified
      */
     public constructor(ioServer: Server, playerId: Types.ObjectId) {

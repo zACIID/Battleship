@@ -11,7 +11,7 @@ import { NotificationData } from '../../model/events/notification-data';
  */
 export class NotificationDeletedEmitter extends RoomEmitter<NotificationData> {
     /**
-     * @param ioServer Socket.io server instance
+     * @param ioServer socket.io server instance
      * @param userId id of the user that has to be notified
      */
     public constructor(ioServer: Server, userId: Types.ObjectId) {

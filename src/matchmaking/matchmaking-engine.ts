@@ -28,7 +28,7 @@ export class MatchmakingEngine {
     private readonly _pollingTime: number;
 
     /**
-     * Socket.io handler server tha will be used by the engine to notify
+     * socket.io handler server tha will be used by the engine to notify
      *  players that a match has been found.
      * @private
      */
@@ -37,7 +37,7 @@ export class MatchmakingEngine {
     /**
      * Creates a matchmaking engine instance
      *
-     * @param sIoServer Socket.io server instance tha will be used by the engine to notify
+     * @param sIoServer socket.io server instance tha will be used by the engine to notify
      *  players that a match has been found
      * @param queuePollingTime Time in milliseconds that passes between each run of the
      *  matchmaking engine.

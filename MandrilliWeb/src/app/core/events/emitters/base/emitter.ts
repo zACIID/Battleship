@@ -1,7 +1,7 @@
 import { Socket } from 'ngx-socket-io';
 
 /**
- * Abstract class that wraps Socket.io emitter functionality
+ * Abstract class that wraps socket.io emitter functionality
  * for server-emitted events
  */
 export abstract class Emitter<T> {

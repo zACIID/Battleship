@@ -5,7 +5,7 @@ import { ServerListener } from './base/server-listener';
 import { NotificationData } from '../../model/events/notification-data';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'notification-deleted' server event.
  * Such event allows the user to be notified when one of his
  * notification was deleted by the server.

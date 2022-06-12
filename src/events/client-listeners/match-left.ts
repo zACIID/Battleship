@@ -4,9 +4,9 @@ import { ClientListener } from './base/client-listener';
 import { MatchData } from '../../model/events/match-data';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'match-joined' client event.
- * Such event allows the client to leave a Socket.io room for some
+ * Such event allows the client to leave a socket.io room for some
  * specific match, so that he can stop listening to the events of such match.
  */
 export class MatchLeftListener extends ClientListener<MatchData> {

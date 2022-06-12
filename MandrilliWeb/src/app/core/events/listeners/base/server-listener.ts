@@ -2,7 +2,7 @@ import { Socket } from 'ngx-socket-io';
 
 /**
  * Abstract class that wraps functionality used to listen
- * to server-emitted Socket.io events
+ * to server-emitted socket.io events
  */
 export abstract class ServerListener<T> {
     public readonly client: Socket;

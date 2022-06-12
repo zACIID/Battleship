@@ -10,7 +10,7 @@ import { ShotData } from '../../model/events/shot-data';
  */
 export class ShotFiredEmitter extends RoomEmitter<ShotData> {
     /**
-     * @param ioServer Socket.io server instance
+     * @param ioServer socket.io server instance
      * @param matchId id of the match whose players and spectators have to be notified
      */
     public constructor(ioServer: Server, matchId: Types.ObjectId) {

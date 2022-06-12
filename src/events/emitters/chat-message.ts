@@ -12,7 +12,7 @@ import { ChatMessage } from '../../model/events/chat-message';
  */
 export class ChatMessageEmitter extends RoomEmitter<ChatMessage> {
     /**
-     * @param ioServer Socket.io server instance
+     * @param ioServer socket.io server instance
      * @param chatId id of the chat whose users have to be notified
      */
     public constructor(ioServer: Server, chatId: Types.ObjectId) {

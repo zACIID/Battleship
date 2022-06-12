@@ -10,7 +10,7 @@ import { getUserById, UserDocument, UserStatus } from '../../model/user/user';
 import { RequestTypes } from '../../model/user/notification';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'match-request-accepted' client event.
  * Such event happens when a user accepts a match request.
  * The match is then created between the two users, who are then notified.

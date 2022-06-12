@@ -11,7 +11,7 @@ import { FriendStatusChangedData } from '../../model/events/friend-status-change
  */
 export class FriendStatusChangedEmitter extends RoomEmitter<FriendStatusChangedData> {
     /**
-     * @param ioServer Socket.io server instance
+     * @param ioServer socket.io server instance
      * @param toNotifyId id of the user that has to be notified
      */
     public constructor(ioServer: Server, toNotifyId: Types.ObjectId) {

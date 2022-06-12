@@ -5,7 +5,7 @@ import { ServerListener } from './base/server-listener';
 import { MatchTerminatedData } from '../../model/events/match-terminated-data';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'match-terminated' server event.
  * Such event allows the clients that are playing in or spectating a match
  * to get notified by the server when such match is terminated.

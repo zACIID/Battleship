@@ -98,14 +98,14 @@ app.use(
 /* Register express routes */
 registerRoutes(app);
 
-/* Socket.io server setup */
+/* socket.io server setup */
 export const ioServer: io.Server = new io.Server(httpServer);
 
 ioServer.on('connection', async function (client) {
-    console.log(chalk.green(`Socket.io client ${client.id} connected`));
+    console.log(chalk.green(`socket.io client ${client.id} connected`));
 
     client.on('disconnect', function () {
-        console.log(chalk.redBright(`Socket.io client ${client.id} disconnected`));
+        console.log(chalk.redBright(`socket.io client ${client.id} disconnected`));
     });
 
     /* Join listeners are being setup for each client.

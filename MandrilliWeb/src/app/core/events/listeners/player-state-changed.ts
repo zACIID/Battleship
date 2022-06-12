@@ -5,7 +5,7 @@ import { ServerListener } from './base/server-listener';
 import { PlayerStateChangedData } from '../../model/events/player-state-changed-data';
 
 /**
- * Class that wraps Socket.io functionality to listen
+ * Class that wraps socket.io functionality to listen
  * to a 'player-state-changed' server event.
  * Such event allows to get notified when a player during the current
  * match changes his "ready" state, which defines if he has completed
