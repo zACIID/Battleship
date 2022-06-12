@@ -83,12 +83,14 @@ export interface MongoDbFilterReq extends MongoDbReqBody {
  * the MongoDb Data Api that the value is indeed an ObjectId
  */
 interface RequestObjectId {
-    $oid: string | Types.ObjectId;
+    $oid: DocId;
 }
 
 export interface MongoDbSingleInsertResponse {
     insertedId: string;
 }
+
+export type DocId = string | Types.ObjectId;
 
 export class MongoDbApi {
     private readonly _credentials: MongoDpApiCredentials;
@@ -102,30 +104,30 @@ export class MongoDbApi {
     /*
      * Get user document by _id
      */
-    public async getUserDocument(_id: string): Promise<dbUser.UserDocument> {
+    public async getUserDocument(userId: DocId): Promise<dbUser.UserDocument> {
         return await this.getDocumentById<dbUser.UserDocument>(
             dbCollectionNames.userCollection,
-            _id
+            userId
         );
     }
 
     /*
      * Get match document by _id
      */
-    public async getMatchDocument(_id: string): Promise<dbMatch.MatchDocument> {
+    public async getMatchDocument(matchId: DocId): Promise<dbMatch.MatchDocument> {
         return await this.getDocumentById<dbMatch.MatchDocument>(
             dbCollectionNames.matchCollection,
-            _id
+            matchId
         );
     }
 
     /*
      * Get chat document by _id
      */
-    public async getChatDocument(_id: string): Promise<dbChat.ChatDocument> {
+    public async getChatDocument(chatId: DocId): Promise<dbChat.ChatDocument> {
         return await this.getDocumentById<dbChat.ChatDocument>(
             dbCollectionNames.userCollection,
-            _id
+            chatId
         );
     }
 
@@ -134,10 +136,10 @@ export class MongoDbApi {
      */
     public async getDocumentById<T extends Document>(
         collectionName: string,
-        _id: string
+        docId: DocId
     ): Promise<T> {
         const filter: FilterQuery<Document> = {
-            _id: MongoDbApi.convertToRequestObjId(_id),
+            _id: MongoDbApi.convertToRequestObjId(docId),
         };
 
         return await this.getDocument<T>(filter, collectionName);
@@ -147,7 +149,7 @@ export class MongoDbApi {
      * Get matchmaking queue entry by user id
      * @param userId id of the user that the entry represents
      */
-    public async getQueueEntry(userId: string): Promise<dbMatchmaking.QueueEntryDocument> {
+    public async getQueueEntry(userId: DocId): Promise<dbMatchmaking.QueueEntryDocument> {
         const filter = {
             userId: userId,
         };
@@ -190,7 +192,7 @@ export class MongoDbApi {
         );
     }
 
-    public async insertQueueEntry(
+    public async insertMatchmakingEntry(
         entryData: dbMatchmaking.QueueEntry
     ): Promise<MongoDbSingleInsertResponse> {
         return await this.insertDocument<dbMatchmaking.QueueEntry>(
@@ -216,100 +218,88 @@ export class MongoDbApi {
         });
     }
 
-    public async emptyDatabase(): Promise<void> {
-        await this.emptyCollection(dbCollectionNames.chatCollection);
-    }
-
-    public async emptyUserCollection(): Promise<void> {
-        await this.emptyCollection(dbCollectionNames.userCollection);
-    }
-
-    public async emptyChatCollection(): Promise<void> {
-        await this.emptyCollection(dbCollectionNames.chatCollection);
-    }
-
-    public async emptyMatchCollection(): Promise<void> {
-        await this.emptyCollection(dbCollectionNames.matchCollection);
-    }
-
-    public async emptyMatchmakingCollection(): Promise<void> {
-        await this.emptyCollection(dbCollectionNames.matchmakingCollection);
-    }
-
-    private async emptyCollection(collection: string): Promise<void> {
-        const reqBody: MongoDbFilterReq = {
-            dataSource: this._credentials.clusterName,
-            database: this._credentials.dbName,
-            collection: collection,
-            filter: {},
-        };
-
-        // Response should contain something like "deletedCount: x"
-        await this.sendMongoDbRequest<Object>({
-            requestPath: '/action/deleteMany',
-            body: reqBody,
-        });
-    }
-
     /**
      * Deletes the user with the provided id from the database
-     * @param _id
+     * @param userId
      */
-    public async deleteUser(_id: string): Promise<void> {
-        return await this.deleteDocument(
-            {
-                _id: MongoDbApi.convertToRequestObjId(_id),
-            },
-            dbCollectionNames.userCollection
-        );
+    public async deleteUser(userId: DocId): Promise<void> {
+        return this.deleteMultipleUsers([userId]);
     }
 
     /**
      * Deletes the chat with the provided id from the database
-     * @param _id
+     * @param chatId
      */
-    public async deleteChat(_id: string): Promise<void> {
-        return await this.deleteDocument(
-            {
-                _id: MongoDbApi.convertToRequestObjId(_id),
-            },
-            dbCollectionNames.chatCollection
-        );
+    public async deleteChat(chatId: DocId): Promise<void> {
+        return this.deleteMultipleChats([chatId]);
     }
 
     /**
      * Deletes the match with the provided id from the database
-     * @param _id
+     * @param matchId
      */
-    public async deleteMatch(_id: string): Promise<void> {
-        return await this.deleteDocument(
-            {
-                _id: MongoDbApi.convertToRequestObjId(_id),
-            },
-            dbCollectionNames.matchCollection
-        );
+    public async deleteMatch(matchId: DocId): Promise<void> {
+        return this.deleteMultipleMatches([matchId]);
     }
 
     /**
      * Deletes the matchmaking queue entry of the user
      * with the provided id from the database
-     * @param userId
+     * @param userId id of the user whose entry should be deleted
      */
-    public async deleteQueueEntry(userId: string): Promise<void> {
-        return await this.deleteDocument(
-            {
-                userId: userId,
-            },
-            dbCollectionNames.matchmakingCollection
-        );
+    public async deleteMatchmakingEntry(userId: string): Promise<void> {
+        return await this.deleteMultipleMatchmakingEntries([userId]);
     }
 
     /**
-     * Deletes a document based on the provided filter
-     * @param filter
-     * @param collection
+     * Deletes from the database the users with the provided ids
+     * @param userIds ids of the users that should be deleted
      */
-    public async deleteDocument(filter: FilterQuery<Document>, collection: string): Promise<void> {
+    public async deleteMultipleUsers(userIds: DocId[]): Promise<void> {
+        await this.deleteMultipleDocumentsById(dbCollectionNames.userCollection, userIds);
+    }
+
+    /**
+     * Deletes from the database the chats with the provided ids
+     * @param chatIds ids of the chats that should be deleted
+     */
+    public async deleteMultipleChats(chatIds: DocId[]): Promise<void> {
+        await this.deleteMultipleDocumentsById(dbCollectionNames.matchmakingCollection, chatIds);
+    }
+
+    /**
+     * Deletes from the database the matches with the provided ids
+     * @param matchIds ids of the matches that should be deleted
+     */
+    public async deleteMultipleMatches(matchIds: DocId[]): Promise<void> {
+        await this.deleteMultipleDocumentsById(dbCollectionNames.matchCollection, matchIds);
+    }
+
+    /**
+     * Deletes from the database the matchmaking entries of the users with the provided ids
+     * @param userIds ids of the users whose entries should be deleted
+     */
+    public async deleteMultipleMatchmakingEntries(userIds: DocId[]): Promise<void> {
+        await this.deleteMultipleDocumentsById(dbCollectionNames.matchmakingCollection, userIds);
+    }
+
+    private async deleteMultipleDocumentsById(collection: string, docIds: DocId[]): Promise<void> {
+        const queryDocIds: RequestObjectId[] = docIds.map(
+            (dId: string | Types.ObjectId): RequestObjectId => {
+                return MongoDbApi.convertToRequestObjId(dId);
+            }
+        );
+
+        const multipleIdsFilter: FilterQuery<Document> = {
+            _id: { $in: queryDocIds },
+        };
+        return this.deleteMultipleDocuments(collection, multipleIdsFilter);
+    }
+
+    private async deleteMultipleDocuments(
+        collection: string,
+        filter: FilterQuery<Document> = {}
+    ): Promise<void> {
         const reqBody: MongoDbFilterReq = {
             dataSource: this._credentials.clusterName,
             database: this._credentials.dbName,
@@ -319,7 +309,7 @@ export class MongoDbApi {
 
         // Response should contain something like "deletedCount: x"
         await this.sendMongoDbRequest<Object>({
-            requestPath: '/action/deleteOne',
+            requestPath: '/action/deleteMany',
             body: reqBody,
         });
     }

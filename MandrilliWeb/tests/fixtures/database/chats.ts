@@ -1,14 +1,14 @@
 import { Types } from 'mongoose';
 
 import {
+    DocId,
     getApiCredentials,
     MongoDbApi,
     MongoDbSingleInsertResponse,
     MongoDpApiCredentials,
 } from './mongodb-api';
 import { Chat } from '../../../../src/model/chat/chat';
-import { apiAuthPassword, getCredentialsForUser } from '../authentication';
-import { deleteUser, InsertedUser, insertUser } from './users';
+import { InsertedUser } from './users';
 import { SetupData } from '../utils';
 
 /**
@@ -51,4 +51,15 @@ export const insertChat = async (chatUserIds: string[]): Promise<InsertedChat> =
         chatId: chatId,
         chatData: chatData,
     };
+};
+
+export const deleteChat = async (chatId: DocId): Promise<void> => {
+    return deleteMultipleChats([chatId]);
+};
+
+export const deleteMultipleChats = async (chatIds: DocId[]): Promise<void> => {
+    const apiCred: MongoDpApiCredentials = await getApiCredentials();
+    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+
+    await mongoDbApi.deleteMultipleChats(chatIds);
 };

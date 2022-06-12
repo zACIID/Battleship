@@ -1,5 +1,6 @@
 import { User, UserRoles, UserStatus } from '../../../../src/model/user/user';
 import {
+    DocId,
     getApiCredentials,
     MongoDbApi,
     MongoDbSingleInsertResponse,
@@ -52,9 +53,13 @@ export const insertUser = async (userData?: User): Promise<InsertedUser> => {
     };
 };
 
-export const deleteUser = async (userId: string): Promise<void> => {
+export const deleteUser = async (userId: DocId): Promise<void> => {
+    return deleteMultipleUsers([userId]);
+};
+
+export const deleteMultipleUsers = async (userIds: DocId[]): Promise<void> => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 
-    await mongoDbApi.deleteUser(userId);
+    await mongoDbApi.deleteMultipleUsers(userIds);
 };
