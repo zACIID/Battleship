@@ -21,16 +21,20 @@ export class RegistrationScreenComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    signup(username: string, password: string) {
-        try {
-            this.authClient.register({ username, password }).subscribe((data: User) => {
+    public signup(username: string, password: string) {
+        this.userMessage.error = false;
+        
+        this.authClient.register({ username, password }).subscribe({
+            next: (data: User) => {
                 localStorage.setItem('id', data.userId);
                 this.router.navigate(['/homepage']);
-            });
-        } catch (err: any) {
-            this.userMessage.error = true;
-            this.userMessage.errorMessage = err;
-            console.log('An error occurred while signin up: ' + err);
-        }
+            },
+            error: (error: any) =>{
+                this.userMessage.error = true;
+                this.userMessage.errorMessage = error.error.errorMessage;
+                console.log('An error occurred while signin up: ' + JSON.stringify(error));
+            },
+        });
+        
     }
 }
