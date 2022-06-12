@@ -1,6 +1,6 @@
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient, joinChat, leaveChat } from '../../fixtures/socket-io-client';
+import { getSocketIoClientInjector, joinChat, leaveChat } from '../../fixtures/socket-io-client';
 import { ChatJoinedEmitter } from '../../../src/app/core/events/emitters/chat-joined';
 import { ChatLeftEmitter } from '../../../src/app/core/events/emitters/chat-left';
 
@@ -11,7 +11,7 @@ let client: Socket;
 const chatIdToJoin: string = 'any-chat-id';
 
 beforeEach(() => {
-    client = injectSocketIoClient();
+    client = getSocketIoClientInjector();
 });
 
 describe('Join Chat', () => {

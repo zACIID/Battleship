@@ -25,7 +25,7 @@ interface FriendRequestAcceptedSetupData extends SetupData {
  * Inserts a sender, a receiver and the new notification in the database,
  * to emulate what would happen if some user sends a friend request to another user.
  */
-const setup = async (): Promise<FriendRequestAcceptedSetupData> => {
+const setupDb = async (): Promise<FriendRequestAcceptedSetupData> => {
     const sender: InsertedUser = await insertUser();
     const receiver: InsertedUser = await insertUser();
 
@@ -55,10 +55,10 @@ const setup = async (): Promise<FriendRequestAcceptedSetupData> => {
 };
 
 /**
- * Delete the two users created in the setup (sender, receiver)
+ * Deletes the two users created in the setup (sender, receiver)
  * @param setupData
  */
-const teardown = async (setupData: FriendRequestAcceptedSetupData): Promise<void> => {
+const teardownDb = async (setupData: FriendRequestAcceptedSetupData): Promise<void> => {
     const { sender, receiver } = setupData.insertedData;
 
     await deleteUser(sender.userId);
@@ -68,16 +68,24 @@ const teardown = async (setupData: FriendRequestAcceptedSetupData): Promise<void
 let client: Socket;
 let setupData: FriendRequestAcceptedSetupData;
 
-beforeEach(async () => {
+const testSetup = async () => {
     client = injectSocketIoClient();
-    setupData = await setup();
-});
+    setupData = await setupDb();
+};
 
-afterEach(async () => {
-    await teardown(setupData);
-});
+const testTeardown = async () => {
+    await teardownDb(setupData);
+};
 
 describe('Friend Request Accepted', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Correctly Fire Friend Status Changed Event', (done) => {
         const { sender, receiver } = setupData.insertedData;
 

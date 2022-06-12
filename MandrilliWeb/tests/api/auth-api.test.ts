@@ -6,7 +6,6 @@ import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { JwtStorage } from '../../src/app/core/api/jwt-auth/jwt-storage';
 import { UserIdStorage } from '../../src/app/core/api/userId-auth/userId-storage';
 import {
-    apiAuthPassword,
     authenticate,
     getCredentialsForUser,
     JwtStubProvider,
@@ -25,7 +24,7 @@ interface AuthTestingSetupData extends SetupData {
 /**
  * Insert a user in the db, which will be used to authenticate with the api
  */
-const setup = async (): Promise<AuthTestingSetupData> => {
+const setupDb = async (): Promise<AuthTestingSetupData> => {
     const insertedUser: InsertedUser = await insertUser();
 
     return {
@@ -40,7 +39,7 @@ const setup = async (): Promise<AuthTestingSetupData> => {
  * Deletes the user inserted in the setup
  * @param setupData
  */
-const teardown = async (setupData: AuthTestingSetupData): Promise<void> => {
+const teardownDb = async (setupData: AuthTestingSetupData): Promise<void> => {
     await deleteUser(setupData.insertedData.user.userId);
 };
 
@@ -58,18 +57,26 @@ let httpClient: HttpClient;
 let setupData: AuthTestingSetupData;
 let jwtProvider: JwtProvider;
 
-beforeEach(async () => {
+const testSetup = async () => {
     httpClient = injectHttpClient();
-    setupData = await setup();
+    setupData = await setupDb();
 
     jwtProvider = await authenticate(setupData.apiAuthCredentials);
-});
+};
 
-afterEach(async () => {
-    await teardown(setupData);
-});
+const testTeardown = async () => {
+    await teardownDb(setupData);
+};
 
 describe('Login', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const authApi: AuthApi = getAuthApi();
         const credentials: LoginInfo = setupData.apiAuthCredentials;
@@ -114,6 +121,14 @@ describe('Login', () => {
 });
 
 describe('Signup', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const authApi: AuthApi = getAuthApi();
         const newCredentials: LoginInfo = {

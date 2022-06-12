@@ -1,10 +1,10 @@
 import { SocketIoModule, Socket, SocketIoConfig } from 'ngx-socket-io';
 import { TestBed } from '@angular/core/testing';
+
 import { environment } from '../../src/environments/environment';
 import { ServerJoinedEmitter } from '../../src/app/core/events/emitters/server-joined';
 import { ChatJoinedEmitter } from '../../src/app/core/events/emitters/chat-joined';
 import { MatchJoinedEmitter } from '../../src/app/core/events/emitters/match-joined';
-import { close } from 'fs';
 import { ChatLeftEmitter } from '../../src/app/core/events/emitters/chat-left';
 import { MatchLeftEmitter } from '../../src/app/core/events/emitters/match-left';
 

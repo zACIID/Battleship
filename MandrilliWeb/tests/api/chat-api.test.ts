@@ -4,20 +4,20 @@ import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
-import { ChatApiTestingSetupData, insertChat, InsertedChat } from '../fixtures/database/chats';
+import {
+    ChatApiTestingSetupData,
+    deleteChat,
+    insertChat,
+    InsertedChat,
+} from '../fixtures/database/chats';
 import { Chat } from '../../src/app/core/model/chat/chat';
 import { Message } from '../../src/app/core/model/chat/message';
 import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
-import {
-    getApiCredentials,
-    MongoDbApi,
-    MongoDpApiCredentials,
-} from '../fixtures/database/mongodb-api';
 
 /**
  * Inserts a user and a chat in the database and returns the setup data
  */
-const setup = async (): Promise<ChatApiTestingSetupData> => {
+const setupDb = async (): Promise<ChatApiTestingSetupData> => {
     const insertedUser: InsertedUser = await insertUser();
     const insertedChat: InsertedChat = await insertChat([insertedUser.userId]);
 
@@ -34,11 +34,8 @@ const setup = async (): Promise<ChatApiTestingSetupData> => {
  * Deletes the user and the chat inserted during setup
  * @param setupData
  */
-const teardown = async (setupData: ChatApiTestingSetupData): Promise<void> => {
-    const apiCred: MongoDpApiCredentials = await getApiCredentials();
-    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
-
-    await mongoDbApi.emptyChatCollection();
+const teardownDb = async (setupData: ChatApiTestingSetupData): Promise<void> => {
+    await deleteChat(setupData.insertedData.chat.chatId);
     await deleteUser(setupData.insertedData.user.userId);
 };
 
@@ -47,18 +44,26 @@ let setupData: ChatApiTestingSetupData;
 let jwtProvider: JwtProvider;
 const wrongChatId: string = 'wrong-chat-id';
 
-beforeEach(async () => {
+const testSetup = async () => {
     httpClient = injectHttpClient();
-    setupData = await setup();
+    setupData = await setupDb();
 
     jwtProvider = await authenticate(setupData.apiAuthCredentials);
-});
+};
 
-afterEach(async () => {
-    await teardown(setupData);
-});
+const testTeardown = async () => {
+    await teardownDb(setupData);
+};
 
 describe('Get Chat', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
@@ -100,6 +105,14 @@ describe('Get Chat', () => {
 });
 
 describe('Delete Chat', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Not Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
@@ -174,12 +187,18 @@ describe('Get Messages', () => {
 describe('Add Message', () => {
     let messageStub: Message;
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        await testSetup();
+
         messageStub = {
             author: setupData.insertedData.user.userId,
             timestamp: new Date(),
             content: 'some message',
         };
+    });
+
+    afterEach(async () => {
+        await testTeardown();
     });
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
@@ -226,11 +245,13 @@ describe('Add User', () => {
     let newUser: InsertedUser;
 
     beforeEach(async () => {
+        await testSetup();
+
         newUser = await insertUser();
     });
 
     afterEach(async () => {
-        await deleteUser(newUser.userId);
+        await testTeardown();
     });
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
@@ -269,6 +290,14 @@ describe('Add User', () => {
 });
 
 describe('Remove User', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Not Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { user, chat } = setupData.insertedData;

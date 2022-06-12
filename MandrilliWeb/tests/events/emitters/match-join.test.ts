@@ -1,25 +1,43 @@
 import { Socket } from 'ngx-socket-io';
 
-import {
-    injectSocketIoClient,
-    joinMatch,
-    leaveChat,
-    leaveMatch,
-} from '../../fixtures/socket-io-client';
+import { injectSocketIoClient, joinMatch, leaveMatch } from '../../fixtures/socket-io-client';
 import { MatchJoinedEmitter } from '../../../src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from '../../../src/app/core/events/emitters/match-left';
+import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
 
 let client: Socket;
+let matchIdToJoin: string;
 
-// It should work with any string, since the matchId required is really
-// just an identifier for the socket.io server room.
-const matchIdToJoin: string = 'any-match-id';
+/**
+ * Inserts a new match in the db
+ */
+const setupDb = async () => {
+    const matches: UserMatches = await createNMatch(1);
+    matchIdToJoin = matches.matchIds[0];
+};
 
-beforeEach(() => {
+const teardownDb = async () => {
+    await deleteMatch(matchIdToJoin);
+};
+
+const testSetup = async () => {
     client = injectSocketIoClient();
-});
+    await setupDb();
+};
+
+const testTeardown = async () => {
+    await teardownDb();
+};
 
 describe('Join Match', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Not Throw', () => {
         joinMatch(matchIdToJoin, client);
     });
@@ -32,6 +50,14 @@ describe('Join Match', () => {
 });
 
 describe('Join And Leave Chat', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Not Throw', () => {
         joinMatch(matchIdToJoin, client);
 

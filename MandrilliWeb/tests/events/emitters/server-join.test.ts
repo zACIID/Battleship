@@ -2,18 +2,37 @@ import { Socket } from 'ngx-socket-io';
 
 import { injectSocketIoClient, joinServer } from '../../fixtures/socket-io-client';
 import { ServerJoinedEmitter } from '../../../src/app/core/events/emitters/server-joined';
+import { InsertedUser, deleteUser, insertUser } from '../../fixtures/database/users';
 
 let client: Socket;
+let userIdToJoin: string;
 
-// It should work with any string, since the matchId required is really
-// just an identifier for the socket.io server room.
-const userIdToJoin: string = 'any-user-id';
+/**
+ * Inserts in the db the user to join the server with
+ */
+const setupDb = async () => {
+    const insertedUser: InsertedUser = await insertUser();
+    userIdToJoin = insertedUser.userId;
+};
 
-beforeEach(() => {
-    client = injectSocketIoClient();
-});
+/**
+ * Deletes the inserted user from the db
+ */
+const teardownDb = async () => {
+    await deleteUser(userIdToJoin);
+};
 
 describe('Join Server', () => {
+    beforeEach(() => {
+        client = injectSocketIoClient();
+
+        setupDb();
+    });
+
+    afterEach(async () => {
+        await teardownDb();
+    });
+
     test('Should Not Throw', () => {
         joinServer(userIdToJoin, client);
     });

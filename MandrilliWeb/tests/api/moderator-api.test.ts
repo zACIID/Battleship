@@ -18,7 +18,7 @@ let fakeModerator: InsertedUser;
 let usefulUser1: InsertedUser;
 let usefulUser2: InsertedUser;
 
-beforeEach(async () => {
+const setupTest = async () => {
     httpClient = injectHttpClient();
 
     moderator = await insertModerator();
@@ -32,15 +32,23 @@ beforeEach(async () => {
 
     const fakeModCred: LoginInfo = getCredentialsForUser(fakeModerator.userData.username);
     jwtProviderFakeModerator = await authenticate(fakeModCred);
-});
+};
 
-afterEach(async () => {
+const teardownTest = async () => {
     await deleteUser(moderator.userId);
     await deleteUser(fakeModerator.userId);
-});
+};
 
 describe('Add Moderator', () => {
     let newMod: User;
+
+    beforeEach(async () => {
+        await setupTest();
+    });
+
+    afterEach(async () => {
+        await teardownTest();
+    });
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
@@ -91,6 +99,14 @@ describe('Add Moderator', () => {
 });
 
 describe('BanUser', () => {
+    beforeEach(async () => {
+        await setupTest();
+    });
+
+    afterEach(async () => {
+        await teardownTest();
+    });
+
     test('Should Return Empty Response', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
 

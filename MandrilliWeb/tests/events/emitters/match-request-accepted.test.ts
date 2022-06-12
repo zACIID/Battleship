@@ -11,7 +11,6 @@ import { Notification, NotificationType } from '../../../src/app/core/model/user
 import { sendNotification } from '../../fixtures/database/notifications';
 import { MatchFoundListener } from '../../../src/app/core/events/listeners/match-found';
 import { MatchData } from '../../../src/app/core/model/events/match-data';
-import { UserStatus } from '../../../src/app/core/model/user/user';
 
 interface MatchRequestAcceptedSetupData extends SetupData {
     insertedData: {
@@ -25,7 +24,7 @@ interface MatchRequestAcceptedSetupData extends SetupData {
  * Inserts a sender, a receiver and the new match in the database,
  * to emulate what would happen if some user sends a match request to another user.
  */
-const setup = async (): Promise<MatchRequestAcceptedSetupData> => {
+const setupDb = async (): Promise<MatchRequestAcceptedSetupData> => {
     const sender: InsertedUser = await insertUser();
     const receiver: InsertedUser = await insertUser();
 
@@ -58,7 +57,7 @@ const setup = async (): Promise<MatchRequestAcceptedSetupData> => {
  * Delete the two users created in the setup (sender, receiver)
  * @param setupData
  */
-const teardown = async (setupData: MatchRequestAcceptedSetupData): Promise<void> => {
+const teardownDb = async (setupData: MatchRequestAcceptedSetupData): Promise<void> => {
     const { sender, receiver } = setupData.insertedData;
 
     await deleteUser(sender.userId);
@@ -69,18 +68,18 @@ let senderClient: Socket;
 let receiverClient: Socket;
 let setupData: MatchRequestAcceptedSetupData;
 
-beforeEach(async () => {
-    senderClient = injectSocketIoClient();
-    receiverClient = injectSocketIoClient();
-
-    setupData = await setup();
-});
-
-afterEach(async () => {
-    await teardown(setupData);
-});
-
 describe('Match Request Accepted', () => {
+    beforeEach(async () => {
+        senderClient = injectSocketIoClient();
+        receiverClient = injectSocketIoClient();
+
+        setupData = await setupDb();
+    });
+
+    afterEach(async () => {
+        await teardownDb(setupData);
+    });
+
     test('Should Correctly Fire Match Found Event', (done) => {
         const { sender, receiver } = setupData.insertedData;
 
