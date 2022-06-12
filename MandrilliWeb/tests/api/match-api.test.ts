@@ -1,23 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-
-import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
-import { apiAuthPassword, authenticate } from './fixtures/authentication';
-import { injectHttpClient } from './fixtures/http-client';
-import {
-    ChatApiTestingSetupData,
-    setupDbChatApiTesting,
-    teardownDbChatApiTesting,
-} from './fixtures/database/chats';
-import { Chat } from '../../src/app/core/model/chat/chat';
-import { Message } from '../../src/app/core/model/chat/message';
-import { deleteUser, InsertedUser, insertUser } from './fixtures/database/users'
+import { apiAuthPassword, authenticate } from '../fixtures/authentication';
+import { injectHttpClient } from '../fixtures/http-client';
+import { InsertedUser, insertUser } from '../fixtures/database/users'
 import { 
         UserMatches, 
-        setupDbMatchApiTesting, 
         teardownDbMatchApiTesting, 
         createNMatch
-} from '../api/fixtures/database/match'
+} from '../fixtures/database/matches'
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { Match } from 'src/app/core/model/match/match';
 import { PlayerState } from 'src/app/core/model/match/player-state';
