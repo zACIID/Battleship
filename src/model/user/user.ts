@@ -307,7 +307,7 @@ UserSchema.methods.addRelationshipSymmetrically = async function (
 ): Promise<UserDocument> {
     const doesUserContainRelationship = (user: UserDocument) => {
         for (let idx in this.relationships) {
-            if (this.relationships[idx].friendId.equals(friendId)) {
+            if (user.relationships[idx].friendId.equals(friendId)) {
                 return true;
             }
         }
