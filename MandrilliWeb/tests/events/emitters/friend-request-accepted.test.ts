@@ -1,6 +1,7 @@
+import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient, joinServer } from '../../fixtures/socket-io-client';
+import { socketIoTestbedConfig, joinServer } from '../../fixtures/socket-io-client';
 import { SetupData } from '../../fixtures/utils';
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
@@ -69,11 +70,15 @@ let client: Socket;
 let setupData: FriendRequestAcceptedSetupData;
 
 const testSetup = async () => {
-    client = injectSocketIoClient();
+    TestBed.configureTestingModule(socketIoTestbedConfig);
+    client = TestBed.inject(Socket);
+
     setupData = await setupDb();
 };
 
 const testTeardown = async () => {
+    client.disconnect();
+
     await teardownDb(setupData);
 };
 

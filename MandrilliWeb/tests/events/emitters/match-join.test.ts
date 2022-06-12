@@ -1,6 +1,7 @@
+import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient, joinMatch, leaveMatch } from '../../fixtures/socket-io-client';
+import { joinMatch, leaveMatch, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
 import { MatchJoinedEmitter } from '../../../src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from '../../../src/app/core/events/emitters/match-left';
 import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
@@ -21,11 +22,15 @@ const teardownDb = async () => {
 };
 
 const testSetup = async () => {
-    client = injectSocketIoClient();
+    TestBed.configureTestingModule(socketIoTestbedConfig);
+    client = TestBed.inject(Socket);
+
     await setupDb();
 };
 
 const testTeardown = async () => {
+    client.disconnect();
+
     await teardownDb();
 };
 

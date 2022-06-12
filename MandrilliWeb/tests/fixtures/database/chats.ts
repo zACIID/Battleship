@@ -39,7 +39,7 @@ export interface ChatApiTestingSetupData extends SetupData {
     };
 }
 
-export const insertChat = async (chatUserIds: string[]): Promise<InsertedChat> => {
+export const insertChat = async (chatUserIds: string[] = []): Promise<InsertedChat> => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 

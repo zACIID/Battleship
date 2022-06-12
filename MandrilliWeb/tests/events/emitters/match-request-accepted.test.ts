@@ -1,6 +1,7 @@
+import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient, joinServer } from '../../fixtures/socket-io-client';
+import { joinServer, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
 import { SetupData } from '../../fixtures/utils';
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
@@ -68,16 +69,28 @@ let senderClient: Socket;
 let receiverClient: Socket;
 let setupData: MatchRequestAcceptedSetupData;
 
+const testSetup = async () => {
+    TestBed.configureTestingModule(socketIoTestbedConfig);
+    senderClient = TestBed.inject(Socket);
+    receiverClient = TestBed.inject(Socket);
+
+    setupData = await setupDb();
+};
+
+const testTeardown = async () => {
+    senderClient.disconnect();
+    receiverClient.disconnect();
+
+    await teardownDb(setupData);
+};
+
 describe('Match Request Accepted', () => {
     beforeEach(async () => {
-        senderClient = injectSocketIoClient();
-        receiverClient = injectSocketIoClient();
-
-        setupData = await setupDb();
+        await testSetup();
     });
 
     afterEach(async () => {
-        await teardownDb(setupData);
+        await testTeardown();
     });
 
     test('Should Correctly Fire Match Found Event', (done) => {
@@ -101,7 +114,7 @@ describe('Match Request Accepted', () => {
             senderEventFired = true;
 
             // Match id could be any string
-            expect(eventData.matchId).toBe(expect.any(String));
+            expect(eventData.matchId).toEqual(expect.any(String));
 
             // End only after having listened to both events
             if (bothEventFired()) {

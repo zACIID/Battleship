@@ -1,5 +1,5 @@
 import { SocketIoModule, Socket, SocketIoConfig } from 'ngx-socket-io';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, TestModuleMetadata } from '@angular/core/testing';
 
 import { environment } from '../../src/environments/environment';
 import { ServerJoinedEmitter } from '../../src/app/core/events/emitters/server-joined';
@@ -13,13 +13,12 @@ const sIoConfig: SocketIoConfig = {
     options: {},
 };
 
-export const injectSocketIoClient = (): Socket => {
-    TestBed.configureTestingModule({
-        imports: [SocketIoModule.forRoot(sIoConfig)],
-        providers: [],
-    });
-
-    return TestBed.inject(Socket);
+/**
+ * Returns the necessary testbed configuration to inject SocketIo services
+ */
+export const socketIoTestbedConfig: TestModuleMetadata = {
+    imports: [SocketIoModule.forRoot(sIoConfig)],
+    providers: [],
 };
 
 export const joinServer = (userId: string, client: Socket) => {

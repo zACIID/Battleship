@@ -1,6 +1,7 @@
+import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient, joinServer } from '../../fixtures/socket-io-client';
+import { socketIoTestbedConfig, joinServer } from '../../fixtures/socket-io-client';
 import { ServerJoinedEmitter } from '../../../src/app/core/events/emitters/server-joined';
 import { InsertedUser, deleteUser, insertUser } from '../../fixtures/database/users';
 
@@ -22,15 +23,26 @@ const teardownDb = async () => {
     await deleteUser(userIdToJoin);
 };
 
-describe('Join Server', () => {
-    beforeEach(() => {
-        client = injectSocketIoClient();
+const testSetup = async () => {
+    TestBed.configureTestingModule(socketIoTestbedConfig);
+    client = TestBed.inject(Socket);
 
-        setupDb();
+    await setupDb();
+};
+
+const testTeardown = async () => {
+    client.disconnect();
+
+    await teardownDb();
+};
+
+describe('Join Server', () => {
+    beforeEach(async () => {
+        await testSetup();
     });
 
     afterEach(async () => {
-        await teardownDb();
+        await testTeardown();
     });
 
     test('Should Not Throw', () => {
