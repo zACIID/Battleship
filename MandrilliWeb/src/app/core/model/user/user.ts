@@ -9,6 +9,12 @@ export enum UserStatus {
     Spectating = 'Spectating',
 }
 
+export enum UserRoles {
+    Base = 'Base',
+    Moderator = 'Moderator',
+    Admin = 'Admin',
+}
+
 export class User {
     public readonly userId: string;
     public readonly username: string;
@@ -19,7 +25,7 @@ export class User {
     constructor(
         userId: string = '',
         username: string = '',
-        roles: string[] = [],
+        roles: UserRoles[] = [],
         status: UserStatus = UserStatus.Online,
         elo: number = 0
     ) {

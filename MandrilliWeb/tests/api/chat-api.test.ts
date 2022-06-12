@@ -2,16 +2,16 @@ import { HttpClient } from '@angular/common/http';
 
 import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
-import { authenticate } from './fixtures/authentication';
-import { injectHttpClient } from './fixtures/http-client';
+import { authenticate } from '../fixtures/authentication';
+import { injectHttpClient } from '../fixtures/http-client';
 import {
     ChatApiTestingSetupData,
     setupDbChatApiTesting,
     teardownDbChatApiTesting,
-} from './fixtures/database/chats';
+} from '../fixtures/database/chats';
 import { Chat } from '../../src/app/core/model/chat/chat';
 import { Message } from '../../src/app/core/model/chat/message';
-import { deleteUser, InsertedUser, insertUser } from './fixtures/database/users';
+import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
 
 let httpClient: HttpClient;
 let setupData: ChatApiTestingSetupData;

@@ -1,4 +1,4 @@
-import { User, UserRoles, UserStatus } from '../../../../../src/model/user/user';
+import { User, UserRoles, UserStatus } from '../../../../src/model/user/user';
 import {
     getApiCredentials,
     MongoDbApi,
@@ -38,11 +38,11 @@ export interface InsertedUser {
     userData: User;
 }
 
-export const insertUser = async (): Promise<InsertedUser> => {
+export const insertUser = async (userData?: User): Promise<InsertedUser> => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 
-    const userData: User = getUserData();
+    userData = userData ? userData : getUserData();
     const insertUserRes: MongoDbSingleInsertResponse = await mongoDbApi.insertUser(userData);
     const userId: string = insertUserRes.insertedId;
 

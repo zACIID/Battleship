@@ -1,10 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import * as dbUser from '../../../../../src/model/user/user';
-import * as dbMatch from '../../../../../src/model/match/match';
-import * as dbChat from '../../../../../src/model/chat/chat';
-import * as dbMatchmaking from '../../../../../src/model/matchmaking/queue-entry';
-import { environment } from '../../../../src/environments/environment';
+import * as dbUser from '../../../../src/model/user/user';
+import * as dbMatch from '../../../../src/model/match/match';
+import * as dbChat from '../../../../src/model/chat/chat';
+import * as dbMatchmaking from '../../../../src/model/matchmaking/queue-entry';
+import { environment } from '../../../src/environments/environment';
 import { Document, FilterQuery, Types } from 'mongoose';
 
 const dbCollectionNames = {

@@ -1,12 +1,13 @@
 import { firstValueFrom, Observable } from 'rxjs';
 
-import { JwtStorage } from '../../../src/app/core/api/jwt-auth/jwt-storage';
-import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
-import { LoginInfo, AuthApi, AuthResult } from '../../../src/app/core/api/handlers/auth-api';
-import axios, { AxiosResponse } from 'axios';
-import { environment } from '../../../src/environments/environment';
-import { UserIdStorage } from '../../../src/app/core/api/userId-auth/userId-storage';
-import { UserIdProvider } from '../../../src/app/core/api/userId-auth/userId-provider';
+import { JwtStorage } from '../../src/app/core/api/jwt-auth/jwt-storage';
+import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
+import { LoginInfo, AuthApi, AuthResult } from '../../src/app/core/api/handlers/auth-api';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { environment } from '../../src/environments/environment';
+import { UserIdStorage } from '../../src/app/core/api/userId-auth/userId-storage';
+import { UserIdProvider } from '../../src/app/core/api/userId-auth/userId-provider';
+import { getAxiosReqConfig } from './utils';
 
 /**
  * Class that provides jwt storage and provider stubs.
@@ -99,11 +100,27 @@ export const knownBcryptDigest = {
  */
 export const apiAuthPassword = knownBcryptDigest.clearPassword;
 
+/**
+ * Returns the credentials to authenticate as the user with the provided username
+ * @param username username of the user to authenticate with
+ */
+export const getCredentialsForUser = (username: string): LoginInfo => {
+    return {
+        username: username,
+        password: apiAuthPassword,
+    };
+};
+
 export const authenticate = async (credentials: LoginInfo): Promise<JwtProvider> => {
     // Await the authentication response
     const reqUrl: string = `${environment.apiBaseUrl}/api/auth/signin`;
+    const reqConfig: AxiosRequestConfig = getAxiosReqConfig();
 
-    const authRes: AxiosResponse<AuthResult> = await axios.post<AuthResult>(reqUrl, credentials);
+    const authRes: AxiosResponse<AuthResult> = await axios.post<AuthResult>(
+        reqUrl,
+        credentials,
+        reqConfig
+    );
     const authData: AuthResult = authRes.data;
 
     // Create the storage and provider for the jwt

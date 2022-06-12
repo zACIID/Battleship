@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 
-import { apiAuthPassword } from './fixtures/authentication';
+import { apiAuthPassword, getCredentialsForUser } from '../fixtures/authentication';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
-import { authenticate } from './fixtures/authentication';
-import { injectHttpClient } from './fixtures/http-client';
-import { deleteUser, InsertedUser, insertUser } from './fixtures/database/users';
-import { insertModerator } from './fixtures/database/moderator';
+import { authenticate } from '../fixtures/authentication';
+import { injectHttpClient } from '../fixtures/http-client';
+import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
+import { insertModerator } from '../fixtures/database/moderator';
 import { ModeratorApi } from '../../src/app/core/api/handlers/moderator-api';
 import { User, UserStatus } from '../../src/app/core/model/user/user';
+import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 
 let httpClient: HttpClient;
 let moderator: InsertedUser;
@@ -26,14 +27,11 @@ beforeEach(async () => {
     usefulUser1 = await insertUser();
     usefulUser2 = await insertUser();
 
-    jwtProviderFakeModerator = await authenticate({
-        username: fakeModerator.userData.username,
-        password: apiAuthPassword,
-    });
-    jwtProviderModerator = await authenticate({
-        username: moderator.userData.username,
-        password: apiAuthPassword,
-    });
+    const modCred: LoginInfo = getCredentialsForUser(moderator.userData.username);
+    jwtProviderModerator = await authenticate(modCred);
+
+    const fakeModCred: LoginInfo = getCredentialsForUser(fakeModerator.userData.username);
+    jwtProviderFakeModerator = await authenticate(fakeModCred);
 });
 
 afterEach(async () => {

@@ -6,8 +6,8 @@ import {
     MongoDbSingleInsertResponse,
     MongoDpApiCredentials,
 } from './mongodb-api';
-import { Chat } from '../../../../../src/model/chat/chat';
-import { apiAuthPassword } from '../authentication';
+import { Chat } from '../../../../src/model/chat/chat';
+import { apiAuthPassword, getCredentialsForUser } from '../authentication';
 import { deleteUser, InsertedUser, insertUser } from './users';
 import { SetupData } from '../utils';
 
@@ -47,10 +47,7 @@ export const setupDbChatApiTesting = async (): Promise<ChatApiTestingSetupData> 
     const insertedChat: InsertedChat = await insertChat([insertedUser.userId as string]);
 
     return {
-        apiAuthCredentials: {
-            username: insertedUser.userData.username,
-            password: apiAuthPassword,
-        },
+        apiAuthCredentials: getCredentialsForUser(insertedUser.userData.username),
         insertedData: {
             user: insertedUser,
             chat: insertedChat,
