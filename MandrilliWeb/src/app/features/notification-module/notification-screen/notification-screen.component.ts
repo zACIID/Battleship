@@ -20,7 +20,6 @@ export class NotificationScreenComponent implements OnInit {
     public friendNotifications: NotificationOverview[] = [];
     public battleNotifications: NotificationOverview[] = [];
 
-    // TODO resolve NullInjectorError on FriendRequestAcceptedEmitter
     constructor(
         private matchRequestAcceptedEmitter: MatchRequestAcceptedEmitter,
         private notificationApi: NotificationApi,

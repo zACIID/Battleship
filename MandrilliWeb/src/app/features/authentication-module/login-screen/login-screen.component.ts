@@ -52,7 +52,7 @@ export class LoginScreenComponent implements OnInit {
                     
                 })
                 */
-                
+                this.router.navigate(['/homepage']);
                 
             });
         } catch (err: any) {
