@@ -10,17 +10,11 @@ import { deleteMultipleUsers, getUserData, InsertedUser, insertUser } from './us
 import { User } from '../../../../src/model/user/user';
 import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
 import { deleteMultipleChats } from './chats';
+import { ShipTypes } from '../../../../src/model/match/state/ship';
 
 export interface UserMatches {
     userInfo: { userId: string; username: string };
     matchIds: string[];
-}
-
-enum ShipTypes {
-    Destroyer = 'Destroyer',
-    Cruiser = 'Cruiser',
-    Battleship = 'Battleship',
-    Carrier = 'Carrier',
 }
 
 let apiCred: MongoDpApiCredentials;
