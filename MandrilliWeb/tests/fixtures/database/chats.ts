@@ -39,22 +39,6 @@ export interface ChatApiTestingSetupData extends SetupData {
     };
 }
 
-/**
- * Sets up the db for chat api testing and returns the setup data
- */
-export const setupDbChatApiTesting = async (): Promise<ChatApiTestingSetupData> => {
-    const insertedUser: InsertedUser = await insertUser();
-    const insertedChat: InsertedChat = await insertChat([insertedUser.userId as string]);
-
-    return {
-        apiAuthCredentials: getCredentialsForUser(insertedUser.userData.username),
-        insertedData: {
-            user: insertedUser,
-            chat: insertedChat,
-        },
-    };
-};
-
 export const insertChat = async (chatUserIds: string[]): Promise<InsertedChat> => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
@@ -67,14 +51,4 @@ export const insertChat = async (chatUserIds: string[]): Promise<InsertedChat> =
         chatId: chatId,
         chatData: chatData,
     };
-};
-
-export const teardownDbChatApiTesting = async (
-    setupData: ChatApiTestingSetupData
-): Promise<void> => {
-    const apiCred: MongoDpApiCredentials = await getApiCredentials();
-    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
-
-    await mongoDbApi.emptyChatCollection();
-    await deleteUser(setupData.insertedData.user.userId);
 };

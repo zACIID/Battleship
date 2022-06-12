@@ -2,16 +2,45 @@ import { HttpClient } from '@angular/common/http';
 
 import { ChatApi } from '../../src/app/core/api/handlers/chat-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
-import { authenticate } from '../fixtures/authentication';
+import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
-import {
-    ChatApiTestingSetupData,
-    setupDbChatApiTesting,
-    teardownDbChatApiTesting,
-} from '../fixtures/database/chats';
+import { ChatApiTestingSetupData, insertChat, InsertedChat } from '../fixtures/database/chats';
 import { Chat } from '../../src/app/core/model/chat/chat';
 import { Message } from '../../src/app/core/model/chat/message';
 import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
+import {
+    getApiCredentials,
+    MongoDbApi,
+    MongoDpApiCredentials,
+} from '../fixtures/database/mongodb-api';
+
+/**
+ * Inserts a user and a chat in the database and returns the setup data
+ */
+const setup = async (): Promise<ChatApiTestingSetupData> => {
+    const insertedUser: InsertedUser = await insertUser();
+    const insertedChat: InsertedChat = await insertChat([insertedUser.userId]);
+
+    return {
+        apiAuthCredentials: getCredentialsForUser(insertedUser.userData.username),
+        insertedData: {
+            user: insertedUser,
+            chat: insertedChat,
+        },
+    };
+};
+
+/**
+ * Deletes the user and the chat inserted during setup
+ * @param setupData
+ */
+const teardown = async (setupData: ChatApiTestingSetupData): Promise<void> => {
+    const apiCred: MongoDpApiCredentials = await getApiCredentials();
+    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+
+    await mongoDbApi.emptyChatCollection();
+    await deleteUser(setupData.insertedData.user.userId);
+};
 
 let httpClient: HttpClient;
 let setupData: ChatApiTestingSetupData;
@@ -20,13 +49,13 @@ const wrongChatId: string = 'wrong-chat-id';
 
 beforeEach(async () => {
     httpClient = injectHttpClient();
-    setupData = await setupDbChatApiTesting();
+    setupData = await setup();
 
     jwtProvider = await authenticate(setupData.apiAuthCredentials);
 });
 
 afterEach(async () => {
-    await teardownDbChatApiTesting(setupData);
+    await teardown(setupData);
 });
 
 describe('Get Chat', () => {

@@ -25,7 +25,7 @@ interface AuthTestingSetupData extends SetupData {
 /**
  * Insert a user in the db, which will be used to authenticate with the api
  */
-const setupAuthApiTesting = async (): Promise<AuthTestingSetupData> => {
+const setup = async (): Promise<AuthTestingSetupData> => {
     const insertedUser: InsertedUser = await insertUser();
 
     return {
@@ -40,7 +40,7 @@ const setupAuthApiTesting = async (): Promise<AuthTestingSetupData> => {
  * Deletes the user inserted in the setup
  * @param setupData
  */
-const teardownAuthApiTesting = async (setupData: AuthTestingSetupData): Promise<void> => {
+const teardown = async (setupData: AuthTestingSetupData): Promise<void> => {
     await deleteUser(setupData.insertedData.user.userId);
 };
 
@@ -60,13 +60,13 @@ let jwtProvider: JwtProvider;
 
 beforeEach(async () => {
     httpClient = injectHttpClient();
-    setupData = await setupAuthApiTesting();
+    setupData = await setup();
 
     jwtProvider = await authenticate(setupData.apiAuthCredentials);
 });
 
 afterEach(async () => {
-    await teardownAuthApiTesting(setupData);
+    await teardown(setupData);
 });
 
 describe('Login', () => {
