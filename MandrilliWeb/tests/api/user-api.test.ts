@@ -8,41 +8,32 @@ import { deleteUser } from '../../../src/model/user/user';
 import { ModeratorApi } from '../../src/app/core/api/handlers/moderator-api';
 import { UserApi, UsernameUpdate } from '../../src/app/core/api/handlers/user-api';
 import { User } from '../../src/app/core/model/user/user';
+import { UserStats } from 'src/app/core/model/user/user-stats';
 
 let httpClient: HttpClient;
 let mainUser: InsertedUser;
 let fakeUser: InsertedUser;
 let jwtProviderMainUser: JwtProvider;
 let jwtProviderFakeUser: JwtProvider;
-let jwtProviderUsefullUser: JwtProvider;
 let wrongUserId: string = '';
-let usefulUser1: InsertedUser;
 let wrongPassword: string;
 let wrongUsername: string;
+let fakeStats: UserStats
 
-beforeEach(async () => {
-    httpClient = injectHttpClient();
-
-    mainUser = await insertUser();
-    fakeUser = await insertUser();
-    usefulUser1 = await insertUser();
-
-    const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-    jwtProviderMainUser = await authenticate(modCred);
-
-    const fakeModCred: LoginInfo = getCredentialsForUser(fakeUser.userData.username);
-    jwtProviderFakeUser = await authenticate(fakeModCred);
-
-    const usefullUserModCred: LoginInfo = getCredentialsForUser(usefulUser1.userData.username);
-    jwtProviderUsefullUser = await authenticate(usefullUserModCred);
-});
-
-afterEach(async () => {
-    deleteUser(mainUser);
-    deleteUser(fakeUser);
-});
 
 describe('Get User', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+    });
+    
+    afterEach(async () => {
+        deleteUser(mainUser);
+    });
+    
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.getUser(mainUser.userId).subscribe({
@@ -83,6 +74,22 @@ describe('Get User', () => {
 });
 
 describe('Get Multiple Users', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        fakeUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+        const fakeModCred: LoginInfo = getCredentialsForUser(fakeUser.userData.username);
+        jwtProviderFakeUser = await authenticate(fakeModCred);
+    });
+    
+    afterEach(async () => {
+        deleteUser(mainUser);
+        deleteUser(fakeUser)
+    });
+    
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.getMultipleUsers([mainUser.userId, fakeUser.userId]).subscribe({
@@ -110,7 +117,7 @@ describe('Get Multiple Users', () => {
     });
 
     //empty list
-    test('Should Throw - No Moderator Privileges', (done) => {
+    test('Should Throw - data Inconsistency', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.getMultipleUsers([]).subscribe({
             error: (err: Error) => {
@@ -124,7 +131,7 @@ describe('Get Multiple Users', () => {
     });
 
     //one wrong parameter
-    test('Should Throw - No Moderator Privileges', (done) => {
+    test('Should Throw ', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.getMultipleUsers([mainUser.userId, wrongUserId]).subscribe({
             error: (err: Error) => {
@@ -139,9 +146,19 @@ describe('Get Multiple Users', () => {
 });
 
 describe('Delete User', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+    });
+    
+    afterEach(async () => {});
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
-        const userApi: UserApi = new UserApi(httpClient, jwtProviderUsefullUser);
-        userApi.deleteUser(usefulUser1.userId).subscribe({
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
+        userApi.deleteUser(mainUser.userId).subscribe({
             next: (nun: void) => {},
             complete: async () => {
                 done();
@@ -150,8 +167,8 @@ describe('Delete User', () => {
     });
 
     //wrong userId
-    test('Should Throw - No Moderator Privileges', (done) => {
-        const userApi: UserApi = new UserApi(httpClient, jwtProviderUsefullUser);
+    test('Should Throw ', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.deleteUser(wrongUserId).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
@@ -165,6 +182,18 @@ describe('Delete User', () => {
 });
 
 describe('Update Password', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+    });
+    
+    afterEach(async () => {
+        deleteUser(mainUser);
+    });
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(mainUser.userId, 'ayo').subscribe({
@@ -176,7 +205,7 @@ describe('Update Password', () => {
     });
 
     //wrong userId
-    test('Should Throw - No Moderator Privileges', (done) => {
+    test('Should Throw - ', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(wrongUserId, 'ayo').subscribe({
             error: (err: Error) => {
@@ -190,7 +219,7 @@ describe('Update Password', () => {
     });
 
     //wrong password
-    test('Should Throw - No Moderator Privileges', (done) => {
+    test('Should Throw - ', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(mainUser.userId, wrongPassword).subscribe({
             error: (err: Error) => {
@@ -205,6 +234,18 @@ describe('Update Password', () => {
 });
 
 describe('Update Username', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+    });
+    
+    afterEach(async () => {
+        deleteUser(mainUser);
+    });
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updateUsername(mainUser.userId, 'ayo').subscribe({
@@ -226,7 +267,7 @@ describe('Update Username', () => {
     });
 
     //wrong userId
-    test('Should Throw - No Moderator Privileges', (done) => {
+    test('Should Throw ', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(wrongUserId, 'ayo').subscribe({
             error: (err: Error) => {
@@ -240,9 +281,151 @@ describe('Update Username', () => {
     });
 
     //wrong username
-    test('Should Throw - No Moderator Privileges', (done) => {
+    test('Should Throw ', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(mainUser.userId, wrongUsername).subscribe({
+            error: (err: Error) => {
+                expect(err).toBeTruthy();
+                done();
+            },
+            complete: () => {
+                throw Error('Observable should not complete without throwing');
+            },
+        });
+    });
+});
+
+describe('Get Stats', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+    });
+    
+    afterEach(async () => {
+        deleteUser(mainUser);
+    });
+
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
+        userApi.getStats(mainUser.userId).subscribe({
+            next: (userData: UserStats) => {
+                // Expect non-empty response
+                expect(userData).toBeTruthy();
+
+                // Expect an object with the correct fields
+                expect(userData).toEqual(
+                    expect.objectContaining<UserStats>({
+                        elo: expect.any(Number),
+                        topElo: expect.any(Number),
+                        wins: expect.any(Number),
+                        losses: expect.any(Number),
+                        shipsDestroyed: expect.any(Number),
+                        totalShots: expect.any(Number),
+                        totalHits: expect.any(Number),
+                        rank: expect.any(String)
+                    })
+                );
+            },
+            complete: async () => {
+                done();
+            },
+        });
+    });
+
+    //wrong userId
+    test('Should Throw ', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
+        userApi.getStats(wrongUserId).subscribe({
+            error: (err: Error) => {
+                expect(err).toBeTruthy();
+                done();
+            },
+            complete: () => {
+                throw Error('Observable should not complete without throwing');
+            },
+        });
+    });
+});
+
+describe('Update User Stats', () => {
+
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        mainUser = await insertUser();
+        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(modCred);
+    });
+    
+    afterEach(async () => {
+        deleteUser(mainUser);
+    });
+
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
+        userApi.updateStats(mainUser.userId,{
+            elo: 0,
+            topElo: 0,
+            wins: 0,
+            losses: 0,
+            shipsDestroyed: 0,
+            totalShots: 0,
+            totalHits: 0,
+            rank: ""
+        }).subscribe({
+            next: (userData: UserStats) => {
+                // Expect non-empty response
+                expect(userData).toBeTruthy();
+
+                // Expect an object with the correct fields
+                expect(userData).toEqual(
+                    expect.objectContaining<UserStats>({
+                        elo: expect.any(Number),
+                        topElo: expect.any(Number),
+                        wins: expect.any(Number),
+                        losses: expect.any(Number),
+                        shipsDestroyed: expect.any(Number),
+                        totalShots: expect.any(Number),
+                        totalHits: expect.any(Number),
+                        rank: expect.any(String)
+                    })
+                );
+            },
+            complete: async () => {
+                done();
+            },
+        });
+    });
+
+    //wrong userId
+    test('Should Throw', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
+        userApi.updateStats(wrongUserId,{
+            elo: 0,
+            topElo: 0,
+            wins: 0,
+            losses: 0,
+            shipsDestroyed: 0,
+            totalShots: 0,
+            totalHits: 0,
+            rank: ""
+        }).subscribe({
+            error: (err: Error) => {
+                expect(err).toBeTruthy();
+                done();
+            },
+            complete: () => {
+                throw Error('Observable should not complete without throwing');
+            },
+        });
+    });
+
+    //wrong stats
+    test('Should Throw ', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
+        userApi.updateStats(mainUser.userId, fakeStats).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();
