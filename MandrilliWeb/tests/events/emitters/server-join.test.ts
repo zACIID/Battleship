@@ -1,6 +1,6 @@
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient } from '../../fixtures/socket-io-client';
+import { injectSocketIoClient, joinServer } from '../../fixtures/socket-io-client';
 import { ServerJoinedEmitter } from '../../../src/app/core/events/emitters/server-joined';
 
 let client: Socket;
@@ -15,10 +15,7 @@ beforeEach(() => {
 
 describe('Join Server', () => {
     test('Should Not Throw', () => {
-        const serverJoinedEmitter: ServerJoinedEmitter = new ServerJoinedEmitter(client);
-        serverJoinedEmitter.emit({
-            userId: userIdToJoin,
-        });
+        joinServer(userIdToJoin, client);
     });
 
     test('Event Name Should Be "server-joined"', () => {

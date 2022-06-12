@@ -1,6 +1,6 @@
 import { Socket } from 'ngx-socket-io';
 
-import { injectSocketIoClient } from '../../fixtures/socket-io-client';
+import { injectSocketIoClient, joinChat, leaveChat } from '../../fixtures/socket-io-client';
 import { ChatJoinedEmitter } from '../../../src/app/core/events/emitters/chat-joined';
 import { ChatLeftEmitter } from '../../../src/app/core/events/emitters/chat-left';
 
@@ -16,10 +16,7 @@ beforeEach(() => {
 
 describe('Join Chat', () => {
     test('Should Not Throw', () => {
-        const chatJoinedEmitter: ChatJoinedEmitter = new ChatJoinedEmitter(client);
-        chatJoinedEmitter.emit({
-            chatId: chatIdToJoin,
-        });
+        joinChat(chatIdToJoin, client);
     });
 
     test('Event Name Should Be "chat-joined"', () => {
@@ -31,15 +28,9 @@ describe('Join Chat', () => {
 
 describe('Join And Leave Chat', () => {
     test('Should Not Throw', () => {
-        const chatJoinedEmitter: ChatJoinedEmitter = new ChatJoinedEmitter(client);
-        chatJoinedEmitter.emit({
-            chatId: chatIdToJoin,
-        });
+        joinChat(chatIdToJoin, client);
 
-        const chatLeftEmitter: ChatLeftEmitter = new ChatLeftEmitter(client);
-        chatLeftEmitter.emit({
-            chatId: chatIdToJoin,
-        });
+        leaveChat(chatIdToJoin, client);
     });
 
     test('Event Name Should Be "chat-left"', () => {
