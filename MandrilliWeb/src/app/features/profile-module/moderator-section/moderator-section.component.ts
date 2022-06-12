@@ -1,3 +1,4 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { LoginInfo } from './../../../core/api/handlers/auth-api';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { ModeratorApi } from './../../../core/api/handlers/moderator-api';
@@ -11,10 +12,13 @@ import { Component, OnInit } from '@angular/core';
 export class ModeratorSectionComponent implements OnInit {
     public userInSessionId: string = '';
 
-    constructor(private moderatorClient: ModeratorApi, private userClient: UserApi) {}
+    constructor(
+        private moderatorClient: ModeratorApi,
+        private userIdProvider: UserIdProvider
+    ) {}
 
     ngOnInit(): void {
-        this.userInSessionId = localStorage.getItem('id') || '';
+        this.userInSessionId = this.userIdProvider.getUserId();
     }
 
     public ban(username: string): void {

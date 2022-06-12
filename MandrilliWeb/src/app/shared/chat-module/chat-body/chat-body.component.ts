@@ -1,3 +1,4 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { Message } from './../../../core/model/chat/message';
 import { ChatApi } from './../../../core/api/handlers/chat-api';
 import { Component, OnInit, Input } from '@angular/core';
@@ -8,7 +9,11 @@ import { Component, OnInit, Input } from '@angular/core';
     styleUrls: ['./chat-body.component.css'],
 })
 export class ChatBodyComponent implements OnInit {
-    constructor(private chatClient: ChatApi) {}
+
+    constructor(
+        private chatClient: ChatApi,
+        private userIdProvider: UserIdProvider
+    ) {}
 
     @Input() chatId: string = '';
     public messages: Message[] = [];
@@ -26,7 +31,7 @@ export class ChatBodyComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.userId = localStorage.getItem('id') || '';
+        this.userId = this.userIdProvider.getUserId();
         try {
             this.chatClient
                 .getMessages(this.chatId, this.options.skip, this.options.limit)

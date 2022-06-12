@@ -17,7 +17,5 @@ export class HomepageScreenComponent implements OnInit {
 
     ngOnInit(): void {
         this.userInSessionId = this.userIdProvider.getUserId();
-        console.log(this.userInSessionId)
-        
     }
 }

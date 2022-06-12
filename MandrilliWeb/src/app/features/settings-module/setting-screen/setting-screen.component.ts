@@ -1,3 +1,4 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { JwtStorage } from './../../../core/api/jwt-auth/jwt-storage';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { Component, OnInit } from '@angular/core';
@@ -14,11 +15,12 @@ export class SettingScreenComponent implements OnInit {
     constructor(
         private userClient: UserApi,
         private router: Router,
-        private accessTokenStorage: JwtStorage
+        private accessTokenStorage: JwtStorage,
+        private userIdProvider: UserIdProvider
     ) {}
 
     ngOnInit(): void {
-        this.userInSessionId = localStorage.getItem('id') || '';
+        this.userInSessionId = this.userIdProvider.getUserId();
     }
 
     public changeUsername(newUsername: string) {

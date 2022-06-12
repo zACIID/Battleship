@@ -1,3 +1,4 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { NotificationType } from './../../../core/model/user/notification';
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { UserStats } from './../../../core/model/user/user-stats';
@@ -16,12 +17,15 @@ export class StatsOverviewComponent implements OnInit {
 
     @Input() myProfile: boolean = false;
 
-    constructor(private notificationClient: NotificationApi) {}
+    constructor(
+        private notificationClient: NotificationApi,
+        private userIdProvider: UserIdProvider,
+    ) {}
 
     ngOnInit(): void {}
 
     public addFriend() {
-        let userInSessionId = localStorage.getItem('id') || '';
+        let userInSessionId = this.userIdProvider.getUserId();
 
         try {
             this.notificationClient

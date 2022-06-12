@@ -1,3 +1,4 @@
+import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { UserStats } from './../../../core/model/user/user-stats';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -20,7 +21,8 @@ export class ProfileScreenComponent implements OnInit {
 
     constructor(
         private userClient: UserApi,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private userIdProvider: UserIdProvider
     ) {}
 
     ngOnInit(): void {
@@ -31,7 +33,7 @@ export class ProfileScreenComponent implements OnInit {
         this.getUser();
         this.getUserStats();
         this.isUserModerator = this.user.roles.includes("Moderator")  ? true : false;
-        let userInSessionId = localStorage.getItem('id') || '';
+        let userInSessionId = this.userIdProvider.getUserId();
 
         if (userInSessionId === this.userShowedId) {
             this.myProfile = true;

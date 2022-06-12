@@ -19,7 +19,7 @@ export class UserIdProvider {
         const userId: string | null = localStorage.getItem(environment.localStorageTokenKey);
 
         if (!userId) throw new Error('UserId is not set yet');
-
+        
         return userId;
     }
 }
