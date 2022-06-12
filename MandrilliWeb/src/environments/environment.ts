@@ -18,7 +18,7 @@ export const environment = {
     /**
      * Key by which the userId stored in the browser local storage
      */
-    localStorageUserId: 'userId'
+    localStorageUserIdKey: 'userId',
 };
 
 /*

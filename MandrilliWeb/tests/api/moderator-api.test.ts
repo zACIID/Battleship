@@ -44,7 +44,7 @@ afterEach(async () => {
 describe('Add Moderator', () => {
     let newMod: User;
 
-    test('AddModerator Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
         let newMod: User;
 
@@ -76,7 +76,7 @@ describe('Add Moderator', () => {
         });
     });
 
-    test('Add moderator Should Throw', (done) => {
+    test('Should Throw - No Moderator Privileges', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderFakeModerator);
 
         modApi.addModerator({ username: 'Huentas', password: apiAuthPassword }).subscribe({
@@ -93,7 +93,7 @@ describe('Add Moderator', () => {
 });
 
 describe('BanUser', () => {
-    test('BanUserShould Return Empty Response', (done) => {
+    test('Should Return Empty Response', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
 
         modApi.banUser(usefulUser1.userData.username).subscribe({
@@ -104,7 +104,7 @@ describe('BanUser', () => {
         });
     });
 
-    test('BanUser Should Throw', (done) => {
+    test('Should Throw - No Moderator Privileges', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderFakeModerator);
 
         modApi.banUser(usefulUser2.userData.username).subscribe({
@@ -118,7 +118,7 @@ describe('BanUser', () => {
         });
     });
 
-    test('BanUser Should Throw 2', (done) => {
+    test('Should Throw - User To Ban Does Not Exist', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
         modApi.banUser('Non existing username').subscribe({
             error: (err: Error) => {

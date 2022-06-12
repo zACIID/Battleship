@@ -30,7 +30,7 @@ afterEach(async () => {
 });
 
 describe('Get Chat', () => {
-    test('Get Chat Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
 
@@ -54,7 +54,7 @@ describe('Get Chat', () => {
         });
     });
 
-    test('Get Chat Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
 
         chatApi.getChat(wrongChatId).subscribe({
@@ -71,7 +71,7 @@ describe('Get Chat', () => {
 });
 
 describe('Delete Chat', () => {
-    test('Delete Chat Should Not Throw', (done) => {
+    test('Should Not Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
 
@@ -83,7 +83,7 @@ describe('Delete Chat', () => {
         });
     });
 
-    test('Delete Chat Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
 
         chatApi.deleteChat(wrongChatId).subscribe({
@@ -100,7 +100,7 @@ describe('Delete Chat', () => {
 });
 
 describe('Get Messages', () => {
-    test('Get Messages Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
 
@@ -126,7 +126,7 @@ describe('Get Messages', () => {
         });
     });
 
-    test('Get Messages Should Throw', (done) => {
+    test('Messages Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
 
         chatApi.getMessages(wrongChatId).subscribe({
@@ -153,7 +153,7 @@ describe('Add Message', () => {
         };
     });
 
-    test('Add Message Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
 
@@ -177,7 +177,7 @@ describe('Add Message', () => {
         });
     });
 
-    test('Add Messages Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
 
         chatApi.addMessage(wrongChatId, messageStub).subscribe({
@@ -204,7 +204,7 @@ describe('Add User', () => {
         await deleteUser(newUser.userId);
     });
 
-    test('Add User Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;
 
@@ -222,7 +222,7 @@ describe('Add User', () => {
         });
     });
 
-    test('Add User Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { user } = setupData.insertedData;
 
@@ -240,7 +240,7 @@ describe('Add User', () => {
 });
 
 describe('Remove User', () => {
-    test('Remove User Should Not Throw', (done) => {
+    test('Should Not Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { user, chat } = setupData.insertedData;
 
@@ -251,7 +251,7 @@ describe('Remove User', () => {
         });
     });
 
-    test('Remove User Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { user } = setupData.insertedData;
 

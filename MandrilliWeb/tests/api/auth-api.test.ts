@@ -65,7 +65,7 @@ afterEach(async () => {
 });
 
 describe('Login', () => {
-    test('Login Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const authApi: AuthApi = getAuthApi();
         const credentials: LoginInfo = setupData.apiAuthCredentials;
 
@@ -88,7 +88,7 @@ describe('Login', () => {
         });
     });
 
-    test('Login Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const authApi: AuthApi = getAuthApi();
         const wrongCredentials: LoginInfo = {
             username: 'wrong-username',
@@ -109,7 +109,7 @@ describe('Login', () => {
 });
 
 describe('Signup', () => {
-    test('Signup Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const authApi: AuthApi = getAuthApi();
         const newCredentials: LoginInfo = {
             username: 'any-username',
@@ -145,7 +145,7 @@ describe('Signup', () => {
         });
     });
 
-    test('Signup Should Throw', (done) => {
+    test('Should Throw', (done) => {
         const authApi: AuthApi = getAuthApi();
 
         const insertedUser: InsertedUser = setupData.insertedData.user;
