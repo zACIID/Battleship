@@ -13,8 +13,8 @@ const routes: Routes = [
             ),
     },
     {
-        //TODO add :id parameter after the end of the graphical debugging process -> 
-        path: 'game',
+        
+        path: 'game/:id',
         loadChildren: () => import('./features/game-module/game.module').then((m) => m.GameModule),
     },
     {
@@ -65,7 +65,7 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'preparation-phase',
+        path: 'preparation-phase/:id',
         loadChildren: () =>
             import('./features/preparation-phase-module/preparation-phase.module').then(
                 (m) => m.PreparationPhaseModule

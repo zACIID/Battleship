@@ -136,7 +136,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
         let startingRow = this.parseCoord(row);
         let startingCol = this.parseCoord(col);
-        console.log(this.isValidCoords(startingRow, startingCol))
+        
         if(this.isValidCoords(startingRow, startingCol)){
 
             let coords: GridCoordinates[] = [];
