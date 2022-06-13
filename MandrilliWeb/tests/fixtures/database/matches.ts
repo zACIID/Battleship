@@ -52,11 +52,11 @@ let playerGrid: BattleshipGrid = {
     shotsReceived: [],
 };
 
-export const setupDbMatchApiTesting = async (userData?: User): Promise<UserMatches> => {
+export const createMatch = async (userData?: User): Promise<UserMatches> => {
     apiCred = await getApiCredentials();
     mongoDbApi = new MongoDbApi(apiCred);
     if (userData) {
-        userID = (userID === '')? (await mongoDbApi.insertUser(userData)).insertedId : userID
+        userID = userID === '' ? (await mongoDbApi.insertUser(userData)).insertedId : userID;
         userBody = {
             userId: userID,
             userData: userData,
@@ -98,10 +98,10 @@ export const setupDbMatchApiTesting = async (userData?: User): Promise<UserMatch
 
     return Promise.resolve({
         userInfo: {
-            userId: firstPlayer.userId, 
-            username: firstPlayer.userData.username
+            userId: firstPlayer.userId,
+            username: firstPlayer.userData.username,
         },
-        matchIds:[match.insertedId]
+        matchIds: [match.insertedId],
     });
 };
 
@@ -122,11 +122,19 @@ export async function createNMatch(n: number = 5): Promise<UserMatches> {
 
 async function createNMatchAux(n: number, ids: string[] = []): Promise<string[]> {
     if (n > 0) {
-        ids.push((await setupDbMatchApiTesting(repeatUser)).matchIds[0]);
+        ids.push((await createMatch(repeatUser)).matchIds[0]);
         return createNMatchAux(n - 1, ids);
     } else return Promise.resolve(ids);
 }
 
+/** TODO va sistemato il modo in cui viene fatto teardown.
+ *      Al momento il database è lasciato sporco perché, anche se si chiama questa funzione,
+ *      dato che le variabili firstPlayer, secondPlayer, etc. sono globali rispetto al file,
+ *      ogni volta che viene chiamato createNMatch vengono sovrascritte, dunque si perdono
+ *      i riferimenti ai documenti inseriti.
+ *      Bisognerebbe fare in modo che createNMatch ritornasse tutti i riferimenti ai documenti creati,
+ *      tipo un oggetto "setupData", in modo che poi dai test si può fare il teardown
+ */
 export const teardownDbMatchApiTesting = async (): Promise<boolean> => {
     await deleteMultipleUsers([firstPlayer.userId, secondPlayer.userId, userObserver.userId]);
     await deleteMultipleChats([playerChat.insertedId, observerChat.insertedId]);

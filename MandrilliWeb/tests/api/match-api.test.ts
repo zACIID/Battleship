@@ -8,7 +8,7 @@ import {
     UserMatches,
     teardownDbMatchApiTesting,
     createNMatch,
-    setupDbMatchApiTesting,
+    createMatch,
 } from '../fixtures/database/matches';
 import { MatchApi } from '../../src/app/core/api/handlers/match-api';
 import { Match } from '../../src/app/core/model/match/match';
@@ -76,7 +76,7 @@ const testTeardown = async () => {
 describe('Get Match', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting(); // carico un solo match
+        setupData = await createMatch(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -186,7 +186,7 @@ describe('Get Matches', () => {
 describe('Set Ready', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting(); // carico un solo match
+        setupData = await createMatch(); // carico un solo match
         userWithNoMatch = await insertUser();
         jwtProviderUser0Matches = await authenticate(
             getCredentialsForUser(userWithNoMatch.userData.username)
@@ -285,7 +285,7 @@ describe('Set Ready', () => {
 describe('UpdateStats', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting(); // carico un solo match
+        setupData = await createMatch(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -360,7 +360,7 @@ describe('UpdateStats', () => {
 describe('fireShot', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting(); // carico un solo match
+        setupData = await createMatch(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -435,7 +435,7 @@ describe('fireShot', () => {
 describe('updatePlayerGrid', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting(); // carico un solo match
+        setupData = await createMatch(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 

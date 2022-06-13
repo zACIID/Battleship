@@ -7,36 +7,36 @@ import { injectHttpClient } from '../fixtures/http-client';
 import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
 import { insertModerator } from '../fixtures/database/moderator';
 import { ModeratorApi } from '../../src/app/core/api/handlers/moderator-api';
-import { User, UserStatus } from '../../src/app/core/model/user/user';
+import { User } from '../../src/app/core/model/user/user';
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 
 let httpClient: HttpClient;
 let moderator: InsertedUser;
 let jwtProviderModerator: JwtProvider;
 let jwtProviderFakeModerator: JwtProvider;
-let fakeModerator: InsertedUser;
-let usefulUser1: InsertedUser;
-let usefulUser2: InsertedUser;
+let baseUser: InsertedUser;
+let userToBan1: InsertedUser;
+let userToBan2: InsertedUser;
 
 const setupTest = async () => {
     httpClient = injectHttpClient();
 
     moderator = await insertModerator();
-    fakeModerator = await insertUser();
+    baseUser = await insertUser();
 
-    usefulUser1 = await insertUser();
-    usefulUser2 = await insertUser();
+    userToBan1 = await insertUser();
+    userToBan2 = await insertUser();
 
     const modCred: LoginInfo = getCredentialsForUser(moderator.userData.username);
     jwtProviderModerator = await authenticate(modCred);
 
-    const fakeModCred: LoginInfo = getCredentialsForUser(fakeModerator.userData.username);
+    const fakeModCred: LoginInfo = getCredentialsForUser(baseUser.userData.username);
     jwtProviderFakeModerator = await authenticate(fakeModCred);
 };
 
 const teardownTest = async () => {
     await deleteUser(moderator.userId);
-    await deleteUser(fakeModerator.userId);
+    await deleteUser(baseUser.userId);
 };
 
 describe('Add Moderator', () => {
@@ -110,7 +110,7 @@ describe('BanUser', () => {
     test('Should Return Empty Response', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderModerator);
 
-        modApi.banUser(usefulUser1.userData.username).subscribe({
+        modApi.banUser(userToBan1.userData.username).subscribe({
             next: () => {},
             complete: () => {
                 done();
@@ -121,7 +121,7 @@ describe('BanUser', () => {
     test('Should Throw - No Moderator Privileges', (done) => {
         const modApi: ModeratorApi = new ModeratorApi(httpClient, jwtProviderFakeModerator);
 
-        modApi.banUser(usefulUser2.userData.username).subscribe({
+        modApi.banUser(userToBan2.userData.username).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();
