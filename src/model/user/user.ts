@@ -437,12 +437,12 @@ export async function getLeaderboard(skip: number, limit: number): Promise<UserD
         .sort({ elo: -1 })
         .skip(skip)
         .limit(limit)
-        .catch((err: Error) => Promise.reject(new Error('Sum internal error just occurred')));
+        .catch((err: Error) => Promise.reject(err));
 }
 
 export async function deleteUser(filter: FilterQuery<UserDocument>): Promise<void> {
     const obj: { deletedCount?: number } = await UserModel.deleteOne(filter).catch((err) =>
-        Promise.reject(new Error('Sum internal error just occurred'))
+        Promise.reject(err)
     );
     return !obj.deletedCount
         ? Promise.reject(new Error('No user with that identifier'))

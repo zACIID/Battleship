@@ -1,5 +1,5 @@
 import { getRank } from './../../../core/model/user/elo-rankings';
-import { UserOverview } from './../../../core/model/user/user-overview';
+import { Overview } from '../../../core/model/user/overview';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
 import { Component, OnInit } from '@angular/core';
@@ -8,18 +8,16 @@ import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { FriendStatusChangedListener } from 'src/app/core/events/listeners/friend-status-changed';
 import { FriendStatusChangedData } from 'src/app/core/model/events/friend-status-changed-data';
 
-
-
 @Component({
     selector: 'app-play-together-screen',
     templateUrl: './play-together-screen.component.html',
     styleUrls: ['./play-together-screen.component.css'],
 })
 export class PlayTogetherScreenComponent implements OnInit {
-    public friends: UserOverview[] = [];
+    public friends: Overview[] = [];
 
     constructor(
-        private relationshipClient: RelationshipApi, 
+        private relationshipClient: RelationshipApi,
         private userClient: UserApi,
         private userIdProvider: UserIdProvider,
         private friendListener: FriendStatusChangedListener
@@ -46,7 +44,7 @@ export class PlayTogetherScreenComponent implements OnInit {
         } catch (err) {
             console.log('An error occurred while retrieving online friends list: ' + err);
         }
-        this.friendListener.listen(this.pollingFriends); 
+        this.friendListener.listen(this.pollingFriends);
     }
 
     public num_online() {
@@ -60,7 +58,7 @@ export class PlayTogetherScreenComponent implements OnInit {
                 username: user.username,
                 elo: user.elo,
                 rank: getRank(user.elo),
-            })
-        })
+            });
+        });
     }
 }

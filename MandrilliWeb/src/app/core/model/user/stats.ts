@@ -1,4 +1,6 @@
-export class UserStats {
+import { ApiUserStats } from '../api/user/stats';
+
+export class Stats implements ApiUserStats {
     elo: number;
     topElo: number;
     wins: number;
