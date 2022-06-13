@@ -1,5 +1,5 @@
 import { MatchStats } from './../../../core/model/match/match-stats';
-import { UserStats } from './../../../core/model/user/user-stats';
+import { Stats } from '../../../core/model/user/stats';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -8,7 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./stats-grid.component.css'],
 })
 export class StatsGridComponent implements OnInit {
-    @Input() stats: UserStats = new UserStats();
+    @Input() stats: Stats = new Stats();
     @Input() matchStats: MatchStats = new MatchStats();
     @Input() profile: boolean = false;
     public duration: number = 0;

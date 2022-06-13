@@ -1,6 +1,6 @@
 import { getRank } from 'src/app/core/model/user/elo-rankings';
 import { UserApi } from './../../../core/api/handlers/user-api';
-import { UserOverview } from './../../../core/model/user/user-overview';
+import { Overview } from '../../../core/model/user/overview';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class PlayerInfoComponent implements OnInit {
     @Input() userId: string = '';
-    public user: UserOverview = new UserOverview();
+    public user: Overview = new Overview();
 
     constructor(private router: Router, private userClient: UserApi) {}
 

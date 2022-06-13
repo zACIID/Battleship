@@ -65,8 +65,9 @@ router.get(
     }
 );
 
+// TODO beeagus
 router.get(
-    '/matches/:userId',
+    'users/:userId/matches',
     authenticateToken,
     retrieveUserId,
     async (req: AuthenticatedRequest, res: MatchEndpointResponse) => {

@@ -1,5 +1,5 @@
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { UserStats } from './../../../core/model/user/user-stats';
+import { Stats } from '../../../core/model/user/stats';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
@@ -11,13 +11,12 @@ import { User } from '../../../core/model/user/user';
     styleUrls: ['./profile-screen.component.css'],
 })
 export class ProfileScreenComponent implements OnInit {
-
     public myProfile: boolean = false;
     public isUserModerator: boolean = false;
     public user: User = new User();
     private userShowedId: string = '';
     public rank: string = '';
-    public stats: UserStats = new UserStats();
+    public stats: Stats = new Stats();
 
     constructor(
         private userClient: UserApi,
@@ -29,10 +28,10 @@ export class ProfileScreenComponent implements OnInit {
         this.route.params.subscribe((params) => {
             this.userShowedId = params['id'];
         });
-        
+
         this.getUser();
         this.getUserStats();
-        this.isUserModerator = this.user.roles.includes("Moderator")  ? true : false;
+        this.isUserModerator = this.user.roles.includes('Moderator') ? true : false;
         let userInSessionId = this.userIdProvider.getUserId();
 
         if (userInSessionId === this.userShowedId) {
@@ -53,7 +52,7 @@ export class ProfileScreenComponent implements OnInit {
     public getUserStats(): void {
         try {
             if (!this.user) throw new Error('User is not defined');
-            this.userClient.getStats(this.user.userId).subscribe((stat: UserStats) => {
+            this.userClient.getStats(this.user.userId).subscribe((stat: Stats) => {
                 this.stats = stat;
             });
         } catch (err) {

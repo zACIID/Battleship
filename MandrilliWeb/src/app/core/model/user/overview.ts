@@ -3,7 +3,7 @@ import { getRank } from './elo-rankings';
  * Class that contains all the relevant information to show about a user, some of these field may need to link an action
  * Like userId will need to open the corresponding player info just by clicking it
  */
-export class UserOverview {
+export class Overview {
     /**
      * Id of the user
      */

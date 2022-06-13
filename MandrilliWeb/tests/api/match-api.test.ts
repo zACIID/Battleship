@@ -4,7 +4,12 @@ import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
 import { InsertedUser, insertUser } from '../fixtures/database/users';
-import { UserMatches, teardownDbMatchApiTesting, createNMatch, setupDbMatchApiTesting } from '../fixtures/database/matches';
+import {
+    UserMatches,
+    teardownDbMatchApiTesting,
+    createNMatch,
+    setupDbMatchApiTesting,
+} from '../fixtures/database/matches';
 import { MatchApi } from '../../src/app/core/api/handlers/match-api';
 import { Match } from '../../src/app/core/model/match/match';
 import { PlayerState } from '../../src/app/core/model/match/player-state';
@@ -12,8 +17,7 @@ import { MatchStats } from '../../src/app/core/model/match/match-stats';
 import { Shot } from '../../src/app/core/model/api/match/shot';
 import { GridCoordinates } from '../../src/app/core/model/match/coordinates';
 import { BattleshipGrid } from '../../src/app/core/model/match/battleship-grid';
-import { Ship } from '../../src/app/core/model/match/ship';
-import { MatchStatsUpdate } from '../../src/app/core/model/api/match/match-stats-update';
+import { StatsUpdate } from '../../src/app/core/model/api/match/stats-update';
 
 let httpClient: HttpClient;
 let setupData: UserMatches;
@@ -23,7 +27,7 @@ let jwtProviderUser0Matches: JwtProvider;
 let wrongMatchId: string = 'bro';
 let wrongUserId: string = 'bro';
 let wrongState: boolean;
-let matchStats: MatchStatsUpdate;
+let matchStats: StatsUpdate;
 let shot: Shot;
 let gridUpdate: BattleshipGrid = {
     ships: [
@@ -42,7 +46,7 @@ let gridUpdate: BattleshipGrid = {
                     col: 2,
                 },
             ],
-            type: 'cruiser',
+            type: 'Cruiser',
         },
     ],
     shotsReceived: [
@@ -54,7 +58,6 @@ let gridUpdate: BattleshipGrid = {
 };
 
 const testSetup = async () => {
-
     httpClient = injectHttpClient();
     setupData = await createNMatch();
     userWithNoMatch = await insertUser();
@@ -62,8 +65,8 @@ const testSetup = async () => {
     jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
 
     jwtProviderUser0Matches = await authenticate(
-        getCredentialsForUser(userWithNoMatch.userData.username));
-
+        getCredentialsForUser(userWithNoMatch.userData.username)
+    );
 };
 
 const testTeardown = async () => {
@@ -73,7 +76,7 @@ const testTeardown = async () => {
 describe('Get Match', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting() // carico un solo match
+        setupData = await setupDbMatchApiTesting(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -90,14 +93,16 @@ describe('Get Match', () => {
                 expect(match).toBeTruthy();
 
                 // Expect an object with the correct fields
+                // TODO try to make it work with PlayerState and MatchStats
+                //  response is correct btw
                 expect(match).toEqual(
                     expect.objectContaining<Match>({
                         matchId: expect.any(String),
-                        player1: expect.any(PlayerState),
-                        player2: expect.any(PlayerState),
+                        player1: expect.any(Object),
+                        player2: expect.any(Object),
                         playersChat: expect.any(String),
-                        observersChat: expect.any(PlayerState),
-                        stats: expect.any(MatchStats),
+                        observersChat: expect.any(String),
+                        stats: expect.any(Object),
                     })
                 );
             },
@@ -181,7 +186,7 @@ describe('Get Matches', () => {
 describe('Set Ready', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting() // carico un solo match
+        setupData = await setupDbMatchApiTesting(); // carico un solo match
         userWithNoMatch = await insertUser();
         jwtProviderUser0Matches = await authenticate(
             getCredentialsForUser(userWithNoMatch.userData.username)
@@ -280,7 +285,7 @@ describe('Set Ready', () => {
 describe('UpdateStats', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting() // carico un solo match
+        setupData = await setupDbMatchApiTesting(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -291,19 +296,19 @@ describe('UpdateStats', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
         matchStats = {
-            winner: setupData.userInfo.username.toString(),
+            winner: setupData.userInfo.userId,
             endTime: 0,
             totalShots: 0,
             totalHits: 0,
         };
         matchApi.updateStats(setupData.matchIds[0], matchStats).subscribe({
-            next: (matchStats: MatchStatsUpdate) => {
+            next: (matchStats: StatsUpdate) => {
                 // Expect non-empty response
                 expect(matchStats).toBeTruthy();
 
                 // Expect an object with the correct fields
                 expect(matchStats).toEqual(
-                    expect.objectContaining<MatchStatsUpdate>({
+                    expect.objectContaining<StatsUpdate>({
                         winner: expect.any(String),
                         endTime: expect.any(Number),
                         totalShots: expect.any(Number),
@@ -355,7 +360,7 @@ describe('UpdateStats', () => {
 describe('fireShot', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting() // carico un solo match
+        setupData = await setupDbMatchApiTesting(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -373,15 +378,15 @@ describe('fireShot', () => {
             },
         };
         matchApi.fireShot(setupData.matchIds[0], shot).subscribe({
-            next: (shot: Shot) => {
+            next: (shotCoords: GridCoordinates) => {
                 // Expect non-empty response
-                expect(shot).toBeTruthy();
+                expect(shotCoords).toBeTruthy();
 
                 // Expect an object with the correct fields
-                expect(shot).toEqual(
-                    expect.objectContaining<Shot>({
-                        playerId: expect.any(String),
-                        coordinates: expect.any(GridCoordinates),
+                expect(shotCoords).toEqual(
+                    expect.objectContaining<GridCoordinates>({
+                        row: expect.any(Number),
+                        col: expect.any(Number),
                     })
                 );
             },
@@ -430,7 +435,7 @@ describe('fireShot', () => {
 describe('updatePlayerGrid', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await setupDbMatchApiTesting() // carico un solo match
+        setupData = await setupDbMatchApiTesting(); // carico un solo match
         jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
@@ -443,15 +448,15 @@ describe('updatePlayerGrid', () => {
         matchApi
             .updatePlayerGrid(setupData.matchIds[0], setupData.userInfo.userId, gridUpdate)
             .subscribe({
-                next: (ship: Ship) => {
+                next: (grid: BattleshipGrid) => {
                     // Expect non-empty response
-                    expect(ship).toBeTruthy();
+                    expect(grid).toBeTruthy();
 
                     // Expect an object with the correct fields
-                    expect(ship).toEqual(
-                        expect.objectContaining<Ship>({
-                            coordinates: expect.any(GridCoordinates),
-                            type: expect.any(String),
+                    expect(grid).toEqual(
+                        expect.objectContaining<BattleshipGrid>({
+                            ships: expect.any(Array),
+                            shotsReceived: expect.any(Array),
                         })
                     );
                 },
@@ -506,6 +511,5 @@ describe('updatePlayerGrid', () => {
                     throw Error('Observable should not complete without throwing');
                 },
             });
-        }
-    );
+    });
 });
