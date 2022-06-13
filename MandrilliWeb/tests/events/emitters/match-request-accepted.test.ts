@@ -12,6 +12,7 @@ import { Notification, NotificationType } from '../../../src/app/core/model/user
 import { sendNotification } from '../../fixtures/database/notifications';
 import { MatchFoundListener } from '../../../src/app/core/events/listeners/match-found';
 import { MatchData } from '../../../src/app/core/model/events/match-data';
+import { deleteMatch } from '../../fixtures/database/matches';
 
 interface MatchRequestAcceptedSetupData extends SetupData {
     insertedData: {
@@ -104,18 +105,21 @@ describe('Match Request Accepted', () => {
         // Listen to both the match found events
         let senderEventFired: boolean = false;
         let receiverEventFired: boolean = false;
-        const bothEventFired = () => {
+        const bothEventsFired = () => {
             return senderEventFired && receiverEventFired;
         };
 
         // Check that the event returns a valid matchId
         // and terminate the test only if both events are fired
-        const assertMatchFoundEvent = (eventData: MatchData) => {
+        const assertMatchFoundEvent = async (eventData: MatchData) => {
             // Match id could be any string
             expect(eventData.matchId).toEqual(expect.any(String));
 
             // End only after having listened to both events
-            if (bothEventFired()) {
+            if (bothEventsFired()) {
+                // Teardown: delete the created match
+                await deleteMatch(eventData.matchId);
+
                 done();
             }
         };
@@ -145,10 +149,10 @@ describe('Match Request Accepted', () => {
     });
 
     test('Event Name Should Be "match-request-accepted"', () => {
-        const friendReqEmitter: MatchRequestAcceptedEmitter = new MatchRequestAcceptedEmitter(
+        const matchReqEmitter: MatchRequestAcceptedEmitter = new MatchRequestAcceptedEmitter(
             senderClient
         );
 
-        expect(friendReqEmitter.eventName).toEqual('match-request-accepted');
+        expect(matchReqEmitter.eventName).toEqual('match-request-accepted');
     });
 });
