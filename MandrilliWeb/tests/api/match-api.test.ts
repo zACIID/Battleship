@@ -4,7 +4,7 @@ import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
 import { InsertedUser, insertUser } from '../fixtures/database/users';
-import { UserMatches, teardownDbMatchApiTesting, createNMatch } from '../fixtures/database/matches';
+import { UserMatches, teardownDbMatchApiTesting, createNMatch, setupDbMatchApiTesting } from '../fixtures/database/matches';
 import { MatchApi } from '../../src/app/core/api/handlers/match-api';
 import { Match } from '../../src/app/core/model/match/match';
 import { PlayerState } from '../../src/app/core/model/match/player-state';
@@ -54,6 +54,7 @@ let gridUpdate: BattleshipGrid = {
 };
 
 const testSetup = async () => {
+
     httpClient = injectHttpClient();
     setupData = await createNMatch();
     userWithNoMatch = await insertUser();
@@ -61,8 +62,8 @@ const testSetup = async () => {
     jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
 
     jwtProviderUser0Matches = await authenticate(
-        getCredentialsForUser(userWithNoMatch.userData.username)
-    );
+        getCredentialsForUser(userWithNoMatch.userData.username));
+
 };
 
 const testTeardown = async () => {
@@ -71,7 +72,9 @@ const testTeardown = async () => {
 
 describe('Get Match', () => {
     beforeEach(async () => {
-        await testSetup();
+        httpClient = injectHttpClient();
+        setupData = await setupDbMatchApiTesting() // carico un solo match
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
     afterEach(async () => {
@@ -122,7 +125,9 @@ describe('Get Match', () => {
 
 describe('Get Matches', () => {
     beforeEach(async () => {
-        await testSetup();
+        httpClient = injectHttpClient();
+        setupData = await createNMatch();
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
     afterEach(async () => {
@@ -175,7 +180,13 @@ describe('Get Matches', () => {
 
 describe('Set Ready', () => {
     beforeEach(async () => {
-        await testSetup();
+        httpClient = injectHttpClient();
+        setupData = await setupDbMatchApiTesting() // carico un solo match
+        userWithNoMatch = await insertUser();
+        jwtProviderUser0Matches = await authenticate(
+            getCredentialsForUser(userWithNoMatch.userData.username)
+        );
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
     afterEach(async () => {
@@ -268,7 +279,9 @@ describe('Set Ready', () => {
 
 describe('UpdateStats', () => {
     beforeEach(async () => {
-        await testSetup();
+        httpClient = injectHttpClient();
+        setupData = await setupDbMatchApiTesting() // carico un solo match
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
     afterEach(async () => {
@@ -341,7 +354,9 @@ describe('UpdateStats', () => {
 
 describe('fireShot', () => {
     beforeEach(async () => {
-        await testSetup();
+        httpClient = injectHttpClient();
+        setupData = await setupDbMatchApiTesting() // carico un solo match
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
     afterEach(async () => {
@@ -414,7 +429,9 @@ describe('fireShot', () => {
 
 describe('updatePlayerGrid', () => {
     beforeEach(async () => {
-        await testSetup();
+        httpClient = injectHttpClient();
+        setupData = await setupDbMatchApiTesting() // carico un solo match
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
     });
 
     afterEach(async () => {
@@ -489,5 +506,6 @@ describe('updatePlayerGrid', () => {
                     throw Error('Observable should not complete without throwing');
                 },
             });
-    });
+        }
+    );
 });

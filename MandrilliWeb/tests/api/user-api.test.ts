@@ -1,11 +1,10 @@
 import { InsertedUser, insertUser } from '../fixtures/database/users';
 import { HttpClient } from '@angular/common/http';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
-import { apiAuthPassword, authenticate, getCredentialsForUser } from '../fixtures/authentication';
+import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { deleteUser } from '../../../src/model/user/user';
-import { ModeratorApi } from '../../src/app/core/api/handlers/moderator-api';
 import { UserApi, UsernameUpdate } from '../../src/app/core/api/handlers/user-api';
 import { User } from '../../src/app/core/model/user/user';
 import { UserStats } from 'src/app/core/model/user/user-stats';

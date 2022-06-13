@@ -52,17 +52,17 @@ let playerGrid: BattleshipGrid = {
     shotsReceived: [],
 };
 
-export const setupDbMatchApiTesting = async (userData?: User): Promise<string> => {
+export const setupDbMatchApiTesting = async (userData?: User): Promise<UserMatches> => {
     apiCred = await getApiCredentials();
     mongoDbApi = new MongoDbApi(apiCred);
     if (userData) {
-        if ((userID = '')) userID = (await mongoDbApi.insertUser(userData)).insertedId;
+        userID = (userID === '')? (await mongoDbApi.insertUser(userData)).insertedId : userID
         userBody = {
             userId: userID,
             userData: userData,
         };
     }
-    firstPlayer = userData ? await insertUser() : userBody;
+    firstPlayer = !userData ? await insertUser() : userBody;
     secondPlayer = await insertUser();
     userObserver = await insertUser();
     playerArray = [Types.ObjectId(firstPlayer.userId), Types.ObjectId(secondPlayer.userId)];
@@ -96,7 +96,13 @@ export const setupDbMatchApiTesting = async (userData?: User): Promise<string> =
         },
     });
 
-    return Promise.resolve(match.insertedId);
+    return Promise.resolve({
+        userInfo: {
+            userId: firstPlayer.userId, 
+            username: firstPlayer.userData.username
+        },
+        matchIds:[match.insertedId]
+    });
 };
 
 export async function createNMatch(n: number = 5): Promise<UserMatches> {
@@ -116,14 +122,12 @@ export async function createNMatch(n: number = 5): Promise<UserMatches> {
 
 async function createNMatchAux(n: number, ids: string[] = []): Promise<string[]> {
     if (n > 0) {
-        ids.push(await setupDbMatchApiTesting(repeatUser));
+        ids.push((await setupDbMatchApiTesting(repeatUser)).matchIds[0]);
         return createNMatchAux(n - 1, ids);
     } else return Promise.resolve(ids);
 }
 
 export const teardownDbMatchApiTesting = async (): Promise<boolean> => {
-    // TODO Dovrebbero essere tutti, perché repeat user in realtà ha lo userId di firstPlayer
-    //  chiedere a Biagio
     await deleteMultipleUsers([firstPlayer.userId, secondPlayer.userId, userObserver.userId]);
     await deleteMultipleChats([playerChat.insertedId, observerChat.insertedId]);
     await deleteMatch(match.insertedId);
