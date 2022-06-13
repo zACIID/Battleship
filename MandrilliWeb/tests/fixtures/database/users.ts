@@ -7,6 +7,7 @@ import {
     MongoDpApiCredentials,
 } from './mongodb-api';
 import { knownBcryptDigest } from '../authentication';
+import { randomInt } from 'crypto';
 
 /**
  * Returns data that represents a user in the db.
@@ -15,7 +16,7 @@ import { knownBcryptDigest } from '../authentication';
  */
 export const getUserData = (): User => {
     return {
-        username: `username-${Date.now()}`,
+        username: `username-${randomInt(100000)}-${Date.now()}`,
         pwd_hash: knownBcryptDigest.pwdHash,
         salt: knownBcryptDigest.pwdSalt,
         roles: [UserRoles.Base],
