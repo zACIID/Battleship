@@ -10,4 +10,9 @@ export interface RelationshipOverview extends Relationship {
      * Username of the friend
      */
     friendUsername: string;
+
+    /**
+     * Current match of the friend
+     */
+    matchId: string;
 }

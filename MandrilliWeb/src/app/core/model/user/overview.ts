@@ -25,6 +25,6 @@ export class Overview {
     rank: string = '';
 
     constructor() {
-        getRank(this.elo);
+        this.rank = getRank(this.elo);
     }
 }

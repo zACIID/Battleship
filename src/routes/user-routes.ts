@@ -1,3 +1,4 @@
+import * as match from './../model/match/match';
 import { Types } from 'mongoose';
 import { Router, Response } from 'express';
 
@@ -49,13 +50,20 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
         try {
             user = await usr.getUserById(userId);
+            let currentMatch: match.Match = (await match.getMatchByUserId(userId))[0];
+            if(currentMatch.stats.endTime === null){
+                currentMatch = undefined;
+            }
+
             return res.status(201).json({
                 userId: user._id,
                 username: user.username,
                 roles: user.roles,
                 status: user.status,
                 elo: user.stats.elo,
+                match: currentMatch
             });
+            
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({

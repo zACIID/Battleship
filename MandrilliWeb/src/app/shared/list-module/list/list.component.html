@@ -24,8 +24,11 @@
 
     <div *ngSwitchDefault>
         <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="showChat(item.chatId)">
-            <p> <strong>{{item.friendUsername}}</strong></p>
-        </div>
+            <div>
+                <p> <strong>{{item.friendUsername}}</strong></p>
+            </div>
+            <button class="button is-success" [disabled]="item.matchId == undefined" [routerLink]="['/match-results/{{item.matchId}}']">Spectate</button>
+        </div>    
     </div>
 
 </div>

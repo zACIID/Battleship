@@ -49,6 +49,8 @@ export class ProfileScreenComponent implements OnInit {
         }
     }
 
+
+    // TODO fix this error
     public getUserStats(): void {
         try {
             if (!this.user) throw new Error('User is not defined');
