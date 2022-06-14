@@ -9,7 +9,7 @@ import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { MatchRequestAcceptedEmitter } from '../../../src/app/core/events/emitters/match-request-accepted';
 import { Notification, NotificationType } from '../../../src/app/core/model/user/notification';
-import { sendNotification } from '../../fixtures/database/notifications';
+import { sendNotification } from '../../fixtures/api-utils/notifications';
 import { MatchFoundListener } from '../../../src/app/core/events/listeners/match-found';
 import { MatchData } from '../../../src/app/core/model/events/match-data';
 import { deleteMatch } from '../../fixtures/database/matches';

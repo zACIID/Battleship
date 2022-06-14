@@ -7,7 +7,7 @@ import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { Notification, NotificationType } from '../../src/app/core/model/user/notification';
-import { sendNotification } from '../fixtures/database/notifications';
+import { sendNotification } from '../fixtures/api-utils/notifications';
 import { NotificationApi } from '../../src/app/core/api/handlers/notification-api';
 
 interface NotificationSetupData extends SetupData {

@@ -7,17 +7,16 @@ import * as dbMatch from '../../../../src/model/match/match';
 import * as dbChat from '../../../../src/model/chat/chat';
 import * as dbMatchmaking from '../../../../src/model/matchmaking/queue-entry';
 import { environment } from '../../../src/environments/environment';
-import { Collection, Document, FilterQuery, ObjectId, Types } from 'mongoose';
-import { DefaultDeserializer } from 'v8';
-import { getUserById, getLastNotification } from '../../../../src/model/user/user'
+import { Document, FilterQuery, Types } from 'mongoose';
+import { getUserById, getLastNotification } from '../../../../src/model/user/user';
 
 const dbCollectionNames = {
     userCollection: 'Users',
     matchCollection: 'Matches',
     chatCollection: 'Chats',
     matchmakingCollection: 'MatchmakingQueue',
-    notificationCollection: 'Notifications', 
-    relationshipCollection: 'Relationship'
+    notificationCollection: 'Notifications',
+    relationshipCollection: 'Relationship',
 };
 
 export interface MongoDpApiCredentials {
@@ -75,7 +74,6 @@ interface MongoDbInsertReq<D> extends MongoDbReqBody {
     document: D;
 }
 
-
 export interface MongoDbFilterReq extends MongoDbReqBody {
     /**
      * Filters for a query
@@ -128,10 +126,10 @@ export class MongoDbApi {
         );
     }
 
-    public async getRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId ) {
+    public async getRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId) {
         const filter = {
             friendId: friendId,
-            chatId: chatId
+            chatId: chatId,
         };
 
         return await this.getDocument<dbRelation.RelationshipSubDocument>(
@@ -210,19 +208,21 @@ export class MongoDbApi {
             dbCollectionNames.matchCollection
         );
     }
-    
+
     //BAD PRACTICE
     public async insertNotification(
-        notificationData: dbNotification.RequestNotification, 
+        notificationData: dbNotification.RequestNotification,
         reciver: string
-    ) : Promise<dbNotification.RequestNotification> {
-        let userReciver: dbUser.UserDocument = await getUserById(Types.ObjectId(reciver))
-        let notification: dbNotification.RequestNotification 
-        await userReciver.addNotification(notificationData.type, notificationData.sender)
-        notification = await getLastNotification(userReciver.id)
+    ): Promise<dbNotification.RequestNotification> {
+        let userReciver: dbUser.UserDocument = await getUserById(Types.ObjectId(reciver));
+        let notification: dbNotification.RequestNotification;
+        await userReciver.addNotification(notificationData.type, notificationData.sender);
+        notification = await getLastNotification(userReciver.id);
         return notification
             ? Promise.resolve(notification)
-            : Promise.reject("Bro hai sbanfato te qualcosa nel settuppare il test di notifications")
+            : Promise.reject(
+                  'Bro hai sbanfato te qualcosa nel settuppare il test di notifications'
+              );
     }
 
     public async insertMatchmakingEntry(
@@ -234,11 +234,14 @@ export class MongoDbApi {
         );
     }
 
-    public async insertRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId): Promise<void> {
+    public async insertRelationship(
+        friendId: Types.ObjectId,
+        chatId: Types.ObjectId
+    ): Promise<void> {
         await this.insertDocument<dbRelation.Relationship>(
-            { friendId: friendId, chatId: chatId }, 
+            { friendId: friendId, chatId: chatId },
             dbCollectionNames.relationshipCollection
-        ); 
+        );
     }
 
     public async insertDocument<I>(
@@ -282,14 +285,11 @@ export class MongoDbApi {
         return this.deleteMultipleMatches([matchId]);
     }
 
-    public async deleteRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId){
-        return this.deleteMultipleDocuments(
-            dbCollectionNames.relationshipCollection, 
-            {
-                friendId: {$in: [friendId]}, 
-                chatId: {$in: [chatId]}
-            }
-        );
+    public async deleteRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId) {
+        return this.deleteMultipleDocuments(dbCollectionNames.relationshipCollection, {
+            friendId: { $in: [friendId] },
+            chatId: { $in: [chatId] },
+        });
     }
 
     /**
@@ -308,7 +308,6 @@ export class MongoDbApi {
     public async deleteMultipleUsers(userIds: DocId[]): Promise<void> {
         await this.deleteMultipleDocumentsById(dbCollectionNames.userCollection, userIds);
     }
-
 
     /**
      * Deletes from the database the chats with the provided ids

@@ -9,7 +9,7 @@ import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { FriendRequestAcceptedEmitter } from '../../../src/app/core/events/emitters/friend-request-accepted';
 import { Notification, NotificationType } from '../../../src/app/core/model/user/notification';
-import { sendNotification } from '../../fixtures/database/notifications';
+import { sendNotification } from '../../fixtures/api-utils/notifications';
 import { FriendStatusChangedListener } from '../../../src/app/core/events/listeners/friend-status-changed';
 import { FriendStatusChangedData } from '../../../src/app/core/model/events/friend-status-changed-data';
 import { UserStatus } from '../../../src/app/core/model/user/user';

@@ -4,7 +4,6 @@ import { Observable, catchError, map } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { JwtProvider } from '../jwt-auth/jwt-provider';
-import { Ship } from '../../model/match/ship';
 import { Match } from '../../model/match/match';
 import { BattleshipGrid } from '../../model/match/battleship-grid';
 import { StatsUpdate } from '../../model/api/match/stats-update';
@@ -13,6 +12,14 @@ import { GridCoordinates } from '../../model/match/coordinates';
 import { ApiMatch } from '../../model/api/match/match';
 import { MatchStats } from '../../model/match/match-stats';
 import { ApiMatchStats } from '../../model/api/match/stats';
+
+/**
+ * Interface that models the request and response body of a request
+ * to change the ready state of a player in a match
+ */
+export interface StateChangeBody {
+    ready: boolean;
+}
 
 /**
  * Class that handles communication with match-related endpoints
@@ -88,18 +95,19 @@ export class MatchApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    public setReadyState(
-        matchId: string,
-        playerId: string,
-        isReady: boolean
-    ): Observable<{ ready: boolean }> {
+    public setReadyState(matchId: string, playerId: string, isReady: boolean): Observable<boolean> {
         const reqPath: string = `${this.baseUrl}/api/matches/${matchId}/players/${playerId}/ready`;
-        const reqBody = {
+        const reqBody: StateChangeBody = {
             ready: isReady,
         };
 
         return this.httpClient
-            .put<{ ready: boolean }>(reqPath, reqBody, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .put<StateChangeBody>(reqPath, reqBody, this.createRequestOptions())
+            .pipe(
+                catchError(this.handleError),
+                map<StateChangeBody, boolean>((res: StateChangeBody) => {
+                    return res.ready;
+                })
+            );
     }
 }

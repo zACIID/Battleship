@@ -6,7 +6,7 @@ import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { joinServer, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
-import { removeNotification, sendNotification } from '../../fixtures/database/notifications';
+import { removeNotification, sendNotification } from '../../fixtures/api-utils/notifications';
 import { SetupData } from '../../fixtures/utils';
 import { NotificationReceivedListener } from '../../../src/app/core/events/listeners/notification-received';
 import { NotificationType, Notification } from '../../../src/app/core/model/user/notification';
