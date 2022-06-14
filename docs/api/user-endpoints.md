@@ -97,7 +97,8 @@
         "Moderator"
     ],
     "online": true,
-    "elo": 750
+    "elo": 750,
+    "match": "currentMatch" || "undefined"
 }
 ```
 
