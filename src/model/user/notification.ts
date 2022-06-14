@@ -12,8 +12,21 @@ export enum RequestTypes {
  * Interface that represents a User notification
  */
 export interface RequestNotification {
+    /**
+     * Type of the notification
+     */
     type: RequestTypes;
+
+    /**
+     * Id of the user that sent the notification
+     */
     sender: Types.ObjectId;
+
+    /**
+     * Timestamp that the notification was created at.
+     * It is automatically inserted by the database
+     */
+    timestamp?: Date;
 }
 
 /**
@@ -26,16 +39,18 @@ export interface RequestNotificationSubDocument
 /**
  * A notification is identified by the pair (type, requester)
  */
-export const NotificationSchema = new Schema<RequestNotificationSubDocument>(
-    {
-        type: {
-            type: SchemaTypes.String,
-            required: true,
-            enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
-        },
-        sender: {
-            type: Types.ObjectId,
-            required: true,
-        },
-    },{ timestamps: true }, {_id: false}
-);
+export const NotificationSchema = new Schema<RequestNotificationSubDocument>({
+    type: {
+        type: SchemaTypes.String,
+        required: true,
+        enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
+    },
+    sender: {
+        type: Types.ObjectId,
+        required: true,
+    },
+    timestamp: {
+        type: SchemaTypes.Date,
+        default: () => new Date(),
+    },
+});
