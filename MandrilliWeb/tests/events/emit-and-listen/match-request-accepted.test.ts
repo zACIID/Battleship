@@ -13,6 +13,7 @@ import { sendNotification } from '../../fixtures/api-utils/notifications';
 import { MatchFoundListener } from '../../../src/app/core/events/listeners/match-found';
 import { MatchData } from '../../../src/app/core/model/events/match-data';
 import { deleteMatch } from '../../fixtures/database/matches';
+import { MatchTerminatedListener } from '../../../src/app/core/events/listeners/match-terminated';
 
 interface MatchRequestAcceptedSetupData extends SetupData {
     insertedData: {
@@ -85,7 +86,7 @@ const testTeardown = async () => {
     await teardownDb(setupData);
 };
 
-describe('Match Request Accepted', () => {
+describe('Match Request Accepted - Match Found', () => {
     beforeEach(async () => {
         await testSetup();
     });
@@ -148,11 +149,17 @@ describe('Match Request Accepted', () => {
         });
     });
 
-    test('Event Name Should Be "match-request-accepted"', () => {
+    test('Emitter Event Name Should Be "match-request-accepted"', () => {
         const matchReqEmitter: MatchRequestAcceptedEmitter = new MatchRequestAcceptedEmitter(
             senderClient
         );
 
         expect(matchReqEmitter.eventName).toEqual('match-request-accepted');
+    });
+
+    test('Listener Event Name Should Be "match-found"', () => {
+        const listener: MatchFoundListener = new MatchFoundListener(senderClient);
+
+        expect(listener.eventName).toEqual('match-terminated');
     });
 });

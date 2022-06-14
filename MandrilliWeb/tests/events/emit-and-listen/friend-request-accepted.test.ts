@@ -13,6 +13,7 @@ import { sendNotification } from '../../fixtures/api-utils/notifications';
 import { FriendStatusChangedListener } from '../../../src/app/core/events/listeners/friend-status-changed';
 import { FriendStatusChangedData } from '../../../src/app/core/model/events/friend-status-changed-data';
 import { UserStatus } from '../../../src/app/core/model/user/user';
+import { PositioningCompletedListener } from '../../../src/app/core/events/listeners/positioning-completed';
 
 interface FriendRequestAcceptedSetupData extends SetupData {
     insertedData: {
@@ -82,7 +83,7 @@ const testTeardown = async () => {
     await teardownDb(setupData);
 };
 
-describe('Friend Request Accepted', () => {
+describe('Friend Request Accepted - Friend Status Changed', () => {
     beforeEach(async () => {
         await testSetup();
     });
@@ -122,11 +123,17 @@ describe('Friend Request Accepted', () => {
         });
     });
 
-    test('Event Name Should Be "friend-request-accepted"', () => {
+    test('Emitter Event Name Should Be "friend-request-accepted"', () => {
         const friendReqEmitter: FriendRequestAcceptedEmitter = new FriendRequestAcceptedEmitter(
             client
         );
 
         expect(friendReqEmitter.eventName).toEqual('friend-request-accepted');
+    });
+
+    test('Listener Event Name Should Be "friend-status-changed"', () => {
+        const listener: FriendStatusChangedListener = new FriendStatusChangedListener(client);
+
+        expect(listener.eventName).toEqual('friend-status-changed');
     });
 });

@@ -9,6 +9,7 @@ import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/
 import { MatchTerminatedData } from '../../../src/app/core/model/events/match-terminated-data';
 import { MatchTerminatedListener } from '../../../src/app/core/events/listeners/match-terminated';
 import { PlayerWonEmitter } from '../../../src/app/core/events/emitters/player-won';
+import { FriendStatusChangedListener } from '../../../src/app/core/events/listeners/friend-status-changed';
 
 interface MatchRequestAcceptedSetupData extends SetupData {
     insertedData: {
@@ -70,7 +71,7 @@ const testTeardown = async () => {
     await teardownDb(setupData);
 };
 
-describe('Player Won', () => {
+describe('Player Won - Match Terminated', () => {
     beforeEach(async () => {
         await testSetup();
     });
@@ -132,9 +133,15 @@ describe('Player Won', () => {
         });
     });
 
-    test('Event Name Should Be "player-won"', () => {
+    test('Emitter Event Name Should Be "player-won"', () => {
         const playerWonEmitter: PlayerWonEmitter = new PlayerWonEmitter(player1Client);
 
         expect(playerWonEmitter.eventName).toEqual('player-won');
+    });
+
+    test('Listener Event Name Should Be "match-terminated"', () => {
+        const listener: MatchTerminatedListener = new MatchTerminatedListener(player2Client);
+
+        expect(listener.eventName).toEqual('match-terminated');
     });
 });
