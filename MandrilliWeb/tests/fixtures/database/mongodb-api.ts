@@ -208,13 +208,16 @@ export class MongoDbApi {
     }
     
     //BAD PRACTICE
-    public async insertNotification(notificationData: dbNotification.RequestNotification, reciver: string) : Promise<MongoDbSingleInsertResponse> {
+    public async insertNotification(
+        notificationData: dbNotification.RequestNotification, 
+        reciver: string
+    ) : Promise<dbNotification.RequestNotification> {
         let userReciver: dbUser.UserDocument = await getUserById(Types.ObjectId(reciver))
-        let notificationId: string 
+        let notification: dbNotification.RequestNotification 
         await userReciver.addNotification(notificationData.type, notificationData.sender)
-        notificationId = (await getLastNotification(userReciver.id)).id
-        return notificationId
-            ? Promise.resolve({ insertedId: notificationId })
+        notification = await getLastNotification(userReciver.id)
+        return notification
+            ? Promise.resolve(notification)
             : Promise.reject("Bro hai sbanfato te qualcosa nel settuppare il test di notifications")
     }
 

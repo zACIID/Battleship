@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-
+import * as dbNotification from '../../../../src/model/user/notification';
 import { getAxiosReqConfig } from '../utils';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { Notification } from '../../../src/app/core/model/user/notification';
