@@ -1,17 +1,21 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import * as dbUser from '../../../../src/model/user/user';
+import * as dbNotification from '../../../../src/model/user/notification';
 import * as dbMatch from '../../../../src/model/match/match';
 import * as dbChat from '../../../../src/model/chat/chat';
 import * as dbMatchmaking from '../../../../src/model/matchmaking/queue-entry';
 import { environment } from '../../../src/environments/environment';
 import { Document, FilterQuery, Types } from 'mongoose';
+import { DefaultDeserializer } from 'v8';
+import { getUserById, getLastNotification } from '../../../../src/model/user/user'
 
 const dbCollectionNames = {
     userCollection: 'Users',
     matchCollection: 'Matches',
     chatCollection: 'Chats',
     matchmakingCollection: 'MatchmakingQueue',
+    notificationCollection: 'Notifications'
 };
 
 export interface MongoDpApiCredentials {
@@ -69,6 +73,7 @@ interface MongoDbInsertReq<D> extends MongoDbReqBody {
     document: D;
 }
 
+
 export interface MongoDbFilterReq extends MongoDbReqBody {
     /**
      * Filters for a query
@@ -109,6 +114,16 @@ export class MongoDbApi {
             dbCollectionNames.userCollection,
             userId
         );
+    }
+
+    /*
+     * Get notification document by _id
+     */
+    public async getNotificationDocument(notId: DocId): Promise<dbNotification.RequestNotificationSubDocument> {
+        return await this.getDocumentById<dbNotification.RequestNotificationSubDocument>(
+            dbCollectionNames.notificationCollection,
+            notId
+        )
     }
 
     /*
@@ -191,6 +206,17 @@ export class MongoDbApi {
             dbCollectionNames.matchCollection
         );
     }
+    
+    //BAD PRACTICE
+    public async insertNotification(notificationData: dbNotification.RequestNotification, reciver: string) : Promise<MongoDbSingleInsertResponse> {
+        let userReciver: dbUser.UserDocument = await getUserById(Types.ObjectId(reciver))
+        let notificationId: string 
+        await userReciver.addNotification(notificationData.type, notificationData.sender)
+        notificationId = (await getLastNotification(userReciver.id)).id
+        return notificationId
+            ? Promise.resolve({ insertedId: notificationId })
+            : Promise.reject("Bro hai sbanfato te qualcosa nel settuppare il test di notifications")
+    }
 
     public async insertMatchmakingEntry(
         entryData: dbMatchmaking.QueueEntry
@@ -243,6 +269,14 @@ export class MongoDbApi {
     }
 
     /**
+     * Deletes the notification with the provided id from the database
+     * @param notificationId
+     */
+    public async deleteNotification(notificationId: DocId): Promise<void> {
+        return this.deleteMultipleNotifications([notificationId])
+    }
+
+    /**
      * Deletes the matchmaking queue entry of the user
      * with the provided id from the database
      * @param userId id of the user whose entry should be deleted
@@ -257,6 +291,14 @@ export class MongoDbApi {
      */
     public async deleteMultipleUsers(userIds: DocId[]): Promise<void> {
         await this.deleteMultipleDocumentsById(dbCollectionNames.userCollection, userIds);
+    }
+
+     /**
+     * Deletes from the database the notifications with the provided ids
+     * @param notIds ids of the notifications that should be deleted
+     */
+    public async deleteMultipleNotifications(notIds: DocId[]) : Promise<void> {
+        await this.deleteMultipleDocumentsById(dbCollectionNames.notificationCollection, notIds)
     }
 
     /**

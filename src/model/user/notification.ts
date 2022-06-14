@@ -37,6 +37,5 @@ export const NotificationSchema = new Schema<RequestNotificationSubDocument>(
             type: Types.ObjectId,
             required: true,
         },
-    },
-    { _id: false }
+    },{ timestamps: true }
 );
