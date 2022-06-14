@@ -477,6 +477,15 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
         : Promise.resolve(stat.stats);
 }
 
+export async function getLastNotification(_id: Types.ObjectId) : Promise<RequestNotificationSubDocument> {
+    let notification: UserDocument = await UserModel.findOne({ _id }, {notifications: 1 })
+    .sort({ createdAt: -1 })
+
+    return !notification 
+        ? Promise.reject(new Error("No notification with that Identifier")) 
+        : Promise.resolve(notification.notifications[0])
+}
+
 /**
  * @param userId id of the user to update
  * @param elo new elo of the user
