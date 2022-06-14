@@ -138,7 +138,9 @@ describe('Positioning Completed', () => {
     });
 
     test('Event Name Should Be "positioning-completed"', () => {
-        const listener: PlayerStateChangedListener = new PlayerStateChangedListener(player1Client);
+        const listener: PositioningCompletedListener = new PositioningCompletedListener(
+            player2Client
+        );
 
         expect(listener.eventName).toEqual('positioning-completed');
     });
