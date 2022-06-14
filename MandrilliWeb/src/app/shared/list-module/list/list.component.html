@@ -27,7 +27,7 @@
             <div>
                 <p> <strong>{{item.friendUsername}}</strong></p>
             </div>
-            <button class="button is-success" [disabled]="item.matchId == undefined" [routerLink]="['/match-results/{{item.matchId}}']">Spectate</button>
+            <button class="button is-success" [disabled]=" item.matchId == '' " [routerLink]="['/match-results/{{item.matchId}}']">Spectate</button>
         </div>    
     </div>
 

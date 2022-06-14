@@ -26,17 +26,19 @@ export class FriendListScreenComponent implements OnInit {
             this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
                 this.friends = data.map((rel: Relationship) => {
                     let usrnm: string = '';
-                    this.userClient
-                        .getUser(rel.friendId)
-                        .subscribe((x: User) => {
+                    let currentMatch: string = "";
+                    this.userClient.getUser(rel.friendId).subscribe((x: User) => {
                             usrnm = x.username;
-                        });
+                    });
+                    this.userClient.getCurrentMatch(rel.friendId).subscribe((x: string) => {
+                        currentMatch = x;
+                    })
 
                     return {
                         friendId: rel.friendId,
                         chatId: rel.friendId,
                         friendUsername: usrnm,
-                        matchId: ""
+                        matchId: currentMatch
                     };
                 });
             });

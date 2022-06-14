@@ -12,26 +12,29 @@
     - [Retrieve User](#retrieve-user)
       - [Url Parameters](#url-parameters)
       - [Example Response Body](#example-response-body)
+    - [Retrieve User's Current Match](#retrieve-user-current-match)
+      - [Url Parameters](#url-parameters-1)
+      - [Example Response Body](#example-response-body-current-match)
     - [Retrieve Multiple Users](#retrieve-multiple-users)
       - [Query Parameters](#query-parameters)
       - [Example Request Body](#example-request-body)
       - [Example Response Body](#example-response-body-1)
     - [Update Password](#update-password)
-      - [Url Parameters](#url-parameters-1)
+      - [Url Parameters](#url-parameters-2)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-2)
     - [Update Username](#update-username)
-      - [Url Parameters](#url-parameters-2)
+      - [Url Parameters](#url-parameters-3)
       - [Example Request Body](#example-request-body-2)
       - [Example Response Body](#example-response-body-3)
     - [Delete User](#delete-user)
-      - [Url Parameters](#url-parameters-3)
+      - [Url Parameters](#url-parameters-4)
       - [Example Response Body](#example-response-body-4)
     - [Retrieve User Stats](#retrieve-user-stats)
-      - [Url Parameters](#url-parameters-4)
+      - [Url Parameters](#url-parameters-5)
       - [Example Response Body](#example-response-body-5)
     - [Update User Stats](#update-user-stats)
-      - [Url Parameters](#url-parameters-5)
+      - [Url Parameters](#url-parameters-6)
       - [Example Request Body](#example-request-body-3)
       - [Example Response Body](#example-response-body-6)
 
@@ -113,6 +116,45 @@
     "requestPath": "error/request/path"
 }
 ```
+
+### Retrieve User Current Match
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /api/users/:userId/currentMatch | GET | Retrieve the current match of a user if it's InGame, otherwise it returns an empty string
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user which match is to retrieve |
+
+#### Example Response Body Current Match
+
+##### Success
+
+- Status Code: 201
+- [User](#user) resource with the specified id
+
+```json
+{
+    "matchId": "matchid" || "" 
+}
+```
+
+##### Error Current Match
+
+- Status Codes: 400, 404, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
 
 ### Retrieve Multiple Users
 

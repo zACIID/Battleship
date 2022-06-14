@@ -1,3 +1,5 @@
+import { MatchDocument } from '../model/match/match';
+import { UserStatus } from '../model/user/user';
 import * as match from './../model/match/match';
 import { Types } from 'mongoose';
 import { Router, Response } from 'express';
@@ -58,6 +60,47 @@ router.get(
                 status: user.status,
                 elo: user.stats.elo
             });
+            
+        } catch (err) {
+            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
+            return res.status(statusCode).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
+
+
+router.get(
+    '/users/:userId/currentMatch',
+    authenticateToken,
+    retrieveUserId,
+    async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
+        let user: usr.UserDocument;
+        const userId: Types.ObjectId = res.locals.userId;
+        try {
+            user = await usr.getUserById(userId);
+            if(user.status.valueOf() === UserStatus.InGame){
+                const currentMatch: MatchDocument = (match.getMatchByUserId(userId))[0];
+                
+                if(currentMatch.stats.endTime === null){
+                    return res.status(201).json({
+                        matchId: currentMatch._id
+                    })
+                }
+                else{
+                    return res.status(201).json({
+                        matchId: ""
+                    })
+                }
+            }
+            else{
+                return res.status(201).json({
+                    matchId: "" 
+                });
+            }
             
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;

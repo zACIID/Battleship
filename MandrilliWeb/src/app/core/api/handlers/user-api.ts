@@ -23,6 +23,14 @@ interface GetMultipleUsersResponse {
 }
 
 /**
+ * Interface that represents a response from the currentMatch endpoint
+ */
+ interface CurrentMatchResponse {
+    matchId: string;
+}
+
+
+/**
  * Class that handles communication with user-related endpoints
  */
 @Injectable({
@@ -38,6 +46,19 @@ export class UserApi extends BaseAuthenticatedApi {
         return this.httpClient
             .get<User>(reqPath, this.createRequestOptions())
             .pipe(catchError(this.handleError));
+    }
+
+    public getCurrentMatch(userId: string): Observable<string> {
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/currentMatch`;
+
+        return this.httpClient
+            .get<CurrentMatchResponse>(reqPath, this.createRequestOptions())
+            .pipe(
+                catchError(this.handleError),
+                map<CurrentMatchResponse, string>((res: CurrentMatchResponse) => {
+                    return res.matchId;
+                })
+            );
     }
 
     public getMultipleUsers(userIds: string[]): Observable<User[]> {
