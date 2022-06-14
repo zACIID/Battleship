@@ -6,12 +6,8 @@ import { SetupData } from '../../fixtures/utils';
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
 import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
-import { MatchTerminatedData } from '../../../src/app/core/model/events/match-terminated-data';
-import { MatchTerminatedListener } from '../../../src/app/core/events/listeners/match-terminated';
-import { PlayerWonEmitter } from '../../../src/app/core/events/emitters/player-won';
 import { PlayerStateChangedData } from '../../../src/app/core/model/events/player-state-changed-data';
 import { PlayerStateChangedListener } from '../../../src/app/core/events/listeners/player-state-changed';
-import axios from 'axios';
 import { changePlayerState } from '../../fixtures/api-utils/match-state';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
@@ -25,8 +21,7 @@ interface PlayerStateChangedSetupData extends SetupData {
 }
 
 /**
- * Inserts two players and a new match in the database,
- * to emulate the scenario where one player wins a match.
+ * Inserts two players and a new match in the database
  */
 const setupDb = async (): Promise<PlayerStateChangedSetupData> => {
     const player1: InsertedUser = await insertUser();
@@ -100,11 +95,12 @@ describe('Player State Changed', () => {
             return player1EventFired && player2EventFired;
         };
 
-        // Check that the event returns a valid reason
+        // Check that the event returns the correct state
         // and terminate the test only if both events are fired
+        const newState: boolean = true;
         const assertStateChangedEvent = (eventData: PlayerStateChangedData) => {
             // Match id could be any string
-            expect(eventData.isReady).toEqual(expect.any(String));
+            expect(eventData.isReady).toEqual(newState);
 
             // End only after having listened to both events
             if (bothEventsFired()) {
@@ -135,14 +131,13 @@ describe('Player State Changed', () => {
         // the event for every listener of the match (in this case, player1 and player2)
         const p1Cred: LoginInfo = getCredentialsForUser(player1.userData.username);
         authenticate(p1Cred).then((p1JwtProvider: JwtProvider) => {
-            changePlayerState(p1JwtProvider, matchId, player1.userId, true);
+            changePlayerState(p1JwtProvider, matchId, player1.userId, newState);
         });
     });
 
-    // TODO change here and run tests
-    test('Event Name Should Be "player-won"', () => {
-        const playerWonEmitter: PlayerWonEmitter = new PlayerWonEmitter(player1Client);
+    test('Event Name Should Be "player-state-changed"', () => {
+        const listener: PlayerStateChangedListener = new PlayerStateChangedListener(player1Client);
 
-        expect(playerWonEmitter.eventName).toEqual('player-won');
+        expect(listener.eventName).toEqual('player-state-changed');
     });
 });
