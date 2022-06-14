@@ -50,18 +50,13 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
         try {
             user = await usr.getUserById(userId);
-            let currentMatch: match.Match = (await match.getMatchByUserId(userId))[0];
-            if(currentMatch.stats.endTime === null){
-                currentMatch = undefined;
-            }
-
+            
             return res.status(201).json({
                 userId: user._id,
                 username: user.username,
                 roles: user.roles,
                 status: user.status,
-                elo: user.stats.elo,
-                match: currentMatch
+                elo: user.stats.elo
             });
             
         } catch (err) {
