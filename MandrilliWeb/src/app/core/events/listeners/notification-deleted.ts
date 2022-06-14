@@ -13,7 +13,7 @@ import { NotificationData } from '../../model/events/notification-data';
 @Injectable({
     providedIn: 'root',
 })
-export class NotificationDeletedEvent extends ServerListener<NotificationData> {
+export class NotificationDeletedListener extends ServerListener<NotificationData> {
     constructor(client: Socket) {
         super(client, 'notification-deleted');
     }

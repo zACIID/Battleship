@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as dbNotification from '../../../../src/model/user/notification';
+
 import { getAxiosReqConfig } from '../utils';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { Notification } from '../../../src/app/core/model/user/notification';
@@ -10,13 +10,28 @@ export const sendNotification = async (
     newNotification: Notification,
     receiverId: string
 ): Promise<Notification> => {
-    const addNotificationReqUrl: string = `${environment.apiBaseUrl}/api/users/${receiverId}/notifications`;
+    const reqUrl: string = `${environment.apiBaseUrl}/api/users/${receiverId}/notifications`;
     const reqConfig: AxiosRequestConfig = getAxiosReqConfig(senderJwtProvider);
+
     const apiRes: AxiosResponse<Notification> = await axios.post<Notification>(
-        addNotificationReqUrl,
+        reqUrl,
         newNotification,
         reqConfig
     );
 
     return apiRes.data;
+};
+
+export const removeNotification = async (
+    senderJwtProvider: JwtProvider,
+    notificationToRemove: Notification,
+    receiverId: string
+): Promise<void> => {
+    const { type, sender } = notificationToRemove;
+    const queryParams: string = `type=${type}&sender=${sender}`;
+
+    const reqUrl: string = `${environment.apiBaseUrl}/api/users/${receiverId}/notifications?${queryParams}`;
+    const reqConfig: AxiosRequestConfig = getAxiosReqConfig(senderJwtProvider);
+
+    await axios.delete(reqUrl, reqConfig);
 };

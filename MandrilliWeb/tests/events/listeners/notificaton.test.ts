@@ -6,11 +6,12 @@ import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { joinServer, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
-import { sendNotification } from '../../fixtures/database/notifications';
+import { removeNotification, sendNotification } from '../../fixtures/database/notifications';
 import { SetupData } from '../../fixtures/utils';
 import { NotificationReceivedListener } from '../../../src/app/core/events/listeners/notification-received';
 import { NotificationType, Notification } from '../../../src/app/core/model/user/notification';
 import { NotificationData } from '../../../src/app/core/model/events/notification-data';
+import { NotificationDeletedListener } from '../../../src/app/core/events/listeners/notification-deleted';
 
 interface NotificationReceivedSetupData extends SetupData {
     insertedData: {
@@ -87,35 +88,80 @@ describe('Notification Received', () => {
         // notification received event
         joinServer(receiver.userId, receiverClient);
 
-        // Send the notification
         const notificationToSend: Notification = {
             type: NotificationType.FriendRequest,
             sender: receiver.userId,
         };
 
-        sendNotification(senderJwtProvider, notificationToSend, receiver.userId).then(
-            (sentNotification: Notification) => {
-                // Listen to the friend status changed event
-                const notificationListener: NotificationReceivedListener =
-                    new NotificationReceivedListener(receiverClient);
-                notificationListener.listen((eventData: NotificationData) => {
-                    // The new friend of the sender should be the receiver
-                    // and he should be online
-                    expect(eventData.type).toEqual(sentNotification.type);
-                    expect(eventData.sender).toEqual(sentNotification.sender);
-
-                    // End only after having listened to the event
-                    done();
-                });
-            }
-        );
-    });
-
-    test('Event Name Should Be "notification-received"', () => {
+        // Listen for the notification event
         const notificationListener: NotificationReceivedListener = new NotificationReceivedListener(
             receiverClient
         );
+        notificationListener.listen((eventData: NotificationData) => {
+            // The notification data should be equal to the removed notification
+            expect(eventData.type).toEqual(notificationToSend.type);
+            expect(eventData.sender).toEqual(notificationToSend.sender);
 
-        expect(notificationListener.eventName).toEqual('notification-received');
+            // End only after having listened to the event
+            done();
+        });
+
+        // Send the notification
+        sendNotification(senderJwtProvider, notificationToSend, receiver.userId);
+    });
+
+    test('Event Name Should Be "notification-received"', () => {
+        const notificationReceivedListener: NotificationReceivedListener =
+            new NotificationReceivedListener(receiverClient);
+
+        expect(notificationReceivedListener.eventName).toEqual('notification-received');
+    });
+});
+
+describe('Notification Deleted', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
+    test('Removing A Notification Should Correctly Fire Notification Deleted Event', (done) => {
+        const { receiver } = setupData.insertedData;
+
+        // Join the server with the receiver, so that it can listen to the
+        // notification deleted event
+        joinServer(receiver.userId, receiverClient);
+
+        const notificationToRemove: Notification = {
+            type: NotificationType.FriendRequest,
+            sender: receiver.userId,
+        };
+
+        // Listen for the notification event
+        const notificationListener: NotificationDeletedListener = new NotificationDeletedListener(
+            receiverClient
+        );
+        notificationListener.listen((eventData: NotificationData) => {
+            // The notification data should be equal to the removed notification
+            expect(eventData.type).toEqual(notificationToRemove.type);
+            expect(eventData.sender).toEqual(notificationToRemove.sender);
+
+            // End only after having listened to the event
+            done();
+        });
+
+        // Send the notification
+        sendNotification(senderJwtProvider, notificationToRemove, receiver.userId).then(() => {
+            removeNotification(senderJwtProvider, notificationToRemove, receiver.userId);
+        });
+    });
+
+    test('Event Name Should Be "notification-deleted"', () => {
+        const notificationDeletedListener: NotificationDeletedListener =
+            new NotificationDeletedListener(receiverClient);
+
+        expect(notificationDeletedListener.eventName).toEqual('notification-deleted');
     });
 });

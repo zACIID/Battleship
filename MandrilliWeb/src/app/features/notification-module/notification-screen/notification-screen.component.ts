@@ -8,7 +8,7 @@ import { NotificationType } from '../../../core/model/user/notification';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { NotificationReceivedListener } from 'src/app/core/events/listeners/notification-received';
 import { NotificationData } from 'src/app/core/model/events/notification-data';
-import { NotificationDeletedEvent } from 'src/app/core/events/listeners/notification-deleted';
+import { NotificationDeletedListener } from 'src/app/core/events/listeners/notification-deleted';
 
 @Component({
     selector: 'app-notification-screen',
@@ -26,8 +26,8 @@ export class NotificationScreenComponent implements OnInit {
         private userApi: UserApi,
         private friendAcceptClient: FriendRequestAcceptedEmitter,
         private userIdProvider: UserIdProvider,
-        private notificationListener: NotificationReceivedListener, 
-        private notificationDelListener: NotificationDeletedEvent 
+        private notificationListener: NotificationReceivedListener,
+        private notificationDelListener: NotificationDeletedListener
     ) {}
 
     ngOnInit(): void {
@@ -37,7 +37,6 @@ export class NotificationScreenComponent implements OnInit {
                 for (let not of data) {
                     if (not.type === NotificationType.FriendRequest) {
                         this.userApi.getUser(not.sender).subscribe((usr) => {
-                            
                             this.friendNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
@@ -46,7 +45,6 @@ export class NotificationScreenComponent implements OnInit {
                         });
                     } else {
                         this.userApi.getUser(not.sender).subscribe((usr) => {
-                            
                             this.battleNotifications.push({
                                 type: not.type,
                                 sender: not.sender,
@@ -55,28 +53,28 @@ export class NotificationScreenComponent implements OnInit {
                         });
                     }
                 }
-            }); 
+            });
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
-        this.notificationListener.listen(this.pollingNotifications)
-        this.notificationDelListener.listen(this.pollingDeletedNotifications)
+        this.notificationListener.listen(this.pollingNotifications);
+        this.notificationDelListener.listen(this.pollingDeletedNotifications);
     }
 
-    private pollingNotifications(notification: NotificationData){
+    private pollingNotifications(notification: NotificationData) {
         this.userApi.getUser(notification.sender).subscribe((user) => {
             this.friendNotifications.push({
                 type: notification.type,
                 sender: notification.sender,
                 senderUsername: user.username,
             });
-        })
+        });
     }
 
     private pollingDeletedNotifications(notification: NotificationData) {
         this.friendNotifications = this.friendNotifications.filter((not) => {
-            return notification.sender === not.sender && notification.type === not.type
-        })
+            return notification.sender === not.sender && notification.type === not.type;
+        });
     }
 
     public acceptFriend(friendId: string) {
@@ -114,6 +112,4 @@ export class NotificationScreenComponent implements OnInit {
             console.log('error removing battle notification: ' + err);
         }
     }
-
-    
 }
