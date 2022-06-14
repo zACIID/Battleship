@@ -57,7 +57,7 @@ describe('Get Leaderboard', () => {
                     );
                 });
             },
-            complete: async () => {
+            complete: () => {
                 done();
             },
         });

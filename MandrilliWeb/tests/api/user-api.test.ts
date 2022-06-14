@@ -49,7 +49,7 @@ describe('Get User', () => {
                     })
                 );
             },
-            complete: async () => {
+            complete: () => {
                 done();
             },
         });
@@ -108,7 +108,7 @@ describe('Get Multiple Users', () => {
                     );
                 });
             },
-            complete: async () => {
+            complete: () => {
                 done();
             },
         });
@@ -157,7 +157,7 @@ describe('Delete User', () => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.deleteUser(mainUser.userId).subscribe({
             next: (nun: void) => {},
-            complete: async () => {
+            complete: () => {
                 done();
             },
         });
@@ -190,11 +190,10 @@ describe('Update Password', () => {
         await deleteUser(mainUser.userId);
     });
 
-    test('Should Return Non-Empty Response With Correct Fields', (done) => {
+    test('Should Not Throw', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(mainUser.userId, 'ayo').subscribe({
-            next: (nun: void) => {},
-            complete: async () => {
+            complete: () => {
                 done();
             },
         });
@@ -257,7 +256,7 @@ describe('Update Username', () => {
                     })
                 );
             },
-            complete: async () => {
+            complete: () => {
                 done();
             },
         });
@@ -390,7 +389,7 @@ describe('Update User Stats', () => {
                         })
                     );
                 },
-                complete: async () => {
+                complete: () => {
                     done();
                 },
             });
