@@ -96,7 +96,7 @@ describe('Player Won', () => {
 
         // Check that the event returns a valid reason
         // and terminate the test only if both events are fired
-        const assertMatchFoundEvent = (eventData: MatchTerminatedData) => {
+        const assertMatchTerminatedEvent = (eventData: MatchTerminatedData) => {
             // Match id could be any string
             expect(eventData.reason).toEqual(expect.any(String));
 
@@ -116,12 +116,12 @@ describe('Player Won', () => {
         p1MatchTerminatedListener.listen((eventData: MatchTerminatedData) => {
             player1EventFired = true;
 
-            assertMatchFoundEvent(eventData);
+            assertMatchTerminatedEvent(eventData);
         });
         p2MatchTerminatedListener.listen((eventData: MatchTerminatedData) => {
             player2EventFired = true;
 
-            assertMatchFoundEvent(eventData);
+            assertMatchTerminatedEvent(eventData);
         });
 
         // Fire the event with player2
