@@ -3,6 +3,16 @@ import { MatchApi } from './../../../core/api/handlers/match-api';
 import { Match } from './../../../core/model/match/match';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
+import { ChatMessage } from 'src/app/core/model/events/chat-message';
+import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
+import { Shot } from 'src/app/core/model/api/match/shot';
+import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
+import { MatchTerminatedListener } from 'src/app/core/events/listeners/match-terminated';
+import { MatchTerminatedData } from 'src/app/core/model/events/match-terminated-data';
+import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
+import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
+import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
 
 @Component({
     selector: 'app-observers-screen',
@@ -15,17 +25,32 @@ export class ObserversScreenComponent implements OnInit {
     public matchShowedId: string = "";
     public match?: Match;
     public chatId: string = "";
+    public messages: ChatMessage[] = []
+    public player1Grid: BattleshipGrid
+    public player2Grid: BattleshipGrid
+    public generalEnd: string = ""
 
     constructor(
         private route: ActivatedRoute,
         private matchClient: MatchApi,
+        private chatJoinedEmitter: ChatJoinedEmitter,
+        private chatLeftEmitter: ChatLeftEmitter,
+        private matchJoinedEmitter: MatchJoinedEmitter,
+        private matchLeftEmitter: MatchLeftEmitter,
         private chatMessageListener: ChatMessageListener,
+        private playersShotListener: ShotFiredListener,
+        private matchTerminatedListener: MatchTerminatedListener,
         private router: Router
-    ) {}
+    ) {
+        this.player1Grid = new BattleshipGrid()
+        this.player2Grid = new BattleshipGrid()
+    }
 
     ngOnInit(): void {
 
         try{
+            const matchId = this.match?.matchId || ""
+
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
             });
@@ -36,13 +61,12 @@ export class ObserversScreenComponent implements OnInit {
                 this.chatId = data.observersChat;
             })
 
+            this.matchJoinedEmitter.emit({matchId: matchId})
+            this.chatJoinedEmitter.emit({chatId: this.chatId})
 
-
-            /*   TODO 
-             *   Emit nella chat appena joinata ?  
-             *   E' l'emit che aggiunge lo user alla chat ?  
-             */ 
-
+            this.chatMessageListener.listen(this.pollingObserverMessage)
+            this.playersShotListener.listen(this.pollingPlayerHits)
+            this.matchTerminatedListener.listen(this.pollingMatchResult)
 
             // It should force the chatBody component to refresh
             this.chatMessageListener.listen(
@@ -51,8 +75,8 @@ export class ObserversScreenComponent implements OnInit {
                         this.chatId = this.match?.observersChat
                     }
                     else throw new Error("Observers chat id non existent");
-                });
-
+                }
+            );
 
         }
         catch(err){
@@ -62,15 +86,41 @@ export class ObserversScreenComponent implements OnInit {
 
 
     public async quitView(){
-
-        /*  TODO 
-         *  add logic here
-         *  we should remove the user from the chat
-         *  we should also unlisten the chat-message event 
-         */ 
-        
+        this.endScreen()
         await this.router.navigate(['/relationship']);
     }
 
-    
+    private pollingObserverMessage(data: ChatMessage) : void{
+        this.messages.push(data)
+    }
+
+    private pollingPlayerHits(data: Shot) : void {
+        if (data.playerId !== this.match?.player1.playerId)
+            this.player1Grid.shotsReceived.push(data.coordinates)
+        else this.player2Grid.shotsReceived.push(data.coordinates)
+    }
+
+    private async pollingMatchResult(data: MatchTerminatedData) : Promise<void> {
+        const matchId: string = this.match?.matchId || ""
+        const path: string = "/match-results/" + matchId
+
+        this.generalEnd = data.reason.valueOf()
+        this.endScreen()
+
+        //TO DO serve aspettare setTimeout() per fare vedere agli observer perche è finto il match?
+        await this.router.navigate([path])
+        //TO DO da passare alla component il matchId
+    }
+
+    private endScreen() {
+        const matchId: string = this.match?.matchId || ""
+
+        this.matchLeftEmitter.emit({matchId: matchId})
+        this.chatLeftEmitter.emit({chatId: this.chatId})
+
+        this.chatMessageListener.unListen()
+        this.matchTerminatedListener.unListen()
+        this.playersShotListener.unListen()
+    }
+
 }
