@@ -28,7 +28,7 @@ export class HistorySidebarComponent implements OnInit {
         try {
             let userId = this.userIdProvider.getUserId();
             let matches: Match[];
-            this.matchClient.getUserMatches(userId).subscribe((match: Match[]) => {
+            this.userClient.getUserMatches(userId).subscribe((match: Match[]) => {
                 matches = [...match];
 
                 if (matches) {

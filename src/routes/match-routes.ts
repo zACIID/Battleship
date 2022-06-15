@@ -28,7 +28,7 @@ interface MatchEndpointLocals {
     userId: Types.ObjectId;
 }
 
-interface MatchEndpointResponse extends Response {
+export interface MatchEndpointResponse extends Response {
     locals: MatchEndpointLocals;
 }
 
@@ -65,25 +65,6 @@ router.get(
     }
 );
 
-// TODO beeagus
-router.get(
-    'users/:userId/matches',
-    authenticateToken,
-    retrieveUserId,
-    async (req: AuthenticatedRequest, res: MatchEndpointResponse) => {
-        try {
-            let userId: Types.ObjectId = res.locals.userId;
-            const matches: Match[] = await getMatchByUserId(userId);
-            return res.status(200).json(matches);
-        } catch (err) {
-            return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
-                requestPath: req.path,
-            });
-        }
-    }
-);
 
 interface UpdateStatsBody {
     winner: string;

@@ -9,6 +9,12 @@ import { User } from '../../src/app/core/model/user/user';
 import { ApiUserStats } from '../../src/app/core/model/api/user/stats';
 import { UserStats } from '../../src/app/core/model/user/stats';
 import { getRank } from '../../src/app/core/model/user/elo-rankings';
+import { createNMatch, UserMatches } from 'tests/fixtures/database/matches';
+import { testTeardown } from './match-api.test';
+import { MatchApi } from 'src/app/core/api/handlers/match-api';
+import { Match } from 'src/app/core/model/match/match';
+import { PlayerState } from 'src/app/core/model/match/player-state';
+import { MatchStats } from 'src/app/core/model/match/match-stats';
 
 let httpClient: HttpClient;
 let mainUser: InsertedUser;
@@ -280,6 +286,61 @@ describe('Update Username', () => {
     test('Should Throw ', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.updatePassword(mainUser.userId, wrongUsername).subscribe({
+            error: (err: Error) => {
+                expect(err).toBeTruthy();
+                done();
+            },
+            complete: () => {
+                throw Error('Observable should not complete without throwing');
+            },
+        });
+    });
+});
+
+describe('Get Matches', () => {
+    let jwtProvider: JwtProvider
+    let setupData: UserMatches;
+    beforeEach(async () => {
+        httpClient = injectHttpClient();
+        setupData = await createNMatch();
+        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
+    test('Should Return Non-Empty Response With Correct Fields', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProvider);
+        userApi.getUserMatches(setupData.userInfo.userId).subscribe({
+            next: (matches: Match[]) => {
+                // Expect non-empty response
+                expect(matches).toBeTruthy();
+
+                // Expect an object with the correct fields
+                expect(matches).toEqual(
+                    expect.objectContaining<Match[]>([
+                        {
+                            matchId: expect.any(String),
+                            player1: expect.any(PlayerState),
+                            player2: expect.any(PlayerState),
+                            playersChat: expect.any(String),
+                            observersChat: expect.any(PlayerState),
+                            stats: expect.any(MatchStats),
+                        },
+                    ])
+                );
+            },
+            complete: () => {
+                done();
+            },
+        });
+    });
+
+    //wrong Userid
+    test('Should Throw', (done) => {
+        const userApi: UserApi = new UserApi(httpClient, jwtProvider);
+        userApi.getUserMatches(wrongUserId).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();

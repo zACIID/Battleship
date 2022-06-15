@@ -59,14 +59,6 @@ export class MatchApi extends BaseAuthenticatedApi {
         );
     }
 
-    public getUserMatches(userId: string): Observable<Match[]> {
-        const reqPath: string = `${this.baseUrl}/api/matches/${userId}`;
-
-        return this.httpClient
-            .get<Match[]>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
-    }
-
     public updateStats(matchId: string, statsUpdate: StatsUpdate): Observable<StatsUpdate> {
         const reqPath: string = `${this.baseUrl}/api/matches/${matchId}/stats`;
 

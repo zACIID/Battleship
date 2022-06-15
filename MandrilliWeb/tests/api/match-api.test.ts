@@ -69,7 +69,7 @@ const testSetup = async () => {
     );
 };
 
-const testTeardown = async () => {
+export const testTeardown = async () => {
     await teardownDbMatchApiTesting();
 };
 
@@ -117,61 +117,6 @@ describe('Get Match', () => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
 
         matchApi.getMatch(wrongMatchId).subscribe({
-            error: (err: Error) => {
-                expect(err).toBeTruthy();
-                done();
-            },
-            complete: () => {
-                throw Error('Observable should not complete without throwing');
-            },
-        });
-    });
-});
-
-describe('Get Matches', () => {
-    beforeEach(async () => {
-        httpClient = injectHttpClient();
-        setupData = await createNMatch();
-        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
-    });
-
-    afterEach(async () => {
-        await testTeardown();
-    });
-
-    test('Should Return Non-Empty Response With Correct Fields', (done) => {
-        const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-
-        matchApi.getUserMatches(setupData.userInfo.userId).subscribe({
-            next: (matches: Match[]) => {
-                // Expect non-empty response
-                expect(matches).toBeTruthy();
-
-                // Expect an object with the correct fields
-                expect(matches).toEqual(
-                    expect.objectContaining<Match[]>([
-                        {
-                            matchId: expect.any(String),
-                            player1: expect.any(PlayerState),
-                            player2: expect.any(PlayerState),
-                            playersChat: expect.any(String),
-                            observersChat: expect.any(PlayerState),
-                            stats: expect.any(MatchStats),
-                        },
-                    ])
-                );
-            },
-            complete: () => {
-                done();
-            },
-        });
-    });
-
-    //wrong Userid
-    test('Should Throw', (done) => {
-        const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-
-        matchApi.getUserMatches(wrongUserId).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();

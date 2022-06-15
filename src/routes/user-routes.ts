@@ -9,6 +9,7 @@ import { UserStats } from '../model/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { MatchEndpointResponse } from './match-routes';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
@@ -64,6 +65,26 @@ router.get(
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
+
+
+router.get(
+    'users/:userId/matches',
+    authenticateToken,
+    retrieveUserId,
+    async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
+        try {
+            let userId: Types.ObjectId = res.locals.userId;
+            const matches: match.Match[] = await match.getMatchByUserId(userId);
+            return res.status(200).json(matches);
+        } catch (err) {
+            return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,
                 requestPath: req.path,

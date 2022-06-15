@@ -8,6 +8,7 @@ import { User } from '../../model/user/user';
 import { ApiUserStats } from '../../model/api/user/stats';
 import { UserStats } from '../../model/user/stats';
 import { getRank } from '../../model/user/elo-rankings';
+import { Match } from '../../model/match/match';
 
 /**
  * Interface that represents an Update Username endpoint response
@@ -116,6 +117,14 @@ export class UserApi extends BaseAuthenticatedApi {
                 };
             })
         );
+    }
+
+    public getUserMatches(userId: string): Observable<Match[]> {
+        const reqPath: string = `${this.baseUrl}/users/${userId}/matches`;
+
+        return this.httpClient
+            .get<Match[]>(reqPath, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 
     public updateStats(userId: string, statsUpdate: ApiUserStats): Observable<ApiUserStats> {
