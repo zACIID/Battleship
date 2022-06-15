@@ -25,18 +25,18 @@
 
                 <!-- TODO add logic on these 2 buttons to start a match -->
 
-                <div class="column height-20 is-half mr-6 has-text-centered pointer">
+                <div class="column height-20 is-half mr-6 has-text-centered ">
 
-                    <div class="box has-background-light" (click)="startMatchMaking()">
+                    <div class="box has-background-light pointer" (click)="startMatchMaking()">
                         <strong class="is-size-3 has-weight-bold is-vcentered">Casual game</strong>
                     </div>
                     <p class="has-text-light is-size-5 p-3"> Play with a random user thanks to a skill based matchmaking !</p>
                         
                 </div>
 
-                <div class="column height-20 is-half has-text-centered pointer">
+                <div class="column height-20 is-half has-text-centered">
 
-                    <div class="box has-background-light">
+                    <div class="box has-background-light pointer" [routerLink]="['/play-together']">
                         <strong class="is-size-3 has-weight-bold ">Play with a friend </strong>
                     </div>
                     <p class="has-text-light is-size-5 p-3"> Select an online user from your friends list and fight him !</p>

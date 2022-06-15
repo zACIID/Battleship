@@ -1,3 +1,5 @@
+import { Notification } from './../../../core/model/user/notification';
+import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { getRank } from './../../../core/model/user/elo-rankings';
 import { Overview } from '../../../core/model/user/overview';
 import { UserApi } from './../../../core/api/handlers/user-api';
@@ -7,6 +9,7 @@ import { UserStatus } from '../../../core/model/user/user';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { FriendStatusChangedListener } from 'src/app/core/events/listeners/friend-status-changed';
 import { FriendStatusChangedData } from 'src/app/core/model/events/friend-status-changed-data';
+import { NotificationType } from 'src/app/core/model/user/notification';
 
 @Component({
     selector: 'app-play-together-screen',
@@ -15,19 +18,20 @@ import { FriendStatusChangedData } from 'src/app/core/model/events/friend-status
 })
 export class PlayTogetherScreenComponent implements OnInit {
     public friends: Overview[] = [];
-
+    private userInSessionId: string = "";
     constructor(
         private relationshipClient: RelationshipApi,
         private userClient: UserApi,
         private userIdProvider: UserIdProvider,
-        private friendListener: FriendStatusChangedListener
+        private friendListener: FriendStatusChangedListener,
+        private notificationApi: NotificationApi
     ) {}
 
     ngOnInit(): void {
         try {
             // Retrieving only online friends
-            let userId: string = this.userIdProvider.getUserId();
-            this.relationshipClient.getRelationships(userId).subscribe((relationships) => {
+            this.userInSessionId = this.userIdProvider.getUserId();
+            this.relationshipClient.getRelationships(this.userInSessionId).subscribe((relationships) => {
                 for (let relation of relationships) {
                     this.userClient.getUser(relation.friendId).subscribe((friend) => {
                         if (friend.status === UserStatus.Online) {
@@ -68,6 +72,15 @@ export class PlayTogetherScreenComponent implements OnInit {
 
     public num_online() {
         return this.friends.length;
+    }
+
+
+    public askToBattle(friendId: string){
+
+        this.notificationApi.addNotification(friendId, {sender: this.userInSessionId, type: NotificationType.MatchRequest})
+        .subscribe((not: Notification) => {
+            console.log("Correctly Added: " + JSON.stringify(not));
+        })
     }
 
 }

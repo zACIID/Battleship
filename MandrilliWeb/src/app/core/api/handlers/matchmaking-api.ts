@@ -5,7 +5,7 @@ import { Observable, catchError } from 'rxjs';
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { JwtProvider } from '../jwt-auth/jwt-provider';
 
-interface EnqueueResponse {
+export interface EnqueueResponse {
     userId: string;
 }
 

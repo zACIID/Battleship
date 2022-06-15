@@ -29,7 +29,7 @@
                     </div>
                 
                     <div *ngSwitchDefault>
-                        <div *ngFor="let item of friends" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+                        <div *ngFor="let item of friends" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (clikc)="askToBattle(item.userId)">
                             <p> <strong>{{item.username}} - {{item.elo}} </strong></p>
                         </div>
                     </div>
