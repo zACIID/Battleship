@@ -1,5 +1,5 @@
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { Stats } from '../../../core/model/user/stats';
+import { UserStats } from '../../../core/model/user/stats';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
@@ -16,7 +16,7 @@ export class ProfileScreenComponent implements OnInit {
     public user: User = new User();
     private userShowedId: string = '';
     public rank: string = '';
-    public stats: Stats = new Stats();
+    public stats: UserStats = new UserStats();
 
     constructor(
         private userClient: UserApi,
@@ -49,12 +49,11 @@ export class ProfileScreenComponent implements OnInit {
         }
     }
 
-
     // TODO fix this error
     public getUserStats(): void {
         try {
             if (!this.user) throw new Error('User is not defined');
-            this.userClient.getStats(this.user.userId).subscribe((stat: Stats) => {
+            this.userClient.getStats(this.user.userId).subscribe((stat: UserStats) => {
                 this.stats = stat;
             });
         } catch (err) {

@@ -1,6 +1,6 @@
 import { ApiUserStats } from '../api/user/stats';
 
-export class Stats implements ApiUserStats {
+export class UserStats implements ApiUserStats {
     elo: number;
     topElo: number;
     wins: number;

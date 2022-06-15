@@ -6,6 +6,8 @@ import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { JwtProvider } from '../jwt-auth/jwt-provider';
 import { User } from '../../model/user/user';
 import { ApiUserStats } from '../../model/api/user/stats';
+import { UserStats } from '../../model/user/stats';
+import { getRank } from '../../model/user/elo-rankings';
 
 /**
  * Interface that represents an Update Username endpoint response
@@ -25,10 +27,9 @@ interface GetMultipleUsersResponse {
 /**
  * Interface that represents a response from the currentMatch endpoint
  */
- interface CurrentMatchResponse {
+interface CurrentMatchResponse {
     matchId: string;
 }
-
 
 /**
  * Class that handles communication with user-related endpoints
@@ -51,14 +52,12 @@ export class UserApi extends BaseAuthenticatedApi {
     public getCurrentMatch(userId: string): Observable<string> {
         const reqPath: string = `${this.baseUrl}/api/users/${userId}/currentMatch`;
 
-        return this.httpClient
-            .get<CurrentMatchResponse>(reqPath, this.createRequestOptions())
-            .pipe(
-                catchError(this.handleError),
-                map<CurrentMatchResponse, string>((res: CurrentMatchResponse) => {
-                    return res.matchId;
-                })
-            );
+        return this.httpClient.get<CurrentMatchResponse>(reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError),
+            map<CurrentMatchResponse, string>((res: CurrentMatchResponse) => {
+                return res.matchId;
+            })
+        );
     }
 
     public getMultipleUsers(userIds: string[]): Observable<User[]> {
@@ -105,12 +104,18 @@ export class UserApi extends BaseAuthenticatedApi {
             .pipe(catchError(this.handleError));
     }
 
-    public getStats(userId: string): Observable<ApiUserStats> {
+    public getStats(userId: string): Observable<UserStats> {
         const reqPath: string = `${this.baseUrl}/api/users/${userId}/stats`;
 
-        return this.httpClient
-            .get<ApiUserStats>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+        return this.httpClient.get<ApiUserStats>(reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError),
+            map<ApiUserStats, UserStats>((apiStats: ApiUserStats) => {
+                return {
+                    ...apiStats,
+                    rank: getRank(apiStats.elo),
+                };
+            })
+        );
     }
 
     public updateStats(userId: string, statsUpdate: ApiUserStats): Observable<ApiUserStats> {

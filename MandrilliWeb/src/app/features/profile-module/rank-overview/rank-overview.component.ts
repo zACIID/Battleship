@@ -1,4 +1,4 @@
-import { Stats } from '../../../core/model/user/stats';
+import { UserStats } from '../../../core/model/user/stats';
 import { User } from './../../../core/model/user/user';
 import { Component, OnInit, Input } from '@angular/core';
 import { getRank } from 'src/app/core/model/user/elo-rankings';
@@ -12,7 +12,7 @@ export class RankOverviewComponent implements OnInit {
     @Input() user: User = new User();
     public rank: string = '';
     public rankImageSrc: string = '';
-    @Input() stats: Stats = new Stats();
+    @Input() stats: UserStats = new UserStats();
 
     constructor() {}
 

@@ -1,7 +1,7 @@
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { NotificationType } from './../../../core/model/user/notification';
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
-import { Stats } from '../../../core/model/user/stats';
+import { UserStats } from '../../../core/model/user/stats';
 import { User } from './../../../core/model/user/user';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -13,7 +13,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class StatsOverviewComponent implements OnInit {
     @Input() user: User = new User();
 
-    @Input() stats: Stats = new Stats();
+    @Input() stats: UserStats = new UserStats();
 
     @Input() myProfile: boolean = false;
 
