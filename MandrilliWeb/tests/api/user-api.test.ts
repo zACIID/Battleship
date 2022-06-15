@@ -6,9 +6,9 @@ import { injectHttpClient } from '../fixtures/http-client';
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { UserApi, UsernameUpdate } from '../../src/app/core/api/handlers/user-api';
 import { User } from '../../src/app/core/model/user/user';
-import { Stats } from 'src/app/core/model/user/stats';
 import { ApiUserStats } from '../../src/app/core/model/api/user/stats';
-import exp from 'constants';
+import { UserStats } from '../../src/app/core/model/user/stats';
+import { getRank } from '../../src/app/core/model/user/elo-rankings';
 
 let httpClient: HttpClient;
 let mainUser: InsertedUser;
@@ -307,13 +307,13 @@ describe('Get Stats', () => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
 
         userApi.getStats(mainUser.userId).subscribe({
-            next: (userStats: ApiUserStats) => {
+            next: (userStats: UserStats) => {
                 // Expect non-empty response
                 expect(userStats).toBeTruthy();
 
                 // Expect an object with the correct fields
                 expect(userStats).toEqual(
-                    expect.objectContaining<ApiUserStats>({
+                    expect.objectContaining<UserStats>({
                         elo: expect.any(Number),
                         topElo: expect.any(Number),
                         wins: expect.any(Number),
@@ -321,6 +321,7 @@ describe('Get Stats', () => {
                         shipsDestroyed: expect.any(Number),
                         totalShots: expect.any(Number),
                         totalHits: expect.any(Number),
+                        rank: expect.any(String),
                     })
                 );
             },
