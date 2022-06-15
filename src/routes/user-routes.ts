@@ -9,6 +9,7 @@ import { UserStats } from '../model/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId, skipLimitChecker } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { MatchData } from '../model/events/match-data';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
@@ -99,13 +100,29 @@ router.get(
                 limit = 10;
             }
 
-            const matches: MatchDocument[] = await match.getUserMostRecentMatches(
+            const matchDocuments: MatchDocument[] = await match.getUserMostRecentMatches(
                 userId,
                 skip,
                 limit
             );
 
-            return res.status(200).json(matches);
+            // "Convert" the matches into a suitable response object for the api
+            const responseMatches = matchDocuments.map((mDoc: MatchDocument) => {
+                return {
+                    matchId: mDoc._id,
+                    player1: mDoc.player1,
+                    player2: mDoc.player2,
+                    playersChat: mDoc.playersChat,
+                    observersChat: mDoc.observersChat,
+                    stats: mDoc.stats,
+                };
+            });
+            const responseData = {
+                matches: responseMatches,
+                nextPage: `${req.path}?skip=${skip + limit}&limit=${limit}`,
+            };
+
+            return res.status(200).json(responseData);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
@@ -126,6 +143,7 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
         try {
             user = await usr.getUserById(userId);
+
             if (user.status.valueOf() === UserStatus.InGame) {
                 const userMatches: MatchDocument[] = await match.getUserMostRecentMatches(
                     userId,
@@ -134,15 +152,20 @@ router.get(
                 );
                 const currentMatch: MatchDocument = userMatches[0];
 
+                // Return the matchId only if it has yet to end
                 if (currentMatch.stats.endTime === null) {
-                    return res.status(201).json({
+                    // Return the matchId
+                    return res.status(200).json({
                         matchId: currentMatch._id,
                     });
                 } else {
-                    return res.status(201).json({
+                    // TODO return an error instead?
+                    return res.status(200).json({
                         matchId: '',
                     });
                 }
+            } else {
+                throw new Error(`User ${userId} is not currently in a match`);
             }
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 400;

@@ -38,7 +38,7 @@ router.get(
         try {
             let matchId: Types.ObjectId = res.locals.matchId;
             const match: MatchDocument = await getMatchById(matchId);
-            const toSend = {
+            const matchResponse = {
                 matchId: match._id,
                 player1: match.player1,
                 player2: match.player2,
@@ -47,7 +47,7 @@ router.get(
                 stats: match.stats,
             };
 
-            return res.status(200).json(toSend);
+            return res.status(200).json(matchResponse);
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
