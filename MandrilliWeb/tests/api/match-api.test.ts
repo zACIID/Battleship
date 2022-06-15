@@ -200,23 +200,19 @@ describe('Set Ready', () => {
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
+        const newState: boolean = true;
 
-        matchApi.setReadyState(setupData.matchIds[0], setupData.userInfo.userId, true).subscribe({
-            next: (res: { ready: boolean }) => {
-                // Expect non-empty response
-                expect(res).toBeTruthy();
-
-                // Expect an object with the correct fields
-                expect(res).toEqual(
-                    expect.objectContaining<{ ready: boolean }>({
-                        ready: expect.any(Boolean),
-                    })
-                );
-            },
-            complete: () => {
-                done();
-            },
-        });
+        matchApi
+            .setReadyState(setupData.matchIds[0], setupData.userInfo.userId, newState)
+            .subscribe({
+                next: (ready: boolean) => {
+                    // Expect non-empty response
+                    expect(ready).toEqual(newState);
+                },
+                complete: () => {
+                    done();
+                },
+            });
     });
 
     // wrong matchId

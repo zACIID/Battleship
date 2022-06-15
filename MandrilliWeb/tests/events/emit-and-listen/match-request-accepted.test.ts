@@ -160,6 +160,6 @@ describe('Match Request Accepted - Match Found', () => {
     test('Listener Event Name Should Be "match-found"', () => {
         const listener: MatchFoundListener = new MatchFoundListener(senderClient);
 
-        expect(listener.eventName).toEqual('match-terminated');
+        expect(listener.eventName).toEqual('match-found');
     });
 });

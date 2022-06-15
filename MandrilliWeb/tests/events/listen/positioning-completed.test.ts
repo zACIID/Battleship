@@ -6,7 +6,6 @@ import { SetupData } from '../../fixtures/utils';
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
 import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
-import { PlayerStateChangedListener } from '../../../src/app/core/events/listeners/player-state-changed';
 import { changePlayerState } from '../../fixtures/api-utils/match-state';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
