@@ -1,10 +1,14 @@
 import { Notification } from '../../model/user/notification';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { JwtProvider } from '../jwt-auth/jwt-provider';
+
+interface GetNotificationsResponse {
+    notifications: Notification[];
+}
 
 /**
  * Class that handles communication with relationship-related endpoints
@@ -21,8 +25,13 @@ export class NotificationApi extends BaseAuthenticatedApi {
         const reqPath: string = `${this.baseUrl}/api/users/${userId}/notifications`;
 
         return this.httpClient
-            .get<Notification[]>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .get<GetNotificationsResponse>(reqPath, this.createRequestOptions())
+            .pipe(
+                catchError(this.handleError),
+                map<GetNotificationsResponse, Notification[]>((res: GetNotificationsResponse) => {
+                    return res.notifications;
+                })
+            );
     }
 
     public addNotification(
