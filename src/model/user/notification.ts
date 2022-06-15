@@ -23,10 +23,16 @@ export interface RequestNotification {
     sender: Types.ObjectId;
 
     /**
-     * Timestamp that the notification was created at.
+     * Date that the notification was created at.
      * It is automatically inserted by the database
      */
-    timestamp?: Date;
+    createdAt?: Date;
+
+    /**
+     * Date that the notification was last updated at.
+     * It is automatically inserted and updated by the database
+     */
+    updatedAt?: Date;
 }
 
 /**
@@ -39,18 +45,17 @@ export interface RequestNotificationSubDocument
 /**
  * A notification is identified by the pair (type, requester)
  */
-export const NotificationSchema = new Schema<RequestNotificationSubDocument>({
-    type: {
-        type: SchemaTypes.String,
-        required: true,
-        enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
+export const NotificationSchema = new Schema<RequestNotificationSubDocument>(
+    {
+        type: {
+            type: SchemaTypes.String,
+            required: true,
+            enum: [RequestTypes.FriendRequest.valueOf(), RequestTypes.MatchRequest.valueOf()],
+        },
+        sender: {
+            type: Types.ObjectId,
+            required: true,
+        },
     },
-    sender: {
-        type: Types.ObjectId,
-        required: true,
-    },
-    timestamp: {
-        type: SchemaTypes.Date,
-        default: () => new Date(),
-    },
-});
+    { timestamps: true }
+);

@@ -468,16 +468,16 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
         : Promise.resolve(stat.stats);
 }
 
-export async function getLastNotification(
-    _id: Types.ObjectId
-): Promise<RequestNotificationSubDocument> {
-    let notification: UserDocument = await UserModel.findOne({ _id }, { notifications: 1 }).sort({
+/**
+ * Returns the most recent notifications of the user, ordered by most recent.
+ * @param userId id of the user to retrieve the notifications of
+ */
+export async function getMostRecentNotifications(
+    userId: Types.ObjectId
+): Promise<RequestNotificationSubDocument[]> {
+    return await UserModel.findOne({ _id: userId }).projection(['notifications']).sort({
         createdAt: -1,
     });
-
-    return !notification
-        ? Promise.reject(new Error('No notification with that Identifier'))
-        : Promise.resolve(notification.notifications[0]);
 }
 
 /**

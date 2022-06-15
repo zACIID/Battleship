@@ -41,7 +41,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/users/:userId/notifications | GET | Retrieve the notifications of the specified user |
+| /api/users/:userId/notifications | GET | Retrieve the notifications, ordered by most recent, of the specified user |
 
 #### Url Parameters
 
@@ -59,7 +59,7 @@
 ##### Success
 
 - Status Code: 200
-- Array of [Notification](#notification) resources that were sent to the specified user
+- Array of [Notification](#notification) resources that were sent to the specified user, ordered by most recent
 
 ```json
 {

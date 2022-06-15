@@ -1,14 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import * as dbUser from '../../../../src/model/user/user';
-import * as dbNotification from '../../../../src/model/user/notification';
 import * as dbRelation from '../../../../src/model/user/relationship';
 import * as dbMatch from '../../../../src/model/match/match';
 import * as dbChat from '../../../../src/model/chat/chat';
 import * as dbMatchmaking from '../../../../src/model/matchmaking/queue-entry';
 import { environment } from '../../../src/environments/environment';
 import { Document, FilterQuery, Types } from 'mongoose';
-import { getUserById, getLastNotification } from '../../../../src/model/user/user';
 
 const dbCollectionNames = {
     userCollection: 'Users',
@@ -209,21 +207,21 @@ export class MongoDbApi {
         );
     }
 
-    //BAD PRACTICE
-    public async insertNotification(
-        notificationData: dbNotification.RequestNotification,
-        reciver: string
-    ): Promise<dbNotification.RequestNotification> {
-        let userReciver: dbUser.UserDocument = await getUserById(Types.ObjectId(reciver));
-        let notification: dbNotification.RequestNotification;
-        await userReciver.addNotification(notificationData.type, notificationData.sender);
-        notification = await getLastNotification(userReciver.id);
-        return notification
-            ? Promise.resolve(notification)
-            : Promise.reject(
-                  'Bro hai sbanfato te qualcosa nel settuppare il test di notifications'
-              );
-    }
+    //// TODO can't user backend code here - remove?
+    //public async insertNotification(
+    //    notificationData: dbNotification.RequestNotification,
+    //    receiver: string
+    //): Promise<dbNotification.RequestNotification> {
+    //    let userReceiver: dbUser.UserDocument = await getUserById(Types.ObjectId(receiver));
+    //    let notification: dbNotification.RequestNotification;
+    //    await userReceiver.addNotification(notificationData.type, notificationData.sender);
+    //    notification = await getLastNotification(userReceiver.id);
+    //    return notification
+    //        ? Promise.resolve(notification)
+    //        : Promise.reject(
+    //              'Bro hai sbanfato te qualcosa nel settuppare il test di notifications'
+    //          );
+    //}
 
     public async insertMatchmakingEntry(
         entryData: dbMatchmaking.QueueEntry

@@ -11,7 +11,7 @@ interface GetNotificationsResponse {
 }
 
 /**
- * Class that handles communication with relationship-related endpoints
+ * Class that handles communication with notification-related endpoints
  */
 @Injectable({
     providedIn: 'root',

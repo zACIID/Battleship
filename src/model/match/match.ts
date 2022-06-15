@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
-import { ChatDocument, ChatModel, createChat } from '../chat/chat';
+import { ChatDocument, createChat } from '../chat/chat';
 
 import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from './match-stats';
 import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/player-state';
@@ -31,35 +31,32 @@ export interface MatchDocument extends Match, Document {
     registerShot(shot: Shot): Promise<MatchDocument>;
 }
 
-export const MatchSchema = new Schema<MatchDocument>(
-    {
-        player1: {
-            type: PlayerStateSchema,
-            required: true,
-        },
-
-        player2: {
-            type: PlayerStateSchema,
-            required: true,
-        },
-
-        playersChat: {
-            type: SchemaTypes.ObjectId,
-            required: true,
-        },
-
-        observersChat: {
-            type: SchemaTypes.ObjectId,
-            required: true,
-        },
-
-        stats: {
-            type: MatchStatsSchema,
-            default: () => ({}),
-        },
+export const MatchSchema = new Schema<MatchDocument>({
+    player1: {
+        type: PlayerStateSchema,
+        required: true,
     },
-    { timestamps: true }
-);
+
+    player2: {
+        type: PlayerStateSchema,
+        required: true,
+    },
+
+    playersChat: {
+        type: SchemaTypes.ObjectId,
+        required: true,
+    },
+
+    observersChat: {
+        type: SchemaTypes.ObjectId,
+        required: true,
+    },
+
+    stats: {
+        type: MatchStatsSchema,
+        default: () => ({}),
+    },
+});
 
 MatchSchema.methods.updatePlayerGrid = function (
     this: MatchDocument,
@@ -173,16 +170,28 @@ export async function updateMatchStats(
     return match.save();
 }
 
-export async function getMatchByUserId(userId: Types.ObjectId): Promise<Match[]> {
-    const matchData: Match[] = await MatchModel.find({ 'player1.playerId': userId })
+/**
+ * Retrieves the most recent matches of the specified user.
+ * Skip and limit params can be used to paginate database requests
+ *
+ * @param userId id of the user whose matches are to retrieve
+ * @param skip number of matches to skip
+ * @param limit number of matches to retrieve
+ */
+export async function getUserMostRecentMatches(
+    userId: Types.ObjectId,
+    skip: number = 0,
+    limit: number = 10
+): Promise<MatchDocument[]> {
+    const mostRecentMatches: MatchDocument[] = await MatchModel.find({ 'player1.playerId': userId })
         .or([{ 'player2.playerId': userId }])
         .sort({ createdAt: -1 })
-        .limit(10)
-        .catch((err: Error) => Promise.reject(new Error('Internal server error')));
+        .skip(skip)
+        .limit(limit);
 
-    return !matchData
-        ? Promise.reject(new Error('No match found with that identifier'))
-        : Promise.resolve(matchData);
+    return !mostRecentMatches
+        ? Promise.reject(new Error(`No matches found for user ${userId}`))
+        : Promise.resolve(mostRecentMatches);
 }
 
 // Create "Matches" collection

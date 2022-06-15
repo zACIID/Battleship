@@ -1,8 +1,12 @@
 import { Types } from 'mongoose';
 import { Response, Router } from 'express';
 
-import { RequestTypes } from '../model/user/notification';
-import { getUserById, UserDocument } from '../model/user/user';
+import {
+    RequestNotification,
+    RequestNotificationSubDocument,
+    RequestTypes,
+} from '../model/user/notification';
+import { getMostRecentNotifications, getUserById, UserDocument } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { NotificationReceivedEmitter } from '../events/emitters/notification-received';
@@ -10,7 +14,6 @@ import { ioServer } from '../index';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { NotificationData } from '../model/events/notification-data';
 import { NotificationDeletedEmitter } from '../events/emitters/notification-deleted';
-import { Emitter } from '../events/emitters/base/emitter';
 
 export const router = Router();
 
@@ -41,8 +44,19 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
 
         try {
-            const user: UserDocument = await getUserById(userId);
-            return res.status(200).json({ notifications: user.notifications });
+            const notifications: RequestNotificationSubDocument[] =
+                await getMostRecentNotifications(userId);
+
+            // Do not send the createdAt and updatedAt fields
+            const responseData: RequestNotification[] = notifications.map(
+                (n: RequestNotificationSubDocument) => {
+                    return {
+                        type: n.type,
+                        sender: n.sender,
+                    };
+                }
+            );
+            return res.status(200).json({ notifications: responseData });
         } catch (err) {
             return res.status(404).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),

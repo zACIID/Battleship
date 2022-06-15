@@ -1,14 +1,7 @@
 import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
-import {
-    getMatchById,
-    MatchDocument,
-    updateMatchStats,
-    MatchModel,
-    getMatchByUserId,
-    Match,
-} from '../model/match/match';
+import { getMatchById, MatchDocument, updateMatchStats, MatchModel } from '../model/match/match';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
 import { GridCoordinates } from '../model/match/state/grid-coordinates';
@@ -64,7 +57,6 @@ router.get(
         }
     }
 );
-
 
 interface UpdateStatsBody {
     winner: string;

@@ -53,15 +53,14 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
         try {
             user = await usr.getUserById(userId);
-            
+
             return res.status(201).json({
                 userId: user._id,
                 username: user.username,
                 roles: user.roles,
                 status: user.status,
-                elo: user.stats.elo
+                elo: user.stats.elo,
             });
-            
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
@@ -73,7 +72,8 @@ router.get(
     }
 );
 
-
+// TODO finish implementation and update docs
+// TODO add skip and limit params
 router.get(
     'users/:userId/matches',
     authenticateToken,
@@ -81,7 +81,7 @@ router.get(
     async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
         try {
             let userId: Types.ObjectId = res.locals.userId;
-            const matches: match.Match[] = await match.getMatchByUserId(userId);
+            const matches: MatchDocument[] = await match.getUserMostRecentMatches(userId);
             return res.status(200).json(matches);
         } catch (err) {
             return res.status(404).json({
@@ -93,7 +93,7 @@ router.get(
     }
 );
 
-
+// TODO finish implementation and update docs
 router.get(
     '/users/:userId/currentMatch',
     authenticateToken,
@@ -103,28 +103,26 @@ router.get(
         const userId: Types.ObjectId = res.locals.userId;
         try {
             user = await usr.getUserById(userId);
-            if(user.status.valueOf() === UserStatus.InGame){
-                const currentMatch: MatchDocument = (match.getMatchByUserId(userId))[0];
-                
-                if(currentMatch.stats.endTime === null){
+            if (user.status.valueOf() === UserStatus.InGame) {
+                const userMatches: MatchDocument[] = await match.getUserMostRecentMatches(
+                    userId,
+                    0,
+                    1
+                );
+                const currentMatch: MatchDocument = userMatches[0];
+
+                if (currentMatch.stats.endTime === null) {
                     return res.status(201).json({
-                        matchId: currentMatch._id
-                    })
-                }
-                else{
+                        matchId: currentMatch._id,
+                    });
+                } else {
                     return res.status(201).json({
-                        matchId: ""
-                    })
+                        matchId: '',
+                    });
                 }
             }
-            else{
-                return res.status(201).json({
-                    matchId: "" 
-                });
-            }
-            
         } catch (err) {
-            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
+            const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 400;
             return res.status(statusCode).json({
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 errorMessage: err.message,

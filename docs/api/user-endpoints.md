@@ -12,9 +12,9 @@
     - [Retrieve User](#retrieve-user)
       - [Url Parameters](#url-parameters)
       - [Example Response Body](#example-response-body)
-    - [Retrieve User's Current Match](#retrieve-user-current-match)
+    - [Retrieve User Current Match](#retrieve-user-current-match)
       - [Url Parameters](#url-parameters-1)
-      - [Example Response Body](#example-response-body-current-match)
+      - [Example Response Body Current Match](#example-response-body-current-match)
     - [Retrieve Multiple Users](#retrieve-multiple-users)
       - [Query Parameters](#query-parameters)
       - [Example Request Body](#example-request-body)
@@ -127,24 +127,24 @@
 
 | Name | Data Type | Description |
 | :--- | :-------- | :---------- |
-| userId | string | Id of the user which match is to retrieve |
+| userId | string | Id of the user whose match is to retrieve |
 
 #### Example Response Body Current Match
 
 ##### Success
 
-- Status Code: 201
+- Status Code: 200
 - [User](#user) resource with the specified id
 
 ```json
 {
-    "matchId": "matchid" || "" 
+    "matchId": "matchid"
 }
 ```
 
 ##### Error Current Match
 
-- Status Codes: 400, 404, 500
+- Status Codes: 400, 404
 - [Error](#error) resource
 
 ```json
