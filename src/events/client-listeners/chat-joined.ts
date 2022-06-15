@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import chalk from 'chalk';
 
 import { ClientListener } from './base/client-listener';
 import { ChatData } from '../../model/events/chat-data';
@@ -14,9 +15,11 @@ export class ChatJoinedListener extends ClientListener<ChatData> {
         super(client, 'chat-joined');
     }
 
-    public listen() {
+    public listen(): void {
         super.listen((joinData: ChatData): Promise<void> => {
             this.client.join(joinData.chatId);
+
+            console.log(chalk.bgGreen(`Client joined the chat '${joinData.chatId}'!`));
 
             return Promise.resolve();
         });

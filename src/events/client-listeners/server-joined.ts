@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import chalk from 'chalk';
 
 import { UserData } from '../../model/events/user-data';
 import { setUserOffline } from '../../model/user/user';
@@ -17,13 +18,17 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
         super(ioServer, client, 'server-joined');
     }
 
-    public listen() {
+    public listen(): void {
         super.listen(async (joinData: UserData): Promise<void> => {
             this.client.join(joinData.userId);
+
+            console.log(chalk.bgGreen(`User ${joinData.userId} joined the server!`));
 
             // Add disconnect listener that performs teardown operations on the
             // user when he leaves the server (such as setting its status to Offline)
             this.client.on('disconnect', async () => {
+                console.log(chalk.bgRed(`User ${joinData.userId} disconnected from the server!`));
+
                 await this.userTeardown(joinData.userId);
             });
 

@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as http from 'http';
 
-import express, { Express, Request } from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import * as io from 'socket.io';
 import mongoose = require('mongoose');
@@ -78,6 +78,8 @@ app.use(function (req, res, next) {
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
 /* Express Requests and Responses logger */
+// TODO function setup expressLogger()
+// TODO make it so that this code is executed only if .env is VERBOSE
 expressWinston.requestWhitelist.push('body');
 expressWinston.responseWhitelist.push('body');
 
@@ -100,13 +102,15 @@ app.use(
 registerRoutes(app);
 
 /* socket.io server setup */
+// TODO function setupIoServer in "registerRoutes" style which contains the below code
 export const ioServer: io.Server = new io.Server(httpServer, {
     cors: {
-      origin: "http://localhost:4200",
-      methods: ["GET", "POST"],
-      credentials: true
-    }
-  });
+        // TODO move in .env
+        origin: 'http://localhost:4200',
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+});
 
 ioServer.on('connection', async function (client) {
     console.log(chalk.green(`socket.io client ${client.id} connected`));
@@ -161,6 +165,7 @@ ioServer.on('connection', async function (client) {
     playerWon.listen();
 });
 
+// TODO function setupMatchmakingEngine
 /* Start the matchmaking engine and tell him to try to look
  * for match arrangements every 5 seconds
  */
@@ -171,6 +176,8 @@ matchmakingEngine.start();
 
 createUser({username: process.env.ADMIN_USERNAME, roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator]})
 .then((admin: UserDocument) =>{
-    admin.setPassword(process.env.ADMIN_PASSWORD)
+    admin.setPassword(process.env.ADMIN_PASSWORD).then(() => {
+        Promise.resolve();
+    })
 })
 .catch((err: Error) =>  console.log(chalk.green("Admin already existent")))

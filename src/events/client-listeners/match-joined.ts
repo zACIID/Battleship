@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import chalk from 'chalk';
 
 import { ClientListener } from './base/client-listener';
 import { MatchData } from '../../model/events/match-data';
@@ -17,6 +18,8 @@ export class MatchJoinedListener extends ClientListener<MatchData> {
     public listen(): void {
         super.listen((joinData: MatchData): Promise<void> => {
             this.client.join(joinData.matchId);
+
+            console.log(chalk.bgGreen(`Client joined the match '${joinData.matchId}'!`));
 
             return Promise.resolve();
         });

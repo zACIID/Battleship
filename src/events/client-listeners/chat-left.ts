@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import chalk from 'chalk';
 
 import { ClientListener } from './base/client-listener';
 import { Promise } from 'mongoose';
@@ -15,9 +16,11 @@ export class ChatLeftListener extends ClientListener<ChatData> {
         super(client, 'chat-left');
     }
 
-    public listen() {
+    public listen(): void {
         super.listen((joinData: ChatData): Promise<void> => {
             this.client.leave(joinData.chatId);
+
+            console.log(chalk.bgRed(`Client left the chat '${joinData.chatId}'!`));
 
             return Promise.resolve();
         });
