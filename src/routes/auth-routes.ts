@@ -7,13 +7,11 @@ import { Strategy } from 'passport-local';
 import {
     createUser,
     getUserByUsername,
-    User,
+    setUserStatus,
     UserDocument,
-    UserModel,
     UserStatus,
 } from '../model/user/user';
-import { AnyKeys, Types } from 'mongoose';
-import { FriendStatusChangedEmitter } from '../events/emitters/friend-status-changed';
+import { AnyKeys } from 'mongoose';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';
 import { AuthenticatedRequest } from './utils/authenticated-request';
@@ -102,7 +100,9 @@ router.post(
             expiresIn: '1h',
         });
 
-        await notifyFriends(req.user.username);
+        // The user comes online after login
+        // TODO this side-effect needs to be tested
+        await setUserStatus(ioServer, req.user._id, UserStatus.Online);
 
         // Return the token along with the id of the authenticated user
         return res.status(200).json({
@@ -111,24 +111,6 @@ router.post(
         });
     }
 );
-
-const notifyFriends = async (username: string) => {
-    const userWithUpdatedStatus: UserDocument = await UserModel.findOne({ username: username });
-    const friendsIdsToNotify: Types.ObjectId[] = userWithUpdatedStatus.relationships.map((rel) => {
-        return rel.friendId;
-    });
-
-    friendsIdsToNotify.forEach((toNotifyId: Types.ObjectId) => {
-        const notifier: FriendStatusChangedEmitter = new FriendStatusChangedEmitter(
-            ioServer,
-            toNotifyId
-        );
-        notifier.emit({
-            friendId: userWithUpdatedStatus._id,
-            status: userWithUpdatedStatus.status,
-        });
-    });
-};
 
 interface SignUpRequest extends Request {
     body: AuthenticationRequestBody;
