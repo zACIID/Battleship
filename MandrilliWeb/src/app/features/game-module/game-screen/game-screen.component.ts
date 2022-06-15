@@ -96,6 +96,10 @@ export class GameScreenComponent implements OnInit {
         }
     }
 
+    ngOneDestroy() : void {
+        this.shotListener.unListen()
+    }
+
     private isValidCoords(row: number, col: number): boolean{
         
         if(!isNaN(row) && !isNaN(col)){
@@ -162,7 +166,6 @@ export class GameScreenComponent implements OnInit {
             this.fleeMatchEmitter.emit({
                 matchId: this.match.matchId
             })
-            
         } else {
             throw new Error('Match has not been set');
         }

@@ -60,6 +60,11 @@ export class PreparationPhaseScreenComponent implements OnInit {
         }
     }
 
+    ngOnDestroy() : void {
+        this.playerStateListener.unListen()
+        this.playersReadyListener.unListen()
+    }
+
 
     private isValidCoords(row: number, col: number): boolean{
         

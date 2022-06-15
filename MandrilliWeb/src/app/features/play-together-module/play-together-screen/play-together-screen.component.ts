@@ -47,6 +47,10 @@ export class PlayTogetherScreenComponent implements OnInit {
         this.friendListener.listen(this.pollingFriends);
     }
 
+    ngOnDestroy() : void {
+        this.friendListener.unListen()
+    }
+
     public num_online() {
         return this.friends.length;
     }

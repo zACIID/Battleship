@@ -61,6 +61,11 @@ export class NotificationScreenComponent implements OnInit {
         this.notificationDelListener.listen(this.pollingDeletedNotifications);
     }
 
+    ngOnDestroy() : void {
+        this.notificationListener.unListen()
+        this.notificationDelListener.unListen()
+    }
+
     private pollingNotifications(notification: NotificationData) {
         this.userApi.getUser(notification.sender).subscribe((user) => {
             this.friendNotifications.push({

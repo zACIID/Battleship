@@ -15,6 +15,10 @@ export class GameModeScreenComponent implements OnInit {
 
     ngOnInit(): void {}
 
+    ngOnDestroy() : void {
+        this.matchListener.unListen()
+    }
+
     public startMatchMaking() {
         this.matchListener.listen(async (data) => {
             let reqpath = 'Observer/' + data.matchId

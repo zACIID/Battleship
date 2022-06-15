@@ -54,6 +54,10 @@ export class ChatScreenComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() : void {
+        this.chatMessageListener.unListen()
+    }
+
     public async leaveChat(){
         this.fleeEmitter.emit({chatId: this.chatId})
         await this.router.navigate(["/relationships"])
