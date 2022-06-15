@@ -1,9 +1,19 @@
-import { Router, Response } from 'express';
-import { UserDocument, createUser, deleteUser, UserRoles, UserStatus } from '../model/user/user';
+import { Response, Router } from 'express';
+import {
+    createUser,
+    deleteUser,
+    getUserById,
+    setUserStatus,
+    updatePassword,
+    updateUserName,
+    UserDocument,
+    UserRoles,
+    UserStatus,
+} from '../model/user/user';
 import { authenticateToken } from './auth-routes';
-import { retrieveUserId } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
-import { AnyKeys } from 'mongoose';
+import { AnyKeys, Types } from 'mongoose';
+import { ioServer } from '../index';
 
 export const router = Router();
 
@@ -24,7 +34,6 @@ interface AddModRequest extends AuthenticatedRequest {
 router.post(
     '/moderators/additions',
     authenticateToken,
-    retrieveUserId,
     async (req: AddModRequest, res: Response) => {
         try {
             if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
@@ -33,7 +42,7 @@ router.post(
 
                     // Status is set to temporary because its credentials have to be changed
                     // at the first login
-                    status: UserStatus.Temporary,
+                    status: UserStatus.TemporaryCredentials,
                 };
                 const newMod: UserDocument = await createUser(newModInfo);
                 await newMod.setRole(UserRoles.Moderator);
@@ -78,18 +87,63 @@ interface BanUserRequest extends AuthenticatedRequest {
  *    The check is done by verifying the content of the jwt
  *    /moderators/bans   |   POST
  */
-router.post(
-    '/moderators/bans',
+router.post('/moderators/bans', authenticateToken, async (req: BanUserRequest, res: Response) => {
+    try {
+        if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
+            await deleteUser({ username: req.body.username });
+
+            return res.status(204).json();
+        } else
+            res.status(403).json({
+                timestamp: Math.floor(new Date().getTime() / 1000),
+                errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
+                requestPath: req.path,
+            });
+    } catch (err) {
+        return res.status(400).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
+    }
+});
+
+interface ModeratorCredentialsUpdate {
+    username: string;
+    password: string;
+}
+
+interface ModeratorCredentialsUpdateRequest extends AuthenticatedRequest {
+    body: ModeratorCredentialsUpdate;
+}
+
+router.put(
+    '/moderators/credentials',
     authenticateToken,
-    retrieveUserId,
-    async (req: BanUserRequest, res: Response) => {
+    async (req: ModeratorCredentialsUpdateRequest, res: Response) => {
+        const { userId, roles } = req.jwtContent;
         try {
-            if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
-                await deleteUser({ username: req.body.username });
+            if (roles.includes(UserRoles.Moderator)) {
+                const mod: UserDocument = await getUserById(Types.ObjectId(userId));
+
+                if (mod.status === UserStatus.TemporaryCredentials) {
+                    await updateUserName(mod._id, req.body.username);
+                    await updatePassword(mod._id, req.body.password);
+
+                    // Since the moderator has changed his credentials at the first login
+                    // he can now be Online as a normal user
+                    await setUserStatus(ioServer, mod._id, UserStatus.Online);
+                } else {
+                    return res.status(400).json({
+                        timestamp: Math.floor(new Date().getTime() / 1000),
+                        errorMessage: `Moderator has already updated his credentials after the first login`,
+                        requestPath: req.path,
+                    });
+                }
 
                 return res.status(204).json();
             } else
-                res.status(403).json({
+                return res.status(403).json({
                     timestamp: Math.floor(new Date().getTime() / 1000),
                     errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
                     requestPath: req.path,

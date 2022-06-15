@@ -37,7 +37,7 @@ export enum UserStatus {
      * to the system. Its purpose is to signal that its credentials
      * have to be changed at the first login
      */
-    Temporary = 'Temporary',
+    TemporaryCredentials = 'TemporaryCredentials',
 }
 
 /**

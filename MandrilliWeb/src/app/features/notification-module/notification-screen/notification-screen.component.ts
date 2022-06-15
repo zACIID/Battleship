@@ -1,8 +1,8 @@
-import { MatchRequestAcceptedEmitter } from './../../../core/events/emitters/match-request-accepted';
-import { UserApi } from './../../../core/api/handlers/user-api';
-import { NotificationOverview } from './../../../core/model/user/notification-overview';
-import { FriendRequestAcceptedEmitter } from './../../../core/events/emitters/friend-request-accepted';
-import { NotificationApi } from './../../../core/api/handlers/notification-api';
+import { MatchRequestAcceptedEmitter } from '../../../core/events/emitters/match-request-accepted';
+import { UserApi } from '../../../core/api/handlers/user-api';
+import { NotificationOverview } from '../../../core/model/user/notification-overview';
+import { FriendRequestAcceptedEmitter } from '../../../core/events/emitters/friend-request-accepted';
+import { NotificationApi } from '../../../core/api/handlers/notification-api';
 import { Component, OnInit } from '@angular/core';
 import { NotificationType } from '../../../core/model/user/notification';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
@@ -57,7 +57,17 @@ export class NotificationScreenComponent implements OnInit {
         } catch (err) {
             console.log(err);
         }
-        this.notificationListener.listen(this.pollingNotifications);
+
+        const test = (notification: NotificationData) => {
+            console.log('Ciao ------');
+
+            this.friendNotifications = this.friendNotifications.filter((not) => {
+                return notification.sender === not.sender && notification.type === not.type;
+            });
+        };
+        test.bind(this);
+
+        this.notificationListener.listen(test);
         this.notificationDelListener.listen(this.pollingDeletedNotifications);
     }
 

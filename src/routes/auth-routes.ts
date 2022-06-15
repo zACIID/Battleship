@@ -138,18 +138,10 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
             elo: newUser.stats.elo,
         });
     } catch (err) {
-        if (err.message === 'User already exists') {
-            return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
-                requestPath: req.path,
-            });
-        } else {
-            return res.status(500).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
-                errorMessage: err.message,
-                requestPath: req.path,
-            });
-        }
+        return res.status(400).json({
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            errorMessage: err.message,
+            requestPath: req.path,
+        });
     }
 });
