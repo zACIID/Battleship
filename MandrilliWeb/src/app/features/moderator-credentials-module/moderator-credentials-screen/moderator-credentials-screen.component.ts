@@ -38,14 +38,14 @@ export class ModeratorCredentialsScreenComponent implements OnInit {
 	}
 
 
-	public changeCredentials(username: string, password: string) {
+	public async changeCredentials(username: string, password: string) {
         
 		this.userMessage.error=false;
 		try{
-			this.userClient.updateUsername(this.userInSessionId, username);
-			this.userClient.updatePassword(this.userInSessionId, password);
+			this.userClient.updateUsername(this.userInSessionId, username).subscribe();
+			this.userClient.updatePassword(this.userInSessionId, password).subscribe();
 
-			this.router.navigate(['/homepage']);
+			await this.router.navigate(['/homepage']);
 		}
 		catch(err: any){
 			this.userMessage.error = true;

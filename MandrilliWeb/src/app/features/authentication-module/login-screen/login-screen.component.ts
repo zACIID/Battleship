@@ -22,29 +22,29 @@ export class LoginScreenComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    public login(username: string, password: string) {
+    public async login(username: string, password: string) {
         const loginInfo: LoginInfo = {
             username: username,
             password: password,
         };
 
         this.authClient.login(loginInfo).subscribe({
-            next: (data: AuthResult) => {
+            next: async (data: AuthResult) => {
                 this.serverJoinedEmitter.emit({ userId: data.userId });
 
                 /* TODO de-comment when status.temporary will be properly added
                 this.userClient.getUser(data.userId).subscribe((user) => {
 
                     if(user.status.temporary){
-                        this.router.navigate(['/moderator-credentials']);
+                        await this.router.navigate(['/moderator-credentials']);
                     }
                     else{
-                        this.router.navigate(['/homepage']);
+                        await this.router.navigate(['/homepage']);
                     }
 
                 })
                 */
-                this.router.navigate(['/homepage']);
+                await this.router.navigate(['/homepage']);
             },
             error: (err: any) => {
                 this.userMessage.error = true;

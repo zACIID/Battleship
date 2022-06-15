@@ -40,8 +40,8 @@ export class ListComponent implements OnInit {
         } else return 0;
     }
 
-    public showChat(chatId: string) {
+    public async showChat(chatId: string) {
         let url = '/chat/' + chatId;
-        this.router.navigate([url]);
+        await this.router.navigate([url]);
     }
 }

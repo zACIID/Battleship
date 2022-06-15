@@ -258,16 +258,16 @@ export class PreparationPhaseScreenComponent implements OnInit {
         this.opponentsId = data.playerId
     }
 
-    private pollingFullReadyRequest(data: GenericMessage) : void {
+    private async pollingFullReadyRequest(data: GenericMessage) : Promise<void> {
         const path: string = "/game/" + this.matchId
-        this.router.navigate([path]);
+        await this.router.navigate([path]);
     }
 
 
-    public leaveMatch() {
+    public async leaveMatch() {
         if (this.matchId) this.fleeMatchEmitter.emit({ matchId: this.matchId });
         else throw new Error('Error while leaving the match');
-        this.router.navigate(["/homepage"]);
+        await this.router.navigate(["/homepage"]);
     }
 
 

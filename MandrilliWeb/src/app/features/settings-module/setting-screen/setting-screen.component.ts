@@ -35,22 +35,23 @@ export class SettingScreenComponent implements OnInit {
 
     public changePwd(newPwd: string) {
         try {
-            this.userClient.updatePassword(this.userInSessionId, newPwd);
+            this.userClient.updatePassword(this.userInSessionId, newPwd).subscribe();
             console.log('Password correctly updated!');
         } catch (err) {
             console.log('An error occurred while updating the password: ' + err);
         }
     }
 
-    public logout() {
+    public async logout() {
         this.accessTokenStorage.store("");
+        await this.router.navigate(['/authentication/login']);
     }
 
-    public deleteProfile() {
+    public async deleteProfile() {
         try {
-            this.userClient.deleteUser(this.userInSessionId);
-            this.logout();
-            this.router.navigate(['/authentication/register']);
+            this.userClient.deleteUser(this.userInSessionId).subscribe();
+            await this.logout();
+            await this.router.navigate(['/authentication/register']);
         } catch (err) {
             console.log('An error occurred while deleting the user: ' + err);
         }

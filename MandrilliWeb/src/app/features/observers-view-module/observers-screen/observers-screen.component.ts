@@ -61,7 +61,7 @@ export class ObserversScreenComponent implements OnInit {
     }
 
 
-    public quitView(){
+    public async quitView(){
 
         /*  TODO 
          *  add logic here
@@ -69,7 +69,7 @@ export class ObserversScreenComponent implements OnInit {
          *  we should also unlisten the chat-message event 
          */ 
         
-        this.router.navigate(['/relationship']);
+        await this.router.navigate(['/relationship']);
     }
 
     

@@ -59,11 +59,6 @@ export class AuthApi extends BaseApi {
                     this.jwtStorage.store(authRes.token);
                     this.userIdStorage.store(authRes.userId);
 
-                    // TODO debug
-                    console.log('Auth results:');
-                    console.log('token: ' + authRes.token);
-                    console.log('userId: ' + authRes.userId);
-
                     return authRes;
                 })
             );
@@ -71,7 +66,7 @@ export class AuthApi extends BaseApi {
 
     public register(credentials: LoginInfo): Observable<User> {
         const reqPath: string = `${this.baseUrl}/api/auth/signup`;
-
+        
         return this.httpClient.post<User>(reqPath, credentials).pipe(catchError(this.handleError));
     }
 }

@@ -140,11 +140,11 @@ export class GameScreenComponent implements OnInit {
         this.playerTurn = false;
     }
 
-    public leaveMatch() {
+    public async leaveMatch() {
         const path: string = "/match-results/" + this.match.matchId;
         if (this.match.matchId) this.fleeMatchEmitter.emit({ matchId: this.match.matchId });
         else throw new Error('MatchId not found');
-        this.router.navigate([path]);
+        await this.router.navigate([path]);
     }
 
     private joinMatch() {

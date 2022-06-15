@@ -99,7 +99,13 @@ app.use(
 registerRoutes(app);
 
 /* socket.io server setup */
-export const ioServer: io.Server = new io.Server(httpServer);
+export const ioServer: io.Server = new io.Server(httpServer, {
+    cors: {
+      origin: "http://localhost:4200",
+      methods: ["GET", "POST"],
+      credentials: true
+    }
+  });
 
 ioServer.on('connection', async function (client) {
     console.log(chalk.green(`socket.io client ${client.id} connected`));

@@ -54,8 +54,8 @@ export class ChatScreenComponent implements OnInit {
         });
     }
 
-    public leaveChat(){
+    public async leaveChat(){
         this.fleeEmitter.emit({chatId: this.chatId})
-        this.router.navigate(["/relationships"])
+        await this.router.navigate(["/relationships"])
     }
 }
