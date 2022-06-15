@@ -60,8 +60,27 @@ export class ObserversScreenComponent implements OnInit {
             this.matchJoinedEmitter.emit({matchId: matchId})
             this.chatJoinedEmitter.emit({chatId: this.chatId})
 
-            this.playersShotListener.listen(this.pollingPlayerHits)
-            this.matchTerminatedListener.listen(this.pollingMatchResult)
+
+            const pollingPlayerHits = (data: Shot): void => {
+                if (data.playerId !== this.match?.player1.playerId)
+                    this.match?.player1.grid.shotsReceived.push(data.coordinates)
+                else this.match?.player2.grid.shotsReceived.push(data.coordinates)
+            }
+            pollingPlayerHits.bind(this);
+            this.playersShotListener.listen(pollingPlayerHits);
+
+
+            const pollingMatchResult = async (data: MatchTerminatedData) : Promise<void> => {
+                const matchId: string = this.match?.matchId || ""
+                const path: string = "/match-results/" + matchId
+        
+                this.generalEnd = data.reason.valueOf()
+        
+                await this.router.navigate([path])
+            }
+            pollingMatchResult.bind(this);
+            this.matchTerminatedListener.listen(pollingMatchResult)
+
 
             // It should force the chatBody component to refresh
             this.chatMessageListener.listen(
@@ -94,18 +113,4 @@ export class ObserversScreenComponent implements OnInit {
         await this.router.navigate(['/relationship']);
     }
 
-    private pollingPlayerHits(data: Shot) : void {
-        if (data.playerId !== this.match?.player1.playerId)
-            this.match?.player1.grid.shotsReceived.push(data.coordinates)
-        else this.match?.player2.grid.shotsReceived.push(data.coordinates)
-    }
-
-    private async pollingMatchResult(data: MatchTerminatedData) : Promise<void> {
-        const matchId: string = this.match?.matchId || ""
-        const path: string = "/match-results/" + matchId
-
-        this.generalEnd = data.reason.valueOf()
-
-        await this.router.navigate([path])
-    }
 }

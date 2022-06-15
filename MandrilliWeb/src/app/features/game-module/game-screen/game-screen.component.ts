@@ -89,7 +89,25 @@ export class GameScreenComponent implements OnInit {
             }
 
             this.joinMatch();
-            this.shotListener.listen(this.pollingOpponentHits);
+
+
+            const pollingOpponentHits = (data: ShotData) => {
+                if(this.match.player1.playerId !== this.userInSessionId) {
+                    this.match.player1.grid.shotsReceived.push(data.coordinates);
+                }
+                else this.match.player2.grid.shotsReceived.push(data.coordinates);
+        
+                this.shipsCoordinates = this.shipsCoordinates.filter((e) => (e.row !== data.coordinates.row && e.col !== data.coordinates.col));
+        
+                if(this.shipsCoordinates.length === 0){
+                    this.lostAndSauced();
+                }
+        
+                this.playerTurn = true;
+            }
+            pollingOpponentHits.bind(this);
+            this.shotListener.listen(pollingOpponentHits);
+            
         }
         catch(err){
             console.log("An error occurred while initializing the game screen: " + err);
@@ -171,19 +189,5 @@ export class GameScreenComponent implements OnInit {
         }
     }
 
-    private pollingOpponentHits(data: ShotData) {
-        if(this.match.player1.playerId !== this.userInSessionId) {
-            this.match.player1.grid.shotsReceived.push(data.coordinates);
-        }
-        else this.match.player2.grid.shotsReceived.push(data.coordinates);
-
-        this.shipsCoordinates = this.shipsCoordinates.filter((e) => (e.row !== data.coordinates.row && e.col !== data.coordinates.col));
-
-        if(this.shipsCoordinates.length === 0){
-            this.lostAndSauced();
-        }
-
-        this.playerTurn = true;
-    }
-
+    
 }

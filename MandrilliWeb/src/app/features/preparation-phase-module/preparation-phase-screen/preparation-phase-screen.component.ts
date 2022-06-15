@@ -53,11 +53,27 @@ export class PreparationPhaseScreenComponent implements OnInit {
             this.route.params.subscribe((param) => {
                 this.matchId = param["matchId"]
             })
-            this.playerStateListener.listen(this.pollingReadyRequest)
-            this.playersReadyListener.listen(this.pollingFullReadyRequest)
+            
         } catch(err){
             console.log("An error occurred while retrieving the match from the url")
         }
+
+        const pollingReadyRequest = (data: PlayerStateChangedData) : void => {
+            console.log("Player is ready");
+            this.opponentReady = data.isReady
+            this.opponentsId = data.playerId
+        }
+        pollingReadyRequest.bind(this);
+        this.playerStateListener.listen(pollingReadyRequest);
+
+        const pollingFullReadyRequest = async (data: GenericMessage) : Promise<void> => {
+            const path: string = "/game/" + this.matchId
+            await this.router.navigate([path]);
+        }
+        pollingFullReadyRequest.bind(this);
+        this.playersReadyListener.listen(pollingFullReadyRequest)
+
+
     }
 
     ngOnDestroy() : void {
@@ -257,23 +273,11 @@ export class PreparationPhaseScreenComponent implements OnInit {
         }
     }
 
-    private pollingReadyRequest(data: PlayerStateChangedData) : void {
-        console.log("Player is ready");
-        this.opponentReady = data.isReady
-        this.opponentsId = data.playerId
-    }
-
-    private async pollingFullReadyRequest(data: GenericMessage) : Promise<void> {
-        const path: string = "/game/" + this.matchId
-        await this.router.navigate([path]);
-    }
-
 
     public async leaveMatch() {
         if (this.matchId) this.fleeMatchEmitter.emit({ matchId: this.matchId });
         else throw new Error('Error while leaving the match');
         await this.router.navigate(["/homepage"]);
     }
-
 
 }

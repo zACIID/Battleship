@@ -88,8 +88,10 @@ export class NotificationScreenComponent implements OnInit {
     }
 
 
-    ngOnChanges(){
-        this.ngOnInit();
+    private dropNotification(no: NotificationData){
+        this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
+            return not.sender !== no.sender && not.type !== no.type;
+        });
     }
 
     
@@ -98,10 +100,9 @@ export class NotificationScreenComponent implements OnInit {
             receiverId: friendId,
             senderId: this.userId,
         });
-        this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
-            return not.sender !== friendId && not.type !== NotificationType.FriendRequest;
-        });
+        this.dropNotification({sender: friendId, type: NotificationType.FriendRequest});
     }
+
 
     public refuseFriend(friendId: string) {
         try {
@@ -109,7 +110,8 @@ export class NotificationScreenComponent implements OnInit {
                 type: NotificationType.FriendRequest,
                 sender: friendId,
             }).subscribe();
-            this.friendNotifications = this.friendNotifications.filter((el) => el.sender !== friendId);
+            this.dropNotification({sender: friendId, type: NotificationType.FriendRequest});
+            
         } catch (err) {
             console.log('error removing friend notification: ' + err);
         }
@@ -120,16 +122,18 @@ export class NotificationScreenComponent implements OnInit {
             receiverId: this.userId,
             senderId: friendId,
         });
+        this.dropNotification({sender: friendId, type: NotificationType.MatchRequest});
     }
 
     public refuseBattle(friendId: string) {
-        try {
-            this.notificationApi.removeNotification(this.userId, {
-                type: NotificationType.MatchRequest,
-                sender: friendId,
-            });
-        } catch (err) {
-            console.log('error removing battle notification: ' + err);
-        }
+        
+        this.notificationApi.removeNotification(this.userId, {
+            type: NotificationType.MatchRequest,
+            sender: friendId,
+        })
+        .subscribe(()=>{
+            this.dropNotification({sender: friendId, type: NotificationType.MatchRequest});
+        });
+       
     }
 }

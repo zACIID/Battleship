@@ -46,12 +46,14 @@ export class ChatScreenComponent implements OnInit {
             console.log('An error occurred while retrieving the chat: ' + err);
         }
 
-        // This is forcing the ngOnChanges() on chat-body component to refresh the message list (i hope)
-        this.chatMessageListener.listen(() => {
+        const refreshChat = () => {
             this.route.params.subscribe((params) => {
                 this.chatId = params['id'];
-            });
-        });
+            }
+        )};
+        refreshChat.bind(this);
+        this.chatMessageListener.listen(refreshChat);
+        
     }
 
     ngOnDestroy() : void {

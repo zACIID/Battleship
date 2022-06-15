@@ -44,7 +44,22 @@ export class PlayTogetherScreenComponent implements OnInit {
         } catch (err) {
             console.log('An error occurred while retrieving online friends list: ' + err);
         }
-        this.friendListener.listen(this.pollingFriends);
+
+
+        const pollingFriends = (data: FriendStatusChangedData) => {
+            this.userClient.getUser(data.friendId).subscribe((user) => {
+                this.friends.push({
+                    userId: user.userId,
+                    username: user.username,
+                    elo: user.elo,
+                    rank: getRank(user.elo),
+                });
+            });
+        }
+        pollingFriends.bind(this);
+        this.friendListener.listen(pollingFriends);
+
+
     }
 
     ngOnDestroy() : void {
@@ -55,14 +70,4 @@ export class PlayTogetherScreenComponent implements OnInit {
         return this.friends.length;
     }
 
-    private pollingFriends(data: FriendStatusChangedData) {
-        this.userClient.getUser(data.friendId).subscribe((user) => {
-            this.friends.push({
-                userId: user.userId,
-                username: user.username,
-                elo: user.elo,
-                rank: getRank(user.elo),
-            });
-        });
-    }
 }

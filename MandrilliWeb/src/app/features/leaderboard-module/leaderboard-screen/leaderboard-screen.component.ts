@@ -11,14 +11,14 @@ import { Component, OnInit } from '@angular/core';
 export class LeaderboardScreenComponent implements OnInit {
     private options = {
         skip: 0,
-        limit: 10,
+        limit: 8,
     };
 
     public leaders: LeaderboardEntry[] = [];
 
     constructor(private leaderboardClient: LeaderboardApi) {}
 
-    // TODO, what's NextPage in LeaderboardPage ??    - Guendaleena
+    
     ngOnInit(): void {
         try {
             this.leaderboardClient
