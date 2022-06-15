@@ -6,7 +6,7 @@
   - [Table of Contents](#table-of-contents)
   - [Resources](#resources)
     - [Message](#message)
-    - [FriendOnline](#friendonline)
+    - [FriendStatusChange](#friendstatuschange)
     - [MatchFound](#matchfound)
     - [Notification](#notification)
     - [StateChanged](#statechanged)
@@ -17,7 +17,7 @@
     - [MatchTerminated](#matchterminated)
   - [Events](#events)
     - [New Chat Message](#new-chat-message)
-    - [Friend Online](#friend-online)
+    - [Friend Status Changed](#friend-status-changed)
     - [Match Found](#match-found)
     - [Notification Received](#notification-received)
     - [Notification Deleted](#notification-deleted)
@@ -48,11 +48,12 @@ table th:nth-of-type(3) {
 | timestamp | number | Timestamp in unix seconds |
 | content | string | Content of the message |
 
-### FriendOnline
+### FriendStatusChange
 
 | Attribute | Data Type | Description |
 | :-------- | :-------- | :---------- |
-| friendId | string | Id of the friend that has just logged in |
+| friendId | string | Id of the friend whose status has changed |
+| status | string | New status of the friend |
 
 ### MatchFound
 
@@ -115,11 +116,11 @@ table th:nth-of-type(3) {
 | :--------- | :---------- | :--------- |
 | chat-message | When POST request to add a message is received by the server, this event is raised, so that every user in that chat is notified that there is a new message. | With this event, a [Message](#message) resource is sent, which represents the message that was just added to the chat. |
 
-### Friend Online
+### Friend Status Changed
 
 | Event name | Description | Event Data |
 | :--------- | :---------- | :--------- |
-| friend-online | Every time a user logs in, all his friends are notified that he is now online. | With this event, a [FriendOnline](#friendonline) resource is sent, which contains the id of the user that has just logged in. This way, his friends know which user is now online |
+| friend-online | Every time the status of a friend of the current user changes, the user is notified by this event. | With this event, a [FriendStatusCanged](#friendstatuschange) resource is sent, which contains the id of the friend whose status has just changed and its new status. |
 
 ### Match Found
 
