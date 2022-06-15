@@ -19,8 +19,8 @@ export const router = Router();
 interface ChatEndpointLocals {
     chatId: Types.ObjectId;
     userId: Types.ObjectId;
-    skip: string;
-    limit: string;
+    skip: number;
+    limit: number;
 }
 
 interface ChatEndpointResponse extends Response {
@@ -174,19 +174,26 @@ interface MessagePostRequest extends AuthenticatedRequest {
 router.get(
     '/chats/:chatId/messages',
     authenticateToken,
+    // TODO skipLimitChecker could be a function that accepts default values for skip and limit and
+    //  returns a middleware function based on those
     skipLimitChecker,
     retrieveChatId,
     async (req: AuthenticatedRequest, res: ChatEndpointResponse) => {
         try {
             const chatId: Types.ObjectId = res.locals.chatId;
 
-            // Res.locals assigns '0' string if skip
-            // and limit params are not passed to the request
-            const skip: number = parseInt(res.locals.skip);
-            let limit: number = parseInt(res.locals.limit);
+            // If parameters are not passed,
+            // they are assigned the value -1 by the middleware
+            let skip: number = res.locals.skip;
+            let limit: number = res.locals.limit;
+
+            // Set default value for skip
+            if (skip === -1) {
+                skip = 0;
+            }
 
             // Set default value for limit
-            if (limit === 0) {
+            if (limit === -1) {
                 limit = 50;
             }
 

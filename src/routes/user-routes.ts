@@ -7,12 +7,13 @@ import { Router, Response } from 'express';
 import * as usr from '../model/user/user';
 import { UserStats } from '../model/user/user-stats';
 import { authenticateToken } from './auth-routes';
-import { retrieveUserId, retrieveId } from './utils/param-checking';
+import { retrieveUserId, retrieveId, skipLimitChecker } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
-import { MatchEndpointResponse } from './match-routes';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
+    skip: number;
+    limit: number;
 }
 
 /**
@@ -77,11 +78,33 @@ router.get(
 router.get(
     'users/:userId/matches',
     authenticateToken,
+    skipLimitChecker,
     retrieveUserId,
     async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
         try {
-            let userId: Types.ObjectId = res.locals.userId;
-            const matches: MatchDocument[] = await match.getUserMostRecentMatches(userId);
+            const userId: Types.ObjectId = res.locals.userId;
+
+            // If parameters are not passed,
+            // they are assigned the value -1 by the middleware
+            let skip: number = res.locals.skip;
+            let limit: number = res.locals.limit;
+
+            // Set default value for skip
+            if (skip === -1) {
+                skip = 0;
+            }
+
+            // Default value here is 10 for limit
+            if (limit === -1) {
+                limit = 10;
+            }
+
+            const matches: MatchDocument[] = await match.getUserMostRecentMatches(
+                userId,
+                skip,
+                limit
+            );
+
             return res.status(200).json(matches);
         } catch (err) {
             return res.status(404).json({
