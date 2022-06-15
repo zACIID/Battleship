@@ -48,6 +48,9 @@ export class AuthApi extends BaseApi {
         this.jwtStorage = jwtStorage;
     }
 
+    // TODO this should better return nothing because AuthResult is used
+    //  inside the method call to set the userId and jwt
+    //  having this method returning stuff is confusional
     public login(credentials: LoginInfo): Observable<AuthResult> {
         const reqPath: string = `${this.baseUrl}/api/auth/signin`;
 
@@ -66,7 +69,7 @@ export class AuthApi extends BaseApi {
 
     public register(credentials: LoginInfo): Observable<User> {
         const reqPath: string = `${this.baseUrl}/api/auth/signup`;
-        
+
         return this.httpClient.post<User>(reqPath, credentials).pipe(catchError(this.handleError));
     }
 }
