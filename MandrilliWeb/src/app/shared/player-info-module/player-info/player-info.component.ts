@@ -1,5 +1,5 @@
 import { getRank } from 'src/app/core/model/user/elo-rankings';
-import { UserApi } from './../../../core/api/handlers/user-api';
+import { UserApi } from '../../../core/api/handlers/user-api';
 import { Overview } from '../../../core/model/user/overview';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
@@ -26,13 +26,13 @@ export class PlayerInfoComponent implements OnInit {
                 };
             });
         } catch (err) {
-            console.log('An error occure while retrieving user info: ' + err);
+            console.log('An error occurs while retrieving user info: ' + err);
         }
     }
 
-    public show_profile() {
+    public async show_profile() {
         let url: string = '/profile/' + this.userId;
 
-        this.router.navigate([url]);
+        await this.router.navigate([url]);
     }
 }

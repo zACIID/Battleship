@@ -1,4 +1,4 @@
-import { UserIdProvider } from './../../../core/api/userId-auth/userId-provider';
+import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 import { Overview } from '../../../core/model/user/overview';
 import { Component, OnInit } from '@angular/core';
 

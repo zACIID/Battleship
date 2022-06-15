@@ -59,6 +59,11 @@ export class AuthApi extends BaseApi {
                     this.jwtStorage.store(authRes.token);
                     this.userIdStorage.store(authRes.userId);
 
+                    // TODO debug
+                    console.log('Auth results:');
+                    console.log('token: ' + authRes.token);
+                    console.log('userId: ' + authRes.userId);
+
                     return authRes;
                 })
             );

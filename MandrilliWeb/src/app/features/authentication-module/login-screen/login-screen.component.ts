@@ -1,8 +1,7 @@
-import { UserApi } from './../../../core/api/handlers/user-api';
-import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
+import { UserApi } from '../../../core/api/handlers/user-api';
+import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { Component, OnInit } from '@angular/core';
 import { AuthApi, LoginInfo, AuthResult } from '../../../core/api/handlers/auth-api';
-import { UserIdStorage } from '../../../core/api/userId-auth/userId-storage';
 import { Router } from '@angular/router';
 import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
 
@@ -12,20 +11,18 @@ import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined'
     styleUrls: ['./login-screen.component.css'],
 })
 export class LoginScreenComponent implements OnInit {
-
     public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
 
     constructor(
         private authClient: AuthApi,
         private router: Router,
-        private userClient: UserApi,
+        private userClient: UserApi, // TODO still needed?
         private serverJoinedEmitter: ServerJoinedEmitter
     ) {}
 
     ngOnInit(): void {}
 
     public login(username: string, password: string) {
-       
         const loginInfo: LoginInfo = {
             username: username,
             password: password,
@@ -44,7 +41,7 @@ export class LoginScreenComponent implements OnInit {
                     else{
                         this.router.navigate(['/homepage']);
                     }
-                    
+
                 })
                 */
                 this.router.navigate(['/homepage']);
@@ -53,10 +50,7 @@ export class LoginScreenComponent implements OnInit {
                 this.userMessage.error = true;
                 this.userMessage.errorMessage = err.error.errorMessage;
                 console.log('An error occurred while logging in: ' + JSON.stringify(err));
-            }
-                
+            },
         });
-        
-            
     }
 }
