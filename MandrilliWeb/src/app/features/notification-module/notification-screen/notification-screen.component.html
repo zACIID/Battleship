@@ -23,7 +23,24 @@
                 <h1 class="is-size-4 has-text-light has-text-weight-semibold">Friend Request</h1>
                 <hr class="mb-2 mt-1">
                 <div class="request-list-height overflow-scroll p-1">
-                    <app-list [notificationList]="friendNotifications" [accept]="acceptFriend" [refuse]="refuseFriend"></app-list>
+
+
+                    <div *ngFor="let item of friendNotifications">
+                        <div *ngIf="item.type == 'FriendRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer is-flex">
+                            <div class="column is-three-quarters has-text-left">
+                                <strong>{{item.senderUsername}}</strong> wants to be your friend !
+                            </div>
+                            <div class="column is-one-quarter">
+                                <button class="button is-success mr-2" (click)="acceptFriend(item.sender)">Accept</button>
+                                <button class="button is-danger" (click)="refuseFriend(item.sender)">Refuse</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+
+
+                    
                 </div>
                 <h1 class="is-size-4 has-text-light mt-6 has-text-weight-semibold">Match Request</h1>
                 <hr class="mb-2 mt-1">

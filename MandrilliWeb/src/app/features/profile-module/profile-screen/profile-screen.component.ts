@@ -1,9 +1,10 @@
+
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { UserStats } from '../../../core/model/user/stats';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
-import { User } from '../../../core/model/user/user';
+import { User, UserRoles } from '../../../core/model/user/user';
 
 @Component({
     selector: 'app-profile-screen',
@@ -27,29 +28,25 @@ export class ProfileScreenComponent implements OnInit {
     ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.userShowedId = params['id'];
-        });
 
-        this.getUser();
-        this.getUserStats();
-        this.isUserModerator = this.user.roles.includes('Moderator') ? true : false;
-        let userInSessionId = this.userIdProvider.getUserId();
-
-        if (userInSessionId === this.userShowedId) {
-            this.myProfile = true;
-        }
-    }
-
-    public getUser(): void {
-        try {
             this.userClient.getUser(this.userShowedId).subscribe((user: User) => {
                 this.user = user;
+    
+                this.getUserStats();
+                this.isUserModerator = this.user.roles.includes(UserRoles.Moderator);
+                
+                let userInSessionId = this.userIdProvider.getUserId();
+    
+                if (userInSessionId === this.userShowedId) {
+                    this.myProfile = true;
+                }
             });
-        } catch (err) {
-            console.log('An error occurred retrieving the user: ' + err);
-        }
+
+        });
+        
     }
 
-    // TODO fix this error
+    
     public getUserStats(): void {
         try {
             if (!this.user) throw new Error('User is not defined');

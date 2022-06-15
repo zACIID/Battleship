@@ -10,7 +10,9 @@ import { LoginInfo } from './auth-api';
 /**
  * Class that handles communication with moderator-related endpoints
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class ModeratorApi extends BaseAuthenticatedApi {
     public constructor(httpClient: HttpClient, accessTokenProvider: JwtProvider) {
         super(httpClient, accessTokenProvider);

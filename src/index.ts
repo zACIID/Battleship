@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as http from 'http';
-import { inspect } from 'util';
 
 import express, { Express, Request } from 'express';
 import cors from 'cors';
@@ -22,6 +21,8 @@ import { FriendRequestAcceptedListener } from './events/client-listeners/friend-
 import { ChatLeftListener } from './events/client-listeners/chat-left';
 import { MatchLeftListener } from './events/client-listeners/match-left';
 import { PlayerWonListener } from './events/client-listeners/player-won';
+import { createUser, UserRoles, UserDocument } from './model/user/user';
+import { env } from 'process';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -166,3 +167,12 @@ ioServer.on('connection', async function (client) {
 const queuePollingTimeMs: number = 5000;
 const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 matchmakingEngine.start();
+
+try{
+    createUser({username: process.env.ADMIN_USERNAME, roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator]}).then((admin: UserDocument) =>{
+        admin.setPassword(process.env.ADMIN_PASSWORD)
+    });
+}
+catch(err){
+    console.log(chalk.green("Admin already existent"));
+}

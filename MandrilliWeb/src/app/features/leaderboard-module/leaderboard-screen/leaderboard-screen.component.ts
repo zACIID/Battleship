@@ -1,3 +1,4 @@
+import { LeaderboardPage } from './../../../core/model/api/leaderboard/page';
 import { LeaderboardEntry } from './../../../core/model/leaderboard/entry';
 import { LeaderboardApi } from './../../../core/api/handlers/leaderboard-api';
 import { Component, OnInit } from '@angular/core';
@@ -10,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
 export class LeaderboardScreenComponent implements OnInit {
     private options = {
         skip: 0,
-        limit: 5,
+        limit: 10,
     };
 
     public leaders: LeaderboardEntry[] = [];
@@ -22,8 +23,9 @@ export class LeaderboardScreenComponent implements OnInit {
         try {
             this.leaderboardClient
                 .getLeaderboard(this.options.skip, this.options.limit)
-                .subscribe((data) => {
+                .subscribe((data: LeaderboardPage) => {
                     this.leaders = data.leaderboard;
+                    this.options.skip += this.options.limit;
                 });
         } catch (err) {
             console.log('An error occurred while retrieving the leaderboards');

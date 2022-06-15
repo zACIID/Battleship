@@ -1,3 +1,6 @@
+import { UserIdProvider } from './../../../core/api/userId-auth/userId-provider';
+import { FriendRequestAcceptedEmitter } from './../../../core/events/emitters/friend-request-accepted';
+import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { Router } from '@angular/router';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { MatchOverview } from './../../../core/model/match/match-overview';
@@ -10,6 +13,7 @@ import { NotificationOverview } from 'src/app/core/model/user/notification-overv
     styleUrls: ['./list.component.css'],
 })
 export class ListComponent implements OnInit {
+    public userId: string = '';
     @Input() matchList?: MatchOverview[];
     @Input() friendsList?: RelationshipOverview[];
     @Input() notificationList?: NotificationOverview[];
@@ -25,9 +29,16 @@ export class ListComponent implements OnInit {
     @Input() accept?: Function;
     @Input() refuse?: Function;
 
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router,
+        private notificationApi: NotificationApi,
+        private friendAcceptClient: FriendRequestAcceptedEmitter,
+        private userIdProvider: UserIdProvider    
+    ) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.userId = this.userIdProvider.getUserId();
+    }
 
     public num_matches(): number {
         if (this.matchList) return this.matchList.length;

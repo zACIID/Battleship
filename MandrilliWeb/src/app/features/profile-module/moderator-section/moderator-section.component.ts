@@ -19,11 +19,14 @@ export class ModeratorSectionComponent implements OnInit {
 
     ngOnInit(): void {
         this.userInSessionId = this.userIdProvider.getUserId();
+        console.log(this.userInSessionId);
     }
 
     public ban(username: string): void {
         try {
-            this.moderatorClient.banUser(username);
+            this.moderatorClient.banUser(username).subscribe(()=>{
+                console.log("User banned: " + username);
+            });
         } catch (err) {
             console.log('An error occurred while banning a user: ' + err);
         }

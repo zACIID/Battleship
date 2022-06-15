@@ -24,7 +24,7 @@
 
             <div class="height-80 width-80 margin-auto">
 
-                <div class="request-list-height overflow-scroll p-1">
+                <div class="leaders-list-height overflow-scroll p-1">
 
                    
                     <div [ngSwitch]="num_leaders()" class="list-height overflow-scroll">
@@ -34,11 +34,12 @@
                         </div>
 
 
-                        <div *ngSwitchDefault infiniteScroll (scrolled)="loadMore()">
+                        <div *ngSwitchDefault>
 
                             <div *ngFor="let item of leaders" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" [routerLink]="['/profile/{{item.userId}}']">
                                 <p> <strong>{{item.username}} - {{ item.elo }} pp</strong></p>
                             </div>
+                            <button class="button is-small is-fullwidth margin-auto is-info"(click)="loadMore()">Load more</button>
                             
                         </div>
 

@@ -69,6 +69,14 @@
   height:95%;
 }
 
+.request-list-height{
+  max-height:200px;
+}
+
+.leaders-list-height{
+  max-height:500px;
+}
+
 .height-20{
   height:20%
 }

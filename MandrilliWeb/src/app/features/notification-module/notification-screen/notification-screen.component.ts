@@ -66,13 +66,20 @@ export class NotificationScreenComponent implements OnInit {
         this.notificationDelListener.unListen()
     }
 
+
+    ngOnChanges(){
+        this.ngOnInit();
+    }
+
     private pollingNotifications(notification: NotificationData) {
+        
         this.userApi.getUser(notification.sender).subscribe((user) => {
             this.friendNotifications.push({
                 type: notification.type,
                 sender: notification.sender,
                 senderUsername: user.username,
             });
+            this.friendNotifications = [...this.friendNotifications]
         });
     }
 
@@ -94,7 +101,8 @@ export class NotificationScreenComponent implements OnInit {
             this.notificationApi.removeNotification(this.userId, {
                 type: NotificationType.FriendRequest,
                 sender: friendId,
-            });
+            }).subscribe();
+            this.friendNotifications = this.friendNotifications.filter((el) => el.sender !== friendId);
         } catch (err) {
             console.log('error removing friend notification: ' + err);
         }
