@@ -8,13 +8,9 @@ import { UserApi, UsernameUpdate } from '../../src/app/core/api/handlers/user-ap
 import { User } from '../../src/app/core/model/user/user';
 import { ApiUserStats } from '../../src/app/core/model/api/user/stats';
 import { UserStats } from '../../src/app/core/model/user/stats';
-import { getRank } from '../../src/app/core/model/user/elo-rankings';
 import { createNMatch, UserMatches } from 'tests/fixtures/database/matches';
 import { testTeardown } from './match-api.test';
-import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { Match } from 'src/app/core/model/match/match';
-import { PlayerState } from 'src/app/core/model/match/player-state';
-import { MatchStats } from 'src/app/core/model/match/match-stats';
 
 let httpClient: HttpClient;
 let mainUser: InsertedUser;
@@ -298,7 +294,7 @@ describe('Update Username', () => {
 });
 
 describe('Get Matches', () => {
-    let jwtProvider: JwtProvider
+    let jwtProvider: JwtProvider;
     let setupData: UserMatches;
     beforeEach(async () => {
         httpClient = injectHttpClient();
@@ -322,11 +318,11 @@ describe('Get Matches', () => {
                     expect.objectContaining<Match[]>([
                         {
                             matchId: expect.any(String),
-                            player1: expect.any(PlayerState),
-                            player2: expect.any(PlayerState),
+                            player1: expect.any(Object),
+                            player2: expect.any(Object),
                             playersChat: expect.any(String),
-                            observersChat: expect.any(PlayerState),
-                            stats: expect.any(MatchStats),
+                            observersChat: expect.any(Object),
+                            stats: expect.any(Object),
                         },
                     ])
                 );
@@ -356,6 +352,7 @@ describe('Get Stats', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
+
         const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
         jwtProviderMainUser = await authenticate(modCred);
     });

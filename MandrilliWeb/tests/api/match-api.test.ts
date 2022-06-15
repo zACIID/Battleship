@@ -12,8 +12,6 @@ import {
 } from '../fixtures/database/matches';
 import { MatchApi } from '../../src/app/core/api/handlers/match-api';
 import { Match } from '../../src/app/core/model/match/match';
-import { PlayerState } from '../../src/app/core/model/match/player-state';
-import { MatchStats } from '../../src/app/core/model/match/match-stats';
 import { Shot } from '../../src/app/core/model/api/match/shot';
 import { GridCoordinates } from '../../src/app/core/model/match/coordinates';
 import { BattleshipGrid } from '../../src/app/core/model/match/battleship-grid';
@@ -223,7 +221,7 @@ describe('Set Ready', () => {
     });
 });
 
-describe('UpdateStats', () => {
+describe('Update Stats', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         setupData = await createMatch(); // carico un solo match
@@ -298,7 +296,7 @@ describe('UpdateStats', () => {
     });
 });
 
-describe('fireShot', () => {
+describe('Fire Shot', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         setupData = await createMatch(); // carico un solo match
@@ -373,7 +371,7 @@ describe('fireShot', () => {
     });
 });
 
-describe('updatePlayerGrid', () => {
+describe('Update Player Grid', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         setupData = await createMatch(); // carico un solo match
@@ -438,9 +436,12 @@ describe('updatePlayerGrid', () => {
     //wrong update
     test('Should Throw', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
+
         matchApi
             .updatePlayerGrid(setupData.matchIds[0], setupData.userInfo.userId, {
                 ships: gridUpdate.ships,
+
+                // Out of bounds coordinates
                 shotsReceived: [{ row: 20, col: 20 }],
             })
             .subscribe({
