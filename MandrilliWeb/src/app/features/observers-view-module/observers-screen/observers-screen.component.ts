@@ -79,9 +79,18 @@ export class ObserversScreenComponent implements OnInit {
         }
     }
 
+    ngOnDestroy() : void {
+        const matchId: string = this.match?.matchId || ""
+
+        this.matchLeftEmitter.emit({matchId: matchId})
+        this.chatLeftEmitter.emit({chatId: this.chatId})
+
+        this.chatMessageListener.unListen()
+        this.matchTerminatedListener.unListen()
+        this.playersShotListener.unListen()
+    }
 
     public async quitView(){
-        this.endScreen()
         await this.router.navigate(['/relationship']);
     }
 
@@ -96,20 +105,7 @@ export class ObserversScreenComponent implements OnInit {
         const path: string = "/match-results/" + matchId
 
         this.generalEnd = data.reason.valueOf()
-        this.endScreen()
 
         await this.router.navigate([path])
     }
-
-    private endScreen() {
-        const matchId: string = this.match?.matchId || ""
-
-        this.matchLeftEmitter.emit({matchId: matchId})
-        this.chatLeftEmitter.emit({chatId: this.chatId})
-
-        this.chatMessageListener.unListen()
-        this.matchTerminatedListener.unListen()
-        this.playersShotListener.unListen()
-    }
-
 }
