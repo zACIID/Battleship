@@ -34,7 +34,7 @@ export class StatsOverviewComponent implements OnInit {
                     sender: userInSessionId,
                 })
                 .subscribe((data) => {
-                    console.log('Correctly added notification: ' + data);
+                    console.log('Correctly added notification: ' + JSON.stringify(data));
                 });
         } catch (err) {
             console.log('An error occurred in the process of adding a friend: ' + err);

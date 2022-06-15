@@ -58,17 +58,28 @@ export class NotificationScreenComponent implements OnInit {
             console.log(err);
         }
 
-        const test = (notification: NotificationData) => {
-            console.log('Ciao ------');
 
+        const pollingNotifications = (notification: NotificationData) => {
+
+            this.userApi.getUser(notification.sender).subscribe((user) => {
+                this.friendNotifications.push({
+                    type: notification.type,
+                    sender: notification.sender,
+                    senderUsername: user.username,
+                });
+                this.friendNotifications = [...this.friendNotifications];
+            });
+        };
+        pollingNotifications.bind(this);
+        this.notificationListener.listen(pollingNotifications);
+        
+        const pollingDeletedNotifications = (notification: NotificationData) => {
             this.friendNotifications = this.friendNotifications.filter((not) => {
                 return notification.sender === not.sender && notification.type === not.type;
             });
-        };
-        test.bind(this);
-
-        this.notificationListener.listen(test);
-        this.notificationDelListener.listen(this.pollingDeletedNotifications);
+        }
+        pollingDeletedNotifications.bind(this);
+        this.notificationDelListener.listen(pollingDeletedNotifications);
     }
 
     ngOnDestroy() : void {
@@ -81,28 +92,14 @@ export class NotificationScreenComponent implements OnInit {
         this.ngOnInit();
     }
 
-    private pollingNotifications(notification: NotificationData) {
-        
-        this.userApi.getUser(notification.sender).subscribe((user) => {
-            this.friendNotifications.push({
-                type: notification.type,
-                sender: notification.sender,
-                senderUsername: user.username,
-            });
-            this.friendNotifications = [...this.friendNotifications]
-        });
-    }
-
-    private pollingDeletedNotifications(notification: NotificationData) {
-        this.friendNotifications = this.friendNotifications.filter((not) => {
-            return notification.sender === not.sender && notification.type === not.type;
-        });
-    }
-
+    
     public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
             receiverId: friendId,
             senderId: this.userId,
+        });
+        this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
+            return not.sender !== friendId && not.type !== NotificationType.FriendRequest;
         });
     }
 

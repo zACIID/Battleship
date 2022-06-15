@@ -1,3 +1,4 @@
+import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
 import { AuthResult } from './../../../core/api/handlers/auth-api';
 import { UserIdStorage } from './../../../core/api/userId-auth/userId-storage';
 import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
@@ -18,7 +19,8 @@ export class RegistrationScreenComponent implements OnInit {
 
     constructor(
         private authClient: AuthApi,
-        private router: Router
+        private router: Router,
+        private serverJoined: ServerJoinedEmitter
     ) {}
 
     ngOnInit(): void {}
@@ -29,6 +31,7 @@ export class RegistrationScreenComponent implements OnInit {
         this.authClient.register({ username, password }).subscribe({
             next: async (data: User) => {
                 this.authClient.login({username: data.username, password: password}).subscribe( async (user: AuthResult) =>{
+                    this.serverJoined.emit({userId: user.userId});
                     await this.router.navigate(['/homepage']);
                 });
                 

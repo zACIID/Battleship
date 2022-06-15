@@ -168,11 +168,9 @@ const queuePollingTimeMs: number = 5000;
 const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 matchmakingEngine.start();
 
-try{
-    createUser({username: process.env.ADMIN_USERNAME, roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator]}).then((admin: UserDocument) =>{
-        admin.setPassword(process.env.ADMIN_PASSWORD)
-    });
-}
-catch(err){
-    console.log(chalk.green("Admin already existent"));
-}
+
+createUser({username: process.env.ADMIN_USERNAME, roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator]})
+.then((admin: UserDocument) =>{
+    admin.setPassword(process.env.ADMIN_PASSWORD)
+})
+.catch((err: Error) =>  console.log(chalk.green("Admin already existent")))
