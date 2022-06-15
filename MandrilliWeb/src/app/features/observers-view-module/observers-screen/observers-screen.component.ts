@@ -26,8 +26,6 @@ export class ObserversScreenComponent implements OnInit {
     public match?: Match;
     public chatId: string = "";
     public messages: ChatMessage[] = []
-    public player1Grid: BattleshipGrid
-    public player2Grid: BattleshipGrid
     public generalEnd: string = ""
 
     constructor(
@@ -41,10 +39,7 @@ export class ObserversScreenComponent implements OnInit {
         private playersShotListener: ShotFiredListener,
         private matchTerminatedListener: MatchTerminatedListener,
         private router: Router
-    ) {
-        this.player1Grid = new BattleshipGrid()
-        this.player2Grid = new BattleshipGrid()
-    }
+    ) {}
 
     ngOnInit(): void {
 
@@ -96,8 +91,8 @@ export class ObserversScreenComponent implements OnInit {
 
     private pollingPlayerHits(data: Shot) : void {
         if (data.playerId !== this.match?.player1.playerId)
-            this.player1Grid.shotsReceived.push(data.coordinates)
-        else this.player2Grid.shotsReceived.push(data.coordinates)
+            this.match?.player1.grid.shotsReceived.push(data.coordinates)
+        else this.match?.player2.grid.shotsReceived.push(data.coordinates)
     }
 
     private async pollingMatchResult(data: MatchTerminatedData) : Promise<void> {
