@@ -25,8 +25,9 @@ export class ObserversScreenComponent implements OnInit {
     public matchShowedId: string = "";
     public match?: Match;
     public chatId: string = "";
-    public messages: ChatMessage[] = []
     public generalEnd: string = ""
+
+    // TO DO serve un trigger per ogni component
 
     constructor(
         private route: ActivatedRoute,
@@ -59,7 +60,6 @@ export class ObserversScreenComponent implements OnInit {
             this.matchJoinedEmitter.emit({matchId: matchId})
             this.chatJoinedEmitter.emit({chatId: this.chatId})
 
-            this.chatMessageListener.listen(this.pollingObserverMessage)
             this.playersShotListener.listen(this.pollingPlayerHits)
             this.matchTerminatedListener.listen(this.pollingMatchResult)
 
@@ -85,10 +85,6 @@ export class ObserversScreenComponent implements OnInit {
         await this.router.navigate(['/relationship']);
     }
 
-    private pollingObserverMessage(data: ChatMessage) : void{
-        this.messages.push(data)
-    }
-
     private pollingPlayerHits(data: Shot) : void {
         if (data.playerId !== this.match?.player1.playerId)
             this.match?.player1.grid.shotsReceived.push(data.coordinates)
@@ -102,9 +98,7 @@ export class ObserversScreenComponent implements OnInit {
         this.generalEnd = data.reason.valueOf()
         this.endScreen()
 
-        //TO DO serve aspettare setTimeout() per fare vedere agli observer perche è finto il match?
         await this.router.navigate([path])
-        //TO DO da passare alla component il matchId
     }
 
     private endScreen() {
