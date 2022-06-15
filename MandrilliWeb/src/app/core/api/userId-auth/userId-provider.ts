@@ -16,7 +16,7 @@ export class UserIdProvider {
      * @throws Error if the userId has not yet been set
      */
     public getUserId(): string {
-        const userId: string | null = localStorage.getItem(environment.localStorageTokenKey);
+        const userId: string | null = localStorage.getItem(environment.localStorageUserIdKey);
 
         if (!userId) throw new Error('UserId is not set yet');
         

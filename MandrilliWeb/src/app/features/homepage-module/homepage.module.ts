@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { HomepageScreenComponent } from './homepage-screen/homepage-screen.component';
 import { FeatureButtonComponent } from './feature-button/feature-button.component';
 import { GameButtonComponent } from './game-button/game-button.component';
-import { ProfileButtonComponent } from './profile-button/profile-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 
@@ -15,7 +14,6 @@ import { RouterModule } from '@angular/router';
         HomepageScreenComponent,
         FeatureButtonComponent,
         GameButtonComponent,
-        ProfileButtonComponent,
     ],
     imports: [
         CommonModule,

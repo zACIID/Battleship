@@ -1,3 +1,4 @@
+import { UserIdStorage } from './../../../core/api/userId-auth/userId-storage';
 import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -16,7 +17,8 @@ export class RegistrationScreenComponent implements OnInit {
 
     constructor(
         private authClient: AuthApi,
-        private router: Router
+        private router: Router,
+        private userIdStorage: UserIdStorage
     ) {}
 
     ngOnInit(): void {}
@@ -26,7 +28,7 @@ export class RegistrationScreenComponent implements OnInit {
         
         this.authClient.register({ username, password }).subscribe({
             next: (data: User) => {
-                localStorage.setItem('id', data.userId);
+                this.userIdStorage.store(data.userId);
                 this.router.navigate(['/homepage']);
             },
             error: (error: any) =>{
