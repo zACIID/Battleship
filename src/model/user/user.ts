@@ -90,16 +90,6 @@ export interface UserDocument extends User, Document {
     hasRole(role: UserRoles): boolean;
 
     /**
-     * Returns true if the user is a moderator, false otherwise.
-     */
-    isModerator(): boolean;
-
-    /**
-     * Returns true if the user is an admin, false otherwise.
-     */
-    isAdmin(): boolean;
-
-    /**
      * Returns true if the user is friend with key owner, false otherwise.
      *
      * @param key friend's key to look for
@@ -292,13 +282,6 @@ UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocum
     return Promise.reject(new Error('Role already set'));
 };
 
-UserSchema.methods.isModerator = function (): boolean {
-    return this.hasRole(UserRoles.Moderator);
-};
-
-UserSchema.methods.isAdmin = function (): boolean {
-    return this.hasRole(UserRoles.Admin);
-};
 
 /* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
 
