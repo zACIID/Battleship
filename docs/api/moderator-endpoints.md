@@ -13,6 +13,9 @@
     - [Ban User](#ban-user)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-1)
+    - [Update Credentials After First Login](#update-credentials-after-first-login)
+      - [Example Request Body](#example-request-body-2)
+      - [Example Response Body](#example-response-body-2)
 
 ## Resources
 
@@ -98,7 +101,44 @@ Resource containing the username of the user to ban
 
 ##### Error
 
-- Status Codes: 403 (unauthorized) 404 (if user not found)
+- Status Codes: 403 (unauthorized), 400
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### Update Credentials After First Login
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /api/moderators/credentials | PUT | Check if the user is a new moderator (he never updated his credentials at the first login), and update its username and password |
+
+#### Example Request Body
+
+Resource containing the username of the user to ban
+
+```json
+{
+    "username": "username",
+    "password": "password"
+}
+```
+
+#### Example Response Body
+
+##### Success
+
+- Status Code: 204
+- Empty response
+
+##### Error
+
+- Status Codes: 403 (unauthorized)
 - [Error](#error) resource
 
 ```json
