@@ -150,20 +150,13 @@ router.get(
                     0,
                     1
                 );
+                // Since the user is inGame, this should be the match he is currently playing in
                 const currentMatch: MatchDocument = userMatches[0];
 
-                // Return the matchId only if it has yet to end
-                if (currentMatch.stats.endTime === null) {
-                    // Return the matchId
-                    return res.status(200).json({
-                        matchId: currentMatch._id,
-                    });
-                } else {
-                    // TODO return an error instead?
-                    return res.status(200).json({
-                        matchId: '',
-                    });
-                }
+                // Return the matchId
+                return res.status(200).json({
+                    matchId: currentMatch._id,
+                });
             } else {
                 throw new Error(`User ${userId} is not currently in a match`);
             }

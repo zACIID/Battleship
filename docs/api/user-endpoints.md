@@ -8,6 +8,8 @@
     - [Error](#error)
     - [User](#user)
     - [UserStats](#userstats)
+    - [Match](#match)
+    - [MultipleMatches](#multiplematches)
   - [Endpoints](#endpoints)
     - [Retrieve User](#retrieve-user)
       - [Url Parameters](#url-parameters)
@@ -15,26 +17,30 @@
     - [Retrieve User Current Match](#retrieve-user-current-match)
       - [Url Parameters](#url-parameters-1)
       - [Example Response Body Current Match](#example-response-body-current-match)
-    - [Retrieve Multiple Users](#retrieve-multiple-users)
+    - [Retrieve User Most Recent Matches](#retrieve-user-most-recent-matches)
+      - [Url Parameters](#url-parameters-2)
       - [Query Parameters](#query-parameters)
+      - [Example Response Body Current Match](#example-response-body-current-match-1)
+    - [Retrieve Multiple Users](#retrieve-multiple-users)
+      - [Query Parameters](#query-parameters-1)
       - [Example Request Body](#example-request-body)
       - [Example Response Body](#example-response-body-1)
     - [Update Password](#update-password)
-      - [Url Parameters](#url-parameters-2)
+      - [Url Parameters](#url-parameters-3)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-2)
     - [Update Username](#update-username)
-      - [Url Parameters](#url-parameters-3)
+      - [Url Parameters](#url-parameters-4)
       - [Example Request Body](#example-request-body-2)
       - [Example Response Body](#example-response-body-3)
     - [Delete User](#delete-user)
-      - [Url Parameters](#url-parameters-4)
+      - [Url Parameters](#url-parameters-5)
       - [Example Response Body](#example-response-body-4)
     - [Retrieve User Stats](#retrieve-user-stats)
-      - [Url Parameters](#url-parameters-5)
+      - [Url Parameters](#url-parameters-6)
       - [Example Response Body](#example-response-body-5)
     - [Update User Stats](#update-user-stats)
-      - [Url Parameters](#url-parameters-6)
+      - [Url Parameters](#url-parameters-7)
       - [Example Request Body](#example-request-body-3)
       - [Example Response Body](#example-response-body-6)
 
@@ -69,6 +75,24 @@
 | shipsDestroyed | number | Total number of ships destroyed by the user |
 | totalShots | number | Total number of shots of the user |
 | totalHits | number | Total number of hits by the user |
+
+### Match
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| matchId | string | Id of the match |
+| player1 | [PlayerState](#playerstate) | Resource representing the game state of player #1 |
+| player2 | [PlayerState](#playerstate) | Resource representing the game state of player #2 |
+| playersChat | string | Id of the players chat |
+| observersChat | string | Id of the observers chat |
+| stats | [MatchStats](#matchstats) | Stats of the match |
+
+### MultipleMatches
+
+| Attribute | Data Type | Description |
+| :-------- | :-------- | :---------- |
+| matches | [Match](#match)[] | Array of matches |
+| nextPage | string | Request url for the next page of results |
 
 ## Endpoints
 
@@ -121,7 +145,7 @@
 
 | Endpoint | Method | Description |
 | :------- | :----- | :---------- |
-| /api/users/:userId/currentMatch | GET | Retrieve the current match of a user if it's InGame, otherwise it returns an empty string
+| /api/users/:userId/currentMatch | GET | Retrieve the id of the current match of a user if the user is currently playing |
 
 #### Url Parameters
 
@@ -134,11 +158,11 @@
 ##### Success
 
 - Status Code: 200
-- [User](#user) resource with the specified id
+- Resource containing the id of the match that the user is currently in
 
 ```json
 {
-    "matchId": "matchid"
+    "matchId": "match-id"
 }
 ```
 
@@ -155,6 +179,67 @@
 }
 ```
 
+### Retrieve User Most Recent Matches
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /api/users/:userId/matches | GET | Retrieve the most recent matches of the specified user |
+
+#### Url Parameters
+
+| Name | Data Type | Description |
+| :--- | :-------- | :---------- |
+| userId | string | Id of the user whose match is to retrieve |
+
+#### Query Parameters
+
+| Name | Data Type | Required | Description | Default | Constraints |
+| :--- | :-------- | :------- | :---------- | :------ | :---------- |
+| limit | Integer | No | Maximum number of matches to be returned | 10 | limit <= 50 && limit >= 0 |
+| skip | Integer | No | Number of matches to skip before starting to select matches to send | 0 | skip >= 0 |
+
+#### Example Response Body Current Match
+
+##### Success
+
+- Status Code: 200
+- A [MultipleMatches](#multiplematches) resource, containing the specified number of matches, ordered by most recent.
+
+```json
+{
+    "matches": [
+        {
+            "matchId": "match-id",
+            "player1": "player1-id",
+            "player2": "player2-id",
+            "playersChat": "players-chat-id",
+            "observersChat": "observers-chat-id",
+            "stats": {
+                "winner": "winner-user-id",
+                "startTime": 1651881600,
+                "endTime": 1651881600,
+                "shipsDestroyed": 5,
+                "totalShots": 40
+        },
+        ...
+    }
+    ],
+    "nextPage": "next/page/url"
+}
+```
+
+##### Error Current Match
+
+- Status Codes: 400, 404
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
 
 ### Retrieve Multiple Users
 
