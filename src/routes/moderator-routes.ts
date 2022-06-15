@@ -1,8 +1,9 @@
 import { Router, Response } from 'express';
-import { UserDocument, createUser, deleteUser, UserRoles } from '../model/user/user';
+import { UserDocument, createUser, deleteUser, UserRoles, UserStatus } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { AnyKeys } from 'mongoose';
 
 export const router = Router();
 
@@ -27,7 +28,14 @@ router.post(
     async (req: AddModRequest, res: Response) => {
         try {
             if (req.jwtContent.roles.includes(UserRoles.Moderator)) {
-                const newMod: UserDocument = await createUser(req.body);
+                const newModInfo: AnyKeys<UserDocument> = {
+                    username: req.body.username,
+
+                    // Status is set to temporary because its credentials have to be changed
+                    // at the first login
+                    status: UserStatus.Temporary,
+                };
+                const newMod: UserDocument = await createUser(newModInfo);
                 await newMod.setRole(UserRoles.Moderator);
 
                 // TODO Consider doing this instead:

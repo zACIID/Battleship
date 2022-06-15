@@ -1,4 +1,3 @@
-import { Match } from '../match/match'
 /**
  * Enumeration that defines all the possible statuses of a user
  */
@@ -8,6 +7,13 @@ export enum UserStatus {
     PrepPhase = 'PrepPhase',
     InGame = 'InGame',
     Spectating = 'Spectating',
+
+    /**
+     * This status is assigned to a moderator that has just been added
+     * to the system. Its purpose is to signal that its credentials
+     * have to be changed at the first login
+     */
+    Temporary = 'Temporary',
 }
 
 export enum UserRoles {

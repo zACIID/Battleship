@@ -12,6 +12,8 @@ import { UserStats, UserStatsSubDocument } from './user-stats';
 import { Relationship, RelationshipSubDocument, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
 import { ChatDocument, ChatModel, createChat } from '../chat/chat';
+import { FriendStatusChangedEmitter } from '../../events/emitters/friend-status-changed';
+import { Server } from 'socket.io';
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -29,6 +31,13 @@ export enum UserStatus {
     PrepPhase = 'PrepPhase',
     InGame = 'InGame',
     Spectating = 'Spectating',
+
+    /**
+     * This status is assigned to a moderator that has just been added
+     * to the system. Its purpose is to signal that its credentials
+     * have to be changed at the first login
+     */
+    Temporary = 'Temporary',
 }
 
 /**
@@ -282,7 +291,6 @@ UserSchema.methods.setRole = async function (role: UserRoles): Promise<UserDocum
     return Promise.reject(new Error('Role already set'));
 };
 
-
 /* METHODS AND FUNCTIONS FOR RELATIONSHIP MANIPULATIONS */
 
 UserSchema.methods.addRelationshipSymmetrically = async function (
@@ -460,13 +468,16 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
         : Promise.resolve(stat.stats);
 }
 
-export async function getLastNotification(_id: Types.ObjectId) : Promise<RequestNotificationSubDocument> {
-    let notification: UserDocument = await UserModel.findOne({ _id }, {notifications: 1 })
-    .sort({ createdAt: -1 })
+export async function getLastNotification(
+    _id: Types.ObjectId
+): Promise<RequestNotificationSubDocument> {
+    let notification: UserDocument = await UserModel.findOne({ _id }, { notifications: 1 }).sort({
+        createdAt: -1,
+    });
 
-    return !notification 
-        ? Promise.reject(new Error("No notification with that Identifier")) 
-        : Promise.resolve(notification.notifications[0])
+    return !notification
+        ? Promise.reject(new Error('No notification with that Identifier'))
+        : Promise.resolve(notification.notifications[0]);
 }
 
 /**
@@ -506,3 +517,81 @@ export async function updateUserStats(
 
     return user.save();
 }
+
+/**
+ * Set the status of the provided user to offline and notify his friends
+ * that his status has changed
+ * @param ioServer: socket.io server used to send notifications to
+ *      the friends of the user whose status is being changed
+ * @param userId id of user to set online
+ * @private
+ */
+export const setUserOnline = async (ioServer: Server, userId: string): Promise<void> => {
+    const newStatus: UserStatus = UserStatus.Online;
+
+    await setUserStatus(ioServer, userId, newStatus);
+};
+
+/**
+ * Set the status of the provided user to offline and notify his friends
+ * that his status has changed
+ * @param ioServer: socket.io server used to send notifications to
+ *      the friends of the user whose status is being changed
+ * @param userId id of the user to set offline
+ * @private
+ */
+export const setUserOffline = async (ioServer: Server, userId: string): Promise<void> => {
+    const newStatus: UserStatus = UserStatus.Offline;
+
+    await setUserStatus(ioServer, userId, newStatus);
+};
+
+/**
+ * Sets the status of the provided user to the provided value
+ * and notifies his friends of the change.
+ * @param ioServer: socket.io server used to send notifications to
+ *      the friends of the user whose status is being changed
+ * @param userId id of the user whose status has to be changed
+ * @param newStatus new status of the user
+ * @private
+ */
+export const setUserStatus = async (
+    ioServer: Server,
+    userId: string,
+    newStatus: UserStatus
+): Promise<void> => {
+    const user: UserDocument = await getUserById(Types.ObjectId(userId));
+    user.status = newStatus;
+
+    await user.save();
+
+    const friendIds: Types.ObjectId[] = user.relationships.map((rel: RelationshipSubDocument) => {
+        return rel.friendId;
+    });
+    await notifyFriendsUserStatusChanged(ioServer, user._id, friendIds, newStatus);
+};
+
+/**
+ * Notify the friends of the user that his status is now offline
+ * @param ioServer: socket.io server used to send notifications to
+ *      the friends of the user whose status is being changed
+ * @param userId id of the user whose friends have to be notified
+ * @param friendIds ids of the friends of the user
+ * @param newStatus new status of the user
+ * @private
+ */
+const notifyFriendsUserStatusChanged = async (
+    ioServer: Server,
+    userId: Types.ObjectId,
+    friendIds: Types.ObjectId[],
+    newStatus: UserStatus
+): Promise<void> => {
+    // Notify each friend that the user is now offline
+    friendIds.forEach((fId: Types.ObjectId) => {
+        const notifier: FriendStatusChangedEmitter = new FriendStatusChangedEmitter(ioServer, fId);
+        notifier.emit({
+            status: newStatus,
+            friendId: userId.toString(),
+        });
+    });
+};
