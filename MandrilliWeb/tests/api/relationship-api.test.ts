@@ -8,7 +8,7 @@ import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { Relationship } from '../../src/app/core/model/user/relationship';
 import { deleteChat, insertChat, InsertedChat } from '../fixtures/database/chats';
-import { insertRelationship } from '../fixtures/api-utils/relationships';
+import { deleteRelationship, insertRelationship } from '../fixtures/api-utils/relationships';
 
 let httpClient: HttpClient;
 let jwtProviderMainUser: JwtProvider;
@@ -16,7 +16,7 @@ let mainUser: InsertedUser;
 let secondUser: InsertedUser;
 let insertedChat: InsertedChat;
 
-const testSetup = async () => {
+const testSetup = async (autoInsert: boolean = true) => {
     httpClient = injectHttpClient();
 
     mainUser = await insertUser();
@@ -26,13 +26,14 @@ const testSetup = async () => {
     const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
     jwtProviderMainUser = await authenticate(userCred);
 
-    await insertRelationship(secondUser.userId, insertedChat.chatId);
+    await insertRelationship(mainUser.userId, secondUser.userId, insertedChat.chatId);
 };
 
-const teardown = async (): Promise<void> => {
+const teardown = async (autoDelete: boolean = true): Promise<void> => {
     await deleteUser(mainUser.userId);
     await deleteUser(secondUser.userId);
     await deleteChat(insertedChat.chatId);
+    if (autoDelete) deleteRelationship(mainUser.userId, secondUser.userId)
 };
 
 describe('Get Relationship', () => {
@@ -91,11 +92,11 @@ describe('Get Relationship', () => {
 
 describe('add Relationship', () => {
     beforeEach(async () => {
-        await testSetup();
+        await testSetup(false);
     });
 
     afterEach(async () => {
-        await teardown();
+        await teardown(false);
     });
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {

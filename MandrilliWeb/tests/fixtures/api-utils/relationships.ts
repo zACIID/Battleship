@@ -4,15 +4,22 @@ import {
     MongoDpApiCredentials,
 } from '../database/mongodb-api/mongodb-api';
 
-export const insertRelationship = async (friendId: string, chatId: string) => {
+export const insertRelationship = async (selfId: string, friendId: string, chatId: string) => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+    try {
+        await mongoDbApi.insertRelationship(selfId, friendId, chatId);
+    } catch(err) {
+        throw err
+    }
+};
 
-    // TODO also here
-    // await mongoDbApi.insertRelationship(friendId, chatId);
-
-    // TODO
-    throw Error(
-        'Not implemented. Probably need to add a MongoDbApi method that allows for document update'
-    );
+export const deleteRelationship = async (selfId: string, friendId: string) => {
+    const apiCred: MongoDpApiCredentials = await getApiCredentials();
+    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+    try {
+        await mongoDbApi.deleteRelationship(selfId, friendId);
+    } catch(err) {
+        throw err
+    }
 };
