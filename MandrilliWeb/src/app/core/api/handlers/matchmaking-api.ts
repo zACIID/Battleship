@@ -23,7 +23,7 @@ export class MatchmakingApi extends BaseAuthenticatedApi {
     public enqueue(userId: string): Observable<EnqueueResponse> {
         const reqPath: string = `${this.baseUrl}/api/matchmaking/queue`;
         return this.httpClient
-            .put<EnqueueResponse>(reqPath, userId, this.createRequestOptions())
+            .post<EnqueueResponse>(reqPath, {userId: userId}, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 
