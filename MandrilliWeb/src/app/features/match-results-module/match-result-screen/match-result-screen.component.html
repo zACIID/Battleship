@@ -4,7 +4,11 @@
 
     <div class="columns is-widescreen mt-4">
         <div class="column is-one-quarter margin-auto">
-            <app-logo></app-logo>
+            <div class="box has-background-primary image">
+                <figure class="image is-vcentered logo-dimension container">
+                    <img src="assets/images/logo.png" alt="Image">
+                </figure>
+            </div>
         </div>
 
         <div class="column is-half is-vcentered margin-auto">
@@ -15,7 +19,17 @@
         </div>
 
         <div class="column is-one-quarter margin-auto">
-            <back-button></back-button>
+            <div class="box has-background-primary pointer" [routerLink]="['/homepage']">
+                <div class="columns">
+                    <div class="column is-one-quarter has-text-centered">
+                        <strong class="is-size-4 has-text-light has-weight-semibold">X</strong>
+                    </div>
+                    <div class="column ">
+                        <strong class="is-size-4 has-text-light has-weight-semibold">CLOSE</strong>
+                    </div>
+            
+                </div>
+            </div>
         </div>
     </div>
     

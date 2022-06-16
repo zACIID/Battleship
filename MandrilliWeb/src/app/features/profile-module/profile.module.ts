@@ -1,6 +1,5 @@
 import { ProfileRoutingModule } from './profile-routing.module';
 import { StatsModule } from './../../shared/stats-module/stats.module';
-import { BackButtonModule } from './../../shared/back-button-module/back-button.module';
 import { MatchHistoryModule } from './../../shared/match-history/match-history.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -19,7 +18,6 @@ import { ModeratorSectionComponent } from './moderator-section/moderator-section
     imports: [
         CommonModule,
         MatchHistoryModule,
-        BackButtonModule,
         StatsModule,
         ProfileRoutingModule,
     ],
