@@ -100,9 +100,13 @@ router.post(
             expiresIn: '1h',
         });
 
-        // The user comes online after login
-        // TODO this side-effect needs to be tested
-        await setUserStatus(ioServer, req.user._id, UserStatus.Online);
+        // The user comes online after login, only if its status isn't Temporary
+        // in that case, the status is preserved, because it is a flag that
+        // the user (a new moderator) has to update his credentials.
+        if (req.user.status !== UserStatus.TemporaryCredentials) {
+            // TODO side-effect needs to be tested
+            await setUserStatus(ioServer, req.user._id, UserStatus.Online);
+        }
 
         // Return the token along with the id of the authenticated user
         return res.status(200).json({
