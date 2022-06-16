@@ -9,3 +9,10 @@ export interface Relationship {
      */
     chatId: string;
 }
+
+/**
+ * Interface used to identify the response of /api/users/:userId/relationships endpoint
+ */
+export interface RelationshipsResponse {
+    relationships: Relationship[];
+}

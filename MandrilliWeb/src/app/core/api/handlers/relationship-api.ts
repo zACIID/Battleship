@@ -1,3 +1,4 @@
+import { RelationshipsResponse } from './../../model/user/relationship';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 import { Injectable } from '@angular/core';
@@ -17,10 +18,10 @@ export class RelationshipApi extends BaseAuthenticatedApi {
         super(httpClient, accessTokenProvider);
     }
 
-    public getRelationships(userId: string): Observable<Relationship[]> {
+    public getRelationships(userId: string): Observable<RelationshipsResponse> {
         const reqPath: string = `${this.baseUrl}/api/users/${userId}/relationships`;
         return this.httpClient
-            .get<Relationship[]>(reqPath, this.createRequestOptions())
+            .get<RelationshipsResponse>(reqPath, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 
