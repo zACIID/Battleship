@@ -20,7 +20,7 @@ export class GameModeScreenComponent implements OnInit {
         private matchListener: MatchFoundListener, 
         private router: Router,
         private queue: MatchmakingApi,
-        private userIdProvider: UserIdProvider
+        private userIdProvider: UserIdProvider, 
     ) {}
 
     ngOnInit(): void {
@@ -29,6 +29,7 @@ export class GameModeScreenComponent implements OnInit {
 
     ngOnDestroy() : void {
         this.matchListener.unListen()
+        this.queue.removeFromQueue(this.userIdProvider.getUserId()).subscribe()
     }
 
     public startMatchmaking() {
@@ -41,8 +42,7 @@ export class GameModeScreenComponent implements OnInit {
                 await this.router.navigate([reqpath]);
             }
             matchFound.bind(this);
-
-                this.matchListener.listen(matchFound);
+            this.matchListener.listen(matchFound);
             })
             this.inQueue = true;
         }

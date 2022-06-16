@@ -58,7 +58,7 @@ export class MatchmakingEngine {
             throw new Error('Engine is already running!');
         }
 
-        this._intervalId = setTimeout(this.arrangeMatches, this._pollingTime);
+        this._intervalId = setTimeout(function(){ this.arrangeMatches() }.bind(this), this._pollingTime);
     }
 
     /**
