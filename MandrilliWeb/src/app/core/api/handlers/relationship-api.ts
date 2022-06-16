@@ -1,9 +1,8 @@
-import { RelationshipsResponse } from './../../model/user/relationship';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { Injectable } from '@angular/core';
 
-import { Relationship } from '../../model/user/relationship';
+import { Relationship, RelationshipsResponse } from '../../model/user/relationship';
 import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { JwtProvider } from '../jwt-auth/jwt-provider';
 
@@ -18,11 +17,12 @@ export class RelationshipApi extends BaseAuthenticatedApi {
         super(httpClient, accessTokenProvider);
     }
 
-    public getRelationships(userId: string): Observable<RelationshipsResponse> {
+    public getRelationships(userId: string): Observable<Relationship[]> {
         const reqPath: string = `${this.baseUrl}/api/users/${userId}/relationships`;
         return this.httpClient
-            .get<RelationshipsResponse>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .get<RelationshipsResponse>(reqPath, this.createRequestOptions()).pipe(
+                catchError(this.handleError),
+                map<RelationshipsResponse, Relationship[]>( (el: RelationshipsResponse) => el.relationships));
     }
 
     public addRelationship(userId: string, newRel: Relationship): Observable<Relationship> {

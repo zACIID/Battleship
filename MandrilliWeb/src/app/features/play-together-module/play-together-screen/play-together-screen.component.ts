@@ -1,3 +1,4 @@
+import { Relationship } from 'src/app/core/model/user/relationship';
 import { Notification } from './../../../core/model/user/notification';
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { getRank } from './../../../core/model/user/elo-rankings';
@@ -31,8 +32,8 @@ export class PlayTogetherScreenComponent implements OnInit {
         try {
             // Retrieving only online friends
             this.userInSessionId = this.userIdProvider.getUserId();
-            this.relationshipClient.getRelationships(this.userInSessionId).subscribe((relationships) => {
-                for (let relation of relationships) {
+            this.relationshipClient.getRelationships(this.userInSessionId).subscribe((rels: Relationship[]) => {
+                for (let relation of rels) {
                     this.userClient.getUser(relation.friendId).subscribe((friend) => {
                         if (friend.status === UserStatus.Online) {
                             this.friends.push({

@@ -7,7 +7,7 @@
     </div>
 
     <div *ngSwitchDefault>
-        <div *ngFor="let item of matchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer">
+        <div *ngFor="let item of matchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" [routerLink]="['/match-results/{{item.matchId}}']">
             <p> <strong>{{item.username1}}</strong> vs. <strong>{{item.username2}}</strong></p>
         </div>
     </div>
@@ -24,10 +24,13 @@
 
     <div *ngSwitchDefault>
         <div *ngFor="let item of friendsList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="showChat(item.chatId)">
-            <div>
-                <p> <strong>{{item.friendUsername}}</strong></p>
+            <div class="is-flex">
+                <div class="width-80">
+                    <p class="has-text-left"> <strong>{{item.friendUsername}}</strong></p>
+                </div>
+                <button class="button is-success" [disabled]=" item.matchId == '' " [routerLink]="['/match-results/{{item.matchId}}']">Spectate</button>
             </div>
-            <button class="button is-success" [disabled]=" item.matchId == '' " [routerLink]="['/match-results/{{item.matchId}}']">Spectate</button>
+            
         </div>    
     </div>
 

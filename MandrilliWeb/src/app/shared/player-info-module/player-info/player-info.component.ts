@@ -10,21 +10,25 @@ import { Router } from '@angular/router';
     styleUrls: ['./player-info.component.css'],
 })
 export class PlayerInfoComponent implements OnInit {
-    @Input() userId: string = '';
+    @Input() userId?: string;
     public user: Overview = new Overview();
 
     constructor(private router: Router, private userClient: UserApi) {}
 
     ngOnInit(): void {
         try {
-            this.userClient.getUser(this.userId).subscribe((us) => {
-                this.user = {
-                    userId: us.userId,
-                    username: us.username,
-                    elo: us.elo,
-                    rank: getRank(us.elo),
-                };
-            });
+            console.log(this.userId)
+            if(this.userId){
+                this.userClient.getUser(this.userId).subscribe((us) => {
+                    
+                    this.user = {
+                        userId: us.userId,
+                        username: us.username,
+                        elo: us.elo,
+                        rank: getRank(us.elo),
+                    };
+                });
+            }
         } catch (err) {
             console.log('An error occurs while retrieving user info: ' + err);
         }
@@ -35,4 +39,10 @@ export class PlayerInfoComponent implements OnInit {
 
         await this.router.navigate([url]);
     }
+
+
+    ngOnChanges(){
+        this.ngOnInit();
+    }
+
 }

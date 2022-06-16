@@ -475,9 +475,10 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
 export async function getMostRecentNotifications(
     userId: Types.ObjectId
 ): Promise<RequestNotificationSubDocument[]> {
-    return await UserModel.findOne({ _id: userId }).projection(['notifications']).sort({
+    const not: UserDocument =  await UserModel.findOne({ _id: userId }, {notifications: 1}).sort({
         createdAt: -1,
     });
+    return not.notifications;
 }
 
 /**

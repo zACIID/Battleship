@@ -30,7 +30,7 @@ export class HistorySidebarComponent implements OnInit {
             let matches: Match[];
             this.userClient.getUserMatches(userId).subscribe((match: Match[]) => {
                 matches = [...match];
-
+                console.log(match)
                 if (matches) {
                     this.matchHistory = matches.map((x) => {
                         let usr1: string = '';

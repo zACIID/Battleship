@@ -1,10 +1,12 @@
-import { Relationship } from 'src/app/core/model/user/relationship';
+import { concat } from 'rxjs/internal/observable/concat';
+import { Relationship, RelationshipsResponse } from 'src/app/core/model/user/relationship';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { User } from 'src/app/core/model/user/user';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
 import { Component, OnInit } from '@angular/core';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-friend-list-screen',
@@ -24,26 +26,37 @@ export class FriendListScreenComponent implements OnInit {
         try {
             let userId: string = this.userIdProvider.getUserId();
             this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
-                this.friends = data.map((rel: Relationship) => {
-                    let usrnm: string = '';
-                    let currentMatch: string = "";
-                    this.userClient.getUser(rel.friendId).subscribe((x: User) => {
-                            usrnm = x.username;
-                    });
-                    this.userClient.getCurrentMatch(rel.friendId).subscribe((x: string) => {
-                        currentMatch = x;
+                
+
+                for(let rel of data){
+                    const obj = {
+                        friendId: rel.friendId,
+                        chatId: rel.chatId,
+                        friendUsername: "",
+                        matchId: ""
+                    }
+
+                    this.userClient.getCurrentMatch(rel.friendId).subscribe({
+                        next: (match: string) => {
+                            obj.matchId = match;
+                        },
+                        error: (err: Error) => {}
                     })
 
-                    return {
-                        friendId: rel.friendId,
-                        chatId: rel.friendId,
-                        friendUsername: usrnm,
-                        matchId: currentMatch
-                    };
-                });
+                    this.userClient.getUser(rel.friendId).subscribe((user: User) => {
+                        obj.friendUsername = user.username;
+                        this.friends.push(obj);
+                    })
+                
+                }
+                
             });
         } catch (err) {
             console.log('An error occurred while retrieving the friends list: ' + err);
         }
+        
     }
+
+
+
 }

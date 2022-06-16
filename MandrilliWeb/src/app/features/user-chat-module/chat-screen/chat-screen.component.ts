@@ -1,3 +1,4 @@
+import { Chat } from './../../../core/model/chat/chat';
 import { ChatMessageListener } from './../../../core/events/listeners/chat-message';
 import { ChatApi } from './../../../core/api/handlers/chat-api';
 import { ActivatedRoute } from '@angular/router';
@@ -32,20 +33,22 @@ export class ChatScreenComponent implements OnInit {
             this.route.params.subscribe((params) => {
                 this.chatId = params['id'];
             });
-
-            this.chatClient.getChat(this.chatId).subscribe((data) => {
+            
+            this.chatClient.getChat(this.chatId).subscribe((data: Chat) => {
+                
                 let userInSessionId: string = this.userIdProvider.getUserId();
                 for (let user of data.users) {
-                    if (user != userInSessionId) {
+                    if (user !== userInSessionId) {
                         this.friend = user;
                     }
+                    console.log(this.friend)
                 }
                 this.joinEmitter.emit({chatId: data.chatId})
             });
         } catch (err) {
             console.log('An error occurred while retrieving the chat: ' + err);
         }
-
+        
         const refreshChat = () => {
             this.route.params.subscribe((params) => {
                 this.chatId = params['id'];
