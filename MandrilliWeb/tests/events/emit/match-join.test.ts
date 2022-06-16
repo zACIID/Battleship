@@ -4,21 +4,28 @@ import { Socket } from 'ngx-socket-io';
 import { joinMatch, leaveMatch, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
 import { MatchJoinedEmitter } from '../../../src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from '../../../src/app/core/events/emitters/match-left';
-import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
+import {
+    insertMultipleMatches,
+    MatchesSetupData,
+    teardownMatches,
+} from '../../fixtures/database/matches';
 
 let client: Socket;
+let setupData: MatchesSetupData;
 let matchIdToJoin: string;
 
 /**
  * Inserts a new match in the db
  */
 const setupDb = async () => {
-    const matches: UserMatches = await createNMatch(1);
-    matchIdToJoin = matches.matchIds[0];
+    setupData = await insertMultipleMatches(1);
+    const { matches } = setupData.insertedData;
+
+    matchIdToJoin = matches[0].matchId;
 };
 
 const teardownDb = async () => {
-    await deleteMatch(matchIdToJoin);
+    await teardownMatches(setupData);
 };
 
 const testSetup = async () => {

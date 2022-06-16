@@ -6,7 +6,7 @@ import {
     MongoDbApi,
     MongoDbSingleInsertResponse,
     MongoDpApiCredentials,
-} from './mongodb-api';
+} from './mongodb-api/mongodb-api';
 import { Chat } from '../../../../src/model/chat/chat';
 import { InsertedUser } from './users';
 import { SetupData } from '../utils';
@@ -45,7 +45,7 @@ export const insertChat = async (chatUserIds: string[] = []): Promise<InsertedCh
 
     const chatData: Chat = getChatData(chatUserIds);
     const insertedChatRes: MongoDbSingleInsertResponse = await mongoDbApi.insertChat(chatData);
-    const chatId: string = insertedChatRes.insertedId;
+    const chatId: string = insertedChatRes.insertedId.toString();
 
     return {
         chatId: chatId,

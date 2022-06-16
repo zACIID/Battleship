@@ -13,7 +13,6 @@ import { sendNotification } from '../../fixtures/api-utils/notifications';
 import { MatchFoundListener } from '../../../src/app/core/events/listeners/match-found';
 import { MatchData } from '../../../src/app/core/model/events/match-data';
 import { deleteMatch } from '../../fixtures/database/matches';
-import { MatchTerminatedListener } from '../../../src/app/core/events/listeners/match-terminated';
 
 interface MatchRequestAcceptedSetupData extends SetupData {
     insertedData: {

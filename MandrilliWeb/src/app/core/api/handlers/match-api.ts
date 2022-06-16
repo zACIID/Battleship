@@ -6,7 +6,7 @@ import { BaseAuthenticatedApi } from './base/base-authenticated-api';
 import { JwtProvider } from '../jwt-auth/jwt-provider';
 import { Match } from '../../model/match/match';
 import { BattleshipGrid } from '../../model/match/battleship-grid';
-import { StatsUpdate } from '../../model/api/match/stats-update';
+import { MatchStatsUpdate } from '../../model/api/match/stats-update';
 import { Shot } from '../../model/api/match/shot';
 import { GridCoordinates } from '../../model/match/coordinates';
 import { ApiMatch } from '../../model/api/match/match';
@@ -59,11 +59,14 @@ export class MatchApi extends BaseAuthenticatedApi {
         );
     }
 
-    public updateStats(matchId: string, statsUpdate: StatsUpdate): Observable<StatsUpdate> {
+    public updateStats(
+        matchId: string,
+        statsUpdate: MatchStatsUpdate
+    ): Observable<MatchStatsUpdate> {
         const reqPath: string = `${this.baseUrl}/api/matches/${matchId}/stats`;
 
         return this.httpClient
-            .patch<StatsUpdate>(reqPath, statsUpdate, this.createRequestOptions())
+            .patch<MatchStatsUpdate>(reqPath, statsUpdate, this.createRequestOptions())
             .pipe(catchError(this.handleError));
     }
 

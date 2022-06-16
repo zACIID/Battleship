@@ -2,54 +2,31 @@ import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
 import { joinMatch, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
-import { SetupData } from '../../fixtures/utils';
-import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
-import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
-import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
+import { authenticate } from '../../fixtures/authentication';
+import {
+    insertMultipleMatches,
+    MatchesSetupData,
+    teardownMatches,
+    InsertedMatch,
+} from '../../fixtures/database/matches';
 import { PlayerStateChangedData } from '../../../src/app/core/model/events/player-state-changed-data';
 import { PlayerStateChangedListener } from '../../../src/app/core/events/listeners/player-state-changed';
 import { changePlayerState } from '../../fixtures/api-utils/match-state';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 
-interface PlayerStateChangedSetupData extends SetupData {
-    insertedData: {
-        player1: InsertedUser;
-        player2: InsertedUser;
-        matchId: string;
-    };
-}
+interface PlayerStateChangedSetupData extends MatchesSetupData {}
 
 /**
- * Inserts two players and a new match in the database
+ * Inserts a new match in the database, along with its players,
+ * to emulate the scenario where one player wins a match.
  */
 const setupDb = async (): Promise<PlayerStateChangedSetupData> => {
-    const player1: InsertedUser = await insertUser();
-    const player2: InsertedUser = await insertUser();
-
-    const matches: UserMatches = await createNMatch(1);
-    const matchId: string = matches.matchIds[0];
-
-    return {
-        apiAuthCredentials: getCredentialsForUser(player1.userData.username),
-        insertedData: {
-            player1: player1,
-            player2: player2,
-            matchId: matchId,
-        },
-    };
+    return await insertMultipleMatches(1);
 };
 
-/**
- * Delete the two players and the match created in the setup
- * @param setupData
- */
 const teardownDb = async (setupData: PlayerStateChangedSetupData): Promise<void> => {
-    const { player1, player2, matchId } = setupData.insertedData;
-
-    await deleteUser(player1.userId);
-    await deleteUser(player2.userId);
-    await deleteMatch(matchId);
+    await teardownMatches(setupData);
 };
 
 let player1Client: Socket;
@@ -81,7 +58,11 @@ describe('Player State Changed', () => {
     });
 
     test('Should Correctly Fire Player State Changed Event', (done) => {
-        const { player1, matchId } = setupData.insertedData;
+        const { matches } = setupData.insertedData;
+        const currentMatch: InsertedMatch = matches[0];
+
+        const matchId: string = currentMatch.matchId;
+        const player1Id: string = currentMatch.playerIds[0];
 
         // Join the match with both players,
         // so that the state changed event can be listened to
@@ -129,9 +110,9 @@ describe('Player State Changed', () => {
         // Change the state of a player to make the server fire the event
         // In this case, we change the state of player1, which should raise
         // the event for every listener of the match (in this case, player1 and player2)
-        const p1Cred: LoginInfo = getCredentialsForUser(player1.userData.username);
-        authenticate(p1Cred).then((p1JwtProvider: JwtProvider) => {
-            changePlayerState(p1JwtProvider, matchId, player1.userId, newState);
+        const apiCred: LoginInfo = setupData.apiAuthCredentials;
+        authenticate(apiCred).then((jwtProvider: JwtProvider) => {
+            changePlayerState(jwtProvider, matchId, player1Id, newState);
         });
     });
 

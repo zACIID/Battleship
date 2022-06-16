@@ -2,54 +2,28 @@ import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
 import { joinMatch, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
-import { SetupData } from '../../fixtures/utils';
-import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
-import { getCredentialsForUser } from '../../fixtures/authentication';
-import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
+import {
+    InsertedMatch,
+    insertMultipleMatches,
+    MatchesSetupData,
+    teardownMatches,
+} from '../../fixtures/database/matches';
 import { MatchTerminatedData } from '../../../src/app/core/model/events/match-terminated-data';
 import { MatchTerminatedListener } from '../../../src/app/core/events/listeners/match-terminated';
 import { PlayerWonEmitter } from '../../../src/app/core/events/emitters/player-won';
-import { FriendStatusChangedListener } from '../../../src/app/core/events/listeners/friend-status-changed';
 
-interface MatchRequestAcceptedSetupData extends SetupData {
-    insertedData: {
-        player1: InsertedUser;
-        player2: InsertedUser;
-        matchId: string;
-    };
-}
+interface MatchRequestAcceptedSetupData extends MatchesSetupData {}
 
 /**
- * Inserts two players and a new match in the database,
+ * Inserts a new match in the database, along with its players,
  * to emulate the scenario where one player wins a match.
  */
 const setupDb = async (): Promise<MatchRequestAcceptedSetupData> => {
-    const player1: InsertedUser = await insertUser();
-    const player2: InsertedUser = await insertUser();
-
-    const matches: UserMatches = await createNMatch(1);
-    const matchId: string = matches.matchIds[0];
-
-    return {
-        apiAuthCredentials: getCredentialsForUser(player1.userData.username),
-        insertedData: {
-            player1: player1,
-            player2: player2,
-            matchId: matchId,
-        },
-    };
+    return await insertMultipleMatches(1);
 };
 
-/**
- * Delete the two players and the match created in the setup
- * @param setupData
- */
 const teardownDb = async (setupData: MatchRequestAcceptedSetupData): Promise<void> => {
-    const { player1, player2, matchId } = setupData.insertedData;
-
-    await deleteUser(player1.userId);
-    await deleteUser(player2.userId);
-    await deleteMatch(matchId);
+    await teardownMatches(setupData);
 };
 
 let player1Client: Socket;
@@ -81,7 +55,11 @@ describe('Player Won - Match Terminated', () => {
     });
 
     test('Should Correctly Fire Match Terminated Event', (done) => {
-        const { player2, matchId } = setupData.insertedData;
+        const { matches } = setupData.insertedData;
+        const currentMatch: InsertedMatch = matches[0];
+
+        const matchId: string = currentMatch.matchId;
+        const player2Id: string = currentMatch.playerIds[1];
 
         // Join the match with both players,
         // so that the match terminated event can be listened to
@@ -128,8 +106,8 @@ describe('Player Won - Match Terminated', () => {
         // Fire the event with player2
         const playerWonEmitter: PlayerWonEmitter = new PlayerWonEmitter(player2Client);
         playerWonEmitter.emit({
-            matchId: setupData.insertedData.matchId,
-            winnerId: player2.userId,
+            matchId: matchId,
+            winnerId: player2Id,
         });
     });
 

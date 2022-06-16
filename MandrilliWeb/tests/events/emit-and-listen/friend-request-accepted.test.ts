@@ -13,7 +13,6 @@ import { sendNotification } from '../../fixtures/api-utils/notifications';
 import { FriendStatusChangedListener } from '../../../src/app/core/events/listeners/friend-status-changed';
 import { FriendStatusChangedData } from '../../../src/app/core/model/events/friend-status-changed-data';
 import { UserStatus } from '../../../src/app/core/model/user/user';
-import { PositioningCompletedListener } from '../../../src/app/core/events/listeners/positioning-completed';
 
 interface FriendRequestAcceptedSetupData extends SetupData {
     insertedData: {
@@ -67,18 +66,20 @@ const teardownDb = async (setupData: FriendRequestAcceptedSetupData): Promise<vo
     await deleteUser(receiver.userId);
 };
 
-let client: Socket;
+let senderClient: Socket;
+let receiverClient: Socket;
 let setupData: FriendRequestAcceptedSetupData;
 
 const testSetup = async () => {
     TestBed.configureTestingModule(socketIoTestbedConfig);
-    client = TestBed.inject(Socket);
+    senderClient = TestBed.inject(Socket);
+    receiverClient = TestBed.inject(Socket);
 
     setupData = await setupDb();
 };
 
 const testTeardown = async () => {
-    client.disconnect();
+    senderClient.disconnect();
 
     await teardownDb(setupData);
 };
@@ -97,11 +98,12 @@ describe('Friend Request Accepted - Friend Status Changed', () => {
 
         // Join the server with the sender, so that the event that notifies
         // the sender of the new friend can be listened to
-        joinServer(sender.userId, client);
+        joinServer(sender.userId, senderClient);
+        joinServer(receiver.userId, receiverClient);
 
         // Listen to the friend status changed event
         const statusChangedListener: FriendStatusChangedListener = new FriendStatusChangedListener(
-            client
+            senderClient
         );
         statusChangedListener.listen((eventData: FriendStatusChangedData) => {
             // The new friend of the sender should be the receiver
@@ -115,7 +117,7 @@ describe('Friend Request Accepted - Friend Status Changed', () => {
 
         // Accept the friend request
         const friendReqEmitter: FriendRequestAcceptedEmitter = new FriendRequestAcceptedEmitter(
-            client
+            receiverClient
         );
         friendReqEmitter.emit({
             senderId: sender.userId,
@@ -125,14 +127,14 @@ describe('Friend Request Accepted - Friend Status Changed', () => {
 
     test('Emitter Event Name Should Be "friend-request-accepted"', () => {
         const friendReqEmitter: FriendRequestAcceptedEmitter = new FriendRequestAcceptedEmitter(
-            client
+            senderClient
         );
 
         expect(friendReqEmitter.eventName).toEqual('friend-request-accepted');
     });
 
     test('Listener Event Name Should Be "friend-status-changed"', () => {
-        const listener: FriendStatusChangedListener = new FriendStatusChangedListener(client);
+        const listener: FriendStatusChangedListener = new FriendStatusChangedListener(senderClient);
 
         expect(listener.eventName).toEqual('friend-status-changed');
     });

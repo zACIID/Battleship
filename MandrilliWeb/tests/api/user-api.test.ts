@@ -1,5 +1,6 @@
-import { InsertedUser, insertUser, deleteUser } from '../fixtures/database/users';
 import { HttpClient } from '@angular/common/http';
+
+import { InsertedUser, insertUser, deleteUser } from '../fixtures/database/users';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
@@ -8,16 +9,19 @@ import { UserApi, UsernameUpdate } from '../../src/app/core/api/handlers/user-ap
 import { User } from '../../src/app/core/model/user/user';
 import { ApiUserStats } from '../../src/app/core/model/api/user/stats';
 import { UserStats } from '../../src/app/core/model/user/stats';
-import { createNMatch, UserMatches } from 'tests/fixtures/database/matches';
-import { testTeardown } from './match-api.test';
+import {
+    insertMultipleMatches,
+    MatchesSetupData,
+    teardownMatches,
+} from 'tests/fixtures/database/matches';
 import { Match } from 'src/app/core/model/match/match';
 
 let httpClient: HttpClient;
 let mainUser: InsertedUser;
-let fakeUser: InsertedUser;
+let secondUser: InsertedUser;
 let jwtProviderMainUser: JwtProvider;
-let jwtProviderFakeUser: JwtProvider;
-let wrongUserId: string = '';
+let jwtProviderSecondUser: JwtProvider;
+const wrongUserId: string = 'wrong-user-id';
 let wrongPassword: string;
 let wrongUsername: string;
 
@@ -25,8 +29,8 @@ describe('Get User', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
+        const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(userCred);
     });
 
     afterEach(async () => {
@@ -76,22 +80,24 @@ describe('Get Multiple Users', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
-        fakeUser = await insertUser();
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
-        const fakeModCred: LoginInfo = getCredentialsForUser(fakeUser.userData.username);
-        jwtProviderFakeUser = await authenticate(fakeModCred);
+        secondUser = await insertUser();
+
+        const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(userCred);
+
+        const secondUserCred: LoginInfo = getCredentialsForUser(secondUser.userData.username);
+        jwtProviderSecondUser = await authenticate(secondUserCred);
     });
 
     afterEach(async () => {
         await deleteUser(mainUser.userId);
-        await deleteUser(fakeUser.userId);
+        await deleteUser(secondUser.userId);
     });
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
 
-        userApi.getMultipleUsers([mainUser.userId, fakeUser.userId]).subscribe({
+        userApi.getMultipleUsers([mainUser.userId, secondUser.userId]).subscribe({
             next: (users: User[]) => {
                 // Expect non-empty response
                 expect(users).toBeTruthy();
@@ -149,8 +155,9 @@ describe('Delete User', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
+
+        const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(userCred);
     });
 
     afterEach(async () => {});
@@ -158,7 +165,6 @@ describe('Delete User', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProviderMainUser);
         userApi.deleteUser(mainUser.userId).subscribe({
-            next: (nun: void) => {},
             complete: () => {
                 done();
             },
@@ -184,8 +190,9 @@ describe('Update Password', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
+
+        const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(userCred);
     });
 
     afterEach(async () => {
@@ -234,8 +241,9 @@ describe('Update Username', () => {
     beforeEach(async () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
+
+        const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(userCred);
     });
 
     afterEach(async () => {
@@ -295,20 +303,23 @@ describe('Update Username', () => {
 
 describe('Get Matches', () => {
     let jwtProvider: JwtProvider;
-    let setupData: UserMatches;
+    let matchesSetupData: MatchesSetupData;
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        setupData = await createNMatch();
-        jwtProvider = await authenticate(getCredentialsForUser(setupData.userInfo.username));
+        matchesSetupData = await insertMultipleMatches(3);
+        jwtProvider = await authenticate(matchesSetupData.apiAuthCredentials);
     });
 
     afterEach(async () => {
-        await testTeardown();
+        await teardownMatches(matchesSetupData);
     });
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProvider);
-        userApi.getUserMatches(setupData.userInfo.userId).subscribe({
+        const { matches } = matchesSetupData.insertedData;
+        const userId: string = matches[0].playerIds[0];
+
+        userApi.getUserMatches(userId).subscribe({
             next: (matches: Match[]) => {
                 // Expect non-empty response
                 expect(matches).toBeTruthy();

@@ -1,12 +1,17 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import * as dbUser from '../../../../src/model/user/user';
-import * as dbRelation from '../../../../src/model/user/relationship';
-import * as dbMatch from '../../../../src/model/match/match';
-import * as dbChat from '../../../../src/model/chat/chat';
-import * as dbMatchmaking from '../../../../src/model/matchmaking/queue-entry';
-import { environment } from '../../../src/environments/environment';
+import * as dbUser from '../../../../../src/model/user/user';
+import * as dbRelation from '../../../../../src/model/user/relationship';
+import * as dbMatch from '../../../../../src/model/match/match';
+import * as dbMatchStats from '../../../../../src/model/match/match-stats';
+import * as dbPlayerState from '../../../../../src/model/match/state/player-state';
+import * as dbChat from '../../../../../src/model/chat/chat';
+import * as dbMatchmaking from '../../../../../src/model/matchmaking/queue-entry';
+import { environment } from '../../../../src/environments/environment';
 import { Document, FilterQuery, Types } from 'mongoose';
+import { BattleshipGrid } from '../../../../src/app/core/model/match/battleship-grid';
+import { MongoDbApiMatch, toMongoDbApiMatch } from './api-match';
+import { MongoDbApiChat, toMongoDbApiChat } from './api-chat';
 
 const dbCollectionNames = {
     userCollection: 'Users',
@@ -43,6 +48,8 @@ export const getApiCredentials = async (): Promise<MongoDpApiCredentials> => {
     }
 };
 
+export type DocId = string | Types.ObjectId;
+
 interface MongoDbReqParams {
     requestPath: string;
     body: MongoDbReqBody;
@@ -72,6 +79,10 @@ interface MongoDbInsertReq<D> extends MongoDbReqBody {
     document: D;
 }
 
+export interface MongoDbSingleInsertResponse {
+    insertedId: DocId;
+}
+
 export interface MongoDbFilterReq extends MongoDbReqBody {
     /**
      * Filters for a query
@@ -85,23 +96,21 @@ export interface MongoDbFilterReq extends MongoDbReqBody {
  * Wrapper for actual ObjectIds that needs to be sent in order to tell
  * the MongoDb Data Api that the value is indeed an ObjectId
  */
-interface RequestObjectId {
+export class RequestObjectId {
     $oid: DocId;
-}
 
-export interface MongoDbSingleInsertResponse {
-    insertedId: string;
+    constructor(objId: DocId) {
+        this.$oid = objId;
+    }
 }
-
-export type DocId = string | Types.ObjectId;
 
 export class MongoDbApi {
-    private readonly _credentials: MongoDpApiCredentials;
-    private readonly _verbose: boolean;
+    private readonly credentials: MongoDpApiCredentials;
+    private readonly verbose: boolean;
 
     public constructor(credentials: MongoDpApiCredentials, verbose: boolean = false) {
-        this._credentials = credentials;
-        this._verbose = verbose;
+        this.credentials = credentials;
+        this.verbose = verbose;
     }
 
     /*
@@ -180,8 +189,8 @@ export class MongoDbApi {
         collection: string
     ): Promise<D> {
         const reqBody: MongoDbFilterReq = {
-            dataSource: this._credentials.clusterName,
-            database: this._credentials.dbName,
+            dataSource: this.credentials.clusterName,
+            database: this.credentials.dbName,
             collection: collection,
             filter: filter,
         };
@@ -197,31 +206,18 @@ export class MongoDbApi {
     }
 
     public async insertChat(chatData: dbChat.Chat): Promise<MongoDbSingleInsertResponse> {
-        return await this.insertDocument<dbChat.Chat>(chatData, dbCollectionNames.chatCollection);
-    }
-
-    public async insertMatch(matchData: dbMatch.Match): Promise<MongoDbSingleInsertResponse> {
-        return await this.insertDocument<dbMatch.Match>(
-            matchData,
-            dbCollectionNames.matchCollection
+        return await this.insertDocument<MongoDbApiChat>(
+            toMongoDbApiChat(chatData),
+            dbCollectionNames.chatCollection
         );
     }
 
-    //// TODO can't user backend code here - remove?
-    //public async insertNotification(
-    //    notificationData: dbNotification.RequestNotification,
-    //    receiver: string
-    //): Promise<dbNotification.RequestNotification> {
-    //    let userReceiver: dbUser.UserDocument = await getUserById(Types.ObjectId(receiver));
-    //    let notification: dbNotification.RequestNotification;
-    //    await userReceiver.addNotification(notificationData.type, notificationData.sender);
-    //    notification = await getLastNotification(userReceiver.id);
-    //    return notification
-    //        ? Promise.resolve(notification)
-    //        : Promise.reject(
-    //              'Bro hai sbanfato te qualcosa nel settuppare il test di notifications'
-    //          );
-    //}
+    public async insertMatch(matchData: dbMatch.Match): Promise<MongoDbSingleInsertResponse> {
+        return await this.insertDocument<MongoDbApiMatch>(
+            toMongoDbApiMatch(matchData),
+            dbCollectionNames.matchCollection
+        );
+    }
 
     public async insertMatchmakingEntry(
         entryData: dbMatchmaking.QueueEntry
@@ -247,8 +243,8 @@ export class MongoDbApi {
         collection: string
     ): Promise<MongoDbSingleInsertResponse> {
         const reqBody: MongoDbInsertReq<I> = {
-            dataSource: this._credentials.clusterName,
-            database: this._credentials.dbName,
+            dataSource: this.credentials.clusterName,
+            database: this.credentials.dbName,
             collection: collection,
             document: insertData,
         };
@@ -349,8 +345,8 @@ export class MongoDbApi {
         filter: FilterQuery<Document> = {}
     ): Promise<void> {
         const reqBody: MongoDbFilterReq = {
-            dataSource: this._credentials.clusterName,
-            database: this._credentials.dbName,
+            dataSource: this.credentials.clusterName,
+            database: this.credentials.dbName,
             collection: collection,
             filter: filter,
         };
@@ -367,13 +363,13 @@ export class MongoDbApi {
      */
     private async sendMongoDbRequest<R>(reqParams: MongoDbReqParams): Promise<R> {
         try {
-            const url: string = `${this._credentials.apiBaseUrl}${reqParams.requestPath}`;
+            const url: string = `${this.credentials.apiBaseUrl}${reqParams.requestPath}`;
             const reqData: Object = reqParams.body;
 
             const reqHeaders = {
                 'Content-Type': 'application/json',
                 'Access-Control-Request-Headers': '*',
-                'api-key': this._credentials.apiKey,
+                'api-key': this.credentials.apiKey,
             };
             const axiosReqConfig: AxiosRequestConfig = {
                 headers: reqHeaders,
@@ -395,7 +391,7 @@ export class MongoDbApi {
 
     private logRequest(reqParams: MongoDbReqParams) {
         // Do not log if not verbose
-        if (!this._verbose) {
+        if (!this.verbose) {
             return;
         }
 

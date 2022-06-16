@@ -2,54 +2,31 @@ import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
 
 import { joinMatch, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
-import { SetupData } from '../../fixtures/utils';
-import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
-import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
-import { createNMatch, deleteMatch, UserMatches } from '../../fixtures/database/matches';
+import { authenticate } from '../../fixtures/authentication';
+import {
+    InsertedMatch,
+    insertMultipleMatches,
+    MatchesSetupData,
+    teardownMatches,
+} from '../../fixtures/database/matches';
 import { changePlayerState } from '../../fixtures/api-utils/match-state';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { GenericMessage } from '../../../src/app/core/model/events/generic-message';
 import { PositioningCompletedListener } from '../../../src/app/core/events/listeners/positioning-completed';
 
-interface PositioningCompletedSetupData extends SetupData {
-    insertedData: {
-        player1: InsertedUser;
-        player2: InsertedUser;
-        matchId: string;
-    };
-}
+interface PositioningCompletedSetupData extends MatchesSetupData {}
 
 /**
- * Inserts two players and a new match in the database
+ * Inserts a new match in the database, along with its players,
+ * to emulate the scenario where one player wins a match.
  */
 const setupDb = async (): Promise<PositioningCompletedSetupData> => {
-    const player1: InsertedUser = await insertUser();
-    const player2: InsertedUser = await insertUser();
-
-    const matches: UserMatches = await createNMatch(1);
-    const matchId: string = matches.matchIds[0];
-
-    return {
-        apiAuthCredentials: getCredentialsForUser(player1.userData.username),
-        insertedData: {
-            player1: player1,
-            player2: player2,
-            matchId: matchId,
-        },
-    };
+    return await insertMultipleMatches(1);
 };
 
-/**
- * Delete the two players and the match created in the setup
- * @param setupData
- */
 const teardownDb = async (setupData: PositioningCompletedSetupData): Promise<void> => {
-    const { player1, player2, matchId } = setupData.insertedData;
-
-    await deleteUser(player1.userId);
-    await deleteUser(player2.userId);
-    await deleteMatch(matchId);
+    await teardownMatches(setupData);
 };
 
 let player1Client: Socket;
@@ -81,7 +58,12 @@ describe('Positioning Completed', () => {
     });
 
     test('Should Correctly Fire Positioning Completed Event', (done) => {
-        const { player1, player2, matchId } = setupData.insertedData;
+        const { matches } = setupData.insertedData;
+        const currentMatch: InsertedMatch = matches[0];
+
+        const matchId: string = currentMatch.matchId;
+        const player1Id: string = currentMatch.playerIds[0];
+        const player2Id: string = currentMatch.playerIds[1];
 
         // Join the match with both players,
         // so that the state changed event can be listened to
@@ -126,13 +108,10 @@ describe('Positioning Completed', () => {
         });
 
         // Change the state of both the players to fire the positioning completed event
-        const p1Cred: LoginInfo = getCredentialsForUser(player1.userData.username);
-        authenticate(p1Cred).then((p1JwtProvider: JwtProvider) => {
-            changePlayerState(p1JwtProvider, matchId, player1.userId, true);
-        });
-        const p2Cred: LoginInfo = getCredentialsForUser(player2.userData.username);
-        authenticate(p2Cred).then((p2JwtProvider: JwtProvider) => {
-            changePlayerState(p2JwtProvider, matchId, player2.userId, true);
+        const apiCred: LoginInfo = setupData.apiAuthCredentials;
+        authenticate(apiCred).then((jwtProvider: JwtProvider) => {
+            changePlayerState(jwtProvider, matchId, player1Id, true);
+            changePlayerState(jwtProvider, matchId, player2Id, true);
         });
     });
 

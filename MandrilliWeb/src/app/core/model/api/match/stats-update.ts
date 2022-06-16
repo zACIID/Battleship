@@ -1,4 +1,4 @@
-export interface StatsUpdate {
+export interface MatchStatsUpdate {
     /**
      * Id of player that won the match
      */

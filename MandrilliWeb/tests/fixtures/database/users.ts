@@ -5,7 +5,7 @@ import {
     MongoDbApi,
     MongoDbSingleInsertResponse,
     MongoDpApiCredentials,
-} from './mongodb-api';
+} from './mongodb-api/mongodb-api';
 import { knownBcryptDigest } from '../authentication';
 import { randomInt } from 'crypto';
 

@@ -6,17 +6,12 @@ import { injectHttpClient } from '../fixtures/http-client';
 import { deleteUser, InsertedUser, insertUser } from 'tests/fixtures/database/users';
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { Relationship } from '../../src/app/core/model/user/relationship';
-import {
-    ChatApiTestingSetupData,
-    deleteChat,
-    insertChat,
-    InsertedChat,
-} from '../fixtures/database/chats';
+import { deleteChat, insertChat, InsertedChat } from '../fixtures/database/chats';
 import {
     getApiCredentials,
     MongoDbApi,
     MongoDpApiCredentials,
-} from 'tests/fixtures/database/mongodb-api';
+} from 'tests/fixtures/database/mongodb-api/mongodb-api';
 import { Types } from 'mongoose';
 
 let httpClient: HttpClient;

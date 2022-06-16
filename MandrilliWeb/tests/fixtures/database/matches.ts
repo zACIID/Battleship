@@ -5,31 +5,32 @@ import {
     MongoDbApi,
     MongoDbSingleInsertResponse,
     MongoDpApiCredentials,
-} from './mongodb-api';
-import { deleteMultipleUsers, getUserData, InsertedUser, insertUser } from './users';
-import { User } from '../../../../src/model/user/user';
+} from './mongodb-api/mongodb-api';
+import { deleteMultipleUsers, InsertedUser, insertUser } from './users';
 import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
-import { deleteMultipleChats } from './chats';
+import { deleteMultipleChats, insertChat, InsertedChat } from './chats';
 import { ShipTypes } from '../../../../src/model/match/state/ship';
+import { Match } from '../../../../src/model/match/match';
+import { SetupData } from '../utils';
+import { getCredentialsForUser } from '../authentication';
 
-export interface UserMatches {
-    userInfo: { userId: string; username: string };
-    matchIds: string[];
+export interface MatchesSetupData extends SetupData {
+    insertedData: {
+        authUser: InsertedUser;
+        matches: InsertedMatch[];
+    };
+}
+
+export interface InsertedMatch {
+    matchId: string;
+    playerIds: string[];
+    observerIds: string[];
+    chatIds: string[];
 }
 
 let apiCred: MongoDpApiCredentials;
-let userID: string = '';
 let mongoDbApi: MongoDbApi;
-let firstPlayer: InsertedUser;
-let secondPlayer: InsertedUser;
-let userObserver: InsertedUser;
-let playerArray: Types.ObjectId[];
-let playerChat: MongoDbSingleInsertResponse;
-let observerChat: MongoDbSingleInsertResponse;
-let match: MongoDbSingleInsertResponse;
-let repeatUser: User;
-let userBody: InsertedUser;
-let playerGrid: BattleshipGrid = {
+const playerGrid: BattleshipGrid = {
     ships: [
         {
             coordinates: [
@@ -52,28 +53,15 @@ let playerGrid: BattleshipGrid = {
     shotsReceived: [],
 };
 
-export const createMatch = async (userData?: User): Promise<UserMatches> => {
-    apiCred = await getApiCredentials();
-    mongoDbApi = new MongoDbApi(apiCred);
-    if (userData) {
-        userID = userID === '' ? (await mongoDbApi.insertUser(userData)).insertedId : userID;
-        userBody = {
-            userId: userID,
-            userData: userData,
-        };
-    }
-    firstPlayer = !userData ? await insertUser() : userBody;
-    secondPlayer = await insertUser();
-    userObserver = await insertUser();
-    playerArray = [Types.ObjectId(firstPlayer.userId), Types.ObjectId(secondPlayer.userId)];
-    playerChat = await mongoDbApi.insertChat({ users: playerArray, messages: [] });
-    observerChat = await mongoDbApi.insertChat({
-        users: [Types.ObjectId(userObserver.userId)],
-        messages: [],
-    });
-    match = await mongoDbApi.insertMatch({
+export const getMatchData = (
+    player1Id: string,
+    player2Id: string,
+    pChatId: string,
+    obsChatId: string
+): Match => {
+    return {
         player1: {
-            playerId: playerArray[0],
+            playerId: Types.ObjectId(player1Id),
             grid: {
                 ships: [{ coordinates: playerGrid.ships[0].coordinates, type: ShipTypes.Cruiser }],
                 shotsReceived: [],
@@ -81,66 +69,88 @@ export const createMatch = async (userData?: User): Promise<UserMatches> => {
             isReady: false,
         },
         player2: {
-            playerId: playerArray[1],
+            playerId: Types.ObjectId(player2Id),
             grid: { ships: [], shotsReceived: [] },
             isReady: false,
         },
-        playersChat: Types.ObjectId(playerChat.insertedId),
-        observersChat: Types.ObjectId(observerChat.insertedId),
+        playersChat: Types.ObjectId(pChatId),
+        observersChat: Types.ObjectId(obsChatId),
         stats: {
-            winner: playerArray[0],
+            winner: Types.ObjectId(player1Id),
             startTime: new Date(),
             endTime: new Date(),
             totalShots: 0,
             shipsDestroyed: 0,
         },
-    });
-
-    return Promise.resolve({
-        userInfo: {
-            userId: firstPlayer.userId,
-            username: firstPlayer.userData.username,
-        },
-        matchIds: [match.insertedId],
-    });
+    };
 };
 
-export async function createNMatch(n: number = 5): Promise<UserMatches> {
-    let matchIds: string[];
-    repeatUser = getUserData();
-    matchIds = await createNMatchAux(n);
-    userID = '';
-
-    return Promise.resolve({
-        userInfo: {
-            userId: userBody.userId,
-            username: repeatUser.username,
-        },
-        matchIds: matchIds,
-    });
-}
-
-async function createNMatchAux(n: number, ids: string[] = []): Promise<string[]> {
-    if (n > 0) {
-        ids.push((await createMatch(repeatUser)).matchIds[0]);
-        return createNMatchAux(n - 1, ids);
-    } else return Promise.resolve(ids);
-}
-
-/** TODO va sistemato il modo in cui viene fatto teardown.
- *      Al momento il database è lasciato sporco perché, anche se si chiama questa funzione,
- *      dato che le variabili firstPlayer, secondPlayer, etc. sono globali rispetto al file,
- *      ogni volta che viene chiamato createNMatch vengono sovrascritte, dunque si perdono
- *      i riferimenti ai documenti inseriti.
- *      Bisognerebbe fare in modo che createNMatch ritornasse tutti i riferimenti ai documenti creati,
- *      tipo un oggetto "setupData", in modo che poi dai test si può fare il teardown
+/**
+ * Inserts a match into the database. If match data is not provided,
+ * some is generated. Such default data is composed of two players,
+ * one observer and two chats.
+ * @param matchData
  */
-export const teardownDbMatchApiTesting = async (): Promise<boolean> => {
-    await deleteMultipleUsers([firstPlayer.userId, secondPlayer.userId, userObserver.userId]);
-    await deleteMultipleChats([playerChat.insertedId, observerChat.insertedId]);
-    await deleteMatch(match.insertedId);
+export const insertMatch = async (matchData?: Match): Promise<InsertedMatch> => {
+    let playerIds: string[];
+    let obsIds: string[];
+    let chatIds: string[];
 
-    return Promise.resolve(true);
+    // If not provided, generate some match data to insert
+    if (!matchData) {
+        const firstPlayer: InsertedUser = await insertUser();
+        const secondPlayer: InsertedUser = await insertUser();
+        const userObserver: InsertedUser = await insertUser();
+
+        playerIds = [firstPlayer.userId, secondPlayer.userId];
+        obsIds = [userObserver.userId];
+
+        const playerChat: InsertedChat = await insertChat(playerIds);
+        const observerChat: InsertedChat = await insertChat([userObserver.userId]);
+
+        chatIds = [playerChat.chatId, observerChat.chatId];
+
+        matchData = getMatchData(
+            firstPlayer.userId,
+            secondPlayer.userId,
+            playerChat.chatId,
+            observerChat.chatId
+        );
+    } else {
+        const { player1, player2, observersChat, playersChat } = matchData;
+        playerIds = [player1.playerId.toString(), player2.playerId.toString()];
+        obsIds = []; // No observers retrievable from provided data
+        chatIds = [playersChat.toString(), observersChat.toString()];
+    }
+
+    apiCred = await getApiCredentials();
+    mongoDbApi = new MongoDbApi(apiCred);
+
+    const matchId: MongoDbSingleInsertResponse = await mongoDbApi.insertMatch(matchData);
+
+    return {
+        matchId: matchId.insertedId.toString(),
+        playerIds: playerIds,
+        observerIds: obsIds,
+        chatIds: chatIds,
+    };
+};
+
+export const insertMultipleMatches = async (nMatches: number): Promise<MatchesSetupData> => {
+    const matches: InsertedMatch[] = [];
+    for (let i = 0; i < nMatches; i++) {
+        matches.push(await insertMatch());
+    }
+
+    const userToAuthWith: InsertedUser = await insertUser();
+
+    return {
+        apiAuthCredentials: getCredentialsForUser(userToAuthWith.userData.username),
+        insertedData: {
+            authUser: userToAuthWith,
+            matches: matches,
+        },
+    };
 };
 
 export const deleteMatch = async (matchId: DocId): Promise<void> => {
@@ -152,4 +162,30 @@ export const deleteMultipleMatches = async (matchIds: DocId[]): Promise<void> =>
     const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
 
     await mongoDbApi.deleteMultipleMatches(matchIds);
+};
+
+/**
+ * Deletes from the database all the data created during the
+ * setup of multiple matches. This includes matches themselves
+ * as well as all the chats and users that were created.
+ * @param setupData
+ */
+export const teardownMatches = async (setupData: MatchesSetupData) => {
+    // Gather all the ids of the matches, users, chats that have to be deleted
+    const { authUser } = setupData.insertedData;
+    let userIdsToDelete: string[] = [authUser.userId];
+    let chatIdsToDelete: string[] = [];
+    let matchIdsToDelete: string[] = [];
+    setupData.insertedData.matches.forEach((insMatch: InsertedMatch) => {
+        matchIdsToDelete = matchIdsToDelete.concat([insMatch.matchId]);
+
+        userIdsToDelete = userIdsToDelete.concat(insMatch.playerIds);
+        userIdsToDelete = userIdsToDelete.concat(insMatch.observerIds);
+
+        chatIdsToDelete = chatIdsToDelete.concat(insMatch.chatIds);
+    });
+
+    await deleteMultipleMatches(matchIdsToDelete);
+    await deleteMultipleUsers(userIdsToDelete);
+    await deleteMultipleChats(chatIdsToDelete);
 };

@@ -45,9 +45,10 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
      */
     private async userTeardown(userId: string): Promise<void> {
         // TODO check if he has to leave a match and, if yes, notify match-terminated
-        //  this needs a function like findMatchForUser(userId) in order to get the
-        //  match that the user is in. Such function should return the latest match
-        //  where one of the players is the user.
+        //      this needs a function like findMatchForUser(userId) in order to get the
+        //      match that the user is in. Such function should return the latest match
+        //      where one of the players is the user.
+        //  Also Remove the user from the matchmaking queue if he is in there
 
         await setUserOffline(this.ioServer, userId);
     }
