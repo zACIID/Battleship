@@ -18,3 +18,7 @@
 
 
 <button class="button mt-1 is-small is-info is-fullwidth" (click)="newModerator(newModUsername.value, newModPassword.value)">Create moderator</button>
+
+<div  class="width-80 margin-auto has-text-centered height-20px mt-6">
+    <p *ngIf="userMessage.error" class="has-text-warning is-size-5">{{userMessage.errorMessage}}</p>
+</div>

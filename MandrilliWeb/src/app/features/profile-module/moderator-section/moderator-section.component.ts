@@ -1,6 +1,6 @@
+import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { LoginInfo } from './../../../core/api/handlers/auth-api';
-import { UserApi } from './../../../core/api/handlers/user-api';
 import { ModeratorApi } from './../../../core/api/handlers/moderator-api';
 import { Component, OnInit } from '@angular/core';
 
@@ -11,6 +11,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ModeratorSectionComponent implements OnInit {
     public userInSessionId: string = '';
+    public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
 
     constructor(
         private moderatorClient: ModeratorApi,
@@ -26,6 +27,8 @@ export class ModeratorSectionComponent implements OnInit {
         try {
             this.moderatorClient.banUser(username).subscribe(()=>{
                 console.log("User banned: " + username);
+                this.userMessage.error = true;
+                this.userMessage.errorMessage = "Banned: " + username;
             });
         } catch (err) {
             console.log('An error occurred while banning a user: ' + err);
@@ -37,6 +40,8 @@ export class ModeratorSectionComponent implements OnInit {
             let loginInfo: LoginInfo = { username: usrnm, password: pwd };
             this.moderatorClient.addModerator(loginInfo).subscribe((data) => {
                 console.log('Correctly added: ' + data.username);
+                this.userMessage.error = true;
+                this.userMessage.errorMessage = "Created: " + usrnm;
             });
         } catch (err) {
             console.log('An error occurred while creating a new moderator: ' + err);
