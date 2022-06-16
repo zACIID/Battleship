@@ -13,7 +13,7 @@ import {
     insertMultipleMatches,
     MatchesSetupData,
     teardownMatches,
-} from 'tests/fixtures/database/matches';
+} from '../fixtures/database/matches';
 import { Match } from 'src/app/core/model/match/match';
 
 let httpClient: HttpClient;
@@ -306,7 +306,7 @@ describe('Get Matches', () => {
     let matchesSetupData: MatchesSetupData;
     beforeEach(async () => {
         httpClient = injectHttpClient();
-        matchesSetupData = await insertMultipleMatches(3);
+        matchesSetupData = await insertMultipleMatches(2);
         jwtProvider = await authenticate(matchesSetupData.apiAuthCredentials);
     });
 

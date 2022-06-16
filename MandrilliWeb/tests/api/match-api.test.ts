@@ -53,7 +53,7 @@ const gridUpdate: BattleshipGrid = {
 
 const testSetup = async () => {
     httpClient = injectHttpClient();
-    setupData = await insertMultipleMatches(3);
+    setupData = await insertMultipleMatches(2);
     userWithNoMatch = await insertUser();
 
     jwtProvider = await authenticate(setupData.apiAuthCredentials);

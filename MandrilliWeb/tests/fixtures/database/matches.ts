@@ -124,7 +124,7 @@ export const insertMatch = async (matchData?: Match): Promise<InsertedMatch> => 
     }
 
     apiCred = await getApiCredentials();
-    mongoDbApi = new MongoDbApi(apiCred);
+    mongoDbApi = new MongoDbApi(apiCred, true);
 
     const matchId: MongoDbSingleInsertResponse = await mongoDbApi.insertMatch(matchData);
 

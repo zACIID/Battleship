@@ -1,4 +1,4 @@
-import { RelationshipApi } from 'src/app/core/api/handlers/relationship-api';
+import { RelationshipApi } from '../../src/app/core/api/handlers/relationship-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { HttpClient } from '@angular/common/http';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
@@ -11,7 +11,7 @@ import {
     getApiCredentials,
     MongoDbApi,
     MongoDpApiCredentials,
-} from 'tests/fixtures/database/mongodb-api/mongodb-api';
+} from '../fixtures/database/mongodb-api/mongodb-api';
 import { Types } from 'mongoose';
 
 let httpClient: HttpClient;

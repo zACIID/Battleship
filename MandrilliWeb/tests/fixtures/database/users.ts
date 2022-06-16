@@ -46,7 +46,7 @@ export const insertUser = async (userData?: User): Promise<InsertedUser> => {
 
     userData = userData ? userData : getUserData();
     const insertUserRes: MongoDbSingleInsertResponse = await mongoDbApi.insertUser(userData);
-    const userId: string = insertUserRes.insertedId;
+    const userId: string = insertUserRes.insertedId.toString();
 
     return {
         userId: userId,
