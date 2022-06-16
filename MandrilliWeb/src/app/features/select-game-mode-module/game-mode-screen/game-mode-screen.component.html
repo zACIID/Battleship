@@ -25,26 +25,28 @@
 
                 <div class="column height-20 is-half mr-6 has-text-centered ">
 
-                    <div class="box has-background-light pointer" (click)="startMatchmaking()">
-                        <strong class="is-size-3 has-weight-bold is-vcentered">Casual game</strong>
-                    </div>
+                    <button class="button is-fullwidth height-100 has-background-light pointer" (click)="startMatchmaking()" [disabled]="inQueue">
+                        <strong id="casual-button" class="is-size-3 has-weight-bold is-vcentered">Casual game</strong>
+                    </button>
                     <p class="has-text-light is-size-5 p-3"> Play with a random user thanks to a skill based matchmaking !</p>
                         
                 </div>
 
                 <div class="column height-20 is-half has-text-centered">
 
-                    <div class="box has-background-light pointer" [routerLink]="['/play-together']">
+                    <button class="button is-fullwidth height-100 has-background-light pointer" [routerLink]="['/play-together']">
                         <strong class="is-size-3 has-weight-bold ">Play with a friend </strong>
-                    </div>
+                    </button>
                     <p class="has-text-light is-size-5 p-3"> Select an online user from your friends list and fight him !</p>
                     
                 </div>
 
                 
             </div>
-            <div class="width-80 margin-auto has-text-centered mt-6">
-                <p *ngIf="inQueue" class="is-size-4 has-weight-semibold has-text-danger">Waiting for another player ...</p>
+            <div *ngIf="inQueue" class="width-80 margin-auto has-text-centered mt-6">
+                <strong class="is-size-3 has-weight-bold has-text-danger">Waiting for another player ...</strong>
+                <br>
+                <button class="width-40 margin-auto button is-warning" (click)="endMatchmaking()">Leave queue</button>
             </div>
             
 

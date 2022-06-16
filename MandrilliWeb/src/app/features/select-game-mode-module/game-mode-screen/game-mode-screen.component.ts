@@ -35,6 +35,12 @@ export class GameModeScreenComponent implements OnInit {
     public startMatchmaking() {
 
         if(!this.inQueue){
+
+            let btn = document.getElementById("casual-button");
+            if(btn){
+                btn.textContent = "In queue";
+            }
+
             this.queue.enqueue(this.userInSessionId).subscribe((res: EnqueueResponse) => {
 
             const matchFound = async (data: MatchData): Promise<void> => {
@@ -47,5 +53,15 @@ export class GameModeScreenComponent implements OnInit {
             this.inQueue = true;
         }
         
+    }
+
+    public endMatchmaking() {
+
+        this.queue.removeFromQueue(this.userIdProvider.getUserId()).subscribe()
+        this.inQueue = false;
+        let btn = document.getElementById("casual-button");
+        if(btn){
+            btn.textContent = "Casual game";
+        }
     }
 }

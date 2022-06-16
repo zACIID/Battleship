@@ -89,6 +89,10 @@
   height: 80%
 }
 
+.height-100{
+  height: 100%
+}
+
 .boardLabel{
   border: 3px solid gray
 }

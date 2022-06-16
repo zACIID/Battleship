@@ -78,7 +78,7 @@ export class MatchmakingEngine {
         // Until there are at least 2 players in the queue,
         // keep trying to arrange matches
         while (queuedPlayers.length > 1) {
-            console.log("UEI PEEEAR")
+            
             const player: QueueEntry = queuedPlayers.pop();
             const opponent: QueueEntry = this.findOpponent(player, queuedPlayers);
 
