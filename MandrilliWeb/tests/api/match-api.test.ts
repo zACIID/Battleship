@@ -83,8 +83,8 @@ describe('Get Match', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
 
-        const { matches } = setupData.insertedData;
-        matchApi.getMatch(matches[0].matchId).subscribe({
+        const { insMatches } = setupData.insertedData;
+        matchApi.getMatch(insMatches[0].matchId).subscribe({
             next: (match: Match) => {
                 // Expect non-empty response
                 expect(match).toBeTruthy();
@@ -137,25 +137,27 @@ describe('Set Ready', () => {
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
         const newState: boolean = true;
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
-        matchApi.setReadyState(matches[0].matchId, matches[0].playerIds[0], newState).subscribe({
-            next: (ready: boolean) => {
-                // Expect non-empty response
-                expect(ready).toEqual(newState);
-            },
-            complete: () => {
-                done();
-            },
-        });
+        matchApi
+            .setReadyState(insMatches[0].matchId, insMatches[0].playerIds[0], newState)
+            .subscribe({
+                next: (ready: boolean) => {
+                    // Expect non-empty response
+                    expect(ready).toEqual(newState);
+                },
+                complete: () => {
+                    done();
+                },
+            });
     });
 
     // wrong matchId
     test('Should Throw', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
 
-        const { matches } = setupData.insertedData;
-        matchApi.setReadyState(wrongMatchId, matches[0].playerIds[0], true).subscribe({
+        const { insMatches } = setupData.insertedData;
+        matchApi.setReadyState(wrongMatchId, insMatches[0].playerIds[0], true).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();
@@ -178,15 +180,15 @@ describe('Update Stats', () => {
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
         const matchStats: MatchStatsUpdate = {
-            winner: matches[0].playerIds[0],
+            winner: insMatches[0].playerIds[0],
             endTime: 0,
             totalShots: 0,
             totalHits: 0,
         };
-        matchApi.updateStats(matches[0].matchId, matchStats).subscribe({
+        matchApi.updateStats(insMatches[0].matchId, matchStats).subscribe({
             next: (matchStats: MatchStatsUpdate) => {
                 // Expect non-empty response
                 expect(matchStats).toBeTruthy();
@@ -210,10 +212,10 @@ describe('Update Stats', () => {
     //wrong match
     test('Should Throw', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
         const matchStats: MatchStatsUpdate = {
-            winner: matches[0].playerIds[0],
+            winner: insMatches[0].playerIds[0],
             endTime: 0,
             totalShots: 0,
             totalHits: 0,
@@ -233,16 +235,16 @@ describe('Update Stats', () => {
     //wrong stats
     test('Should Throw', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
         const matchStats: MatchStatsUpdate = {
-            winner: matches[0].playerIds[0],
+            winner: insMatches[0].playerIds[0],
             endTime: 0,
             totalShots: 0,
             totalHits: 0,
         };
 
-        matchApi.updateStats(matches[0].matchId, matchStats).subscribe({
+        matchApi.updateStats(insMatches[0].matchId, matchStats).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
 
@@ -266,16 +268,16 @@ describe('Fire Shot', () => {
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
         const shot: Shot = {
-            playerId: matches[0].playerIds[0],
+            playerId: insMatches[0].playerIds[0],
             coordinates: {
                 row: 0,
                 col: 0,
             },
         };
-        matchApi.fireShot(matches[0].matchId, shot).subscribe({
+        matchApi.fireShot(insMatches[0].matchId, shot).subscribe({
             next: (shotCoords: GridCoordinates) => {
                 // Expect non-empty response
                 expect(shotCoords).toBeTruthy();
@@ -297,10 +299,10 @@ describe('Fire Shot', () => {
     //wrong match
     test('Should Throw', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
         const shot: Shot = {
-            playerId: matches[0].playerIds[0],
+            playerId: insMatches[0].playerIds[0],
             coordinates: {
                 row: 0,
                 col: 0,
@@ -329,10 +331,10 @@ describe('Update Player Grid', () => {
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
         matchApi
-            .updatePlayerGrid(matches[0].matchId, matches[0].playerIds[0], gridUpdate)
+            .updatePlayerGrid(insMatches[0].matchId, insMatches[0].playerIds[0], gridUpdate)
             .subscribe({
                 next: (grid: BattleshipGrid) => {
                     // Expect non-empty response
@@ -355,9 +357,9 @@ describe('Update Player Grid', () => {
     //wrong match
     test('Should Throw', (done) => {
         const matchApi: MatchApi = new MatchApi(httpClient, jwtProvider);
-        const { matches } = setupData.insertedData;
+        const { insMatches } = setupData.insertedData;
 
-        matchApi.updatePlayerGrid(wrongMatchId, matches[0].playerIds[0], gridUpdate).subscribe({
+        matchApi.updatePlayerGrid(wrongMatchId, insMatches[0].playerIds[0], gridUpdate).subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
                 done();

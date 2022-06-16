@@ -19,9 +19,9 @@ let matchIdToJoin: string;
  */
 const setupDb = async () => {
     setupData = await insertMultipleMatches(1);
-    const { matches } = setupData.insertedData;
+    const { insMatches } = setupData.insertedData;
 
-    matchIdToJoin = matches[0].matchId;
+    matchIdToJoin = insMatches[0].matchId;
 };
 
 const teardownDb = async () => {

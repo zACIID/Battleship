@@ -1,15 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Document, FilterQuery, Types } from 'mongoose';
 
 import * as dbUser from '../../../../../src/model/user/user';
 import * as dbRelation from '../../../../../src/model/user/relationship';
 import * as dbMatch from '../../../../../src/model/match/match';
-import * as dbMatchStats from '../../../../../src/model/match/match-stats';
-import * as dbPlayerState from '../../../../../src/model/match/state/player-state';
 import * as dbChat from '../../../../../src/model/chat/chat';
 import * as dbMatchmaking from '../../../../../src/model/matchmaking/queue-entry';
 import { environment } from '../../../../src/environments/environment';
-import { Document, FilterQuery, Types } from 'mongoose';
-import { BattleshipGrid } from '../../../../src/app/core/model/match/battleship-grid';
 import { MongoDbApiMatch, toMongoDbApiMatch } from './api-match';
 import { MongoDbApiChat, toMongoDbApiChat } from './api-chat';
 
@@ -96,7 +93,7 @@ export interface MongoDbFilterReq extends MongoDbReqBody {
  * Wrapper for actual ObjectIds that needs to be sent in order to tell
  * the MongoDb Data Api that the value is indeed an ObjectId
  */
-export class RequestObjectId {
+export class ApiObjectId {
     $oid: DocId;
 
     constructor(objId: DocId) {
@@ -163,7 +160,7 @@ export class MongoDbApi {
         docId: DocId
     ): Promise<T> {
         const filter: FilterQuery<Document> = {
-            _id: MongoDbApi.convertToRequestObjId(docId),
+            _id: new ApiObjectId(docId),
         };
 
         return await this.getDocument<T>(filter, collectionName);
@@ -328,9 +325,9 @@ export class MongoDbApi {
     }
 
     private async deleteMultipleDocumentsById(collection: string, docIds: DocId[]): Promise<void> {
-        const queryDocIds: RequestObjectId[] = docIds.map(
-            (dId: string | Types.ObjectId): RequestObjectId => {
-                return MongoDbApi.convertToRequestObjId(dId);
+        const queryDocIds: ApiObjectId[] = docIds.map(
+            (dId: string | Types.ObjectId): ApiObjectId => {
+                return new ApiObjectId(dId);
             }
         );
 
@@ -397,11 +394,5 @@ export class MongoDbApi {
 
         console.log('[MongoDbApi] Request sent:');
         console.log(reqParams);
-    }
-
-    private static convertToRequestObjId(objId: string | Types.ObjectId): RequestObjectId {
-        return {
-            $oid: objId,
-        };
     }
 }

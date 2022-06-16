@@ -3,7 +3,7 @@ import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
 import { HttpClient } from '@angular/common/http';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
-import { deleteUser, InsertedUser, insertUser } from 'tests/fixtures/database/users';
+import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { Relationship } from '../../src/app/core/model/user/relationship';
 import { deleteChat, insertChat, InsertedChat } from '../fixtures/database/chats';

@@ -58,8 +58,8 @@ describe('Player State Changed', () => {
     });
 
     test('Should Correctly Fire Player State Changed Event', (done) => {
-        const { matches } = setupData.insertedData;
-        const currentMatch: InsertedMatch = matches[0];
+        const { insMatches } = setupData.insertedData;
+        const currentMatch: InsertedMatch = insMatches[0];
 
         const matchId: string = currentMatch.matchId;
         const player1Id: string = currentMatch.playerIds[0];

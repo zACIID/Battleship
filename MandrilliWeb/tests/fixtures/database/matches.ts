@@ -17,7 +17,7 @@ import { getCredentialsForUser } from '../authentication';
 export interface MatchesSetupData extends SetupData {
     insertedData: {
         authUser: InsertedUser;
-        matches: InsertedMatch[];
+        insMatches: InsertedMatch[];
     };
 }
 
@@ -148,7 +148,7 @@ export const insertMultipleMatches = async (nMatches: number): Promise<MatchesSe
         apiAuthCredentials: getCredentialsForUser(userToAuthWith.userData.username),
         insertedData: {
             authUser: userToAuthWith,
-            matches: matches,
+            insMatches: matches,
         },
     };
 };
@@ -176,8 +176,8 @@ export const teardownMatches = async (setupData: MatchesSetupData) => {
     let userIdsToDelete: string[] = [authUser.userId];
     let chatIdsToDelete: string[] = [];
     let matchIdsToDelete: string[] = [];
-    setupData.insertedData.matches.forEach((insMatch: InsertedMatch) => {
-        matchIdsToDelete = matchIdsToDelete.concat([insMatch.matchId]);
+    setupData.insertedData.insMatches.forEach((insMatch: InsertedMatch) => {
+        matchIdsToDelete.push(insMatch.matchId);
 
         userIdsToDelete = userIdsToDelete.concat(insMatch.playerIds);
         userIdsToDelete = userIdsToDelete.concat(insMatch.observerIds);

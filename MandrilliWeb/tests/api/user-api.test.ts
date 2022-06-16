@@ -316,8 +316,8 @@ describe('Get Matches', () => {
 
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const userApi: UserApi = new UserApi(httpClient, jwtProvider);
-        const { matches } = matchesSetupData.insertedData;
-        const userId: string = matches[0].playerIds[0];
+        const { insMatches } = matchesSetupData.insertedData;
+        const userId: string = insMatches[0].playerIds[0];
 
         userApi.getUserMatches(userId).subscribe({
             next: (matches: Match[]) => {

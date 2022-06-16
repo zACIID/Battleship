@@ -1,5 +1,5 @@
 import { BattleshipGrid } from '../../../../src/app/core/model/match/battleship-grid';
-import { RequestObjectId } from './mongodb-api';
+import { ApiObjectId } from './mongodb-api';
 import * as dbMatch from '../../../../../src/model/match/match';
 import * as dbPlayerState from '../../../../../src/model/match/state/player-state';
 import * as dbMatchStats from '../../../../../src/model/match/match-stats';
@@ -9,7 +9,7 @@ import * as dbMatchStats from '../../../../../src/model/match/match-stats';
  * that MongoDb Data Api needs an $oid wrapper on ObjectIds
  */
 export interface MongoDbApiPlayerState {
-    playerId: RequestObjectId;
+    playerId: ApiObjectId;
     grid: BattleshipGrid;
     isReady: boolean;
 }
@@ -19,7 +19,7 @@ export interface MongoDbApiPlayerState {
  * that MongoDb Data Api needs an $oid wrapper on ObjectIds
  */
 export interface MongoDbApiMatchStats {
-    winner: RequestObjectId;
+    winner: ApiObjectId;
     startTime: Date;
     endTime: Date;
     totalShots: number;
@@ -33,8 +33,8 @@ export interface MongoDbApiMatchStats {
 export interface MongoDbApiMatch {
     player1: MongoDbApiPlayerState;
     player2: MongoDbApiPlayerState;
-    playersChat: RequestObjectId;
-    observersChat: RequestObjectId;
+    playersChat: ApiObjectId;
+    observersChat: ApiObjectId;
     stats: MongoDbApiMatchStats;
 }
 
@@ -42,8 +42,8 @@ export const toMongoDbApiMatch = (data: dbMatch.Match): MongoDbApiMatch => {
     return {
         player1: toMongoDbApiPlayerState(data.player1),
         player2: toMongoDbApiPlayerState(data.player2),
-        playersChat: new RequestObjectId(data.playersChat),
-        observersChat: new RequestObjectId(data.observersChat),
+        playersChat: new ApiObjectId(data.playersChat),
+        observersChat: new ApiObjectId(data.observersChat),
         stats: toMongoDbApiMatchStats(data.stats),
     };
 };
@@ -52,7 +52,7 @@ export const toMongoDbApiPlayerState = (
     pState: dbPlayerState.PlayerState
 ): MongoDbApiPlayerState => {
     return {
-        playerId: new RequestObjectId(pState.playerId),
+        playerId: new ApiObjectId(pState.playerId),
         grid: pState.grid,
         isReady: pState.isReady,
     };
@@ -60,7 +60,7 @@ export const toMongoDbApiPlayerState = (
 
 export const toMongoDbApiMatchStats = (pStats: dbMatchStats.MatchStats): MongoDbApiMatchStats => {
     return {
-        winner: new RequestObjectId(pStats.winner),
+        winner: new ApiObjectId(pStats.winner),
         startTime: new Date(),
         endTime: new Date(),
         totalShots: pStats.totalShots,
