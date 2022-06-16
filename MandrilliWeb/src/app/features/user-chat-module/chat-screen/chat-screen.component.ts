@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class ChatScreenComponent implements OnInit {
     public chatId: string = '';
     public friend: string = '';
+    public trigger: number = 0;
 
     constructor(
         private route: ActivatedRoute,
@@ -41,7 +42,7 @@ export class ChatScreenComponent implements OnInit {
                     if (user !== userInSessionId) {
                         this.friend = user;
                     }
-                    console.log(this.friend)
+                    
                 }
                 this.joinEmitter.emit({chatId: data.chatId})
             });
@@ -50,10 +51,9 @@ export class ChatScreenComponent implements OnInit {
         }
         
         const refreshChat = () => {
-            this.route.params.subscribe((params) => {
-                this.chatId = params['id'];
-            }
-        )};
+            console.log("refreshing");
+            this.trigger++;
+        };
         refreshChat.bind(this);
         this.chatMessageListener.listen(refreshChat);
         

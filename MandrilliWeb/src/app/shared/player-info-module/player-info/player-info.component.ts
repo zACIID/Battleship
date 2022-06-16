@@ -17,7 +17,7 @@ export class PlayerInfoComponent implements OnInit {
 
     ngOnInit(): void {
         try {
-            console.log(this.userId)
+            
             if(this.userId){
                 this.userClient.getUser(this.userId).subscribe((us) => {
                     

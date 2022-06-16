@@ -89,16 +89,19 @@ export class NotificationScreenComponent implements OnInit {
 
 
     private dropNotification(no: NotificationData){
+        
         this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
-            return not.sender !== no.sender && not.type !== no.type;
+            
+            return (not.sender !== no.sender);
         });
+        
     }
 
     
     public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
-            receiverId: friendId,
-            senderId: this.userId,
+            senderId: friendId,
+            receiverId: this.userId
         });
         this.dropNotification({sender: friendId, type: NotificationType.FriendRequest});
     }

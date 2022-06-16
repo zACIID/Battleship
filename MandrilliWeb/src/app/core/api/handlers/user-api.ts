@@ -1,3 +1,4 @@
+import { GetMatchesResponse } from './../../model/match/match';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map } from 'rxjs';
@@ -120,11 +121,15 @@ export class UserApi extends BaseAuthenticatedApi {
     }
 
     public getUserMatches(userId: string): Observable<Match[]> {
-        const reqPath: string = `${this.baseUrl}/users/${userId}/matches`;
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/matches`;
 
         return this.httpClient
-            .get<Match[]>(reqPath, this.createRequestOptions())
-            .pipe(catchError(this.handleError));
+            .get<GetMatchesResponse>(reqPath, this.createRequestOptions()).pipe(
+                catchError(this.handleError),
+                map<GetMatchesResponse, Match[]>((data: GetMatchesResponse) => {
+                    return data.matches
+                })
+            );
     }
 
     public updateStats(userId: string, statsUpdate: ApiUserStats): Observable<ApiUserStats> {

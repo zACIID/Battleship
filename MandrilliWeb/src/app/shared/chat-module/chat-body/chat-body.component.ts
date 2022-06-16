@@ -16,6 +16,7 @@ export class ChatBodyComponent implements OnInit {
     ) {}
 
     @Input() chatId: string = '';
+    @Input() triggerUpdate: number = 0;
     public messages: Message[] = [];
     public userId: string = '';
 
@@ -37,6 +38,7 @@ export class ChatBodyComponent implements OnInit {
                 .getMessages(this.chatId, this.options.skip, this.options.limit)
                 .subscribe((data) => {
                     this.messages = data;
+                    console.log(this.messages);
                     this.options.skip += this.options.limit;
                 });
         } catch (err) {
@@ -58,10 +60,11 @@ export class ChatBodyComponent implements OnInit {
     }
 
     public post_message(message: string) {
+        console.log("Posting on: " + this.chatId);
         this.chatClient.addMessage(this.chatId, {
             author: this.userId,
             content: message,
             timestamp: new Date(),
-        });
+        }).subscribe();
     }
 }

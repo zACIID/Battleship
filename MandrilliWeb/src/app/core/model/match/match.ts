@@ -38,3 +38,10 @@ export class Match {
         this.player2 = new PlayerState() 
     }
 }
+
+
+
+export interface GetMatchesResponse{
+    matches: Match[];
+}
+

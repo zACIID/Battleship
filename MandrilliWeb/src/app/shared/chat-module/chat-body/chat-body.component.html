@@ -1,7 +1,5 @@
 
-<div class="box overflow-scroll p-5 chat-body-height mb-2" 
-    infiniteScroll 
-    (scrolled)="loadMore()" >
+<div class="box overflow-scroll p-5 chat-body-height mb-2" >
 
     <div *ngFor="let mess of messages">
 
@@ -12,10 +10,10 @@
         <div *ngIf="mess.author != userId">
             <foreign-message [text]="mess.content"></foreign-message>
         </div>
-
+        
     </div>
     
-
+    <button class="button is-small is-fullwidth margin-auto is-warning"(click)="loadMore()">Load more</button>
 </div>
 <div class="columns">
     <div class="column is-three-quarters">
