@@ -13,6 +13,8 @@ import { MatchFoundListener } from 'src/app/core/events/listeners/match-found';
 export class GameModeScreenComponent implements OnInit {
 
     public userInSessionId: string = "";
+    public inQueue: boolean = false;
+
 
     constructor(
         private matchListener: MatchFoundListener, 
@@ -29,18 +31,21 @@ export class GameModeScreenComponent implements OnInit {
         this.matchListener.unListen()
     }
 
-    public startMatchMaking() {
+    public startMatchmaking() {
 
-        this.queue.enqueue(this.userInSessionId).subscribe((res: EnqueueResponse) => {
+        if(!this.inQueue){
+            this.queue.enqueue(this.userInSessionId).subscribe((res: EnqueueResponse) => {
 
-            const matchFound = async (data: MatchData): Promise<void> => {
-                let reqpath = 'preparation-phase/' + data.matchId;
-                await this.router.navigate([reqpath]);
-            }
-            matchFound.bind(this);
+                const matchFound = async (data: MatchData): Promise<void> => {
+                    let reqpath = 'preparation-phase/' + data.matchId;
+                    await this.router.navigate([reqpath]);
+                }
+                matchFound.bind(this);
 
-            this.matchListener.listen(matchFound);
-        })
+                this.matchListener.listen(matchFound);
+            })
+            this.inQueue = true;
+        }
         
     }
 }

@@ -20,14 +20,12 @@
 
             </div>
 
-            <div class="columns height-80 width-80 margin-auto mt-6">
+            <div class="columns width-80 margin-auto mt-6 mb-6">
 
-
-                <!-- TODO add logic on these 2 buttons to start a match -->
 
                 <div class="column height-20 is-half mr-6 has-text-centered ">
 
-                    <div class="box has-background-light pointer" (click)="startMatchMaking()">
+                    <div class="box has-background-light pointer" (click)="startMatchmaking()">
                         <strong class="is-size-3 has-weight-bold is-vcentered">Casual game</strong>
                     </div>
                     <p class="has-text-light is-size-5 p-3"> Play with a random user thanks to a skill based matchmaking !</p>
@@ -43,7 +41,10 @@
                     
                 </div>
 
-
+                
+            </div>
+            <div class="width-80 margin-auto has-text-centered mt-6">
+                <p *ngIf="inQueue" class="is-size-4 has-weight-semibold has-text-danger">Waiting for another player ...</p>
             </div>
             
 
