@@ -13,6 +13,7 @@ import { PositioningCompletedEmitter } from '../events/emitters/positioning-comp
 import { ioServer } from '../index';
 import { ShotFiredEmitter } from '../events/emitters/shot-fired';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { toApiMatchStats } from './utils/model-to-api-conversion';
 
 export const router = Router();
 
@@ -44,7 +45,7 @@ router.get(
                 player2: match.player2,
                 playersChat: match.playersChat,
                 observersChat: match.observersChat,
-                stats: match.stats,
+                stats: toApiMatchStats(match.stats),
             };
 
             return res.status(200).json(matchResponse);
@@ -276,21 +277,4 @@ const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState:
             playerId: playerId.toString(),
         });
     }
-};
-
-const getOpponentId = (match: MatchDocument, playerId: Types.ObjectId): Types.ObjectId => {
-    const player1Id: Types.ObjectId = match.player1.playerId;
-    const player2Id: Types.ObjectId = match.player2.playerId;
-
-    // Opponent is the opposite player
-    let opponentId: Types.ObjectId = null;
-    if (player1Id.equals(playerId)) {
-        opponentId = player2Id;
-    } else if (player2Id.equals(playerId)) {
-        opponentId = player1Id;
-    } else {
-        throw new Error(`PlayerId '${playerId}' not in match`);
-    }
-
-    return opponentId;
 };

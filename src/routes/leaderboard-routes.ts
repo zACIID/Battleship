@@ -4,7 +4,6 @@ import { getLeaderboard, UserDocument } from '../model/user/user';
 import { authenticateToken } from './auth-routes';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { skipLimitChecker } from './utils/param-checking';
-import { Types } from 'mongoose';
 
 export const router: Router = Router();
 

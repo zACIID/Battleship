@@ -9,7 +9,7 @@ import { UserStats } from '../model/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId, skipLimitChecker } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
-import { MatchData } from '../model/events/match-data';
+import { toApiMatchStats } from './utils/model-to-api-conversion';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
@@ -74,8 +74,6 @@ router.get(
     }
 );
 
-// TODO finish implementation and update docs
-// TODO add skip and limit params
 router.get(
     'users/:userId/matches',
     authenticateToken,
@@ -114,7 +112,7 @@ router.get(
                     player2: mDoc.player2,
                     playersChat: mDoc.playersChat,
                     observersChat: mDoc.observersChat,
-                    stats: mDoc.stats,
+                    stats: toApiMatchStats(mDoc.stats),
                 };
             });
             const responseData = {
@@ -133,7 +131,6 @@ router.get(
     }
 );
 
-// TODO finish implementation and update docs
 router.get(
     '/users/:userId/currentMatch',
     authenticateToken,
