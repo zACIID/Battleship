@@ -50,7 +50,13 @@ export const MatchSchema = new Schema<MatchDocument>({
     },
     stats: {
         type: MatchStatsSchema,
-        default: () => ({}),
+        default: (): MatchStats => ({
+            winner: null,
+            startTime: new Date(),
+            endTime: null,
+            totalShots: 0,
+            shipsDestroyed: 0,
+        }),
     },
 });
 
@@ -179,8 +185,9 @@ export async function getUserMostRecentMatches(
     skip: number = 0,
     limit: number = 10
 ): Promise<MatchDocument[]> {
-    const mostRecentMatches: MatchDocument[] = await MatchModel.find({ 'player1.playerId': userId })
-        .or([{ 'player2.playerId': userId }])
+    const mostRecentMatches: MatchDocument[] = await MatchModel.find({
+        $or: [{ 'player1.playerId': userId }, { 'player2.playerId': userId }],
+    })
         .sort({ 'stats.startTime': -1 })
         .skip(skip)
         .limit(limit);

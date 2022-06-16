@@ -1,5 +1,5 @@
 import { MatchDocument } from '../model/match/match';
-import { UserStatus } from '../model/user/user';
+import { UserDocument, UserStatus } from '../model/user/user';
 import * as match from './../model/match/match';
 import { Types } from 'mongoose';
 import { Router, Response } from 'express';
@@ -75,7 +75,7 @@ router.get(
 );
 
 router.get(
-    'users/:userId/matches',
+    '/users/:userId/matches',
     authenticateToken,
     skipLimitChecker,
     retrieveUserId,
@@ -136,12 +136,11 @@ router.get(
     authenticateToken,
     retrieveUserId,
     async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
-        let user: usr.UserDocument;
         const userId: Types.ObjectId = res.locals.userId;
         try {
-            user = await usr.getUserById(userId);
+            const user: UserDocument = await usr.getUserById(userId);
 
-            if (user.status.valueOf() === UserStatus.InGame) {
+            if (user.status === UserStatus.InGame) {
                 const userMatches: MatchDocument[] = await match.getUserMostRecentMatches(
                     userId,
                     0,

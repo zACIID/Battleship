@@ -173,11 +173,13 @@ const queuePollingTimeMs: number = 5000;
 const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 matchmakingEngine.start();
 
-
-createUser({username: process.env.ADMIN_USERNAME, roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator]})
-.then((admin: UserDocument) =>{
-    admin.setPassword(process.env.ADMIN_PASSWORD).then(() => {
-        Promise.resolve();
-    })
+createUser({
+    username: process.env.ADMIN_USERNAME,
+    roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator],
 })
-.catch((err: Error) =>  console.log(chalk.green("Admin already existent")))
+    .then((admin: UserDocument) => {
+        admin.setPassword(process.env.ADMIN_PASSWORD).then(() => {
+            return;
+        });
+    })
+    .catch((err: Error) => console.log(chalk.green('Admin already existent'))); // TODO better error handling?
