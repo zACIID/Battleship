@@ -36,7 +36,7 @@
 
                         <div *ngSwitchDefault>
 
-                            <div *ngFor="let item of leaders" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" [routerLink]="['/profile/{{item.userId}}']">
+                            <div *ngFor="let item of leaders" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="goToProfile(item.userId)" >
                                 <p> <strong>{{item.username}} - {{ item.elo }} pp</strong></p>
                             </div>
                             <button class="button is-small is-fullwidth margin-auto is-info"(click)="loadMore()">Load more</button>

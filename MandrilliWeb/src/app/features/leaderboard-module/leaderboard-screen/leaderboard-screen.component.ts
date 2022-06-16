@@ -2,6 +2,7 @@ import { LeaderboardPage } from './../../../core/model/api/leaderboard/page';
 import { LeaderboardEntry } from './../../../core/model/leaderboard/entry';
 import { LeaderboardApi } from './../../../core/api/handlers/leaderboard-api';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-leaderboard-screen',
@@ -16,7 +17,10 @@ export class LeaderboardScreenComponent implements OnInit {
 
     public leaders: LeaderboardEntry[] = [];
 
-    constructor(private leaderboardClient: LeaderboardApi) {}
+    constructor(
+        private leaderboardClient: LeaderboardApi,
+        private router: Router
+    ) {}
 
     
     ngOnInit(): void {
@@ -49,5 +53,10 @@ export class LeaderboardScreenComponent implements OnInit {
         } catch (err) {
             console.log('An error while retrieving more leaders: ' + err);
         }
+    }
+
+
+    public async goToProfile(userId: string){
+        await this.router.navigate(['profile/'+userId])
     }
 }
