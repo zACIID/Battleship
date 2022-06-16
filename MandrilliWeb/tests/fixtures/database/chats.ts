@@ -59,7 +59,7 @@ export const deleteChat = async (chatId: DocId): Promise<void> => {
 
 export const deleteMultipleChats = async (chatIds: DocId[]): Promise<void> => {
     const apiCred: MongoDpApiCredentials = await getApiCredentials();
-    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred, true);
 
     await mongoDbApi.deleteMultipleChats(chatIds);
 };

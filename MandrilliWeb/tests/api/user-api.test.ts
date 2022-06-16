@@ -325,18 +325,18 @@ describe('Get Matches', () => {
                 expect(matches).toBeTruthy();
 
                 // Expect an object with the correct fields
-                expect(matches).toEqual(
-                    expect.objectContaining<Match[]>([
-                        {
+                matches.forEach((m: Match) => {
+                    expect(m).toEqual(
+                        expect.objectContaining<Match>({
                             matchId: expect.any(String),
                             player1: expect.any(Object),
                             player2: expect.any(Object),
                             playersChat: expect.any(String),
                             observersChat: expect.any(Object),
                             stats: expect.any(Object),
-                        },
-                    ])
-                );
+                        })
+                    );
+                });
             },
             complete: () => {
                 done();
@@ -364,8 +364,8 @@ describe('Get Stats', () => {
         httpClient = injectHttpClient();
         mainUser = await insertUser();
 
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
+        const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+        jwtProviderMainUser = await authenticate(userCred);
     });
 
     afterEach(async () => {

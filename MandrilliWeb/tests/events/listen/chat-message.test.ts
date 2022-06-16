@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
+import { Types } from 'mongoose';
 
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
@@ -7,12 +8,11 @@ import { joinChat, joinServer, socketIoTestbedConfig } from '../../fixtures/sock
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { SetupData } from '../../fixtures/utils';
-import { ChatMessage } from 'src/app/core/model/events/chat-message';
-import { ChatMessageListener } from 'src/app/core/events/listeners/chat-message';
-import { sendMessage } from 'tests/fixtures/api-utils/chat-message';
-import { Types } from 'mongoose';
+import { ChatMessage } from '../../../src/app/core/model/events/chat-message';
+import { ChatMessageListener } from '../../../src/app/core/events/listeners/chat-message';
+import { sendMessage } from '../../fixtures/api-utils/chat-message';
 import { MongoDbApi } from '../../fixtures/database/mongodb-api/mongodb-api';
-import { deleteChat } from 'tests/fixtures/database/chats';
+import { deleteChat } from '../../fixtures/database/chats';
 
 export interface MessageReceivedSetupData extends SetupData {
     insertedData: {

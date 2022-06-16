@@ -16,7 +16,6 @@ const dbCollectionNames = {
     chatCollection: 'Chats',
     matchmakingCollection: 'MatchmakingQueue',
     notificationCollection: 'Notifications',
-    relationshipCollection: 'Relationship',
 };
 
 export interface MongoDpApiCredentials {
@@ -130,18 +129,6 @@ export class MongoDbApi {
         );
     }
 
-    public async getRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId) {
-        const filter = {
-            friendId: friendId,
-            chatId: chatId,
-        };
-
-        return await this.getDocument<dbRelation.RelationshipSubDocument>(
-            filter,
-            dbCollectionNames.relationshipCollection
-        );
-    }
-
     /*
      * Get chat document by _id
      */
@@ -225,14 +212,8 @@ export class MongoDbApi {
         );
     }
 
-    public async insertRelationship(
-        friendId: Types.ObjectId,
-        chatId: Types.ObjectId
-    ): Promise<void> {
-        await this.insertDocument<dbRelation.Relationship>(
-            { friendId: friendId, chatId: chatId },
-            dbCollectionNames.relationshipCollection
-        );
+    public async insertRelationship(friendId: DocId, chatId: DocId): Promise<void> {
+        throw new Error('Not implemented');
     }
 
     public async insertDocument<I>(
@@ -276,13 +257,6 @@ export class MongoDbApi {
         return this.deleteMultipleMatches([matchId]);
     }
 
-    public async deleteRelationship(friendId: Types.ObjectId, chatId: Types.ObjectId) {
-        return this.deleteMultipleDocuments(dbCollectionNames.relationshipCollection, {
-            friendId: { $in: [friendId] },
-            chatId: { $in: [chatId] },
-        });
-    }
-
     /**
      * Deletes the matchmaking queue entry of the user
      * with the provided id from the database
@@ -305,7 +279,7 @@ export class MongoDbApi {
      * @param chatIds ids of the chats that should be deleted
      */
     public async deleteMultipleChats(chatIds: DocId[]): Promise<void> {
-        await this.deleteMultipleDocumentsById(dbCollectionNames.matchmakingCollection, chatIds);
+        await this.deleteMultipleDocumentsById(dbCollectionNames.chatCollection, chatIds);
     }
 
     /**
