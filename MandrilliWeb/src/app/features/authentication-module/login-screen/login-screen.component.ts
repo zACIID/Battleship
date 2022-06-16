@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthApi, LoginInfo, AuthResult } from '../../../core/api/handlers/auth-api';
 import { Router } from '@angular/router';
 import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
+import { UserStatus } from 'src/app/core/model/user/user';
 
 @Component({
     selector: 'app-login-screen',
@@ -16,7 +17,7 @@ export class LoginScreenComponent implements OnInit {
     constructor(
         private authClient: AuthApi,
         private router: Router,
-        private userClient: UserApi, // TODO still needed?
+        private userClient: UserApi,
         private serverJoinedEmitter: ServerJoinedEmitter
     ) {}
 
@@ -29,22 +30,19 @@ export class LoginScreenComponent implements OnInit {
         };
 
         this.authClient.login(loginInfo).subscribe({
-            next: async (data: AuthResult) => {
+            next: (data: AuthResult) => {
                 this.serverJoinedEmitter.emit({ userId: data.userId });
 
-                /* TODO de-comment when status.temporary will be properly added
-                this.userClient.getUser(data.userId).subscribe((user) => {
+                this.userClient.getUser(data.userId).subscribe( async (user) => {
 
-                    if(user.status.temporary){
+                    if(user.status === UserStatus.TemporaryCredentials){
                         await this.router.navigate(['/moderator-credentials']);
                     }
                     else{
                         await this.router.navigate(['/homepage']);
                     }
-
                 })
-                */
-                await this.router.navigate(['/homepage']);
+                
             },
             error: (err: any) => {
                 this.userMessage.error = true;

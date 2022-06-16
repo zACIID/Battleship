@@ -26,7 +26,6 @@ interface NotificationRequest extends AuthenticatedRequest {
     body: PostBody;
 }
 
-// TODO could be an enum
 const errorMessages: string[] = [
     'No user with that identifier',
     'Notification not found',
@@ -131,9 +130,8 @@ router.delete(
             const reqType: RequestTypes = RequestTypes[typeQParam as keyof typeof RequestTypes];
             const senderObjId: Types.ObjectId = retrieveId(senderQParam);
 
-            // Check if users exist
-            // TODO it is not clear here that getUserById is used to check if user exists
             const user: UserDocument = await getUserById(userId);
+            // Check if sender user exists
             const sender: UserDocument = await getUserById(senderObjId);
 
             await user.removeNotification(reqType, senderObjId);

@@ -1,7 +1,7 @@
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { Message } from './../../../core/model/chat/message';
 import { ChatApi } from './../../../core/api/handlers/chat-api';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
     selector: 'chat-body',
@@ -17,6 +17,7 @@ export class ChatBodyComponent implements OnInit {
 
     @Input() chatId: string = '';
     @Input() triggerUpdate: number = 0;
+    @ViewChild('messageContent') input?: ElementRef;
     public messages: Message[] = [];
     public userId: string = '';
 
@@ -60,11 +61,12 @@ export class ChatBodyComponent implements OnInit {
     }
 
     public post_message(message: string) {
-        console.log("Posting on: " + this.chatId);
+        
         this.chatClient.addMessage(this.chatId, {
             author: this.userId,
             content: message,
             timestamp: new Date(),
         }).subscribe();
+        if (this.input) this.input.nativeElement.value = ""
     }
 }

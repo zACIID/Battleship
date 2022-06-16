@@ -71,13 +71,7 @@ export class ChatApi extends BaseAuthenticatedApi {
      * @param limit number of messages to retrieve
      */
     public getMessages(chatId: string, skip?: number, limit?: number): Observable<Message[]> {
-        /** TODO here pagination of requests is not handled well:
-         *      if skip and limit are over the constraints (skip >= 0, 0 <= limit <= 500),
-         *      the api returns an error.
-         *      Also, if more than 500 messages are requested, multiple requests
-         *      that make use of skip and limit are not performed
-         */
-
+        
         // Add query only if both skip and limit are defined
         const areQueryParamsUndefined: boolean = !skip || !limit;
         const query: string = !areQueryParamsUndefined ? `?skip=${skip}&limit=${limit}` : '';

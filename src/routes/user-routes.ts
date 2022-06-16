@@ -40,7 +40,6 @@ interface UpdateStatsRequest extends AuthenticatedRequest {
 
 export const router = Router();
 
-// TODO consider using this enum also in user.ts so that error strings are consistent
 enum UserNotFoundErrors {
     SingleUser = 'No user with that identifier',
     MultipleUsers = 'None of the given ids are present in the db',

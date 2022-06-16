@@ -259,7 +259,6 @@ router.post(
             // Notify users in the chat with the message sent
             const messageNotifier: ChatMessageEmitter = new ChatMessageEmitter(ioServer, chatId);
             messageNotifier.emit({
-                // TODO add chatId here
                 author: authorId.toString(),
                 content: content,
                 timestamp: Math.floor(msgDate.getTime() / 1000),
