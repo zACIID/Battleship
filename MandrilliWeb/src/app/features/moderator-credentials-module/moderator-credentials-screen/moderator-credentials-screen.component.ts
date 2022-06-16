@@ -1,3 +1,4 @@
+import { ModeratorApi } from './../../../core/api/handlers/moderator-api';
 import { UserIdProvider } from './../../../core/api/userId-auth/userId-provider';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
@@ -20,7 +21,8 @@ export class ModeratorCredentialsScreenComponent implements OnInit {
 	constructor(
 		private userClient: UserApi,
 		private router: Router,
-		private userIdProvider: UserIdProvider
+		private userIdProvider: UserIdProvider,
+		private moderatorClient: ModeratorApi
 	) { }
 
 	ngOnInit(): void {
@@ -42,9 +44,8 @@ export class ModeratorCredentialsScreenComponent implements OnInit {
         
 		this.userMessage.error=false;
 		try{
-			this.userClient.updateUsername(this.userInSessionId, username).subscribe();
-			this.userClient.updatePassword(this.userInSessionId, password).subscribe();
-
+			
+			this.moderatorClient.updateTemporaryCredentials({username: username, password: password}).subscribe();
 			await this.router.navigate(['/homepage']);
 		}
 		catch(err: any){

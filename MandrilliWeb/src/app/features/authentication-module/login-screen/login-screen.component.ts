@@ -32,7 +32,6 @@ export class LoginScreenComponent implements OnInit {
         this.authClient.login(loginInfo).subscribe({
             next: (data: AuthResult) => {
                 this.serverJoinedEmitter.emit({ userId: data.userId });
-
                 this.userClient.getUser(data.userId).subscribe( async (user) => {
 
                     if(user.status === UserStatus.TemporaryCredentials){
@@ -46,9 +45,12 @@ export class LoginScreenComponent implements OnInit {
             },
             error: (err: any) => {
                 this.userMessage.error = true;
-                this.userMessage.errorMessage = err.error.errorMessage;
+                if(err.error === "Unauthorized"){
+                    this.userMessage.errorMessage = "Wrong credentials";
+                }
+                else this.userMessage.errorMessage = JSON.stringify(err.error);
                 console.log('An error occurred while logging in: ' + JSON.stringify(err));
-            },
+            }
         });
     }
 }
