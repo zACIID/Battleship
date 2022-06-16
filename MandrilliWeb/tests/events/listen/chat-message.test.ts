@@ -2,7 +2,7 @@ import { deleteMultipleUsers, deleteUser, InsertedUser, insertUser } from '../..
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
 import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
-import { joinServer, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
+import { joinChat, joinServer, socketIoTestbedConfig } from '../../fixtures/socket-io-client';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { SetupData } from '../../fixtures/utils';
@@ -85,6 +85,8 @@ describe('Message Received', () => {
         // Join the server with the receiver, so that it can listen to the
         // notification received event
         joinServer(receiver.userId, receiverClient);
+        // add join chat
+        joinChat(setupData.insertedData.chatId, receiverClient)
 
         const messageListener: ChatMessageListener = new ChatMessageListener(
             receiverClient
