@@ -12,7 +12,7 @@ export class RankOverviewComponent implements OnInit {
     @Input() user: User = new User();
     public rank: string = '';
     public rankImageSrc: string = '';
-    @Input() stats: UserStats = new UserStats();
+    @Input() elo: number = 0;
 
     constructor() {}
 
@@ -21,7 +21,7 @@ export class RankOverviewComponent implements OnInit {
     }
 
     private applyRank() {
-        this.rank = getRank(this.stats.elo);
+        this.rank = getRank(this.elo);
         this.rankImageSrc = 'assets/images/' + this.rank + '.png';
     }
 }

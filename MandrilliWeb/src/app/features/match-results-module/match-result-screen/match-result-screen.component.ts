@@ -1,3 +1,4 @@
+import { StatsOverview } from './../../../core/model/user/stats-overview';
 import { Match } from './../../../core/model/match/match';
 import { MatchApi } from './../../../core/api/handlers/match-api';
 import { ActivatedRoute } from '@angular/router';
@@ -13,6 +14,8 @@ export class MatchResultScreenComponent implements OnInit {
     public matchShowedId: string = '';
     public match?: Match;
     public result: string = '';
+    public matchStats: StatsOverview[] = []
+
 
     constructor(
         private route: ActivatedRoute,
@@ -30,6 +33,12 @@ export class MatchResultScreenComponent implements OnInit {
 
             this.matchClient.getMatch(this.matchShowedId).subscribe((data: Match) => {
                 this.match = data;
+                this.matchStats.push({title: "Ships Destroyed", value: data.stats.shipsDestroyed});
+                this.matchStats.push({title: "Total Shots", value: data.stats.totalShots});
+                const duration = Math.abs(
+                    this.match.stats.startTime.valueOf() - this.match.stats.endTime.valueOf()
+                );
+                this.matchStats.push({title: "Duration", value: duration});
             });
 
             if (userId === this.match?.stats.winner) {

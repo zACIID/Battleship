@@ -1,5 +1,4 @@
-import { MatchStats } from './../../../core/model/match/match-stats';
-import { UserStats } from '../../../core/model/user/stats';
+import { StatsOverview } from './../../../core/model/user/stats-overview';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -8,20 +7,11 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./stats-grid.component.css'],
 })
 export class StatsGridComponent implements OnInit {
-    @Input() stats: UserStats = new UserStats();
-    @Input() matchStats: MatchStats = new MatchStats();
-    @Input() profile: boolean = false;
-    public duration: number = 0;
+    @Input() stats: StatsOverview[] = [];
 
     constructor() {}
 
     ngOnInit(): void {
-        if (this.matchStats) {
-            const diffTime = Math.abs(
-                this.matchStats.startTime.valueOf() - this.matchStats.endTime.valueOf()
-            );
-
-            this.duration = diffTime;
-        }
+        
     }
 }

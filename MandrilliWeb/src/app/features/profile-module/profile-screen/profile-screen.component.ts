@@ -17,7 +17,6 @@ export class ProfileScreenComponent implements OnInit {
     public user: User = new User();
     private userShowedId: string = '';
     public rank: string = '';
-    public stats: UserStats = new UserStats();
 
     constructor(
         private userClient: UserApi,
@@ -32,7 +31,7 @@ export class ProfileScreenComponent implements OnInit {
             this.userClient.getUser(this.userShowedId).subscribe((user: User) => {
                 this.user = user;
     
-                this.getUserStats();
+                
                 this.isUserModerator = this.user.roles.includes(UserRoles.Moderator);
                 
                 let userInSessionId = this.userIdProvider.getUserId();
@@ -47,14 +46,5 @@ export class ProfileScreenComponent implements OnInit {
     }
 
     
-    public getUserStats(): void {
-        try {
-            if (!this.user) throw new Error('User is not defined');
-            this.userClient.getStats(this.user.userId).subscribe((stat: UserStats) => {
-                this.stats = stat;
-            });
-        } catch (err) {
-            console.log('An error occurred while retrieving user stats: ' + err);
-        }
-    }
+    
 }

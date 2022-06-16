@@ -23,7 +23,7 @@
 
                 <div class="box has-background-primary mt-2 profile-body-div mb-3">
 
-                    <stats-overview [user]="user" [stats]="stats" [myProfile]="myProfile"></stats-overview>
+                    <stats-overview [user]="user" [myProfile]="myProfile"></stats-overview>
 
                 </div>
 
@@ -32,7 +32,7 @@
 
                 <div class="half-profile-div box has-background-primary mt-2">
                     
-                    <rank-overview [user]="user" [stats]="stats"></rank-overview>
+                    <rank-overview [user]="user" [elo]="user.elo"></rank-overview>
 
                 </div>
                 <div class="half-profile-div box has-background-primary mt-2 mb-2">
