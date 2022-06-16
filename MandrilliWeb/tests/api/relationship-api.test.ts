@@ -1,51 +1,43 @@
+import { HttpClient } from '@angular/common/http';
+
 import { RelationshipApi } from '../../src/app/core/api/handlers/relationship-api';
 import { JwtProvider } from '../../src/app/core/api/jwt-auth/jwt-provider';
-import { HttpClient } from '@angular/common/http';
 import { authenticate, getCredentialsForUser } from '../fixtures/authentication';
 import { injectHttpClient } from '../fixtures/http-client';
 import { deleteUser, InsertedUser, insertUser } from '../fixtures/database/users';
 import { LoginInfo } from '../../src/app/core/api/handlers/auth-api';
 import { Relationship } from '../../src/app/core/model/user/relationship';
 import { deleteChat, insertChat, InsertedChat } from '../fixtures/database/chats';
-import {
-    getApiCredentials,
-    MongoDbApi,
-    MongoDpApiCredentials,
-} from '../fixtures/database/mongodb-api/mongodb-api';
-import { Types } from 'mongoose';
+import { insertRelationship } from '../fixtures/api-utils/relationships';
 
 let httpClient: HttpClient;
 let jwtProviderMainUser: JwtProvider;
 let mainUser: InsertedUser;
 let secondUser: InsertedUser;
-let mongoDbApi: MongoDbApi;
 let insertedChat: InsertedChat;
 
-async function teardown(): Promise<void> {
+const testSetup = async () => {
+    httpClient = injectHttpClient();
+
+    mainUser = await insertUser();
+    secondUser = await insertUser();
+    insertedChat = await insertChat([mainUser.userId, secondUser.userId]);
+
+    const userCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
+    jwtProviderMainUser = await authenticate(userCred);
+
+    await insertRelationship(secondUser.userId, insertedChat.chatId);
+};
+
+const teardown = async (): Promise<void> => {
     await deleteUser(mainUser.userId);
     await deleteUser(secondUser.userId);
     await deleteChat(insertedChat.chatId);
-
-    await mongoDbApi.deleteRelationship(
-        Types.ObjectId(secondUser.userId),
-        Types.ObjectId(insertedChat.chatId)
-    );
-}
+};
 
 describe('Get Relationship', () => {
     beforeEach(async () => {
-        httpClient = injectHttpClient();
-        mainUser = await insertUser();
-        secondUser = await insertUser();
-        const apiCred: MongoDpApiCredentials = await getApiCredentials();
-        mongoDbApi = new MongoDbApi(apiCred);
-        insertedChat = await insertChat([mainUser.userId, secondUser.userId]);
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
-        await mongoDbApi.insertRelationship(
-            Types.ObjectId(secondUser.userId),
-            Types.ObjectId(insertedChat.chatId)
-        );
+        await testSetup();
     });
 
     afterEach(async () => {
@@ -99,14 +91,7 @@ describe('Get Relationship', () => {
 
 describe('add Relationship', () => {
     beforeEach(async () => {
-        httpClient = injectHttpClient();
-        mainUser = await insertUser();
-        secondUser = await insertUser();
-        const apiCred: MongoDpApiCredentials = await getApiCredentials();
-        mongoDbApi = new MongoDbApi(apiCred);
-        insertedChat = await insertChat([mainUser.userId, secondUser.userId]);
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
+        await testSetup();
     });
 
     afterEach(async () => {
@@ -165,18 +150,7 @@ describe('add Relationship', () => {
 
 describe('delete Relationship', () => {
     beforeEach(async () => {
-        httpClient = injectHttpClient();
-        mainUser = await insertUser();
-        secondUser = await insertUser();
-        const apiCred: MongoDpApiCredentials = await getApiCredentials();
-        mongoDbApi = new MongoDbApi(apiCred);
-        insertedChat = await insertChat([mainUser.userId, secondUser.userId]);
-        const modCred: LoginInfo = getCredentialsForUser(mainUser.userData.username);
-        jwtProviderMainUser = await authenticate(modCred);
-        await mongoDbApi.insertRelationship(
-            Types.ObjectId(secondUser.userId),
-            Types.ObjectId(insertedChat.chatId)
-        );
+        await testSetup();
     });
 
     afterEach(async () => {
