@@ -113,7 +113,7 @@ export const getCredentialsForUser = (username: string): LoginInfo => {
 
 export const authenticate = async (credentials: LoginInfo): Promise<JwtProvider> => {
     // Await the authentication response
-    const reqUrl: string = `${environment.apiBaseUrl}/api/auth/signin`;
+    const reqUrl: string = `${environment.serverBaseUrl}/api/auth/signin`;
     const reqConfig: AxiosRequestConfig = getAxiosReqConfig();
 
     const authRes: AxiosResponse<AuthResult> = await axios.post<AuthResult>(

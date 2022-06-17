@@ -9,7 +9,7 @@ import { ChatLeftEmitter } from '../../src/app/core/events/emitters/chat-left';
 import { MatchLeftEmitter } from '../../src/app/core/events/emitters/match-left';
 
 const sIoConfig: SocketIoConfig = {
-    url: environment.apiBaseUrl,
+    url: environment.serverBaseUrl,
     options: {},
 };
 

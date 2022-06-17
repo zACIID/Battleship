@@ -10,7 +10,6 @@ import { environment } from '../../../../src/environments/environment';
 import { MongoDbApiMatch, toMongoDbApiMatch } from './api-match';
 import { MongoDbApiChat, toMongoDbApiChat } from './api-chat';
 
-
 const dbCollectionNames = {
     userCollection: 'Users',
     matchCollection: 'Matches',
@@ -33,7 +32,7 @@ export const getApiCredentials = async (): Promise<MongoDpApiCredentials> => {
     if (apiCredentials !== null) {
         return apiCredentials;
     } else {
-        const reqUrl: string = `${environment.apiBaseUrl}/api/testing/mongoDbApi/credentials`;
+        const reqUrl: string = `${environment.serverBaseUrl}/api/testing/mongoDbApi/credentials`;
 
         const res: AxiosResponse<MongoDpApiCredentials> = await axios.get<MongoDpApiCredentials>(
             reqUrl
@@ -53,8 +52,8 @@ interface MongoDbReqParams {
 }
 
 interface Relationship {
-    friendId: string, 
-    chatId: string
+    friendId: string;
+    chatId: string;
 }
 
 interface MongoDbReqBody {
@@ -216,63 +215,6 @@ export class MongoDbApi {
             entryData,
             dbCollectionNames.matchmakingCollection
         );
-    }
-
-    /**
-     * @param selfId
-     * @param friendId 
-     * @param chatId 
-     * Insert new relationship with friendId and chatId inside an already-existing user 
-    */
-    public async insertRelationship(selfId: string, friendId: string, chatId: string): Promise<dbRelation.Relationship> {
-        
-        let res: AxiosResponse
-        const data: Relationship = {
-            friendId: friendId, 
-            chatId: chatId
-        }
-
-        const reqHeaders = {
-            'Content-Type': 'application/json',
-            'Access-Control-Request-Headers': '*',
-            'api-key': this.credentials.apiKey,
-        };
-
-        const axiosReqConfig: AxiosRequestConfig = {
-            headers: reqHeaders,
-        };
-
-        const url: string =  `${this.credentials.apiBaseUrl}/users/${selfId}/relationships`
-        try {
-            res = await axios.post<dbRelation.Relationship>(url, data, axiosReqConfig);
-        } catch(err) {
-            return Promise.reject(err)
-        }
-
-        return Promise.resolve(res.data)
-    }
-
-    public async  deleteRelationship(selfId: string, friendId: string) : Promise<void>{
-
-        let res: AxiosResponse
-        const reqHeaders = {
-            'Content-Type': 'application/json',
-            'Access-Control-Request-Headers': '*',
-            'api-key': this.credentials.apiKey,
-        };
-
-        const axiosReqConfig: AxiosRequestConfig = {
-            headers: reqHeaders,
-        };
-
-        const url: string =  `${this.credentials.apiBaseUrl}/users/${selfId}/relationships/${friendId}`
-        try {
-            res = await axios.delete<dbRelation.Relationship>(url, axiosReqConfig);
-        } catch(err) {
-            return Promise.reject(err)
-        }
-
-        return Promise.resolve()
     }
 
     public async insertDocument<I>(

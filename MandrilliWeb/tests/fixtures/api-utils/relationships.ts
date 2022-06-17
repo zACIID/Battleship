@@ -1,25 +1,55 @@
-import {
-    getApiCredentials,
-    MongoDbApi,
-    MongoDpApiCredentials,
-} from '../database/mongodb-api/mongodb-api';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-export const insertRelationship = async (selfId: string, friendId: string, chatId: string) => {
-    const apiCred: MongoDpApiCredentials = await getApiCredentials();
-    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
-    try {
-        await mongoDbApi.insertRelationship(selfId, friendId, chatId);
-    } catch(err) {
-        throw err
-    }
+import { Relationship } from '../../../src/app/core/model/user/relationship';
+import { getAxiosReqConfig } from '../utils';
+import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
+import { environment } from '../../../src/environments/environment';
+
+/**
+ * Adds a relationship that involves the two specified users.
+ * The addition is symmetrical, which means that the relationship is added to both users,
+ * not just to one.
+ * @param jwtProvider provider of jwt used to authenticate with the backend api
+ * @param selfId id of the first user
+ * @param friendId id of the second user
+ */
+export const addRelationship = async (
+    jwtProvider: JwtProvider,
+    selfId: string,
+    friendId: string
+): Promise<Relationship> => {
+    const url: string = `${environment.serverBaseUrl}/api/users/${selfId}/relationships`;
+    const axiosReqConfig: AxiosRequestConfig = getAxiosReqConfig(jwtProvider);
+    const reqBody = {
+        friendId: friendId,
+    };
+
+    const res: AxiosResponse = await axios.post<Relationship>(url, reqBody, axiosReqConfig);
+
+    return res.data;
 };
 
-export const deleteRelationship = async (selfId: string, friendId: string) => {
-    const apiCred: MongoDpApiCredentials = await getApiCredentials();
-    const mongoDbApi: MongoDbApi = new MongoDbApi(apiCred);
+/**
+ * Removes a relationship that involves the two specified users.
+ * The deletion is symmetrical, which means that the relationship is deleted for both users,
+ * not just for one.
+ * @param jwtProvider provider of jwt used to authenticate with the backend api
+ * @param selfId id of the first user
+ * @param friendId id of the second user
+ */
+export const removeRelationship = async (
+    jwtProvider: JwtProvider,
+    selfId: string,
+    friendId: string
+): Promise<void> => {
     try {
-        await mongoDbApi.deleteRelationship(selfId, friendId);
-    } catch(err) {
-        throw err
+        const url: string = `${environment.serverBaseUrl}/api/users/${selfId}/relationships/${friendId}`;
+        const axiosReqConfig: AxiosRequestConfig = getAxiosReqConfig(jwtProvider);
+
+        await axios.delete(url, axiosReqConfig);
+
+        return Promise.resolve();
+    } catch (err) {
+        throw err;
     }
 };

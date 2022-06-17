@@ -10,7 +10,7 @@ export const sendNotification = async (
     newNotification: Notification,
     receiverId: string
 ): Promise<Notification> => {
-    const reqUrl: string = `${environment.apiBaseUrl}/api/users/${receiverId}/notifications`;
+    const reqUrl: string = `${environment.serverBaseUrl}/api/users/${receiverId}/notifications`;
     const reqConfig: AxiosRequestConfig = getAxiosReqConfig(senderJwtProvider);
 
     const apiRes: AxiosResponse<Notification> = await axios.post<Notification>(
@@ -30,7 +30,7 @@ export const removeNotification = async (
     const { type, sender } = notificationToRemove;
     const queryParams: string = `type=${type}&sender=${sender}`;
 
-    const reqUrl: string = `${environment.apiBaseUrl}/api/users/${receiverId}/notifications?${queryParams}`;
+    const reqUrl: string = `${environment.serverBaseUrl}/api/users/${receiverId}/notifications?${queryParams}`;
     const reqConfig: AxiosRequestConfig = getAxiosReqConfig(senderJwtProvider);
 
     await axios.delete(reqUrl, reqConfig);

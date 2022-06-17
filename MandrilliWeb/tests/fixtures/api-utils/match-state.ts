@@ -12,7 +12,7 @@ export const changePlayerState = async (
     playerId: string,
     ready: boolean
 ): Promise<boolean> => {
-    const reqUrl: string = `${environment.apiBaseUrl}/api/matches/${matchId}/players/${playerId}/ready`;
+    const reqUrl: string = `${environment.serverBaseUrl}/api/matches/${matchId}/players/${playerId}/ready`;
     const reqBody: StateChangeBody = {
         ready: ready,
     };
@@ -31,7 +31,7 @@ export const fireShot = async (
     matchId: string,
     shot: Shot
 ): Promise<GridCoordinates> => {
-    const reqUrl: string = `${environment.apiBaseUrl}/api/matches/${matchId}/players/${shot.playerId}/shotsFired`;
+    const reqUrl: string = `${environment.serverBaseUrl}/api/matches/${matchId}/players/${shot.playerId}/shotsFired`;
     const reqBody: GridCoordinates = shot.coordinates;
 
     const res: AxiosResponse<GridCoordinates> = await axios.post<GridCoordinates>(

@@ -3,7 +3,7 @@ export const environment = {
     /**
      * Base url of the backend api
      */
-    apiBaseUrl: 'localhost:3000',
+    serverBaseUrl: 'localhost:3000',
 
     /**
      * Key by which the jwt-auth token is stored in the browser local storage

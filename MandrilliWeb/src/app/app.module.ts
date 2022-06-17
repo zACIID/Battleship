@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 
 const sIoConfig: SocketIoConfig = {
-    url: environment.apiBaseUrl,
+    url: environment.serverBaseUrl,
     options: {},
 };
 

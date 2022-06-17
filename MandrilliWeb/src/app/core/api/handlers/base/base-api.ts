@@ -21,7 +21,7 @@ export abstract class BaseApi {
     protected readonly baseUrl: string;
     protected readonly httpClient: HttpClient;
 
-    protected constructor(httpClient: HttpClient, baseUrl: string = environment.apiBaseUrl) {
+    protected constructor(httpClient: HttpClient, baseUrl: string = environment.serverBaseUrl) {
         this.baseUrl = baseUrl;
         this.httpClient = httpClient;
     }
