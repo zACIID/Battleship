@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Document, Model, Schema, Types, SchemaTypes } from 'mongoose';
+import { Document, Model, Schema, SchemaTypes, Types } from 'mongoose';
 import { ChatDocument, createChat } from '../chat/chat';
 
 import { MatchStats, MatchStatsSchema, MatchStatsSubDocument } from './match-stats';
@@ -7,6 +7,8 @@ import { PlayerState, PlayerStateSchema, PlayerStateSubDocument } from './state/
 import { BattleshipGrid, BattleshipGridSubDocument } from './state/battleship-grid';
 import { Shot } from './state/shot';
 import { GridCoordinates } from './state/grid-coordinates';
+import * as usr from '../user/user';
+import { UserDocument, UserStatus } from '../user/user';
 
 export interface Match {
     player1: PlayerState;
@@ -173,6 +175,26 @@ export async function updateMatchStats(
 }
 
 /**
+ * Retrieves the current match of the user.
+ * If the user is not currently in game or in preparation phase, an error is thrown,
+ * since there is no current match.
+ * @param userId id of the user to retrieve the current match of
+ */
+export const getCurrentMatch = async (userId: Types.ObjectId): Promise<MatchDocument> => {
+    const user: UserDocument = await usr.getUserById(userId);
+
+    if (user.status === UserStatus.InGame || user.status === UserStatus.PrepPhase) {
+        const userMatches: MatchDocument[] = await getUserMostRecentMatches(userId, 0, 1);
+
+        // Since the user is InGame or in PrepPhase, the most recent match
+        // should be the match he is currently playing in
+        return userMatches[0];
+    } else {
+        throw new Error(`User ${userId} is not currently in a match`);
+    }
+};
+
+/**
  * Retrieves the most recent matches of the specified user.
  * Skip and limit params can be used to paginate database requests
  *
@@ -180,11 +202,11 @@ export async function updateMatchStats(
  * @param skip number of matches to skip
  * @param limit number of matches to retrieve
  */
-export async function getUserMostRecentMatches(
+export const getUserMostRecentMatches = async (
     userId: Types.ObjectId,
     skip: number = 0,
     limit: number = 10
-): Promise<MatchDocument[]> {
+): Promise<MatchDocument[]> => {
     const mostRecentMatches: MatchDocument[] = await MatchModel.find({
         $or: [{ 'player1.playerId': userId }, { 'player2.playerId': userId }],
     })
@@ -195,7 +217,7 @@ export async function getUserMostRecentMatches(
     return !mostRecentMatches
         ? Promise.reject(new Error(`No matches found for user ${userId}`))
         : Promise.resolve(mostRecentMatches);
-}
+};
 
 // Create "Matches" collection
 export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'Matches');

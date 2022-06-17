@@ -1,4 +1,4 @@
-import { MatchDocument } from '../model/match/match';
+import { getCurrentMatch, MatchDocument } from '../model/match/match';
 import { UserDocument, UserStatus } from '../model/user/user';
 import * as match from './../model/match/match';
 import { Types } from 'mongoose';
@@ -137,24 +137,9 @@ router.get(
     async (req: AuthenticatedRequest, res: UserEndpointResponse) => {
         const userId: Types.ObjectId = res.locals.userId;
         try {
-            const user: UserDocument = await usr.getUserById(userId);
-
-            if (user.status === UserStatus.InGame) {
-                const userMatches: MatchDocument[] = await match.getUserMostRecentMatches(
-                    userId,
-                    0,
-                    1
-                );
-                // Since the user is inGame, this should be the match he is currently playing in
-                const currentMatch: MatchDocument = userMatches[0];
-
-                // Return the matchId
-                return res.status(200).json({
-                    matchId: currentMatch._id,
-                });
-            } else {
-                throw new Error(`User ${userId} is not currently in a match`);
-            }
+            // Get the current match.
+            // An error is thrown if the user is not in a game
+            await match.getCurrentMatch(userId);
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 400;
             return res.status(statusCode).json({
