@@ -57,11 +57,14 @@ const setupDb = async (): Promise<MessageReceivedSetupData> => {
  * @param setupData
  */
 const teardownDb = async (setupData: MessageReceivedSetupData): Promise<void> => {
+    // Disconnect first, so that the server can tear down the user without problems
+    // After this, the user can be deleted
+    receiverClient.disconnect();
+
     const { chatId, sender, receiver } = setupData.insertedData;
     await deleteChat(chatId);
     await deleteUser(sender.userId);
     await deleteUser(receiver.userId);
-    receiverClient.disconnect();
 };
 
 let receiverClient: Socket;
@@ -89,9 +92,9 @@ describe('Message Received', () => {
         const messageListener: ChatMessageListener = new ChatMessageListener(receiverClient);
         messageListener.listen((eventData: ApiMessage) => {
             // The message data should be equal to the removed message
-            expect(eventData.author).toEqual(String);
-            expect(eventData.timestamp).toEqual(Number);
-            expect(eventData.content).toEqual(String);
+            expect(eventData.author).toEqual(expect.any(String));
+            expect(eventData.timestamp).toEqual(expect.any(Number));
+            expect(eventData.content).toEqual(expect.any(String));
 
             // End only after having listened to the event
             done();

@@ -11,7 +11,7 @@ export const sendMessage = async (
     chatId: string,
     message: Message
 ): Promise<ApiMessage> => {
-    const reqUrl: string = `${environment.serverBaseUrl}/chats/${chatId}/messages`;
+    const reqUrl: string = `${environment.serverBaseUrl}/api/chats/${chatId}/messages`;
     const reqConfig: AxiosRequestConfig = getAxiosReqConfig(senderJwtProvider);
 
     const apiRes: AxiosResponse<ApiMessage> = await axios.post<ApiMessage>(
