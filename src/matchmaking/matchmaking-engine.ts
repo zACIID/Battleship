@@ -4,6 +4,7 @@ import { MatchmakingQueueModel, QueueEntry } from '../model/matchmaking/queue-en
 import * as match from '../model/match/match';
 import { MatchFoundEmitter } from '../events/emitters/match-found';
 import { MatchData } from '../model/events/match-data';
+import { setInterval } from 'timers';
 
 /**
  * Class that represents a matchmaking engine, whose purpose is to arrange game
@@ -18,21 +19,21 @@ export class MatchmakingEngine {
      * Null if no interval is active.
      * @private
      */
-    private _intervalId: NodeJS.Timeout;
+    private intervalId: NodeJS.Timeout;
 
     /**
      * Time in milliseconds that passes between each run of the
      * matchmaking engine.
      * @private
      */
-    private readonly _pollingTime: number;
+    private readonly pollingTime: number;
 
     /**
      * socket.io handler server tha will be used by the engine to notify
      *  players that a match has been found.
      * @private
      */
-    private readonly _sIoServer: Server;
+    private readonly sIoServer: Server;
 
     /**
      * Creates a matchmaking engine instance
@@ -43,9 +44,9 @@ export class MatchmakingEngine {
      *  matchmaking engine.
      */
     public constructor(sIoServer: Server, queuePollingTime: number = 5000) {
-        this._intervalId = null;
-        this._pollingTime = queuePollingTime;
-        this._sIoServer = sIoServer;
+        this.intervalId = null;
+        this.pollingTime = queuePollingTime;
+        this.sIoServer = sIoServer;
     }
 
     /**
@@ -54,11 +55,16 @@ export class MatchmakingEngine {
      * at initialization.
      */
     public start(): void {
-        if (this._intervalId !== null) {
+        if (this.intervalId !== null) {
             throw new Error('Engine is already running!');
         }
 
-        this._intervalId = setTimeout(function(){ this.arrangeMatches() }.bind(this), this._pollingTime);
+        this.intervalId = setInterval(
+            async function () {
+                await this.arrangeMatches();
+            }.bind(this),
+            this.pollingTime
+        );
     }
 
     /**
@@ -78,7 +84,6 @@ export class MatchmakingEngine {
         // Until there are at least 2 players in the queue,
         // keep trying to arrange matches
         while (queuedPlayers.length > 1) {
-            
             const player: QueueEntry = queuedPlayers.pop();
             const opponent: QueueEntry = this.findOpponent(player, queuedPlayers);
 
@@ -106,7 +111,7 @@ export class MatchmakingEngine {
             return null;
         }
 
-        // Sort in descending order
+        // Sort in descending order based on time of queue
         // (note that return 1 and -1 are inverted, because order is desc)
         potentialOpponents.sort((a: QueueEntry, b: QueueEntry) => {
             if (a.queuedSince < b.queuedSince) {
@@ -120,6 +125,7 @@ export class MatchmakingEngine {
 
         // Popping the last element means getting and removing
         // the entry that has been in the queue for the longest time
+        // TODO check side effect on matchmaking queue
         return potentialOpponents.pop();
     }
 
@@ -202,13 +208,13 @@ export class MatchmakingEngine {
         };
 
         const player1Notifier: MatchFoundEmitter = new MatchFoundEmitter(
-            this._sIoServer,
+            this.sIoServer,
             player1.userId
         );
         player1Notifier.emit(notificationData);
 
         const player2Notifier: MatchFoundEmitter = new MatchFoundEmitter(
-            this._sIoServer,
+            this.sIoServer,
             player2.userId
         );
         player2Notifier.emit(notificationData);
@@ -218,12 +224,12 @@ export class MatchmakingEngine {
      * Stops the engine from arranging matches
      */
     public stop(): void {
-        if (this._intervalId === null) {
+        if (this.intervalId === null) {
             throw new Error('Engine is already stopped!');
         }
 
-        clearInterval(this._intervalId);
+        clearInterval(this.intervalId);
 
-        this._intervalId = null;
+        this.intervalId = null;
     }
 }

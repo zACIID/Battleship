@@ -173,6 +173,7 @@ const queuePollingTimeMs: number = 5000;
 const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 matchmakingEngine.start();
 
+/* Create Admin user */
 createUser({
     username: process.env.ADMIN_USERNAME,
     roles: [UserRoles.Admin, UserRoles.Base, UserRoles.Moderator],
