@@ -19,7 +19,9 @@ export class MatchLeftListener extends ClientListener<MatchData> {
         super.listen((joinData: MatchData): Promise<void> => {
             this.client.leave(joinData.matchId);
 
-            console.log(chalk.bgRed(`Client left the match '${joinData.matchId}'!`));
+            console.log(
+                chalk.bgRed(`Client ${this.client.id} left the match '${joinData.matchId}'!`)
+            );
 
             return Promise.resolve();
         });

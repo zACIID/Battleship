@@ -19,7 +19,9 @@ export class MatchJoinedListener extends ClientListener<MatchData> {
         super.listen((joinData: MatchData): Promise<void> => {
             this.client.join(joinData.matchId);
 
-            console.log(chalk.bgGreen(`Client joined the match '${joinData.matchId}'!`));
+            console.log(
+                chalk.bgGreen(`Client ${this.client.id} joined the match '${joinData.matchId}'!`)
+            );
 
             return Promise.resolve();
         });

@@ -19,7 +19,9 @@ export class ChatJoinedListener extends ClientListener<ChatData> {
         super.listen((joinData: ChatData): Promise<void> => {
             this.client.join(joinData.chatId);
 
-            console.log(chalk.bgGreen(`Client joined the chat '${joinData.chatId}'!`));
+            console.log(
+                chalk.bgGreen(`Client ${this.client.id} joined the chat '${joinData.chatId}'!`)
+            );
 
             return Promise.resolve();
         });
