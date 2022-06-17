@@ -15,7 +15,7 @@ export class PlayerStateChangedEmitter extends RoomEmitter<PlayerStateChangedDat
      * @param matchId id of the match whose players and spectators have to be notified
      */
     public constructor(ioServer: Server, matchId: Types.ObjectId) {
-        const eventName: string = `opponent-state-changed`;
+        const eventName: string = `player-state-changed`;
         super(ioServer, eventName, matchId.toString());
     }
 }

@@ -23,7 +23,7 @@ export class PositioningCompletedEmitter extends RoomEmitter<GenericMessage> {
     emit(): void {
         // What is sent here is not important, it could be anything
         super.emit({
-            message: 'positioning completed',
+            message: 'Preparation Phase Completed',
         });
     }
 }

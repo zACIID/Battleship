@@ -125,7 +125,9 @@ export class MatchmakingEngine {
 
         // Popping the last element means getting and removing
         // the entry that has been in the queue for the longest time
-        // TODO check side effect on matchmaking queue
+        // TODO check side effect on matchmaking queue. Is it good that
+        //  the player here is removed? it is unclear if this affects also the
+        //  matchmaking queue on the above functions
         return potentialOpponents.pop();
     }
 
