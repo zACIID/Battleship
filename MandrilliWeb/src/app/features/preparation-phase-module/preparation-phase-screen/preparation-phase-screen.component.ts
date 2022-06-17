@@ -37,7 +37,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private playerStateListener: PlayerStateChangedListener,
-        private playersReadyListener: PositioningCompletedListener,
+        private positioningCompletedListener: PositioningCompletedListener,
         private userIdProvider: UserIdProvider,
         private router: Router,
         private matchClient: MatchApi,
@@ -49,33 +49,35 @@ export class PreparationPhaseScreenComponent implements OnInit {
             this.userId = this.userIdProvider.getUserId();
             this.route.params.subscribe((param) => {
                 // TODO this is undefined. Probably wrong param name
-                console.log('Match Id param: ' + param['matchId']);
-                this.matchId = param['matchId'];
+                console.log('Match Id param: ' + param['id']);
+                this.matchId = param['id'];
             });
         } catch (err) {
             console.log('An error occurred while retrieving the match from the url');
         }
 
-        const pollingReadyRequest = (data: PlayerStateChangedData): void => {
-            console.log('Player is ready');
+        const onPlayerStateChanged = (data: PlayerStateChangedData): void => {
+            console.log(`Player ${data.playerId} is ready`);
 
             this.opponentReady = data.isReady;
             this.opponentsId = data.playerId;
         };
-        pollingReadyRequest.bind(this);
-        this.playerStateListener.listen(pollingReadyRequest);
+        onPlayerStateChanged.bind(this);
+        this.playerStateListener.listen(onPlayerStateChanged);
 
-        const pollingFullReadyRequest = async (data: GenericMessage): Promise<void> => {
+        const onPositioningCompleted = async (data: GenericMessage): Promise<void> => {
+            console.log(data.message);
+
             const path: string = '/game/' + this.matchId;
             await this.router.navigate([path]);
         };
-        pollingFullReadyRequest.bind(this);
-        this.playersReadyListener.listen(pollingFullReadyRequest);
+        onPositioningCompleted.bind(this);
+        this.positioningCompletedListener.listen(onPositioningCompleted);
     }
 
     ngOnDestroy(): void {
         this.playerStateListener.unListen();
-        this.playersReadyListener.unListen();
+        this.positioningCompletedListener.unListen();
     }
 
     private isValidCoords(row: number, col: number): boolean {
@@ -173,8 +175,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
-
-        this.beReady();
     }
 
     public deploy(shipType: string, row: string, col: string, vertical: boolean): boolean {

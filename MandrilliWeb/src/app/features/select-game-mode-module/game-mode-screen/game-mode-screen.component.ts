@@ -4,6 +4,7 @@ import { MatchmakingApi, EnqueueResponse } from './../../../core/api/handlers/ma
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatchFoundListener } from 'src/app/core/events/listeners/match-found';
+import { MatchJoinedEmitter } from '../../../core/events/emitters/match-joined';
 
 @Component({
     selector: 'app-game-mode-screen',
@@ -16,6 +17,7 @@ export class GameModeScreenComponent implements OnInit {
 
     constructor(
         private matchListener: MatchFoundListener,
+        private matchJoined: MatchJoinedEmitter,
         private router: Router,
         private queue: MatchmakingApi,
         private userIdProvider: UserIdProvider
@@ -39,8 +41,12 @@ export class GameModeScreenComponent implements OnInit {
 
             this.queue.enqueue(this.userInSessionId).subscribe((res: EnqueueResponse) => {
                 const matchFound = async (data: MatchData): Promise<void> => {
-                    let reqpath = '/preparation-phase/' + data.matchId;
-                    await this.router.navigate([reqpath]);
+                    this.matchJoined.emit({
+                        matchId: data.matchId,
+                    });
+
+                    let reqPath = '/preparation-phase/' + data.matchId;
+                    await this.router.navigate([reqPath]);
                 };
                 matchFound.bind(this);
                 this.matchListener.listen(matchFound);
