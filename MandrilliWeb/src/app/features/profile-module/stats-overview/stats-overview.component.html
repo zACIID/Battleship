@@ -1,14 +1,16 @@
-<div class="columns">
-    <div class="column">
-        <h1 class="is-size-1 has-text-light">{{user.username}}</h1>
-    </div>
-    <div class="column is-one-quarter">
-        <div *ngIf="!myProfile">
-            
-            <button class="button is-info is-medium mt-4" (click)="addFriend()">Add Friend</button>
+<div *ngIf="user">
+    <div class="columns">
+        <div class="column">
+            <h1 class="is-size-1 has-text-light">{{user.username}}</h1>
+        </div>
+        <div class="column is-one-quarter">
+            <div *ngIf="!myProfile">
+                
+                <button class="button is-info is-medium mt-4" (click)="addFriend()">Add Friend</button>
+            </div>
         </div>
     </div>
+    <div *ngIf="stats">          
+        <stats-grid [stats]="stats"></stats-grid>
+    </div>
 </div>
-
-                    
-<stats-grid [stats]="stats"></stats-grid>

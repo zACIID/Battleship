@@ -1,5 +1,5 @@
 
-<div class="is-flex is-fullwidth is-flex-wrap-wrap is-justify-content-space-evenly is-justify-content-center">
+<div *ngIf="stats" class="is-flex is-fullwidth is-flex-wrap-wrap is-justify-content-space-evenly is-justify-content-center">
 
     <div *ngFor="let stat of stats" class="box has-background-light width-30">
         <stat-block [title]="stat.title" [value]="stat.value"></stat-block>

@@ -22,18 +22,18 @@
                 </div>
 
                 <div class="box has-background-primary mt-2 profile-body-div mb-3">
-
-                    <stats-overview [user]="user" [myProfile]="myProfile"></stats-overview>
-
+                    <div *ngIf="user">
+                        <stats-overview [user]="user" [myProfile]="myProfile"></stats-overview>
+                    </div>
                 </div>
 
             </div>
             <div class="column is-one-third">
 
                 <div class="half-profile-div box has-background-primary mt-2">
-                    
-                    <rank-overview [user]="user" [elo]="user.elo"></rank-overview>
-
+                    <div *ngIf="user">
+                        <rank-overview [user]="user" [elo]="user.elo"></rank-overview>
+                    </div>
                 </div>
                 <div class="half-profile-div box has-background-primary mt-2 mb-2">
                     <div *ngIf="isUserModerator && myProfile">

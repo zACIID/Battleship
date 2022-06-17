@@ -7,11 +7,10 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./stats-grid.component.css'],
 })
 export class StatsGridComponent implements OnInit {
-    @Input() stats: StatsOverview[] = [];
+
+    @Input() stats?: StatsOverview[];
 
     constructor() {}
 
-    ngOnInit(): void {
-        
-    }
+    ngOnInit(): void { }
 }

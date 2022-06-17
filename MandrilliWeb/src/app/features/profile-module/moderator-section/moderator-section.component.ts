@@ -21,7 +21,6 @@ export class ModeratorSectionComponent implements OnInit {
 
     ngOnInit(): void {
         this.userInSessionId = this.userIdProvider.getUserId();
-        console.log(this.userInSessionId);
     }
 
     public ban(username: string): void {

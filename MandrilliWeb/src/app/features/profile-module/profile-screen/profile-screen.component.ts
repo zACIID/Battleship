@@ -14,7 +14,7 @@ import { User, UserRoles } from '../../../core/model/user/user';
 export class ProfileScreenComponent implements OnInit {
     public myProfile: boolean = false;
     public isUserModerator: boolean = false;
-    public user: User = new User();
+    public user?: User = undefined;
     private userShowedId: string = '';
     public rank: string = '';
 
