@@ -78,7 +78,7 @@ describe('Get Relationship', () => {
             httpClient,
             jwtProviderMainUser
         );
-        relationshipApi.getRelationships(secondUser.userId).subscribe({
+        relationshipApi.getRelationships('wrong-user-id').subscribe({
             error: (err: Error) => {
                 expect(err).toBeTruthy();
 

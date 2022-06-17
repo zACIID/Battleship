@@ -12,7 +12,7 @@ import { ChatMessage } from '../../../src/app/core/model/events/chat-message';
 import { ChatMessageListener } from '../../../src/app/core/events/listeners/chat-message';
 import { sendMessage } from '../../fixtures/api-utils/chat-message';
 import { MongoDbApi } from '../../fixtures/database/mongodb-api/mongodb-api';
-import { deleteChat } from '../../fixtures/database/chats';
+import { deleteChat, insertChat, InsertedChat } from '../../fixtures/database/chats';
 
 export interface MessageReceivedSetupData extends SetupData {
     insertedData: {
@@ -33,8 +33,8 @@ const setupDb = async (): Promise<MessageReceivedSetupData> => {
     const receiver: InsertedUser = await insertUser();
 
     const senderCred: LoginInfo = getCredentialsForUser(sender.userData.username);
-    let userArray = [Types.ObjectId(sender.userId), Types.ObjectId(receiver.userId)];
-    let userChat = await mongoDbApi.insertChat({ users: userArray, messages: [] });
+    const chatUserIds = [sender.userId, receiver.userId];
+    const userChat: InsertedChat = await insertChat(chatUserIds);
 
     TestBed.configureTestingModule(socketIoTestbedConfig);
     receiverClient = TestBed.inject(Socket);
@@ -45,7 +45,7 @@ const setupDb = async (): Promise<MessageReceivedSetupData> => {
     return {
         apiAuthCredentials: senderCred,
         insertedData: {
-            chatId: userChat.insertedId.toString(),
+            chatId: userChat.chatId,
             sender: sender,
             receiver: receiver,
         },

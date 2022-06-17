@@ -142,6 +142,14 @@ describe('Delete Chat', () => {
 });
 
 describe('Get Messages', () => {
+    beforeEach(async () => {
+        await testSetup();
+    });
+
+    afterEach(async () => {
+        await testTeardown();
+    });
+
     test('Should Return Non-Empty Response With Correct Fields', (done) => {
         const chatApi: ChatApi = new ChatApi(httpClient, jwtProvider);
         const { chat } = setupData.insertedData;

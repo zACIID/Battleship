@@ -332,7 +332,7 @@ describe('Get Matches', () => {
                             player1: expect.any(Object),
                             player2: expect.any(Object),
                             playersChat: expect.any(String),
-                            observersChat: expect.any(Object),
+                            observersChat: expect.any(String),
                             stats: expect.any(Object),
                         })
                     );
