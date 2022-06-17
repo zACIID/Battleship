@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { Socket } from 'ngx-socket-io';
-import { Types } from 'mongoose';
 
 import { deleteUser, InsertedUser, insertUser } from '../../fixtures/database/users';
 import { authenticate, getCredentialsForUser } from '../../fixtures/authentication';
@@ -8,11 +7,12 @@ import { joinChat, joinServer, socketIoTestbedConfig } from '../../fixtures/sock
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { SetupData } from '../../fixtures/utils';
-import { ChatMessage } from '../../../src/app/core/model/events/chat-message';
 import { ChatMessageListener } from '../../../src/app/core/events/listeners/chat-message';
-import { sendMessage } from '../../fixtures/api-utils/chat-message';
+import { sendMessage } from '../../fixtures/api-utils/messages';
 import { MongoDbApi } from '../../fixtures/database/mongodb-api/mongodb-api';
 import { deleteChat, insertChat, InsertedChat } from '../../fixtures/database/chats';
+import { Message } from '../../../src/app/core/model/chat/message';
+import { ApiMessage } from '../../../src/app/core/model/api/chat/api-message';
 
 export interface MessageReceivedSetupData extends SetupData {
     insertedData: {
@@ -78,7 +78,7 @@ describe('Message Received', () => {
     });
 
     test('New Message Should Correctly Fire Message Received Event', (done) => {
-        const { receiver } = setupData.insertedData;
+        const { sender, receiver } = setupData.insertedData;
 
         // Join the server with the receiver, so that it can listen to the
         // notification received event
@@ -87,8 +87,7 @@ describe('Message Received', () => {
         joinChat(setupData.insertedData.chatId, receiverClient);
 
         const messageListener: ChatMessageListener = new ChatMessageListener(receiverClient);
-
-        messageListener.listen((eventData: ChatMessage) => {
+        messageListener.listen((eventData: ApiMessage) => {
             // The message data should be equal to the removed message
             expect(eventData.author).toEqual(String);
             expect(eventData.timestamp).toEqual(Number);
@@ -99,7 +98,12 @@ describe('Message Received', () => {
         });
 
         // Send the message
-        sendMessage(senderJwtProvider, setupData.insertedData.chatId);
+        const newMessage: Message = {
+            author: sender.userId,
+            timestamp: new Date(),
+            content: 'content',
+        };
+        sendMessage(senderJwtProvider, setupData.insertedData.chatId, newMessage);
     });
 
     test('Event Name Should Be "notification-received"', () => {
