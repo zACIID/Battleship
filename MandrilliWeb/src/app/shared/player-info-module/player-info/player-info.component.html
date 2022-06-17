@@ -1,5 +1,5 @@
-<div class="box has-background-primary columns pointer" (click)="show_profile()">
-    <div *ngIf="userId" class="column is-vcentered" >
+<div *ngIf="user" class="box has-background-primary columns pointer" (click)="show_profile()">
+    <div  class="column is-vcentered" >
         <p>
             <strong>{{ user.username }}</strong>
         </p>

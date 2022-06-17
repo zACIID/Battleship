@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class PlayerInfoComponent implements OnInit {
     @Input() userId?: string;
-    public user: Overview = new Overview();
+    public user?: Overview = undefined;
 
     constructor(private router: Router, private userClient: UserApi) {}
 
@@ -40,9 +40,5 @@ export class PlayerInfoComponent implements OnInit {
         await this.router.navigate([url]);
     }
 
-
-    ngOnChanges(){
-        this.ngOnInit();
-    }
 
 }
