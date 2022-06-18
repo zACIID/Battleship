@@ -7,6 +7,7 @@ export enum UserStatus {
     PrepPhase = 'PrepPhase',
     InGame = 'InGame',
     Spectating = 'Spectating',
+    InQueue = 'InQueue',
 
     /**
      * This status is assigned to a moderator that has just been added

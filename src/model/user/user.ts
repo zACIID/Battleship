@@ -30,7 +30,8 @@ export enum UserStatus {
     Online = 'Online',
     PrepPhase = 'PrepPhase',
     InGame = 'InGame',
-    Spectating = 'Spectating',
+    Spectating = 'Spectating', // TODO no way of setting this status currently. New event?
+    InQueue = 'InQueue',
 
     /**
      * This status is assigned to a moderator that has just been added
@@ -475,7 +476,7 @@ export async function getUserStats(_id: Types.ObjectId): Promise<UserStats> {
 export async function getMostRecentNotifications(
     userId: Types.ObjectId
 ): Promise<RequestNotificationSubDocument[]> {
-    const not: UserDocument =  await UserModel.findOne({ _id: userId }, {notifications: 1}).sort({
+    const not: UserDocument = await UserModel.findOne({ _id: userId }, { notifications: 1 }).sort({
         createdAt: -1,
     });
     return not.notifications;
@@ -527,10 +528,10 @@ export async function updateUserStats(
  * @param userId id of user to set online
  * @private
  */
-export const setUserOnline = async (ioServer: Server, userId: string): Promise<void> => {
+export const setUserOnline = async (ioServer: Server, userId: string): Promise<UserDocument> => {
     const newStatus: UserStatus = UserStatus.Online;
 
-    await setUserStatus(ioServer, userId, newStatus);
+    return await setUserStatus(ioServer, userId, newStatus);
 };
 
 /**
@@ -541,10 +542,10 @@ export const setUserOnline = async (ioServer: Server, userId: string): Promise<v
  * @param userId id of the user to set offline
  * @private
  */
-export const setUserOffline = async (ioServer: Server, userId: string): Promise<void> => {
+export const setUserOffline = async (ioServer: Server, userId: string): Promise<UserDocument> => {
     const newStatus: UserStatus = UserStatus.Offline;
 
-    await setUserStatus(ioServer, userId, newStatus);
+    return await setUserStatus(ioServer, userId, newStatus);
 };
 
 /**
@@ -554,22 +555,25 @@ export const setUserOffline = async (ioServer: Server, userId: string): Promise<
  *      the friends of the user whose status is being changed
  * @param userId id of the user whose status has to be changed
  * @param newStatus new status of the user
+ * @return updated user
  * @private
  */
 export const setUserStatus = async (
     ioServer: Server,
     userId: string,
     newStatus: UserStatus
-): Promise<void> => {
-    const user: UserDocument = await getUserById(Types.ObjectId(userId));
+): Promise<UserDocument> => {
+    let user: UserDocument = await getUserById(Types.ObjectId(userId));
     user.status = newStatus;
 
-    await user.save();
+    user = await user.save();
 
     const friendIds: Types.ObjectId[] = user.relationships.map((rel: RelationshipSubDocument) => {
         return rel.friendId;
     });
     await notifyFriendsUserStatusChanged(ioServer, user._id, friendIds, newStatus);
+
+    return user;
 };
 
 /**
