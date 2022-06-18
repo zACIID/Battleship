@@ -24,10 +24,11 @@ interface EnqueueRequest extends AuthenticatedRequest {
 router.post('/matchmaking/queue', authenticateToken, async (req: EnqueueRequest, res: Response) => {
     try {
         const { userId } = req.body;
-        await insertMatchmakingEntry(Types.ObjectId(userId));
+        const userObjId: Types.ObjectId = Types.ObjectId(userId);
+        await insertMatchmakingEntry(userObjId);
 
         // Change the status of the user: he is now queued
-        await setUserStatus(ioServer, userId, UserStatus.InQueue);
+        await setUserStatus(ioServer, userObjId, UserStatus.InQueue);
 
         return res.status(201).json(req.body);
     } catch (err) {
@@ -56,11 +57,11 @@ router.delete(
     retrieveUserId,
     async (req: RemoveFromQueueRequest, res: Response) => {
         try {
-            const userToUnQueue: Types.ObjectId = res.locals.userId;
-            await removeMatchmakingEntry(userToUnQueue);
+            const userIdToUnQueue: Types.ObjectId = res.locals.userId;
+            await removeMatchmakingEntry(userIdToUnQueue);
 
             // The user is not in queue anymore, so it goes back to idle (Online)
-            await setUserStatus(ioServer, userToUnQueue.toString(), UserStatus.Online);
+            await setUserStatus(ioServer, userIdToUnQueue, UserStatus.Online);
 
             return res.status(204).json();
         } catch (err) {

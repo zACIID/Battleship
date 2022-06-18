@@ -521,34 +521,6 @@ export async function updateUserStats(
 }
 
 /**
- * Set the status of the provided user to offline and notify his friends
- * that his status has changed
- * @param ioServer: socket.io server used to send notifications to
- *      the friends of the user whose status is being changed
- * @param userId id of user to set online
- * @private
- */
-export const setUserOnline = async (ioServer: Server, userId: string): Promise<UserDocument> => {
-    const newStatus: UserStatus = UserStatus.Online;
-
-    return await setUserStatus(ioServer, userId, newStatus);
-};
-
-/**
- * Set the status of the provided user to offline and notify his friends
- * that his status has changed
- * @param ioServer: socket.io server used to send notifications to
- *      the friends of the user whose status is being changed
- * @param userId id of the user to set offline
- * @private
- */
-export const setUserOffline = async (ioServer: Server, userId: string): Promise<UserDocument> => {
-    const newStatus: UserStatus = UserStatus.Offline;
-
-    return await setUserStatus(ioServer, userId, newStatus);
-};
-
-/**
  * Sets the status of the provided user to the provided value
  * and notifies his friends of the change.
  * @param ioServer: socket.io server used to send notifications to
@@ -560,10 +532,10 @@ export const setUserOffline = async (ioServer: Server, userId: string): Promise<
  */
 export const setUserStatus = async (
     ioServer: Server,
-    userId: string,
+    userId: Types.ObjectId,
     newStatus: UserStatus
 ): Promise<UserDocument> => {
-    let user: UserDocument = await getUserById(Types.ObjectId(userId));
+    let user: UserDocument = await getUserById(userId);
     user.status = newStatus;
 
     user = await user.save();

@@ -14,6 +14,7 @@ import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { GenericMessage } from '../../../src/app/core/model/events/generic-message';
 import { PositioningCompletedListener } from '../../../src/app/core/events/listeners/positioning-completed';
+import { JoinReason } from '../../../src/app/core/model/events/match-joined-data';
 
 interface PositioningCompletedSetupData extends MatchesSetupData {}
 
@@ -67,8 +68,16 @@ describe('Positioning Completed', () => {
 
         // Join the match with both players,
         // so that the state changed event can be listened to
-        joinMatch(matchId, player1Client);
-        joinMatch(matchId, player2Client);
+        joinMatch(player1Client, {
+            matchId: matchId,
+            userId: player1Id,
+            joinReason: JoinReason.Player,
+        });
+        joinMatch(player2Client, {
+            matchId: matchId,
+            userId: player2Id,
+            joinReason: JoinReason.Player,
+        });
 
         // Listen to both the match found events
         let player1EventFired: boolean = false;

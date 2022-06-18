@@ -14,6 +14,7 @@ import { PlayerStateChangedListener } from '../../../src/app/core/events/listene
 import { changePlayerState } from '../../fixtures/api-utils/match-state';
 import { LoginInfo } from '../../../src/app/core/api/handlers/auth-api';
 import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
+import { JoinReason } from '../../../src/app/core/model/events/match-joined-data';
 
 interface PlayerStateChangedSetupData extends MatchesSetupData {}
 
@@ -63,11 +64,20 @@ describe('Player State Changed', () => {
 
         const matchId: string = currentMatch.matchId;
         const player1Id: string = currentMatch.playerIds[0];
+        const player2Id: string = currentMatch.playerIds[1];
 
         // Join the match with both players,
         // so that the state changed event can be listened to
-        joinMatch(matchId, player1Client);
-        joinMatch(matchId, player2Client);
+        joinMatch(player1Client, {
+            matchId: matchId,
+            userId: player1Id,
+            joinReason: JoinReason.Player,
+        });
+        joinMatch(player2Client, {
+            matchId: matchId,
+            userId: player2Id,
+            joinReason: JoinReason.Player,
+        });
 
         // Listen to both the match found events
         let player1EventFired: boolean = false;

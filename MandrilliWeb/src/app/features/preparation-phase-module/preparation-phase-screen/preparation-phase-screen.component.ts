@@ -333,7 +333,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
     }
 
     public async leaveMatch() {
-        if (this.matchId) this.fleeMatchEmitter.emit({ matchId: this.matchId });
+        if (this.matchId)
+            this.fleeMatchEmitter.emit({ matchId: this.matchId, userId: this.userId });
         else throw new Error('Error while leaving the match');
         await this.router.navigate(['/homepage']);
     }

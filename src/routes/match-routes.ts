@@ -266,10 +266,14 @@ const setReadyState = async (
  * @param playerId id of the player that changed his ready state
  * @param newState value of the ready state set by the player
  */
-const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState: boolean) => {
+const notifyPlayers = async (match: MatchDocument, playerId: Types.ObjectId, newState: boolean) => {
+    // Both players are ready == positioning completed event
+    // Only one player ready == state changed event
     if (match.player1.isReady && match.player2.isReady) {
         const notifier = new PositioningCompletedEmitter(ioServer, match._id);
-        notifier.emit();
+        await notifier.emit({
+            message: 'Preparation phase completed',
+        });
     } else {
         const notifier = new PlayerStateChangedEmitter(ioServer, match._id);
         notifier.emit({

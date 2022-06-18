@@ -1,10 +1,11 @@
-import { MatchData } from './../../../core/model/events/match-data';
-import { UserIdProvider } from './../../../core/api/userId-auth/userId-provider';
-import { MatchmakingApi, EnqueueResponse } from './../../../core/api/handlers/matchmaking-api';
+import { MatchData } from '../../../core/model/events/match-data';
+import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
+import { EnqueueResponse, MatchmakingApi } from '../../../core/api/handlers/matchmaking-api';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatchFoundListener } from 'src/app/core/events/listeners/match-found';
 import { MatchJoinedEmitter } from '../../../core/events/emitters/match-joined';
+import { JoinReason } from '../../../core/model/events/match-joined-data';
 
 @Component({
     selector: 'app-game-mode-screen',
@@ -40,9 +41,15 @@ export class GameModeScreenComponent implements OnInit {
             }
 
             this.queue.enqueue(this.userInSessionId).subscribe((res: EnqueueResponse) => {
+                // TODO match-found should be listened right after login
+                //  this is because another user can accept a match at any time,
+                //  even after the current user has logged out and logged in multiple times
                 const matchFound = async (data: MatchData): Promise<void> => {
+                    // Join the new match as a player
                     this.matchJoined.emit({
                         matchId: data.matchId,
+                        userId: this.userInSessionId,
+                        joinReason: JoinReason.Player,
                     });
 
                     let reqPath = '/preparation-phase/' + data.matchId;
