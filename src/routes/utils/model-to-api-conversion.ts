@@ -1,4 +1,5 @@
 import { MatchStatsSubDocument } from '../../model/database/match/match-stats';
+import { toUnixSeconds } from './date-utils';
 
 /**
  * Interface that models the match stats object returned by
@@ -18,9 +19,10 @@ export interface ApiMatchStats {
  */
 export const toApiMatchStats = (stats: MatchStatsSubDocument): ApiMatchStats => {
     return {
-        winner: stats.winner.toString(),
-        startTime: Math.floor(new Date(stats.startTime).getTime() / 1000),
-        endTime: Math.floor(new Date(stats.endTime).getTime() / 1000),
+        // Note: winner and endTime could be null if the match hasn't ended yet
+        winner: stats.winner !== null ? stats.winner.toString() : null,
+        startTime: toUnixSeconds(stats.startTime),
+        endTime: stats.endTime !== null ? toUnixSeconds(stats.endTime) : null,
         totalShots: stats.totalShots,
         shipsDestroyed: stats.shipsDestroyed,
     };

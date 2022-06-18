@@ -22,7 +22,6 @@ import { ChatLeftListener } from './events/client-listeners/chat-left';
 import { MatchLeftListener } from './events/client-listeners/match-left';
 import { PlayerWonListener } from './events/client-listeners/player-won';
 import { createUser, UserRoles, UserDocument } from './model/database/user/user';
-import { env } from 'process';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 

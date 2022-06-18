@@ -25,8 +25,18 @@ router.get(
     skipLimitChecker,
     async (req: AuthenticatedRequest, res: LeaderboardEndpointResponse) => {
         try {
-            const skip: number = res.locals.skip;
-            const limit: number = res.locals.limit;
+            // Skip and limit are set to -1 if not specified
+            let skip: number = res.locals.skip;
+            let limit: number = res.locals.limit;
+
+            // Default values for skip and limit are 0 and 50
+            if (skip === -1) {
+                skip = 0;
+            }
+
+            if (limit === -1) {
+                limit = 50;
+            }
 
             const leaderBoard: UserDocument[] = await getLeaderboard(skip, limit);
             const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;

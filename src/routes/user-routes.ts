@@ -139,7 +139,11 @@ router.get(
         try {
             // Get the current match.
             // An error is thrown if the user is not in a game
-            await match.getCurrentMatch(userId);
+            const currentMatch: MatchDocument = await match.getCurrentMatch(userId);
+
+            return res.status(200).json({
+                matchId: currentMatch._id,
+            });
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 400;
             return res.status(statusCode).json({
