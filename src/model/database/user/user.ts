@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import { AnyKeys, Document, FilterQuery, Model, Schema, SchemaTypes, Types } from 'mongoose';
+import { Server } from 'socket.io';
 import bcrypt from 'bcrypt';
 
 import {
@@ -13,7 +14,6 @@ import { Relationship, RelationshipSubDocument, RelationshipSchema } from './rel
 import { StatsSchema } from './user-stats';
 import { ChatDocument, ChatModel, createChat } from '../chat/chat';
 import { FriendStatusChangedEmitter } from '../../../events/emitters/friend-status-changed';
-import { Server } from 'socket.io';
 
 /**
  * Enumeration that defines all the possible roles that can be
@@ -425,8 +425,11 @@ export async function getUsers(ids: Types.ObjectId[]): Promise<UserDocument[]> {
 }
 
 export async function getLeaderboard(skip: number, limit: number): Promise<UserDocument[]> {
-    return UserModel.find({}, { _id: 1, username: 1, 'stats.elo': 1 })
-        .sort({ elo: -1 })
+    // We don't want to return the admin, since it is just a maintenance user
+    const adminUsername: string = process.env.ADMIN_USERNAME;
+
+    return UserModel.find({ username: { $ne: adminUsername } })
+        .sort({ 'stats.elo': -1 })
         .skip(skip)
         .limit(limit)
         .catch((err: Error) => Promise.reject(err));

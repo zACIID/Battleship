@@ -226,7 +226,7 @@ router.put(
 
             // TODO move in setReadyState()?
             // Send notifications to the players based on their states
-            notifyPlayers(match, playerId, newReadyState);
+            await notifyPlayers(match, playerId, newReadyState);
 
             return res.status(200).json(req.body);
         } catch (err) {

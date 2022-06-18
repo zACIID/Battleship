@@ -1,10 +1,4 @@
-import * as dotenv from 'dotenv';
-import path from 'path';
-
 import { Request, Response, Router } from 'express';
-import * as process from 'process';
-
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 export const router = Router();
 
