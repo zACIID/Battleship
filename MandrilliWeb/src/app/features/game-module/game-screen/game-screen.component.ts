@@ -24,7 +24,7 @@ export class GameScreenComponent implements OnInit {
     public playerGrid: BattleshipGrid = new BattleshipGrid();
     public opponentGrid: BattleshipGrid = new BattleshipGrid();
     public opponentsId: string = "";
-    public chatId: string = "";
+    public chatId: string = "";  
     private shipsCoordinates: GridCoordinates[] = [];
     public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
     public playerTurn: boolean = false;
@@ -45,12 +45,14 @@ export class GameScreenComponent implements OnInit {
 
         try{
             this.userInSessionId = this.userIdProvider.getUserId()
-
-            let obs = this.route.params.subscribe((params) => {
+            let flag = false
+            this.route.params.subscribe((params) => {
                 this.match.matchId = params['id'];
+                console.log("fuori il subscribe, match è Update?" + flag)
+                console.log("fuori il subscribe la chatId" + this.chatId)
             });
 
-            obs.add(this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
+            this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
                 this.match = data;
 
                 if(data.player1.playerId === this.userInSessionId){
@@ -64,10 +66,12 @@ export class GameScreenComponent implements OnInit {
                     this.opponentGrid = data.player1.grid;
                     this.opponentsId = data.player1.playerId;
                 }
+                flag = true
                 this.chatId = data.playersChat;
+            })
 
-            }))
-
+            //const example = source.pipe(concatMap(val => of(`Delayed by: ${val}ms`).pipe(delay(val))));
+            // geocodeAddressRequest.flatMap( address -> {return api.createRide(address)})
             let rnd: number = Math.floor( Math.random() * 1000 );
 
             if(rnd % 2 == 0){
