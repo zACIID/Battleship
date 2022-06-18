@@ -13,6 +13,7 @@ import {
 import { ioServer } from '../index';
 import { ChatMessageEmitter } from '../events/emitters/chat-message';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -60,7 +61,7 @@ router.get(
             chat = await getChatById(chatId);
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -93,7 +94,7 @@ router.delete(
 
         await deleteChat(chatId).catch((err: Error) => {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -121,7 +122,7 @@ router.post(
         } catch (err) {
             const code: number = err.message === userErr ? 404 : 400;
             return res.status(code).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -148,7 +149,7 @@ router.delete(
             await chat.removeUser(userId);
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -230,7 +231,7 @@ router.get(
             });
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -267,7 +268,7 @@ router.post(
             return res.status(201).json(req.body);
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

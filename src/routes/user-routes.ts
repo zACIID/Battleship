@@ -10,6 +10,7 @@ import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId, skipLimitChecker } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { toApiMatchStats } from './utils/model-to-api-conversion';
+import { toUnixSeconds } from './utils/date-utils';
 
 interface UserEndpointLocals {
     userId: Types.ObjectId;
@@ -65,7 +66,7 @@ router.get(
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -122,7 +123,7 @@ router.get(
             return res.status(200).json(responseData);
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -147,7 +148,7 @@ router.get(
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 400;
             return res.status(statusCode).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -180,14 +181,14 @@ router.put(
                 const statusCode: number =
                     err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
                 return res.status(statusCode).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    timestamp: toUnixSeconds(new Date()),
                     errorMessage: err.message,
                     requestPath: req.path,
                 });
             }
         } else {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: 'Wrong parameters',
                 requestPath: req.path,
             });
@@ -218,14 +219,14 @@ router.put(
                 const statusCode: number =
                     err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
                 return res.status(statusCode).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    timestamp: toUnixSeconds(new Date()),
                     errorMessage: err.message,
                     requestPath: req.path,
                 });
             }
         } else {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: 'Wrong parameters',
                 requestPath: req.path,
             });
@@ -246,7 +247,7 @@ router.delete(
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -275,7 +276,7 @@ router.get(
         } catch (err) {
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
             return res.status(statusCode).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -309,7 +310,7 @@ router.put(
             const statusCode: number = err.message === UserNotFoundErrors.SingleUser ? 404 : 500;
 
             return res.status(statusCode).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -353,14 +354,14 @@ router.get(
                 statusCode = 500;
             } else {
                 return res.status(statusCode).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    timestamp: toUnixSeconds(new Date()),
                     errorMessage: err.message,
                     requestPath: req.path,
                 });
             }
 
             return res.status(statusCode).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

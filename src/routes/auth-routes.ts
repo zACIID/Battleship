@@ -15,6 +15,7 @@ import { AnyKeys } from 'mongoose';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -39,7 +40,7 @@ export const authenticateToken = function (
     jwt.verify(token, process.env.JWT_SECRET, (err: any, content: JwtData) => {
         if (err)
             return res.status(403).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -143,7 +144,7 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
         });
     } catch (err) {
         return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });

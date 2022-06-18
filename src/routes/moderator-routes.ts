@@ -14,6 +14,7 @@ import { authenticateToken } from './auth-routes';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { AnyKeys, Types } from 'mongoose';
 import { ioServer } from '../index';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -60,13 +61,13 @@ router.post(
                 });
             } else
                 return res.status(403).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    timestamp: toUnixSeconds(new Date()),
                     errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
                     requestPath: req.path,
                 });
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -95,13 +96,13 @@ router.post('/moderators/bans', authenticateToken, async (req: BanUserRequest, r
             return res.status(204).json();
         } else
             res.status(403).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
                 requestPath: req.path,
             });
     } catch (err) {
         return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });
@@ -135,7 +136,7 @@ router.put(
                     await setUserStatus(ioServer, mod._id, UserStatus.Online);
                 } else {
                     return res.status(400).json({
-                        timestamp: Math.floor(new Date().getTime() / 1000),
+                        timestamp: toUnixSeconds(new Date()),
                         errorMessage: `Moderator has already updated his credentials after the first login`,
                         requestPath: req.path,
                     });
@@ -144,13 +145,13 @@ router.put(
                 return res.status(204).json();
             } else
                 return res.status(403).json({
-                    timestamp: Math.floor(new Date().getTime() / 1000),
+                    timestamp: toUnixSeconds(new Date()),
                     errorMessage: `Unauthorized: user ${req.jwtContent.userId} is not a moderator`,
                     requestPath: req.path,
                 });
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

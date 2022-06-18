@@ -4,6 +4,7 @@ import { getLeaderboard, UserDocument } from '../model/database/user/user';
 import { authenticateToken } from './auth-routes';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { skipLimitChecker } from './utils/param-checking';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router: Router = Router();
 
@@ -49,7 +50,7 @@ router.get(
         } catch (err) {
             const status: number = err.message === 'Invalid query parameters' ? 400 : 500;
             return res.status(status).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

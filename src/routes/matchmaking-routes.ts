@@ -10,6 +10,7 @@ import {
 import { setUserStatus, UserStatus } from '../model/database/user/user';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { ioServer } from '../index';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -36,7 +37,7 @@ router.post('/matchmaking/queue', authenticateToken, async (req: EnqueueRequest,
         return res.status(201).json(req.body);
     } catch (err) {
         return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });
@@ -69,7 +70,7 @@ router.delete(
             return res.status(204).json();
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

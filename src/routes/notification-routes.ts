@@ -14,6 +14,7 @@ import { ioServer } from '../index';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { NotificationData } from '../model/events/notification-data';
 import { NotificationDeletedEmitter } from '../events/emitters/notification-deleted';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -58,7 +59,7 @@ router.get(
             return res.status(200).json({ notifications: responseData });
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -104,7 +105,7 @@ router.post(
             let status: number = errorMessages.find((e) => e === err.message) ? 404 : 500;
 
             return res.status(status).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -149,7 +150,7 @@ router.delete(
         } catch (err) {
             const status: number = errorMessages.find((e) => e === err.message) ? 404 : 500;
             return res.status(status).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

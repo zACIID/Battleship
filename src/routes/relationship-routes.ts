@@ -6,6 +6,7 @@ import { UserDocument, getUserById } from '../model/database/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -26,7 +27,7 @@ router.get(
             return res.status(200).json({ relationships: user.relationships });
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -68,7 +69,7 @@ router.post(
         } catch (err) {
             const status = err.message === 'No user with that identifier' ? 404 : 400;
             return res.status(status).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -96,7 +97,7 @@ router.delete(
             return res.status(204).json();
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

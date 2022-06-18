@@ -20,6 +20,7 @@ import { ShotFiredEmitter } from '../events/emitters/shot-fired';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { toApiMatchStats } from './utils/model-to-api-conversion';
 import chalk from 'chalk';
+import { toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -57,7 +58,7 @@ router.get(
             return res.status(200).json(matchResponse);
         } catch (err) {
             return res.status(404).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -100,7 +101,7 @@ router.patch(
             return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -138,7 +139,7 @@ router.put(
             return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -186,7 +187,7 @@ router.post(
             return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });
@@ -231,7 +232,7 @@ router.put(
             return res.status(200).json(req.body);
         } catch (err) {
             return res.status(400).json({
-                timestamp: Math.floor(new Date().getTime() / 1000),
+                timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,
                 requestPath: req.path,
             });

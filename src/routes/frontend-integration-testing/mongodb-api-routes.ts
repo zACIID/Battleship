@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { toUnixSeconds } from '../utils/date-utils';
 
 export const router = Router();
 
@@ -27,7 +28,7 @@ router.get('/testing/mongoDbApi/credentials', async (req: Request, res: Response
         return res.status(200).json(apiCred);
     } catch (err) {
         return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });
