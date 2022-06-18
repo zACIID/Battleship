@@ -4,10 +4,10 @@
 export enum UserStatus {
     Offline = 'Offline',
     Online = 'Online',
-    PrepPhase = 'PrepPhase',
-    InGame = 'InGame',
-    Spectating = 'Spectating',
-    InQueue = 'InQueue',
+    PrepPhase = 'Preparation Phase',
+    InGame = 'In Game',
+    Spectating = 'Spectating', // TODO no way of setting this status currently. New event?
+    InQueue = 'In Queue',
 
     /**
      * This status is assigned to a moderator that has just been added
