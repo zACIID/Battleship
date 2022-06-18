@@ -2,12 +2,12 @@ import { Server, Socket } from 'socket.io';
 import { Types } from 'mongoose';
 
 import { MatchFoundEmitter } from '../emitters/match-found';
-import { createMatch, MatchDocument } from '../../model/match/match';
+import { createMatch, MatchDocument } from '../../model/database/match/match';
 import { MatchData } from '../../model/events/match-data';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { RequestAcceptedData } from '../../model/events/request-accepted-data';
-import { getUserById, UserDocument, UserStatus } from '../../model/user/user';
-import { RequestTypes } from '../../model/user/notification';
+import { getUserById, UserDocument, UserStatus } from '../../model/database/user/user';
+import { RequestTypes } from '../../model/database/user/notification';
 
 /**
  * Class that wraps socket.io functionality to listen

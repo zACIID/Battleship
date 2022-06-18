@@ -1,4 +1,4 @@
-import { RequestTypes } from '../user/notification';
+import { RequestTypes } from '../database/user/notification';
 
 export interface NotificationData {
     /**

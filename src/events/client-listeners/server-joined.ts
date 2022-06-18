@@ -2,13 +2,18 @@ import { Server, Socket } from 'socket.io';
 import chalk from 'chalk';
 
 import { UserData } from '../../model/events/user-data';
-import { getUserById, setUserStatus, UserDocument, UserStatus } from '../../model/user/user';
+import {
+    getUserById,
+    setUserStatus,
+    UserDocument,
+    UserStatus,
+} from '../../model/database/user/user';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { Types } from 'mongoose';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
-import { getCurrentMatch, MatchDocument } from '../../model/match/match';
+import { getCurrentMatch, MatchDocument } from '../../model/database/match/match';
 import { MatchTerminatedReason } from '../../model/events/match-terminated-data';
-import { removeMatchmakingEntry } from '../../model/matchmaking/queue-entry';
+import { removeMatchmakingEntry } from '../../model/database/matchmaking/queue-entry';
 
 /**
  * Class that wraps socket.io functionality to listen to a 'server-joined' client event.

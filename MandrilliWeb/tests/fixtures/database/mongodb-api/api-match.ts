@@ -1,8 +1,8 @@
 import { BattleshipGrid } from '../../../../src/app/core/model/match/battleship-grid';
 import { ApiObjectId } from './mongodb-api';
-import * as dbMatch from '../../../../../src/model/match/match';
-import * as dbPlayerState from '../../../../../src/model/match/state/player-state';
-import * as dbMatchStats from '../../../../../src/model/match/match-stats';
+import * as dbMatch from '../../../../../src/model/database/match/match';
+import * as dbPlayerState from '../../../../../src/model/database/match/state/player-state';
+import * as dbMatchStats from '../../../../../src/model/database/match/match-stats';
 
 /**
  * Interface that models player state data, accounting for the fact

@@ -1,4 +1,4 @@
-import { MatchStatsSubDocument } from '../../model/match/match-stats';
+import { MatchStatsSubDocument } from '../../model/database/match/match-stats';
 
 /**
  * Interface that models the match stats object returned by

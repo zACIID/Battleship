@@ -9,7 +9,7 @@ import {
     UserDocument,
     UserRoles,
     UserStatus,
-} from '../model/user/user';
+} from '../model/database/user/user';
 import { authenticateToken } from './auth-routes';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { AnyKeys, Types } from 'mongoose';

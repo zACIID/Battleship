@@ -1,8 +1,8 @@
 import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { ChatDocument, getChatById, deleteChat } from '../model/chat/chat';
-import { MessageSubDocument } from '../model/chat/message';
+import { ChatDocument, getChatById, deleteChat } from '../model/database/chat/chat';
+import { MessageSubDocument } from '../model/database/chat/message';
 import { authenticateToken } from './auth-routes';
 import {
     skipLimitChecker,

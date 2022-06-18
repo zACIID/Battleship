@@ -1,7 +1,7 @@
 import { AnyKeys, Document, Schema, SchemaTypes, Types } from 'mongoose';
 import mongoose from 'mongoose';
 import { getUserById, UserDocument } from '../user/user';
-import { DeletionResult } from '../../routes/utils/mongoose';
+import { DeletionResult } from '../../../routes/utils/mongoose';
 
 /**
  * Interface that represent the stats of some user of the system.

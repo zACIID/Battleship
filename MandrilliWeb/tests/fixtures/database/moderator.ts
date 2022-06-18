@@ -1,6 +1,6 @@
 import { getUserData, InsertedUser } from './users';
 import { insertUser } from './users';
-import { User, UserRoles } from '../../../../src/model/user/user';
+import { User, UserRoles } from '../../../../src/model/database/user/user';
 
 export const insertModerator: () => Promise<InsertedUser> = async () => {
     const modData: User = getUserData();

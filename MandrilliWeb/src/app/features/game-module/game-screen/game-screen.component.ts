@@ -1,5 +1,5 @@
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
-import { GridCoordinates } from '../../../../../../src/model/match/state/grid-coordinates';
+import { GridCoordinates } from '../../../../../../src/model/database/match/state/grid-coordinates';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
 import { Component, OnInit } from '@angular/core';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';

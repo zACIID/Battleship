@@ -3,8 +3,11 @@ import { Types } from 'mongoose';
 
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId } from './utils/param-checking';
-import { insertMatchmakingEntry, removeMatchmakingEntry } from '../model/matchmaking/queue-entry';
-import { setUserStatus, UserStatus } from '../model/user/user';
+import {
+    insertMatchmakingEntry,
+    removeMatchmakingEntry,
+} from '../model/database/matchmaking/queue-entry';
+import { setUserStatus, UserStatus } from '../model/database/user/user';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { ioServer } from '../index';
 
