@@ -1,13 +1,18 @@
 import { Router, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { getMatchById, MatchDocument, updateMatchStats, MatchModel } from '../model/match/match';
+import {
+    getMatchById,
+    MatchDocument,
+    updateMatchStats,
+    MatchModel,
+} from '../model/database/match/match';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveMatchId } from './utils/param-checking';
-import { GridCoordinates } from '../model/match/state/grid-coordinates';
-import { BattleshipGrid } from '../model/match/state/battleship-grid';
-import { PlayerStateSubDocument } from '../model/match/state/player-state';
-import { Shot } from '../model/match/state/shot';
+import { GridCoordinates } from '../model/database/match/state/grid-coordinates';
+import { BattleshipGrid } from '../model/database/match/state/battleship-grid';
+import { PlayerStateSubDocument } from '../model/database/match/state/player-state';
+import { Shot } from '../model/database/match/state/shot';
 import { PlayerStateChangedEmitter } from '../events/emitters/player-state-changed';
 import { PositioningCompletedEmitter } from '../events/emitters/positioning-completed';
 import { ioServer } from '../index';

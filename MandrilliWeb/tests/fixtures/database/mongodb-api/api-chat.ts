@@ -1,7 +1,7 @@
 import { ApiObjectId } from './mongodb-api';
-import { Chat } from '../../../../../src/model/chat/chat';
+import { Chat } from '../../../../../src/model/database/chat/chat';
 import { Types } from 'mongoose';
-import { Message } from '../../../../../src/model/chat/message';
+import { Message } from '../../../../../src/model/database/chat/message';
 
 /**
  * Interface that models chat message data, accounting for the fact

@@ -10,7 +10,7 @@ import {
     setUserStatus,
     UserDocument,
     UserStatus,
-} from '../model/user/user';
+} from '../model/database/user/user';
 import { AnyKeys } from 'mongoose';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';

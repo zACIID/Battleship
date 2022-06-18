@@ -12,7 +12,7 @@ import { UserStats, UserStatsSubDocument } from './user-stats';
 import { Relationship, RelationshipSubDocument, RelationshipSchema } from './relationship';
 import { StatsSchema } from './user-stats';
 import { ChatDocument, ChatModel, createChat } from '../chat/chat';
-import { FriendStatusChangedEmitter } from '../../events/emitters/friend-status-changed';
+import { FriendStatusChangedEmitter } from '../../../events/emitters/friend-status-changed';
 import { Server } from 'socket.io';
 
 /**

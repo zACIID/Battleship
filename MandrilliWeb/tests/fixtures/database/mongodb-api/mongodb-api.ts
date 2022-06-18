@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Collection, Document, FilterQuery, Types } from 'mongoose';
 
-import * as dbUser from '../../../../../src/model/user/user';
-import * as dbRelation from '../../../../../src/model/user/relationship';
-import * as dbMatch from '../../../../../src/model/match/match';
-import * as dbChat from '../../../../../src/model/chat/chat';
-import * as dbMatchmaking from '../../../../../src/model/matchmaking/queue-entry';
+import * as dbUser from '../../../../../src/model/database/user/user';
+import * as dbRelation from '../../../../../src/model/database/user/relationship';
+import * as dbMatch from '../../../../../src/model/database/match/match';
+import * as dbChat from '../../../../../src/model/database/chat/chat';
+import * as dbMatchmaking from '../../../../../src/model/database/matchmaking/queue-entry';
 import { environment } from '../../../../src/environments/environment';
 import { MongoDbApiMatch, toMongoDbApiMatch } from './api-match';
 import { MongoDbApiChat, toMongoDbApiChat } from './api-chat';

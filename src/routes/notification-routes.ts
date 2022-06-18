@@ -5,8 +5,8 @@ import {
     RequestNotification,
     RequestNotificationSubDocument,
     RequestTypes,
-} from '../model/user/notification';
-import { getMostRecentNotifications, getUserById, UserDocument } from '../model/user/user';
+} from '../model/database/user/notification';
+import { getMostRecentNotifications, getUserById, UserDocument } from '../model/database/user/user';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId } from './utils/param-checking';
 import { NotificationReceivedEmitter } from '../events/emitters/notification-received';

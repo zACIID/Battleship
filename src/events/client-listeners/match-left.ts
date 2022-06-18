@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import { ClientListener } from './base/client-listener';
 import { MatchLeftData } from '../../model/events/match-left-data';
-import { setUserStatus, UserStatus } from '../../model/user/user';
+import { setUserStatus, UserStatus } from '../../model/database/user/user';
 import { ioServer } from '../../index';
 import { Types } from 'mongoose';
 

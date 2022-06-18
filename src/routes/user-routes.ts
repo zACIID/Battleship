@@ -1,11 +1,11 @@
-import { getCurrentMatch, MatchDocument } from '../model/match/match';
-import { UserDocument, UserStatus } from '../model/user/user';
-import * as match from './../model/match/match';
+import { getCurrentMatch, MatchDocument } from '../model/database/match/match';
+import { UserDocument, UserStatus } from '../model/database/user/user';
+import * as match from '../model/database/match/match';
 import { Types } from 'mongoose';
 import { Router, Response } from 'express';
 
-import * as usr from '../model/user/user';
-import { UserStats } from '../model/user/user-stats';
+import * as usr from '../model/database/user/user';
+import { UserStats } from '../model/database/user/user-stats';
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId, retrieveId, skipLimitChecker } from './utils/param-checking';
 import { AuthenticatedRequest } from './utils/authenticated-request';

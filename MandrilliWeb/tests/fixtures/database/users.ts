@@ -1,4 +1,4 @@
-import { User, UserRoles, UserStatus } from '../../../../src/model/user/user';
+import { User, UserRoles, UserStatus } from '../../../../src/model/database/user/user';
 import {
     DocId,
     getApiCredentials,

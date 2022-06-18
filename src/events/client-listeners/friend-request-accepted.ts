@@ -3,8 +3,8 @@ import { Types } from 'mongoose';
 
 import { FriendStatusChangedEmitter } from '../emitters/friend-status-changed';
 import { FriendStatusChangedData } from '../../model/events/friend-status-changed-data';
-import { getUserById, UserDocument, UserStatus } from '../../model/user/user';
-import { RequestTypes } from '../../model/user/notification';
+import { getUserById, UserDocument, UserStatus } from '../../model/database/user/user';
+import { RequestTypes } from '../../model/database/user/notification';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { RequestAcceptedData } from '../../model/events/request-accepted-data';
 

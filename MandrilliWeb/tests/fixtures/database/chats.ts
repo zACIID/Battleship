@@ -7,7 +7,7 @@ import {
     MongoDbSingleInsertResponse,
     MongoDpApiCredentials,
 } from './mongodb-api/mongodb-api';
-import { Chat } from '../../../../src/model/chat/chat';
+import { Chat } from '../../../../src/model/database/chat/chat';
 import { InsertedUser } from './users';
 import { SetupData } from '../utils';
 

@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 
-import { getLeaderboard, UserDocument } from '../model/user/user';
+import { getLeaderboard, UserDocument } from '../model/database/user/user';
 import { authenticateToken } from './auth-routes';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { skipLimitChecker } from './utils/param-checking';

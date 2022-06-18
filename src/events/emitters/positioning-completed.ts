@@ -3,8 +3,8 @@ import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
 import { GenericMessage } from '../../model/events/generic-message';
-import { setUserStatus, UserStatus } from '../../model/user/user';
-import { getMatchById, MatchDocument } from '../../model/match/match';
+import { setUserStatus, UserStatus } from '../../model/database/user/user';
+import { getMatchById, MatchDocument } from '../../model/database/match/match';
 
 /**
  * Class that wraps socket.io functionality to generate a "positioning-completed" event

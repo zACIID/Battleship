@@ -1,4 +1,4 @@
-import { UserStatus } from '../user/user';
+import { UserStatus } from '../database/user/user';
 
 export interface FriendStatusChangedData {
     friendId: string;

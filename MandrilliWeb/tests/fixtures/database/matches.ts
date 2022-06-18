@@ -9,8 +9,8 @@ import {
 import { deleteMultipleUsers, InsertedUser, insertUser } from './users';
 import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
 import { deleteMultipleChats, insertChat, InsertedChat } from './chats';
-import { ShipTypes } from '../../../../src/model/match/state/ship';
-import { Match } from '../../../../src/model/match/match';
+import { ShipTypes } from '../../../../src/model/database/match/state/ship';
+import { Match } from '../../../../src/model/database/match/match';
 import { SetupData } from '../utils';
 import { getCredentialsForUser } from '../authentication';
 

@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 
-import { MatchmakingQueueModel, QueueEntry } from '../model/matchmaking/queue-entry';
-import * as match from '../model/match/match';
+import { MatchmakingQueueModel, QueueEntry } from '../model/database/matchmaking/queue-entry';
+import * as match from '../model/database/match/match';
 import { MatchFoundEmitter } from '../events/emitters/match-found';
 import { MatchData } from '../model/events/match-data';
 import { setInterval } from 'timers';
