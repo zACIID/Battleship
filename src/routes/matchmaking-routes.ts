@@ -64,15 +64,7 @@ router.delete(
     async (req: RemoveFromQueueRequest, res: Response) => {
         try {
             const userToUnQueue: Types.ObjectId = res.locals.userId;
-            const entry: QueueEntryDocument = await MatchmakingQueueModel.findOne({
-                userId: userToUnQueue,
-            });
-
-            if (entry === null) {
-                throw new Error('User not found in queue');
-            }
-
-            await MatchmakingQueueModel.deleteOne({ userId: userToUnQueue });
+            await removeFromMatchmakingQueue(userToUnQueue);
 
             return res.status(204).json();
         } catch (err) {
@@ -84,3 +76,20 @@ router.delete(
         }
     }
 );
+
+/**
+ * Removes the user with the specified id from the queue.
+ * @param userId
+ */
+export const removeFromMatchmakingQueue = async (userId: Types.ObjectId): Promise<void> => {
+    const entry: QueueEntryDocument = await MatchmakingQueueModel.findOne({
+        userId: userId,
+    });
+
+    // TODO doesn't deleteOne raise an exception if no user is found to delete?
+    if (entry === null) {
+        throw new Error('User not found in queue');
+    }
+
+    await MatchmakingQueueModel.deleteOne({ userId: userId });
+};

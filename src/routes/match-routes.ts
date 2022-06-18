@@ -219,9 +219,6 @@ router.put(
             // Update the ready state of the player
             await setReadyState(match, playerId, newReadyState);
 
-            // TODO debug
-            console.log(chalk.bgMagenta('Notifying players/observers of ready status change'));
-
             // TODO move in setReadyState()?
             // Send notifications to the players based on their states
             notifyPlayers(match, playerId, newReadyState);
@@ -249,19 +246,15 @@ const setReadyState = async (
     playerId: Types.ObjectId,
     isReady: boolean
 ): Promise<void> => {
-    let playerState: PlayerStateSubDocument = null;
     if (match.player1.playerId.equals(playerId)) {
-        //playerState = match.player1;
         match.player1.isReady = isReady;
     } else if (match.player2.playerId.equals(playerId)) {
-        //playerState = match.player2;
         match.player2.isReady = isReady;
     } else {
         throw new Error(`User ${playerId} is not part of the match`);
     }
 
-    // Set player state as ready and save the main match document
-    // TODO playerState.isReady = isReady;
+    // Save the match document after having set the player to ready
     await match.save();
 };
 
@@ -274,19 +267,10 @@ const setReadyState = async (
  * @param newState value of the ready state set by the player
  */
 const notifyPlayers = (match: MatchDocument, playerId: Types.ObjectId, newState: boolean) => {
-    // TODO debug
-    console.log(chalk.bgMagenta(match));
-
     if (match.player1.isReady && match.player2.isReady) {
         const notifier = new PositioningCompletedEmitter(ioServer, match._id);
         notifier.emit();
-
-        // TODO debug
-        console.log(chalk.bgMagenta('Positioning completed'));
     } else {
-        // TODO debug
-        console.log(chalk.bgMagenta('State Changed'));
-
         const notifier = new PlayerStateChangedEmitter(ioServer, match._id);
         notifier.emit({
             isReady: newState,

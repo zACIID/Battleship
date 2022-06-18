@@ -4,7 +4,6 @@ import { Match } from './../../../core/model/match/match';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
-import { ChatMessage } from 'src/app/core/model/events/chat-message';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { Shot } from 'src/app/core/model/api/match/shot';
 import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
@@ -20,12 +19,10 @@ import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
     styleUrls: ['./observers-screen.component.css'],
 })
 export class ObserversScreenComponent implements OnInit {
-
-
-    public matchShowedId: string = "";
+    public matchShowedId: string = '';
     public match?: Match;
-    public chatId: string = "";
-    public generalEnd: string = ""
+    public chatId: string = '';
+    public generalEnd: string = '';
 
     // TO DO serve un trigger per ogni component
 
@@ -43,9 +40,8 @@ export class ObserversScreenComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-
-        try{
-            const matchId = this.match?.matchId || ""
+        try {
+            const matchId = this.match?.matchId || '';
 
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
@@ -55,62 +51,53 @@ export class ObserversScreenComponent implements OnInit {
                 this.match = data;
 
                 this.chatId = data.observersChat;
-            })
+            });
 
-            this.matchJoinedEmitter.emit({matchId: matchId})
-            this.chatJoinedEmitter.emit({chatId: this.chatId})
-
+            this.matchJoinedEmitter.emit({ matchId: matchId });
+            this.chatJoinedEmitter.emit({ chatId: this.chatId });
 
             const pollingPlayerHits = (data: Shot): void => {
                 if (data.playerId !== this.match?.player1.playerId)
-                    this.match?.player1.grid.shotsReceived.push(data.coordinates)
-                else this.match?.player2.grid.shotsReceived.push(data.coordinates)
-            }
+                    this.match?.player1.grid.shotsReceived.push(data.coordinates);
+                else this.match?.player2.grid.shotsReceived.push(data.coordinates);
+            };
             pollingPlayerHits.bind(this);
             this.playersShotListener.listen(pollingPlayerHits);
 
+            const pollingMatchResult = async (data: MatchTerminatedData): Promise<void> => {
+                const matchId: string = this.match?.matchId || '';
+                const path: string = '/match-results/' + matchId;
 
-            const pollingMatchResult = async (data: MatchTerminatedData) : Promise<void> => {
-                const matchId: string = this.match?.matchId || ""
-                const path: string = "/match-results/" + matchId
-        
-                this.generalEnd = data.reason.valueOf()
-        
-                await this.router.navigate([path])
-            }
+                this.generalEnd = data.reason.valueOf();
+
+                await this.router.navigate([path]);
+            };
             pollingMatchResult.bind(this);
-            this.matchTerminatedListener.listen(pollingMatchResult)
-
+            this.matchTerminatedListener.listen(pollingMatchResult);
 
             // It should force the chatBody component to refresh
-            this.chatMessageListener.listen(
-                () => { 
-                    if (this.match){
-                        this.chatId = this.match?.observersChat
-                    }
-                    else throw new Error("Observers chat id non existent");
-                }
-            );
-
-        }
-        catch(err){
-            console.log("An error occurred while retrieving the match: " + err);
+            this.chatMessageListener.listen(() => {
+                if (this.match) {
+                    this.chatId = this.match?.observersChat;
+                } else throw new Error('Observers chat id non existent');
+            });
+        } catch (err) {
+            console.log('An error occurred while retrieving the match: ' + err);
         }
     }
 
-    ngOnDestroy() : void {
-        const matchId: string = this.match?.matchId || ""
+    ngOnDestroy(): void {
+        const matchId: string = this.match?.matchId || '';
 
-        this.matchLeftEmitter.emit({matchId: matchId})
-        this.chatLeftEmitter.emit({chatId: this.chatId})
+        this.matchLeftEmitter.emit({ matchId: matchId });
+        this.chatLeftEmitter.emit({ chatId: this.chatId });
 
-        this.chatMessageListener.unListen()
-        this.matchTerminatedListener.unListen()
-        this.playersShotListener.unListen()
+        this.chatMessageListener.unListen();
+        this.matchTerminatedListener.unListen();
+        this.playersShotListener.unListen();
     }
 
-    public async quitView(){
+    public async quitView() {
         await this.router.navigate(['/relationship']);
     }
-
 }

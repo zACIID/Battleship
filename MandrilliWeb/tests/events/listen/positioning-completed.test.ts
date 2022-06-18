@@ -110,8 +110,16 @@ describe('Positioning Completed', () => {
         // Change the state of both the players to fire the positioning completed event
         const apiCred: LoginInfo = setupData.apiAuthCredentials;
         authenticate(apiCred).then((jwtProvider: JwtProvider) => {
-            changePlayerState(jwtProvider, matchId, player1Id, true);
-            changePlayerState(jwtProvider, matchId, player2Id, true);
+            changePlayerState(jwtProvider, matchId, player1Id, true).then(() => {
+                // TODO there is a NASTY race condition here. If the below function call
+                //  is moved out of the promise.then(), the event positioning-completed
+                //  never fires. This is because the two endpoint calls are so close in time
+                //  that the server never has the chance to update the match state before
+                //  the second call arrives, which results in only the second call
+                //  having any effect. This means that only player2.isReady=true,
+                //  while player1.isReady=false
+                changePlayerState(jwtProvider, matchId, player2Id, true);
+            });
         });
     });
 
