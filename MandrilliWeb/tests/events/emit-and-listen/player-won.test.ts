@@ -11,6 +11,7 @@ import {
 import { MatchTerminatedData } from '../../../src/app/core/model/events/match-terminated-data';
 import { MatchTerminatedListener } from '../../../src/app/core/events/listeners/match-terminated';
 import { PlayerWonEmitter } from '../../../src/app/core/events/emitters/player-won';
+import { JoinReason } from '../../../src/app/core/model/events/match-joined-data';
 
 interface MatchRequestAcceptedSetupData extends MatchesSetupData {}
 
@@ -59,12 +60,21 @@ describe('Player Won - Match Terminated', () => {
         const currentMatch: InsertedMatch = insMatches[0];
 
         const matchId: string = currentMatch.matchId;
+        const player1Id: string = currentMatch.playerIds[0];
         const player2Id: string = currentMatch.playerIds[1];
 
         // Join the match with both players,
         // so that the match terminated event can be listened to
-        joinMatch(matchId, player1Client);
-        joinMatch(matchId, player2Client);
+        joinMatch(player1Client, {
+            matchId: matchId,
+            userId: player1Id,
+            joinReason: JoinReason.Player,
+        });
+        joinMatch(player2Client, {
+            matchId: matchId,
+            userId: player2Id,
+            joinReason: JoinReason.Player,
+        });
 
         // Listen to both the match found events
         let player1EventFired: boolean = false;

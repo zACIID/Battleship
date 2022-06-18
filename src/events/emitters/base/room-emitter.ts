@@ -22,7 +22,7 @@ export class RoomEmitter<T> extends Emitter<T> {
      * Emit data only on the room specified at initialization
      * @param data
      */
-    public emit(data?: T) {
+    public emit(data: T) {
         this.ioServer.to(this.roomName).emit(this.eventName, data);
     }
 }

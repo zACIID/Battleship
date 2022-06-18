@@ -1,17 +1,19 @@
-import { ChatMessageListener } from './../../../core/events/listeners/chat-message';
-import { MatchApi } from './../../../core/api/handlers/match-api';
-import { Match } from './../../../core/model/match/match';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+
+import { ChatMessageListener } from '../../../core/events/listeners/chat-message';
+import { MatchApi } from '../../../core/api/handlers/match-api';
+import { Match } from '../../../core/model/match/match';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { Shot } from 'src/app/core/model/api/match/shot';
-import { BattleshipGrid } from 'src/app/core/model/match/battleship-grid';
 import { MatchTerminatedListener } from 'src/app/core/events/listeners/match-terminated';
 import { MatchTerminatedData } from 'src/app/core/model/events/match-terminated-data';
 import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
+import { JoinReason } from '../../../core/model/events/match-joined-data';
+import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 
 @Component({
     selector: 'app-observers-screen',
@@ -24,10 +26,12 @@ export class ObserversScreenComponent implements OnInit {
     public chatId: string = '';
     public generalEnd: string = '';
 
-    // TO DO serve un trigger per ogni component
+    // TODO serve un trigger per ogni component
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
+        private userIdProvider: UserIdProvider,
         private matchClient: MatchApi,
         private chatJoinedEmitter: ChatJoinedEmitter,
         private chatLeftEmitter: ChatLeftEmitter,
@@ -35,13 +39,12 @@ export class ObserversScreenComponent implements OnInit {
         private matchLeftEmitter: MatchLeftEmitter,
         private chatMessageListener: ChatMessageListener,
         private playersShotListener: ShotFiredListener,
-        private matchTerminatedListener: MatchTerminatedListener,
-        private router: Router
+        private matchTerminatedListener: MatchTerminatedListener
     ) {}
 
     ngOnInit(): void {
         try {
-            const matchId = this.match?.matchId || '';
+            const matchId: string = this.match?.matchId || '';
 
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
@@ -53,7 +56,12 @@ export class ObserversScreenComponent implements OnInit {
                 this.chatId = data.observersChat;
             });
 
-            this.matchJoinedEmitter.emit({ matchId: matchId });
+            // Join the new match as a spectator
+            this.matchJoinedEmitter.emit({
+                matchId: matchId,
+                userId: this.userIdProvider.getUserId(),
+                joinReason: JoinReason.Spectator,
+            });
             this.chatJoinedEmitter.emit({ chatId: this.chatId });
 
             const pollingPlayerHits = (data: Shot): void => {
@@ -89,7 +97,7 @@ export class ObserversScreenComponent implements OnInit {
     ngOnDestroy(): void {
         const matchId: string = this.match?.matchId || '';
 
-        this.matchLeftEmitter.emit({ matchId: matchId });
+        this.matchLeftEmitter.emit({ matchId: matchId, userId: this.userIdProvider.getUserId() });
         this.chatLeftEmitter.emit({ chatId: this.chatId });
 
         this.chatMessageListener.unListen();

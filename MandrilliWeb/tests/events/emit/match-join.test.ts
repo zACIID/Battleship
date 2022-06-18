@@ -9,10 +9,12 @@ import {
     MatchesSetupData,
     teardownMatches,
 } from '../../fixtures/database/matches';
+import { JoinReason } from '../../../src/app/core/model/events/match-joined-data';
 
 let client: Socket;
 let setupData: MatchesSetupData;
 let matchIdToJoin: string;
+let userIdJoining: string;
 
 /**
  * Inserts a new match in the db
@@ -22,6 +24,7 @@ const setupDb = async () => {
     const { insMatches } = setupData.insertedData;
 
     matchIdToJoin = insMatches[0].matchId;
+    userIdJoining = insMatches[0].playerIds[0];
 };
 
 const teardownDb = async () => {
@@ -51,7 +54,11 @@ describe('Join Match', () => {
     });
 
     test('Should Not Throw', () => {
-        joinMatch(matchIdToJoin, client);
+        joinMatch(client, {
+            matchId: matchIdToJoin,
+            userId: userIdJoining,
+            joinReason: JoinReason.Player,
+        });
     });
 
     test('Event Name Should Be "match-joined"', () => {
@@ -71,9 +78,16 @@ describe('Join And Leave Chat', () => {
     });
 
     test('Should Not Throw', () => {
-        joinMatch(matchIdToJoin, client);
+        joinMatch(client, {
+            matchId: matchIdToJoin,
+            userId: userIdJoining,
+            joinReason: JoinReason.Player,
+        });
 
-        leaveMatch(matchIdToJoin, client);
+        leaveMatch(client, {
+            matchId: matchIdToJoin,
+            userId: userIdJoining,
+        });
     });
 
     test('Event Name Should Be "match-left"', () => {

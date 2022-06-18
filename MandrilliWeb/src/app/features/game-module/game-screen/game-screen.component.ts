@@ -26,7 +26,7 @@ export class GameScreenComponent implements OnInit {
     public playerGrid: BattleshipGrid = new BattleshipGrid();
     public opponentGrid: BattleshipGrid = new BattleshipGrid();
     public opponentsId: string = "";
-    public chatId: string = "";  
+    public chatId: string = "";
     private shipsCoordinates: GridCoordinates[] = [];
     public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
     public playerTurn: boolean = false;
@@ -39,7 +39,7 @@ export class GameScreenComponent implements OnInit {
         private fleeWinnerEmitter: PlayerWonEmitter,
         private userIdProvider: UserIdProvider,
         private matchClient: MatchApi,
-        private router: Router, 
+        private router: Router,
         private shotListener: ShotFiredListener
     ) {}
 
@@ -62,7 +62,7 @@ export class GameScreenComponent implements OnInit {
                             this.playerGrid = data.player1.grid;
                             this.opponentGrid = data.player2.grid;
                             this.opponentsId = data.player2.playerId;
-    
+
                         }
                         else{
                             this.playerGrid = data.player2.grid;
@@ -104,7 +104,7 @@ export class GameScreenComponent implements OnInit {
             this.route.params.subscribe(((param) => lambda(param)))
 
             this.matchClient.getMatch(this.match.matchId).subscribe((match: Match) => lambda2(match))
-        
+
 
             console.log("Match è" + this.match.player1.isReady)
 
@@ -139,18 +139,18 @@ export class GameScreenComponent implements OnInit {
                     this.match.player1.grid.shotsReceived.push(data.coordinates);
                 }
                 else this.match.player2.grid.shotsReceived.push(data.coordinates);
-        
+
                 this.shipsCoordinates = this.shipsCoordinates.filter((e) => (e.row !== data.coordinates.row && e.col !== data.coordinates.col));
-        
+
                 if(this.shipsCoordinates.length === 0){
                     this.lostAndSauced();
                 }
-        
+
                 this.playerTurn = true;
             }
             pollingOpponentHits.bind(this);
             this.shotListener.listen(pollingOpponentHits);
-            
+
         }
         catch(err){
             console.log("An error occurred while initializing the game screen: " + err);
@@ -162,7 +162,7 @@ export class GameScreenComponent implements OnInit {
     }
 
     private isValidCoords(row: number, col: number): boolean{
-        
+
         if(!isNaN(row) && !isNaN(col)){
             if ((row <= 9 && row >= 0 ) && (col <= 9 && col >= 0)){
 
@@ -177,16 +177,16 @@ export class GameScreenComponent implements OnInit {
     private parseCoord(coord: string): number{
         coord = coord.toUpperCase();
         switch(coord){
-            case 'A': return 0; 
-            case 'B': return 1; 
-            case 'C': return 2; 
-            case 'D': return 3; 
-            case 'E': return 4; 
-            case 'F': return 5; 
-            case 'G': return 6; 
-            case 'H': return 7; 
-            case 'I': return 8; 
-            case 'J': return 9; 
+            case 'A': return 0;
+            case 'B': return 1;
+            case 'C': return 2;
+            case 'D': return 3;
+            case 'E': return 4;
+            case 'F': return 5;
+            case 'G': return 6;
+            case 'H': return 7;
+            case 'I': return 8;
+            case 'J': return 9;
             default: return Number(coord) - 1;
         }
     }
@@ -201,7 +201,7 @@ export class GameScreenComponent implements OnInit {
         if(this.isValidCoords(shotRow, shotCol)){
             this.matchClient.fireShot(this.match.matchId, {playerId: this.userInSessionId, coordinates:{row: shotRow, col: shotCol}});
         }
-    
+
         this.playerTurn = false;
     }
 
@@ -232,5 +232,5 @@ export class GameScreenComponent implements OnInit {
         }
     }
 
-    
+
 }

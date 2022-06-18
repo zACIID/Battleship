@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import chalk from 'chalk';
 
 import { UserData } from '../../model/events/user-data';
-import { getUserById, setUserOffline, UserDocument, UserStatus } from '../../model/user/user';
+import { getUserById, setUserStatus, UserDocument, UserStatus } from '../../model/user/user';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { Types } from 'mongoose';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
@@ -62,7 +62,7 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
             // It is important to set the status to Offline only at the end, since
             // status contains information about what the user is currently doing.
             // Overwriting it with Offline would mean losing that information.
-            await setUserOffline(this.ioServer, userId);
+            await setUserStatus(this.ioServer, Types.ObjectId(userId), UserStatus.Offline);
         } catch (err) {
             console.log(
                 chalk.bgRed(`User teardown on disconnect has failed. Reason: ${err.message}`)

@@ -15,6 +15,7 @@ import { JwtProvider } from '../../../src/app/core/api/jwt-auth/jwt-provider';
 import { Shot } from '../../../src/app/core/model/api/match/shot';
 import { ShotFiredListener } from '../../../src/app/core/events/listeners/shot-fired';
 import { ShotData } from '../../../src/app/core/model/events/shot-data';
+import { JoinReason } from '../../../src/app/core/model/events/match-joined-data';
 
 interface ShotFiredSetupData extends MatchesSetupData {}
 
@@ -64,11 +65,20 @@ describe('Shot Fired', () => {
 
         const matchId: string = currentMatch.matchId;
         const player1Id: string = currentMatch.playerIds[0];
+        const player2Id: string = currentMatch.playerIds[1];
 
         // Join the match with both players,
         // so that the state changed event can be listened to
-        joinMatch(matchId, player1Client);
-        joinMatch(matchId, player2Client);
+        joinMatch(player1Client, {
+            matchId: matchId,
+            userId: player1Id,
+            joinReason: JoinReason.Player,
+        });
+        joinMatch(player2Client, {
+            matchId: matchId,
+            userId: player2Id,
+            joinReason: JoinReason.Player,
+        });
 
         // Listen to both the match found events
         let player1EventFired: boolean = false;
