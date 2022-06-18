@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Types } from 'mongoose';
+import { toUnixSeconds } from './date-utils';
 
 /**
  * Middleware that tries to extract the skip and limit query parameters from
@@ -19,7 +20,7 @@ export const skipLimitChecker = function (req: Request, res: Response, next: Nex
 
     if (regexp.test(skip) || regexp.test(limit)) {
         return res.status(400).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: 'Wrong skip or limit',
             requestPath: req.path,
         });
@@ -48,7 +49,7 @@ export const retrieveUserId = function (req: Request, res: Response, next: NextF
         next();
     } catch (err) {
         return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });
@@ -71,7 +72,7 @@ export const retrieveChatId = function (req: Request, res: Response, next: NextF
         next();
     } catch (err) {
         return res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });
@@ -95,7 +96,7 @@ export const retrieveMatchId = function (req: Request, res: Response, next: Next
         next();
     } catch (err) {
         res.status(404).json({
-            timestamp: Math.floor(new Date().getTime() / 1000),
+            timestamp: toUnixSeconds(new Date()),
             errorMessage: err.message,
             requestPath: req.path,
         });
