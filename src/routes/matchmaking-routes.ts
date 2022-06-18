@@ -1,20 +1,17 @@
-import { Router, Response } from 'express';
+import { Response, Router } from 'express';
 import { Types } from 'mongoose';
 
 import { authenticateToken } from './auth-routes';
 import { retrieveUserId } from './utils/param-checking';
-import {
-    MatchmakingQueueModel,
-    QueueEntry,
-    QueueEntryDocument,
-} from '../model/matchmaking/queue-entry';
-import { getUserById, UserDocument } from '../model/user/user';
+import { insertMatchmakingEntry, removeMatchmakingEntry } from '../model/matchmaking/queue-entry';
+import { setUserStatus, UserStatus } from '../model/user/user';
 import { AuthenticatedRequest } from './utils/authenticated-request';
+import { ioServer } from '../index';
 
 export const router = Router();
 
 interface EnqueueRequestBody {
-    userId: Types.ObjectId;
+    userId: string;
 }
 
 interface EnqueueRequest extends AuthenticatedRequest {
@@ -22,19 +19,15 @@ interface EnqueueRequest extends AuthenticatedRequest {
 }
 
 /**
- * /api/matchmaking/queue   POST   Add a player to the matchmaking queue
+ * /api/matchmaking/queue   POST   Add a user to the matchmaking queue
  */
 router.post('/matchmaking/queue', authenticateToken, async (req: EnqueueRequest, res: Response) => {
     try {
-        const playerToQueue: UserDocument = await getUserById(req.body.userId);
-        const queueEntry: QueueEntry = {
-            userId: playerToQueue._id,
-            elo: playerToQueue.stats.elo,
-            queuedSince: new Date(),
-        };
+        const { userId } = req.body;
+        await insertMatchmakingEntry(Types.ObjectId(userId));
 
-        const queueDoc: QueueEntryDocument = new MatchmakingQueueModel(queueEntry);
-        await queueDoc.save();
+        // Change the status of the user: he is now queued
+        await setUserStatus(ioServer, userId, UserStatus.InQueue);
 
         return res.status(201).json(req.body);
     } catch (err) {
@@ -64,7 +57,10 @@ router.delete(
     async (req: RemoveFromQueueRequest, res: Response) => {
         try {
             const userToUnQueue: Types.ObjectId = res.locals.userId;
-            await removeFromMatchmakingQueue(userToUnQueue);
+            await removeMatchmakingEntry(userToUnQueue);
+
+            // The user is not in queue anymore, so it goes back to idle (Online)
+            await setUserStatus(ioServer, userToUnQueue.toString(), UserStatus.Online);
 
             return res.status(204).json();
         } catch (err) {
@@ -76,20 +72,3 @@ router.delete(
         }
     }
 );
-
-/**
- * Removes the user with the specified id from the queue.
- * @param userId
- */
-export const removeFromMatchmakingQueue = async (userId: Types.ObjectId): Promise<void> => {
-    const entry: QueueEntryDocument = await MatchmakingQueueModel.findOne({
-        userId: userId,
-    });
-
-    // TODO doesn't deleteOne raise an exception if no user is found to delete?
-    if (entry === null) {
-        throw new Error('User not found in queue');
-    }
-
-    await MatchmakingQueueModel.deleteOne({ userId: userId });
-};

@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
 import { getCurrentMatch, MatchDocument } from '../../model/match/match';
 import { MatchTerminatedReason } from '../../model/events/match-terminated-data';
-import { removeFromMatchmakingQueue } from '../../routes/matchmaking-routes';
+import { removeMatchmakingEntry } from '../../model/matchmaking/queue-entry';
 
 /**
  * Class that wraps socket.io functionality to listen to a 'server-joined' client event.
@@ -92,7 +92,7 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
         const user: UserDocument = await getUserById(userObjId);
 
         if (user.status === UserStatus.InQueue) {
-            await removeFromMatchmakingQueue(userObjId);
+            await removeMatchmakingEntry(userObjId);
         }
     }
 }
