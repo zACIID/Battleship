@@ -36,6 +36,7 @@ export const IS_TESTING_MODE: boolean = process.env.TEST === 'true';
 // If testing, set test db uri, else use the other
 const dbUri: string = IS_TESTING_MODE ? process.env.TEST_DB_URI : process.env.DB_URI;
 const serverPort: number = parseInt(process.env.PORT, 10);
+const serverHost: string = process.env.HOST;
 
 /* Database Connection */
 console.log('Demanding the sauce...');
@@ -53,7 +54,9 @@ mongoose
     });
 
 const httpServer: http.Server = http.createServer(app);
-httpServer.listen(serverPort, () => console.log(`HTTP Server started on port ${serverPort}`));
+httpServer.listen(serverPort, serverHost, () => {
+    console.log(`HTTP Server started on ${serverHost}:${serverPort}`);
+});
 
 /* Allows server to respond to a particular request that asks which request options it accepts */
 app.use(cors());
@@ -104,7 +107,7 @@ registerRoutes(app);
 // TODO function setupIoServer in "registerRoutes" style which contains the below code
 export const ioServer: io.Server = new io.Server(httpServer, {
     cors: {
-        // TODO move in .env
+        // TODO how to set this? because origin of course depends on the address of every client that connects
         origin: 'http://localhost:4200',
         methods: ['GET', 'POST'],
         credentials: true,
