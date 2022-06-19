@@ -22,9 +22,9 @@ import { ChatLeftListener } from './events/client-listeners/chat-left';
 import { MatchLeftListener } from './events/client-listeners/match-left';
 import { PlayerWonListener } from './events/client-listeners/player-won';
 import { createUser, UserRoles, UserDocument } from './model/database/user/user';
-import { Socket } from 'socket.io';
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Remember that the runtime working dir is <root>/dist/src
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export const app: Express = express();
 
@@ -38,6 +38,12 @@ export const IS_TESTING_MODE: boolean = process.env.TEST === 'true';
 const dbUri: string = IS_TESTING_MODE ? process.env.TEST_DB_URI : process.env.DB_URI;
 const serverPort: number = parseInt(process.env.PORT, 10);
 const serverHost: string = process.env.HOST;
+
+console.log(process.env);
+console.log(process.env.TEST_DB_URI);
+console.log(process.env.PORT);
+console.log(process.env.HOST);
+console.log(process.env.TEST);
 
 /* Database Connection */
 console.log('Demanding the sauce...');
@@ -55,6 +61,8 @@ mongoose
     });
 
 const httpServer: http.Server = http.createServer(app);
+console.log(serverPort);
+console.log(serverHost);
 httpServer.listen(serverPort, serverHost, () => {
     console.log(`HTTP Server started on ${serverHost}:${serverPort}`);
 });
@@ -115,7 +123,7 @@ export const ioServer: io.Server = new io.Server(httpServer, {
     },
 });
 
-ioServer.on('connection', async function (client: Socket) {
+ioServer.on('connection', async function (client: io.Socket) {
     console.log(chalk.green(`socket.io client ${client.id} connected`));
 
     client.on('disconnect', function () {
