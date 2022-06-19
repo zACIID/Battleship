@@ -14,6 +14,7 @@ import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { ShotData } from 'src/app/core/model/events/shot-data';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 import { JoinReason } from 'src/app/core/model/events/match-joined-data';
+import { createSocket } from 'dgram';
 
 @Component({
     selector: 'app-game-screen',
@@ -93,6 +94,7 @@ export class GameScreenComponent implements OnInit {
         // this.joinMatch();
         const pollingOpponentHits = (data: ShotData) => {
             
+
             if (this.match.player1.playerId !== this.userInSessionId) {
                 this.match.player1.grid.shotsReceived.push(data.coordinates);
             } else this.match.player2.grid.shotsReceived.push(data.coordinates);
@@ -107,7 +109,9 @@ export class GameScreenComponent implements OnInit {
 
             console.log("Ho pollato gli hits")
 
-            this.playerTurn = true;
+            console.log(this.playerTurn + "PlayerTurn BEFORE")
+            this.playerTurn = !this.playerTurn
+            console.log(this.playerTurn + "PlayerTurn AFTER")
         }
         pollingOpponentHits.bind(this);
         this.shotListener.listen(pollingOpponentHits);
@@ -121,7 +125,7 @@ export class GameScreenComponent implements OnInit {
 
     }
 
-    ngOneDestroy(): void {
+    ngOnDestroy(): void {
         this.shotListener.unListen();
         this.chatMessageListener.unListen();
     }
@@ -173,7 +177,7 @@ export class GameScreenComponent implements OnInit {
             this.matchClient.fireShot(this.match.matchId, {
                 playerId: this.userInSessionId,
                 coordinates: { row: shotRow, col: shotCol },
-            });
+            }).subscribe();
 
         }
 
