@@ -34,7 +34,7 @@ export class MatchApi extends BaseAuthenticatedApi {
 
     public getMatch(matchId: string): Observable<Match> {
         const reqPath: string = `${this.baseUrl}/api/matches/${matchId}`;
-
+        console.log("dentro")
         return this.httpClient.get<ApiMatch>(reqPath, this.createRequestOptions()).pipe(
             catchError(this.handleError),
             map<ApiMatch, Match>((apiMatch: ApiMatch) => {
@@ -46,7 +46,6 @@ export class MatchApi extends BaseAuthenticatedApi {
                     totalShots: apiStats.totalShots,
                     shipsDestroyed: apiStats.shipsDestroyed,
                 };
-
                 return {
                     matchId: apiMatch.matchId,
                     player1: apiMatch.player1,

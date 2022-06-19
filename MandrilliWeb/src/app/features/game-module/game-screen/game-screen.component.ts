@@ -7,10 +7,12 @@ import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 import { Match } from 'src/app/core/model/match/match';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { ShotData } from 'src/app/core/model/events/shot-data';
+import { combineLatest, combineLatestAll, concatMap, mergeAll } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 
 @Component({
     selector: 'app-game-screen',
@@ -45,16 +47,44 @@ export class GameScreenComponent implements OnInit {
 
         try{
             this.userInSessionId = this.userIdProvider.getUserId()
-            let flag = false
-            this.route.params.subscribe((params) => {
-                this.match.matchId = params['id'];
-                console.log("fuori il subscribe, match è Update?" + flag)
-                console.log("fuori il subscribe la chatId" + this.chatId)
-            });
+            /*
+                this.route.params.subscribe({
+                next: (params) => {
+                    this.match.matchId = params['id'];
+                    console.log("finito la parmas")
+                },
+                complete: () => {
+                    console.log("dentro la complete")
+                    this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
+                        this.match = data;
+                        console.log("nella get MATCH")
+                        if(data.player1.playerId === this.userInSessionId){
+                            this.playerGrid = data.player1.grid;
+                            this.opponentGrid = data.player2.grid;
+                            this.opponentsId = data.player2.playerId;
+    
+                        }
+                        else{
+                            this.playerGrid = data.player2.grid;
+                            this.opponentGrid = data.player1.grid;
+                            this.opponentsId = data.player1.playerId;
+                        }
+                        this.chatId = data.playersChat;
+                    })
+                }
+            })
+            */
 
-            this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
+            const lambda = (param: Params) => {
+                console.log("di nuovo debtro la param (lambda)")
+                this.match.matchId = param['id']
+            }
+
+            lambda.bind(this)
+
+            const lambda2 = (data: Match) => {
                 this.match = data;
-
+                console.log("nella get MATCH")
                 if(data.player1.playerId === this.userInSessionId){
                     this.playerGrid = data.player1.grid;
                     this.opponentGrid = data.player2.grid;
@@ -66,12 +96,21 @@ export class GameScreenComponent implements OnInit {
                     this.opponentGrid = data.player1.grid;
                     this.opponentsId = data.player1.playerId;
                 }
-                flag = true
                 this.chatId = data.playersChat;
-            })
+            }
 
-            //const example = source.pipe(concatMap(val => of(`Delayed by: ${val}ms`).pipe(delay(val))));
-            // geocodeAddressRequest.flatMap( address -> {return api.createRide(address)})
+            lambda2.bind(this)
+
+            this.route.params.subscribe(((param) => lambda(param)))
+
+            this.matchClient.getMatch(this.match.matchId).subscribe((match: Match) => lambda2(match))
+        
+
+            console.log("Match è" + this.match.player1.isReady)
+
+
+            //const source = Rx.of('Hello');
+            //source.map(val => doOperationThatReturnsObservable(val)).map(f)
             let rnd: number = Math.floor( Math.random() * 1000 );
 
             if(rnd % 2 == 0){
