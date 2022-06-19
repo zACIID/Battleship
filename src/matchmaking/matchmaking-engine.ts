@@ -116,11 +116,7 @@ export class MatchmakingEngine {
         // Until there are at least 2 players in the queue,
         // keep trying to arrange matches
         while (queuedPlayers.length > 1) {
-            this.log(
-                `[${new Date()}] Arranging matches (${
-                    queuedPlayers.length
-                } players in the queue)...`
-            );
+            this.log(`Arranging matches (${queuedPlayers.length} players in the queue)...`);
 
             const player: QueueEntry = queuedPlayers.pop();
             const opponent: QueueEntry = this.findOpponent(player, queuedPlayers);
@@ -154,7 +150,6 @@ export class MatchmakingEngine {
      */
     private findOpponent(player: QueueEntry, restOfTheQueue: QueueEntry[]): QueueEntry {
         this.log(chalk.magenta(`Finding opponent for player: ${JSON.stringify(player)}`));
-        this.log(chalk.magenta(`Rest of the queue: ${JSON.stringify(restOfTheQueue)}`));
 
         const potentialOpponents: QueueEntry[] = this.getPotentialOpponents(player, restOfTheQueue);
 
@@ -209,16 +204,6 @@ export class MatchmakingEngine {
         const p2EloDelta: number = this.getEloDelta(p2);
         const eloDiff: number = Math.abs(p1.elo - p2.elo);
 
-        this.log(
-            chalk.red(
-                `Are players matchable?\n ${JSON.stringify({
-                    p1EloDelta,
-                    p2EloDelta,
-                    eloDiff,
-                })}`
-            )
-        );
-
         const isP1Skill: boolean = eloDiff <= p1EloDelta;
         const isP2Skill: boolean = eloDiff <= p2EloDelta;
 
@@ -267,7 +252,7 @@ export class MatchmakingEngine {
             matchId: createdMatch._id,
         };
 
-        this.log(chalk.green('Sending notifications about the match found to the players'));
+        this.log(chalk.green('Match Found: sending notifications to the players'));
 
         const player1Notifier: MatchFoundEmitter = new MatchFoundEmitter(
             this.sIoServer,
