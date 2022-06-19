@@ -66,7 +66,7 @@ export class GameScreenComponent implements OnInit {
             );
 
             let rnd: number = Math.floor(Math.random() * 1000);
-
+            
             if (rnd % 2 == 0) {
                 if (this.match.player1.playerId === this.userInSessionId) this.playerTurn = true;
                 else this.playerTurn = false;
@@ -74,7 +74,7 @@ export class GameScreenComponent implements OnInit {
                 if (this.match.player2.playerId === this.userInSessionId) this.playerTurn = true;
                 else this.playerTurn = false;
             }
-
+            console.log(this.match);
             for (let ships of this.playerGrid.ships) {
                 for (let coord of ships.coordinates) {
                     this.shipsCoordinates.push(coord);

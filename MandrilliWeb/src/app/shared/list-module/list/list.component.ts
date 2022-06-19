@@ -45,8 +45,14 @@ export class ListComponent implements OnInit {
         } else return 0;
     }
 
-    public async showChat(chatId: string) {
+    public async showChat(chatId: string): Promise<void> {
         let url = '/chat/' + chatId;
         await this.router.navigate([url]);
     }
+
+    public async goToMatchResults(matchId: string): Promise<void> {
+        let url = '/match-results/' + matchId;
+        await this.router.navigate([url]);
+    }
+
 }

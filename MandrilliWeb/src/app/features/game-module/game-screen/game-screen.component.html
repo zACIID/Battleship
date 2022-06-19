@@ -62,7 +62,8 @@
 
                 <!-- To set to your turn -->
                 <div class="box has-background-primary mt-2 has-text-centered">
-                    <strong class="has-text-light has-weight-bold">Opponent's turn</strong>
+                    <strong *ngIf = "!playerTurn" class="has-text-light has-weight-bold">Opponent's turn</strong>
+                    <strong *ngIf = "playerTurn" class="has-text-light has-weight-bold">Your turn</strong>
                 </div>
 
                 <div class ="columns width-80 margin-auto mt-0">
