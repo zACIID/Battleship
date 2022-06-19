@@ -12,6 +12,7 @@ import { GenericMessage } from 'src/app/core/model/events/generic-message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { concat } from 'rxjs/internal/observable/concat';
+import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 
 @Component({
     selector: 'app-preparation-phase-screen',
@@ -41,7 +42,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private userIdProvider: UserIdProvider,
         private router: Router,
         private matchClient: MatchApi,
-        private fleeMatchEmitter: MatchLeftEmitter
+        private fleeMatchEmitter: MatchLeftEmitter, 
+        private chatMessageEmitter: ChatJoinedEmitter
     ) {}
 
     ngOnInit(): void {
@@ -70,6 +72,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
         };
         onPositioningCompleted.bind(this);
         this.positioningCompletedListener.listen(onPositioningCompleted);
+
     }
 
     ngOnDestroy(): void {
