@@ -31,7 +31,7 @@ export class GameScreenComponent implements OnInit {
     public chatId?: string = undefined;
     private shipsCoordinates: GridCoordinates[] = [];
     public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
-    public playerTurn: boolean = false;
+    public playerTurn?: boolean;
 
     constructor(
         private route: ActivatedRoute,
@@ -66,7 +66,7 @@ export class GameScreenComponent implements OnInit {
                     this.chatId = data.playersChat;
                     this.chatMessageEmitter.emit({chatId: this.match.playersChat})
                   
-                    let rnd: number = Math.floor(Math.random() * 1000);
+                    let rnd: number = this.match.matchId.charCodeAt(0);
 
                     if (rnd % 2 == 0) {
                         if (this.match.player1.playerId === this.userInSessionId) this.playerTurn = true;
@@ -81,47 +81,43 @@ export class GameScreenComponent implements OnInit {
                             this.shipsCoordinates.push(coord);
                         }
                     }
-                    console.log(this.match)
+                    console.log(this.playerTurn)
+                    // TODO remove since the match at this point is already joined?
+                    //  the join is made right after the match-found event is raised
+                    // this.joinMatch();
+                    const pollingOpponentHits = (data: ShotData) => {
+                        
+
+                        if (this.match.player1.playerId !== data.playerId) {
+                            this.match.player1.grid.shotsReceived.push(data.coordinates);
+                        } else this.match.player2.grid.shotsReceived.push(data.coordinates);
+
+                        this.shipsCoordinates = this.shipsCoordinates.filter(
+                            (e) => e.row !== data.coordinates.row && e.col !== data.coordinates.col
+                        );
+
+                        if (this.shipsCoordinates.length === 0) {
+                            this.lostAndSauced();
+                        }
+                        this.trigger++;
+                        this.playerTurn = !this.playerTurn
+
+                    }
+                    pollingOpponentHits.bind(this);
+                    this.shotListener.listen(pollingOpponentHits);
+
+                    
+                    const refreshChat = () => {
+                        this.trigger++;
+                    };
+                    refreshChat.bind(this);
+                    this.chatMessageListener.listen(refreshChat);
                 })
             });
             
         } catch (err) {
             console.log('An error occurred while initializing the game screen: ' + err);
         }
-
-        // TODO remove since the match at this point is already joined?
-        //  the join is made right after the match-found event is raised
-        // this.joinMatch();
-        const pollingOpponentHits = (data: ShotData) => {
-            
-
-            if (this.match.player1.playerId !== this.userInSessionId) {
-                this.match.player1.grid.shotsReceived.push(data.coordinates);
-            } else this.match.player2.grid.shotsReceived.push(data.coordinates);
-
-            this.shipsCoordinates = this.shipsCoordinates.filter(
-                (e) => e.row !== data.coordinates.row && e.col !== data.coordinates.col
-            );
-
-            if (this.shipsCoordinates.length === 0) {
-                this.lostAndSauced();
-            }
-
-            console.log("Ho pollato gli hits")
-
-            console.log(this.playerTurn + "PlayerTurn BEFORE")
-            this.playerTurn = !this.playerTurn
-            console.log(this.playerTurn + "PlayerTurn AFTER")
-        }
-        pollingOpponentHits.bind(this);
-        this.shotListener.listen(pollingOpponentHits);
-
-        
-        const refreshChat = () => {
-            this.trigger++;
-        };
-        refreshChat.bind(this);
-        this.chatMessageListener.listen(refreshChat);
 
     }
 
@@ -178,10 +174,8 @@ export class GameScreenComponent implements OnInit {
                 playerId: this.userInSessionId,
                 coordinates: { row: shotRow, col: shotCol },
             }).subscribe();
-
         }
 
-        this.playerTurn = false;
     }
 
     public async leaveMatch() {

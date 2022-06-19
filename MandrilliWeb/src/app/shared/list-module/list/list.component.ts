@@ -55,4 +55,9 @@ export class ListComponent implements OnInit {
         await this.router.navigate([url]);
     }
 
+    public async spectateMatch(matchId: string) : Promise<void> {
+        let url = '/observers/' + matchId;
+        await this.router.navigate([url]);
+    }
+
 }

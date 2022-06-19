@@ -50,7 +50,7 @@
 
                 </div>
                 <div class="width-80 margin-auto">
-                    <opponent-board [state]="opponentGrid"></opponent-board>
+                    <opponent-board [state]="opponentGrid" [triggerUpdate]="trigger"></opponent-board>
                 </div>
                 
                 
@@ -58,7 +58,7 @@
             </div>
             <div class="column is-half">
 
-                <board [state]="playerGrid"></board>
+                <board [state]="playerGrid" [triggerUpdate]="trigger"></board>
 
                 <!-- To set to your turn -->
                 <div class="box has-background-primary mt-2 has-text-centered">

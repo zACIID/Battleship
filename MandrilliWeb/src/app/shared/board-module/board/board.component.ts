@@ -44,7 +44,8 @@ export class BoardComponent implements OnInit {
                 let id: string = shot.row.toString() + shot.col.toString(); 
                 let square: HTMLElement | null = document.getElementById(id);
                 if(square){
-                    square?.classList.add("fire");
+                    //square?.classList.add("fire");
+                    square.innerText = "X";
                 }
             }
 
