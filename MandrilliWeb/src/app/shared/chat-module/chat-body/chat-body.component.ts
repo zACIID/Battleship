@@ -1,7 +1,7 @@
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { Message } from './../../../core/model/chat/message';
 import { ChatApi } from './../../../core/api/handlers/chat-api';
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, SimpleChange, SimpleChanges } from '@angular/core';
 
 @Component({
     selector: 'chat-body',
@@ -28,8 +28,6 @@ export class ChatBodyComponent implements OnInit {
 
     ngOnChanges(): void {
         this.options = { skip: 0, limit: 5 };
-
-        this.ngOnInit();
     }
 
     ngOnInit(): void {

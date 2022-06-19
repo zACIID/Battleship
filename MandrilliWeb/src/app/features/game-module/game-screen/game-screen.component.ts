@@ -1,3 +1,4 @@
+import { ChatMessageListener } from './../../../core/events/listeners/chat-message';
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from '../../../../../../src/model/database/match/state/grid-coordinates';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
@@ -23,13 +24,15 @@ export class GameScreenComponent implements OnInit {
     public playerGrid: BattleshipGrid = new BattleshipGrid();
     public opponentGrid: BattleshipGrid = new BattleshipGrid();
     public opponentsId: string = '';
-    public chatId: string = '';
+    public trigger: number = 0;
+    public chatId?: string = undefined;
     private shipsCoordinates: GridCoordinates[] = [];
     public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
     public playerTurn: boolean = false;
 
     constructor(
         private route: ActivatedRoute,
+        private chatMessageListener: ChatMessageListener,
         private joinMatchEmitter: MatchJoinedEmitter,
         private leaveMatchEmitter: MatchLeftEmitter,
         private fleeWinnerEmitter: PlayerWonEmitter,
@@ -43,15 +46,11 @@ export class GameScreenComponent implements OnInit {
         try {
             this.userInSessionId = this.userIdProvider.getUserId();
 
-            let obs = this.route.params.subscribe((params) => {
+            this.route.params.subscribe((params) => {
                 this.match.matchId = params['id'];
-            });
 
-            // TODO only called on unsubscribe?
-            obs.add(
                 this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
                     this.match = data;
-
                     if (data.player1.playerId === this.userInSessionId) {
                         this.playerGrid = data.player1.grid;
                         this.opponentGrid = data.player2.grid;
@@ -62,53 +61,65 @@ export class GameScreenComponent implements OnInit {
                         this.opponentsId = data.player1.playerId;
                     }
                     this.chatId = data.playersChat;
-                })
-            );
 
-            let rnd: number = Math.floor(Math.random() * 1000);
+
+                    let rnd: number = Math.floor(Math.random() * 1000);
             
-            if (rnd % 2 == 0) {
-                if (this.match.player1.playerId === this.userInSessionId) this.playerTurn = true;
-                else this.playerTurn = false;
-            } else {
-                if (this.match.player2.playerId === this.userInSessionId) this.playerTurn = true;
-                else this.playerTurn = false;
-            }
-            console.log(this.match);
-            for (let ships of this.playerGrid.ships) {
-                for (let coord of ships.coordinates) {
-                    this.shipsCoordinates.push(coord);
-                }
-            }
-
-            // TODO remove since the match at this point is already joined?
-            //  the join is made right after the match-found event is raised
-            // this.joinMatch();
-
-            const pollingOpponentHits = (data: ShotData) => {
-                if (this.match.player1.playerId !== this.userInSessionId) {
-                    this.match.player1.grid.shotsReceived.push(data.coordinates);
-                } else this.match.player2.grid.shotsReceived.push(data.coordinates);
-
-                this.shipsCoordinates = this.shipsCoordinates.filter(
-                    (e) => e.row !== data.coordinates.row && e.col !== data.coordinates.col
-                );
-
-                if (this.shipsCoordinates.length === 0) {
-                    this.lostAndSauced();
-                }
-
-                this.playerTurn = true;
-            };
-            pollingOpponentHits.bind(this);
-            this.shotListener.listen(pollingOpponentHits);
+                    if (rnd % 2 == 0) {
+                        if (this.match.player1.playerId === this.userInSessionId) this.playerTurn = true;
+                        else this.playerTurn = false;
+                    } else {
+                        if (this.match.player2.playerId === this.userInSessionId) this.playerTurn = true;
+                        else this.playerTurn = false;
+                    }
+                    
+                    for (let ships of this.playerGrid.ships) {
+                        for (let coord of ships.coordinates) {
+                            this.shipsCoordinates.push(coord);
+                        }
+                    }
+                    console.log(this.match)
+                })
+            });
+            
         } catch (err) {
             console.log('An error occurred while initializing the game screen: ' + err);
         }
+
+        // TODO remove since the match at this point is already joined?
+        //  the join is made right after the match-found event is raised
+        // this.joinMatch();
+        const pollingOpponentHits = (data: ShotData) => {
+            
+            if (this.match.player1.playerId !== this.userInSessionId) {
+                this.match.player1.grid.shotsReceived.push(data.coordinates);
+            } else this.match.player2.grid.shotsReceived.push(data.coordinates);
+
+            this.shipsCoordinates = this.shipsCoordinates.filter(
+                (e) => e.row !== data.coordinates.row && e.col !== data.coordinates.col
+            );
+
+            if (this.shipsCoordinates.length === 0) {
+                this.lostAndSauced();
+            }
+
+            this.playerTurn = true;
+        };
+        pollingOpponentHits.bind(this);
+        this.shotListener.listen(pollingOpponentHits);
+
+        
+        const refreshChat = () => {
+            this.trigger++;
+        };
+        refreshChat.bind(this);
+        this.chatMessageListener.listen(refreshChat);
+
     }
 
     ngOneDestroy(): void {
         this.shotListener.unListen();
+        this.chatMessageListener.unListen();
     }
 
     private isValidCoords(row: number, col: number): boolean {

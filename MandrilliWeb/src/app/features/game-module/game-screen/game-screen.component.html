@@ -114,11 +114,10 @@
 
         </div>
         
-        <div class="chat-height p-4">
-            <chat-body [chatId]="chatId"></chat-body>
+        <div *ngIf="chatId" class="chat-height p-4">
+            <chat-body [chatId]="chatId" [triggerUpdate]="trigger"></chat-body>
         </div>
 
-    
     </div>
     
 </div>

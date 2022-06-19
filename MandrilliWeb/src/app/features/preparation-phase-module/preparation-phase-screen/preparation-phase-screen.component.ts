@@ -48,8 +48,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
         try {
             this.userId = this.userIdProvider.getUserId();
             this.route.params.subscribe((param) => {
-                // TODO this is undefined. Probably wrong param name
-                console.log('Match Id param: ' + param['id']);
                 this.matchId = param['id'];
             });
         } catch (err) {
@@ -66,7 +64,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
         this.playerStateListener.listen(onPlayerStateChanged);
 
         const onPositioningCompleted = async (data: GenericMessage): Promise<void> => {
-            console.log(data.message);
 
             const path: string = '/game/' + this.matchId;
             await this.router.navigate([path]);

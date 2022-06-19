@@ -33,25 +33,25 @@ export class ChatScreenComponent implements OnInit {
         try {
             this.route.params.subscribe((params) => {
                 this.chatId = params['id'];
+
+                this.chatClient.getChat(this.chatId).subscribe((data: Chat) => {
+                
+                    let userInSessionId: string = this.userIdProvider.getUserId();
+                    for (let user of data.users) {
+                        if (user !== userInSessionId) {
+                            this.friend = user;
+                        }
+                        
+                    }
+                    this.joinEmitter.emit({chatId: data.chatId})
+                });
             });
             
-            this.chatClient.getChat(this.chatId).subscribe((data: Chat) => {
-                
-                let userInSessionId: string = this.userIdProvider.getUserId();
-                for (let user of data.users) {
-                    if (user !== userInSessionId) {
-                        this.friend = user;
-                    }
-                    
-                }
-                this.joinEmitter.emit({chatId: data.chatId})
-            });
         } catch (err) {
             console.log('An error occurred while retrieving the chat: ' + err);
         }
         
         const refreshChat = () => {
-            console.log("refreshing");
             this.trigger++;
         };
         refreshChat.bind(this);
