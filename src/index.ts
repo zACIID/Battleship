@@ -22,6 +22,7 @@ import { ChatLeftListener } from './events/client-listeners/chat-left';
 import { MatchLeftListener } from './events/client-listeners/match-left';
 import { PlayerWonListener } from './events/client-listeners/player-won';
 import { createUser, UserRoles, UserDocument } from './model/database/user/user';
+import { Socket } from 'socket.io';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -114,7 +115,7 @@ export const ioServer: io.Server = new io.Server(httpServer, {
     },
 });
 
-ioServer.on('connection', async function (client) {
+ioServer.on('connection', async function (client: Socket) {
     console.log(chalk.green(`socket.io client ${client.id} connected`));
 
     client.on('disconnect', function () {

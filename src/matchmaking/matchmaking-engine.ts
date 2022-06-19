@@ -5,6 +5,7 @@ import * as match from '../model/database/match/match';
 import { MatchFoundEmitter } from '../events/emitters/match-found';
 import { MatchData } from '../model/events/match-data';
 import { setInterval } from 'timers';
+import { EngineAlreadyStartedError, EngineAlreadyStoppedError } from './engine-errors';
 
 /**
  * Class that represents a matchmaking engine, whose purpose is to arrange game
@@ -56,7 +57,7 @@ export class MatchmakingEngine {
      */
     public start(): void {
         if (this.intervalId !== null) {
-            throw new Error('Engine is already running!');
+            throw new EngineAlreadyStartedError();
         }
 
         this.intervalId = setInterval(
@@ -227,7 +228,7 @@ export class MatchmakingEngine {
      */
     public stop(): void {
         if (this.intervalId === null) {
-            throw new Error('Engine is already stopped!');
+            throw new EngineAlreadyStoppedError();
         }
 
         clearInterval(this.intervalId);
