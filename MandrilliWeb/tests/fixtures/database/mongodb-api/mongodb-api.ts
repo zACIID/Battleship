@@ -51,11 +51,6 @@ interface MongoDbReqParams {
     body: MongoDbReqBody;
 }
 
-interface Relationship {
-    friendId: string;
-    chatId: string;
-}
-
 interface MongoDbReqBody {
     /**
      * Cluster name

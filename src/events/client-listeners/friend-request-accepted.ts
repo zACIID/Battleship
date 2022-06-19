@@ -28,10 +28,8 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<Reques
     public listen(): void {
         super.listen(async (eventData: RequestAcceptedData): Promise<void> => {
             try {
-                // Add the relationship to both users, remove the now old notification
-                // from the user that  received the friend request
+                // Add the relationship to both users
                 await FriendRequestAcceptedListener.createNewRelationship(eventData);
-                await FriendRequestAcceptedListener.removeNotification(eventData);
 
                 // Notify the new friend about the accepted request and
                 // the fact that a new friend is online
@@ -39,9 +37,22 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<Reques
             } catch (err) {
                 if (err instanceof Error) {
                     console.log(
-                        chalk.bgRed(`Could not accept friend request between 
+                        chalk.bgRed(`Could not accept friend request between users 
                     ${eventData.senderId} and ${eventData.receiverId}.
                     Reason: ${err.message}`)
+                    );
+                }
+            }
+
+            try {
+                // remove the now old notification
+                // from the user that received the friend request
+                await FriendRequestAcceptedListener.removeNotification(eventData);
+            } catch (err) {
+                if (err instanceof Error) {
+                    console.log(
+                        chalk.bgRed(`Could not remove notification from user 
+                    ${eventData.receiverId}. Reason: ${err.message}`)
                     );
                 }
             }
