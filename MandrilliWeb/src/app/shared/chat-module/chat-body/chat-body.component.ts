@@ -28,6 +28,7 @@ export class ChatBodyComponent implements OnInit {
 
     ngOnChanges(): void {
         this.options = { skip: 0, limit: 5 };
+        this.ngOnInit()
     }
 
     ngOnInit(): void {
