@@ -53,9 +53,9 @@
     "scripts": {
         "test": "mocha",
         "compile": "tsc",
-        "start": "node dist/index.js",
-        "start-dev": "DEBUG=socket.io:client,socket.io:server,socket.io:parser node dist/index.js",
-        "start-dev-s.io-all": "DEBUG=socket* node dist/index.js",
+        "start": "node dist/src/index.js",
+        "start-dev": "DEBUG=socket.io:client,socket.io:server,socket.io:parser node dist/src/index.js",
+        "start-dev-s.io-all": "DEBUG=socket* node dist/src/index.js",
         "dev": "tsc --watch",
         "lint": "eslint --ext .ts .",
         "lint:fix": "eslint --ext .ts . --fix",
