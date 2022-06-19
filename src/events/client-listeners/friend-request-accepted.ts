@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { Types } from 'mongoose';
+import chalk from 'chalk';
 
 import { FriendStatusChangedEmitter } from '../emitters/friend-status-changed';
 import { FriendStatusChangedData } from '../../model/events/friend-status-changed-data';
@@ -26,14 +27,24 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<Reques
 
     public listen(): void {
         super.listen(async (eventData: RequestAcceptedData): Promise<void> => {
-            // Add the relationship to both users, remove the now old notification
-            // from the user that  received the friend request
-            await FriendRequestAcceptedListener.createNewRelationship(eventData);
-            await FriendRequestAcceptedListener.removeNotification(eventData);
+            try {
+                // Add the relationship to both users, remove the now old notification
+                // from the user that  received the friend request
+                await FriendRequestAcceptedListener.createNewRelationship(eventData);
+                await FriendRequestAcceptedListener.removeNotification(eventData);
 
-            // Notify the new friend about the accepted request and
-            // the fact that a new friend is online
-            this.notifyNewFriend(eventData);
+                // Notify the new friend about the accepted request and
+                // the fact that a new friend is online
+                this.notifyNewFriend(eventData);
+            } catch (err) {
+                if (err instanceof Error) {
+                    console.log(
+                        chalk.bgRed(`Could not accept friend request between 
+                    ${eventData.senderId} and ${eventData.receiverId}.
+                    Reason: ${err.message}`)
+                    );
+                }
+            }
         });
     }
 

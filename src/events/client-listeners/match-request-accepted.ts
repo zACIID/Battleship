@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { Types } from 'mongoose';
+import chalk from 'chalk';
 
 import { MatchFoundEmitter } from '../emitters/match-found';
 import { createMatch, MatchDocument } from '../../model/database/match/match';
@@ -32,6 +33,12 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<Request
                 // TODO maybe create an event like 'accept-error' to
                 //  notify the user that the request couldn't be accepted,
                 //  and send a reason for its
+                console.log(
+                    chalk.yellow(
+                        `[${MatchRequestAcceptedListener.name}] Match request could not be accepted 
+                        because at least one user is not available`
+                    )
+                );
                 return;
             }
 

@@ -284,7 +284,7 @@ export class MatchmakingEngine {
 
     private log(message: string): void {
         if (this.verbose) {
-            console.log(`[Matchmaking Engine] ${message}`);
+            console.log(`[${MatchmakingEngine.name}] ${message}`);
         }
     }
 }
