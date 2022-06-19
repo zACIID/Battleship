@@ -78,15 +78,19 @@ export class MatchmakingEngine {
             throw new EngineAlreadyStartedError();
         }
 
-        this.setTimeoutOnArrangeMatches();
+        this.refreshQueueScan();
     }
 
     /**
      * Calls setTimeout with the function that arranges the matches between
-     * the users in the queue
+     * the users in the queue and clears the interval of the previous call.
      * @private
      */
-    private setTimeoutOnArrangeMatches() {
+    private refreshQueueScan() {
+        this.log(chalk.yellow('Refreshing interval'));
+
+        clearInterval(this.intervalId);
+
         this.intervalId = setTimeout(
             async function () {
                 await this.arrangeMatches();
@@ -139,7 +143,7 @@ export class MatchmakingEngine {
         }
 
         // Scan terminated: refresh the timeout on this function
-        this.setTimeoutOnArrangeMatches();
+        this.refreshQueueScan();
     }
 
     /**

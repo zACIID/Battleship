@@ -3,7 +3,7 @@ import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 
 import * as io from 'socket.io';
 import * as ioClient from 'socket.io-client';
-import mongoose, { Connection, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import chalk from 'chalk';
 
 import { MatchmakingEngine } from '../../src/matchmaking/matchmaking-engine';
@@ -40,18 +40,6 @@ const baseSetup = async () => {
         console.log(chalk.bgBlue(`Started test http server at ${ioClientConnectionString}`));
     });
 
-    // If testing, set test db uri, else use the other
-    const IS_TESTING_MODE: boolean = process.env.TEST === 'true';
-    const dbUri: string = IS_TESTING_MODE ? process.env.TEST_DB_URI : process.env.DB_URI;
-
-    // Connect to the database
-    await mongoose
-        .connect(dbUri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
-        .then(() => console.log('Connected to Db'));
-
     engine = new MatchmakingEngine(ioServer, enginePollingTimeMs, true);
 
     jest.useRealTimers();
@@ -71,8 +59,6 @@ const baseTeardown = async (): Promise<void> => {
             console.log('Engine already stopped');
         }
     }
-
-    await mongoose.connection.close();
 
     jest.clearAllTimers();
 
@@ -132,19 +118,24 @@ describe('Match arrangements', () => {
 
             // Get the event name straight from the listener instead of hard coding the string
             // This should be less error prone
-            serverJoinedEvName = serverJoinedEvName ? serverJoined.eventName : serverJoinedEvName;
+            serverJoinedEvName =
+                serverJoinedEvName === null ? serverJoined.eventName : serverJoinedEvName;
         });
 
         // Insert an odd number of users so that one is left without an opponent
         oddUsers = await insertMultipleUsers(oddNumberOfUsers);
         oddUsers.forEach((u: UserDocument) => {
             console.log(chalk.bgMagenta('Connecting socket...'));
-            const c: ioClient.Socket = ioClient.io(ioClientConnectionString);
+            const c: ioClient.Socket = ioClient.io('http://localhost:3001');
             clients.push(c);
 
-            // Join the server
-            c.emit(serverJoinedEvName, {
-                userId: u._id.toString(),
+            c.on('connect', () => {
+                console.log(chalk.yellow('On Connect (client)'));
+
+                // Join the server after connecting
+                c.emit(serverJoinedEvName, {
+                    userId: u._id.toString(),
+                });
             });
         });
     });
