@@ -39,12 +39,6 @@ const dbUri: string = IS_TESTING_MODE ? process.env.TEST_DB_URI : process.env.DB
 const serverPort: number = parseInt(process.env.PORT, 10);
 const serverHost: string = process.env.HOST;
 
-console.log(process.env);
-console.log(process.env.TEST_DB_URI);
-console.log(process.env.PORT);
-console.log(process.env.HOST);
-console.log(process.env.TEST);
-
 /* Database Connection */
 console.log('Demanding the sauce...');
 mongoose
@@ -61,8 +55,6 @@ mongoose
     });
 
 const httpServer: http.Server = http.createServer(app);
-console.log(serverPort);
-console.log(serverHost);
 httpServer.listen(serverPort, serverHost, () => {
     console.log(`HTTP Server started on ${serverHost}:${serverPort}`);
 });
