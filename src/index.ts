@@ -170,9 +170,9 @@ ioServer.on('connection', async function (client: io.Socket) {
 
 // TODO function setupMatchmakingEngine
 /* Start the matchmaking engine and tell him to try to look
- * for match arrangements every 5 seconds
+ * for match arrangements every 1.5 seconds
  */
-const queuePollingTimeMs: number = 5000;
+const queuePollingTimeMs: number = 1500;
 const matchmakingEngine = new MatchmakingEngine(ioServer, queuePollingTimeMs);
 matchmakingEngine.start();
 
@@ -186,4 +186,4 @@ createUser({
             return;
         });
     })
-    .catch((err: Error) => console.log(chalk.green('Admin already existent'))); // TODO better error handling?
+    .catch((err: Error) => console.log(chalk.yellow('Admin already existent'))); // TODO better error handling?

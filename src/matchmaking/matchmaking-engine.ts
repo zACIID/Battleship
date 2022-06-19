@@ -87,25 +87,23 @@ export class MatchmakingEngine {
      * @private
      */
     private refreshQueueScan() {
-        this.log(chalk.yellow('Refreshing interval'));
-
         clearInterval(this.intervalId);
 
         this.intervalId = setTimeout(
             async function () {
-                await this.arrangeMatches();
+                await this.scanQueue();
             }.bind(this),
             this.pollingTime
         );
     }
 
     /**
-     * Tries to arrange matches between queued players.
+     * Scans the matchmaking queue and tries to arrange matches between queued users.
      * If two players are suitable for a game, determined by an elo-based matchmaking criteria,
      * the match is created and the two players are notified.
      * @private
      */
-    private async arrangeMatches(): Promise<void> {
+    private async scanQueue(): Promise<void> {
         this.log('Looking for players to match...');
 
         // Queued players, ordered by most recent
@@ -155,7 +153,12 @@ export class MatchmakingEngine {
      * @returns the opponent for the specified player, if found, else null
      */
     private findOpponent(player: QueueEntry, restOfTheQueue: QueueEntry[]): QueueEntry {
+        this.log(chalk.magenta(`Finding opponent for player: ${JSON.stringify(player)}`));
+        this.log(chalk.magenta(`Rest of the queue: ${JSON.stringify(restOfTheQueue)}`));
+
         const potentialOpponents: QueueEntry[] = this.getPotentialOpponents(player, restOfTheQueue);
+
+        this.log(chalk.magenta(`Potential opponents: ${JSON.stringify(potentialOpponents)}`));
 
         if (potentialOpponents.length === 0) {
             return null;
@@ -206,6 +209,16 @@ export class MatchmakingEngine {
         const p2EloDelta: number = this.getEloDelta(p2);
         const eloDiff: number = Math.abs(p1.elo - p2.elo);
 
+        this.log(
+            chalk.red(
+                `Are players matchable?\n ${JSON.stringify({
+                    p1EloDelta,
+                    p2EloDelta,
+                    eloDiff,
+                })}`
+            )
+        );
+
         const isP1Skill: boolean = eloDiff <= p1EloDelta;
         const isP2Skill: boolean = eloDiff <= p2EloDelta;
 
@@ -231,7 +244,7 @@ export class MatchmakingEngine {
         // Delta's multiplier depends on time spent in queue
         // The more time he spent there, the more the delta is wide,
         // which means that a match should be found more easily
-        const timeSpentInQueueMs: number = player.queuedSince.getMilliseconds();
+        const timeSpentInQueueMs: number = Date.now() - player.queuedSince.getMilliseconds();
         const multiplier = Math.ceil(timeSpentInQueueMs / timeBeforeIncreaseMs);
 
         return startingDelta * multiplier;
@@ -253,6 +266,8 @@ export class MatchmakingEngine {
         const notificationData: MatchData = {
             matchId: createdMatch._id,
         };
+
+        this.log(chalk.green('Sending notifications about the match found to the players'));
 
         const player1Notifier: MatchFoundEmitter = new MatchFoundEmitter(
             this.sIoServer,
