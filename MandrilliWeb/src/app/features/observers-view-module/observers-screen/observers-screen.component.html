@@ -4,32 +4,28 @@
     
         <div class="columns mt-5">
 
-            <div class="column is-half">
+            <div *ngIf="match" class="column is-half">
 
                 <div class="width-80 margin-auto mb-6">
                     <player-info [userId]="match.player1.playerId"></player-info>
                 </div>
-                <board [state]="match.player1.grid"></board>
+                <board [state]="match.player1.grid" [triggerUpdate]="trigger"></board>
 
             </div>
             <div class="column is-half">
 
-
                 <div class="width-80 margin-auto mb-6">
                     <player-info [userId]="match.player2.playerId"></player-info>
                 </div>
-                <board [state]="match.player2.grid"></board>
+                <board [state]="match.player2.grid" [triggerUpdate]="trigger"></board>
             </div>
 
         </div>
-    
-    
     </div>
     
     
     <div class="column height is-one-quarter mr-5">
     
-            
         <div class="box has-background-primary pointer height-100 width-80 margin-auto">
             <div class="has-text-centered">
                

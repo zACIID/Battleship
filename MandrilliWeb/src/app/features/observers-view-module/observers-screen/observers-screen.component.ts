@@ -22,11 +22,11 @@ import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 })
 export class ObserversScreenComponent implements OnInit {
     public matchShowedId: string = '';
-    public match?: Match;
+    public match?: Match = undefined;
     public chatId: string = '';
     public generalEnd: string = '';
+    public trigger: number = 0;
 
-    // TODO serve un trigger per ogni component
 
     constructor(
         private route: ActivatedRoute,
@@ -44,51 +44,51 @@ export class ObserversScreenComponent implements OnInit {
 
     ngOnInit(): void {
         try {
-            const matchId: string = this.match?.matchId || '';
 
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
+
+                this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
+                    this.match = data;
+                    this.chatId = data.observersChat;
+
+                    // Join the new match as a spectator
+                    this.matchJoinedEmitter.emit({
+                        matchId: this.matchShowedId,
+                        userId: this.userIdProvider.getUserId(),
+                        joinReason: JoinReason.Spectator,
+                    });
+                    this.chatJoinedEmitter.emit({ chatId: this.chatId });
+
+                    const pollingPlayerHits = (data: Shot): void => {
+                        if (data.playerId !== this.match?.player1.playerId)
+                            this.match?.player1.grid.shotsReceived.push(data.coordinates);
+                        else this.match?.player2.grid.shotsReceived.push(data.coordinates);
+                        this.trigger++;
+                    };
+                    pollingPlayerHits.bind(this);
+                    this.playersShotListener.listen(pollingPlayerHits);
+
+                    const pollingMatchResult = async (data: MatchTerminatedData): Promise<void> => {
+                        const matchId: string = this.match?.matchId || '';
+                        const path: string = '/match-results/' + matchId;
+
+                        this.generalEnd = data.reason.valueOf();
+
+                        await this.router.navigate([path]);
+                    };
+                    pollingMatchResult.bind(this);
+                    this.matchTerminatedListener.listen(pollingMatchResult);
+
+
+                    this.chatMessageListener.listen(() => {
+                        this.trigger++;
+                    });
+
+                });
             });
 
-            this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
-                this.match = data;
 
-                this.chatId = data.observersChat;
-            });
-
-            // Join the new match as a spectator
-            this.matchJoinedEmitter.emit({
-                matchId: matchId,
-                userId: this.userIdProvider.getUserId(),
-                joinReason: JoinReason.Spectator,
-            });
-            this.chatJoinedEmitter.emit({ chatId: this.chatId });
-
-            const pollingPlayerHits = (data: Shot): void => {
-                if (data.playerId !== this.match?.player1.playerId)
-                    this.match?.player1.grid.shotsReceived.push(data.coordinates);
-                else this.match?.player2.grid.shotsReceived.push(data.coordinates);
-            };
-            pollingPlayerHits.bind(this);
-            this.playersShotListener.listen(pollingPlayerHits);
-
-            const pollingMatchResult = async (data: MatchTerminatedData): Promise<void> => {
-                const matchId: string = this.match?.matchId || '';
-                const path: string = '/match-results/' + matchId;
-
-                this.generalEnd = data.reason.valueOf();
-
-                await this.router.navigate([path]);
-            };
-            pollingMatchResult.bind(this);
-            this.matchTerminatedListener.listen(pollingMatchResult);
-
-            // It should force the chatBody component to refresh
-            this.chatMessageListener.listen(() => {
-                if (this.match) {
-                    this.chatId = this.match?.observersChat;
-                } else throw new Error('Observers chat id non existent');
-            });
         } catch (err) {
             console.log('An error occurred while retrieving the match: ' + err);
         }

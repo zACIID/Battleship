@@ -28,7 +28,7 @@
                 <div class="width-80">
                     <p class="has-text-left"> <strong>{{item.friendUsername}}</strong></p>
                 </div>
-                <button class="button is-success" [disabled]=" item.matchId == '' " [routerLink]="['/match-results/{{item.matchId}}']">Spectate</button>
+                <button class="button is-success" [disabled]=" item.matchId == '' " (click)="spectateMatch(item.matchId)">Spectate</button>
             </div>
             
         </div>    
