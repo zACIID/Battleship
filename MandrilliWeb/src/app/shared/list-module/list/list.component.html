@@ -7,7 +7,7 @@
     </div>
 
     <div *ngSwitchDefault>
-        <div *ngFor="let item of matchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" [routerLink]="['/match-results/{{item.matchId}}']">
+        <div *ngFor="let item of matchList" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer" (click)="goToMatchResults(item.matchId)">
             <p> <strong>{{item.username1}}</strong> vs. <strong>{{item.username2}}</strong></p>
         </div>
     </div>

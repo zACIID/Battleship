@@ -34,7 +34,7 @@ export class GameScreenComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private joinMatchEmitter: MatchJoinedEmitter,
-        private fleeMatchEmitter: MatchLeftEmitter,
+        private leaveMatchEmitter: MatchLeftEmitter,
         private fleeWinnerEmitter: PlayerWonEmitter,
         private userIdProvider: UserIdProvider,
         private matchClient: MatchApi,
@@ -120,7 +120,9 @@ export class GameScreenComponent implements OnInit {
                 }
             }
 
-            this.joinMatch();
+            // TODO remove since the match at this point is already joined?
+            //  the join is made right after the match-found event is raised
+            // this.joinMatch();
 
             const pollingOpponentHits = (data: ShotData) => {
                 if (this.match.player1.playerId !== this.userInSessionId) {

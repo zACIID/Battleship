@@ -39,7 +39,6 @@ export class ChatBodyComponent implements OnInit {
                 .getMessages(this.chatId, this.options.skip, this.options.limit)
                 .subscribe((data) => {
                     this.messages = data;
-                    console.log(this.messages);
                     this.options.skip += this.options.limit;
                 });
         } catch (err) {
