@@ -17,7 +17,7 @@ export class HistorySidebarComponent implements OnInit {
     constructor(
         private matchClient: MatchApi,
         private userClient: UserApi,
-        private userIdProvider: UserIdProvider    
+        private userIdProvider: UserIdProvider
     ) {}
 
     ngOnInit(): void {
@@ -28,12 +28,17 @@ export class HistorySidebarComponent implements OnInit {
         try {
             let userId = this.userIdProvider.getUserId();
             let matches: Match[];
-            this.userClient.getUserMatches(userId).subscribe( {
+            this.userClient.getUserMatches(userId).subscribe({
                 next: (match: Match[]) => {
                     matches = [...match];
-                    
+
                     if (matches) {
                         this.matchHistory = matches.map((x) => {
+                            // TODO uncomment when our spaghetti works
+                            //if (x.stats.winner === null) {
+                            //    throw new Error("A match shouldn't be completed without a winner");
+                            //}
+
                             let usr1: string = '';
                             this.userClient
                                 .getUser(x.player1.playerId)
@@ -50,14 +55,14 @@ export class HistorySidebarComponent implements OnInit {
                                 player2Id: x.player2.playerId,
                                 username1: usr1,
                                 username2: usr2,
-                                winner: x.stats.winner,
+                                winner: x.stats.winner === null ? 'No Winner' : x.stats.winner,
                             };
                         });
                     }
                 },
                 error: (err: Error) => {
-                    console.log("Error retrieving matches: " + JSON.stringify(err));
-                }
+                    console.log('Error retrieving matches: ' + JSON.stringify(err));
+                },
             });
         } catch (err: any) {
             console.log('Handling error: ' + JSON.stringify(err));

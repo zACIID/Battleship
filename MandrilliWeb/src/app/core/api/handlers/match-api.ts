@@ -38,11 +38,14 @@ export class MatchApi extends BaseAuthenticatedApi {
         return this.httpClient.get<ApiMatch>(reqPath, this.createRequestOptions()).pipe(
             catchError(this.handleError),
             map<ApiMatch, Match>((apiMatch: ApiMatch) => {
+                console.log('Get Match:');
+                console.log(JSON.stringify(apiMatch));
+
                 const apiStats: ApiMatchStats = apiMatch.stats;
                 const actualMatchStats: MatchStats = {
                     winner: apiStats.winner,
                     startTime: new Date(apiStats.startTime),
-                    endTime: new Date(apiStats.endTime),
+                    endTime: apiStats.endTime !== null ? new Date(apiStats.endTime) : null,
                     totalShots: apiStats.totalShots,
                     shipsDestroyed: apiStats.shipsDestroyed,
                 };

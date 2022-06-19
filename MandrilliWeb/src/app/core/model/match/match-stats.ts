@@ -1,8 +1,9 @@
 export class MatchStats {
     /**
      * Id of player that won the match
+     * Can be null if match hasn't ended
      */
-    winner: string = '';
+    winner: string | null = '';
 
     /**
      * Time that the match started at
@@ -11,8 +12,9 @@ export class MatchStats {
 
     /**
      * Time that the match ended at
+     * Can be null if match hasn't ended
      */
-    endTime: Date = new Date();
+    endTime: Date | null = new Date();
 
     /**
      * Total shots fired during the match

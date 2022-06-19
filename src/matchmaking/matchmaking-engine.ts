@@ -1,10 +1,14 @@
 import { Server } from 'socket.io';
+import chalk from 'chalk';
 
-import { MatchmakingQueueModel, QueueEntry } from '../model/database/matchmaking/queue-entry';
+import {
+    MatchmakingQueueModel,
+    QueueEntry,
+    removeMultipleMatchmakingEntries,
+} from '../model/database/matchmaking/queue-entry';
 import * as match from '../model/database/match/match';
 import { MatchFoundEmitter } from '../events/emitters/match-found';
 import { MatchData } from '../model/events/match-data';
-import { setInterval } from 'timers';
 import { EngineAlreadyStartedError, EngineAlreadyStoppedError } from './engine-errors';
 
 /**
@@ -37,17 +41,29 @@ export class MatchmakingEngine {
     private readonly sIoServer: Server;
 
     /**
+     * If true, the engine logs statements on the console
+     * @private
+     */
+    private readonly verbose: boolean;
+
+    /**
      * Creates a matchmaking engine instance
      *
      * @param sIoServer socket.io server instance tha will be used by the engine to notify
      *  players that a match has been found
      * @param queuePollingTime Time in milliseconds that passes between each run of the
      *  matchmaking engine.
+     * @param verbose If true, the engine logs statements on the console
      */
-    public constructor(sIoServer: Server, queuePollingTime: number = 5000) {
+    public constructor(
+        sIoServer: Server,
+        queuePollingTime: number = 5000,
+        verbose: boolean = false
+    ) {
         this.intervalId = null;
         this.pollingTime = queuePollingTime;
         this.sIoServer = sIoServer;
+        this.verbose = verbose;
     }
 
     /**
@@ -56,11 +72,22 @@ export class MatchmakingEngine {
      * at initialization.
      */
     public start(): void {
+        this.log('Starting the engine...');
+
         if (this.intervalId !== null) {
             throw new EngineAlreadyStartedError();
         }
 
-        this.intervalId = setInterval(
+        this.setTimeoutOnArrangeMatches();
+    }
+
+    /**
+     * Calls setTimeout with the function that arranges the matches between
+     * the users in the queue
+     * @private
+     */
+    private setTimeoutOnArrangeMatches() {
+        this.intervalId = setTimeout(
             async function () {
                 await this.arrangeMatches();
             }.bind(this),
@@ -75,61 +102,75 @@ export class MatchmakingEngine {
      * @private
      */
     private async arrangeMatches(): Promise<void> {
+        this.log('Looking for players to match...');
+
         // Queued players, ordered by most recent
         // This way, the one that has been queuing for the longest time has the priority,
         // because, being the last in the queue, will be popped first
-        const queuedPlayers: QueueEntry[] = await MatchmakingQueueModel.find({}).sort({
+        let queuedPlayers: QueueEntry[] = await MatchmakingQueueModel.find({}).sort({
             queuedSince: 1,
         });
 
         // Until there are at least 2 players in the queue,
         // keep trying to arrange matches
         while (queuedPlayers.length > 1) {
+            this.log(
+                `[${new Date()}] Arranging matches (${
+                    queuedPlayers.length
+                } players in the queue)...`
+            );
+
             const player: QueueEntry = queuedPlayers.pop();
             const opponent: QueueEntry = this.findOpponent(player, queuedPlayers);
 
             if (opponent !== null) {
+                this.log(chalk.blue(`Creating match for ${player.userId} and ${opponent.userId}`));
+                this.log(chalk.blue(`Queue entries: ${player} | ${opponent}`));
+
                 await this.arrangeMatch(player, opponent);
+
+                // Remove the entries of the two players from the queue,
+                // both in the database and in memory
+                await removeMultipleMatchmakingEntries([player.userId, opponent.userId]);
+                queuedPlayers = queuedPlayers.filter((entry: QueueEntry) => {
+                    return entry.userId !== player.userId && entry.userId !== opponent.userId;
+                });
             }
         }
+
+        // Scan terminated: refresh the timeout on this function
+        this.setTimeoutOnArrangeMatches();
     }
 
     /**
      * Finds an opponent for the specified player and returns it.
      *
      * @param player player to find an opponent for
-     * @param matchmakingQueue rest of the matchmaking queue (player excluded)
+     * @param restOfTheQueue rest of the matchmaking queue (player excluded)
      * @private
      * @returns the opponent for the specified player, if found, else null
      */
-    private findOpponent(player: QueueEntry, matchmakingQueue: QueueEntry[]): QueueEntry {
-        const potentialOpponents: QueueEntry[] = this.getPotentialOpponents(
-            player,
-            matchmakingQueue
-        );
+    private findOpponent(player: QueueEntry, restOfTheQueue: QueueEntry[]): QueueEntry {
+        const potentialOpponents: QueueEntry[] = this.getPotentialOpponents(player, restOfTheQueue);
 
         if (potentialOpponents.length === 0) {
             return null;
         }
 
-        // Sort in descending order based on time of queue
-        // (note that return 1 and -1 are inverted, because order is desc)
+        // Sort in ascending order based on time of queue
         potentialOpponents.sort((a: QueueEntry, b: QueueEntry) => {
             if (a.queuedSince < b.queuedSince) {
-                return 1;
-            } else if (a.queuedSince > b.queuedSince) {
                 return -1;
+            } else if (a.queuedSince > b.queuedSince) {
+                return 1;
             } else {
                 return 0;
             }
         });
 
-        // Popping the last element means getting and removing
-        // the entry that has been in the queue for the longest time
-        // TODO check side effect on matchmaking queue. Is it good that
-        //  the player here is removed? it is unclear if this affects also the
-        //  matchmaking queue on the above functions
-        return potentialOpponents.pop();
+        // Returning the first potential opponent means
+        // getting the one that was queued for the longest time
+        return potentialOpponents[0];
     }
 
     /**
@@ -137,15 +178,14 @@ export class MatchmakingEngine {
      * applying an elo-based matchmaking criteria.
      *
      * @param player player to find the potential opponents for
-     * @param matchmakingQueue all the other players in-queue
+     * @param restOfTheQueue all the other players in-queue
      * @private
+     * @return new array containing the shallow copy of the entries in the rest of the queue
+     *  that can be matched with the player
      */
-    private getPotentialOpponents(
-        player: QueueEntry,
-        matchmakingQueue: QueueEntry[]
-    ): QueueEntry[] {
-        return matchmakingQueue.filter((entry) => {
-            return MatchmakingEngine.arePlayersMatchable(player, entry);
+    private getPotentialOpponents(player: QueueEntry, restOfTheQueue: QueueEntry[]): QueueEntry[] {
+        return restOfTheQueue.filter((entry) => {
+            return this.arePlayersMatchable(player, entry);
         });
     }
 
@@ -157,9 +197,9 @@ export class MatchmakingEngine {
      * @param p2
      * @private
      */
-    private static arePlayersMatchable(p1: QueueEntry, p2: QueueEntry): boolean {
-        const p1EloDelta: number = MatchmakingEngine.getEloDelta(p1);
-        const p2EloDelta: number = MatchmakingEngine.getEloDelta(p2);
+    private arePlayersMatchable(p1: QueueEntry, p2: QueueEntry): boolean {
+        const p1EloDelta: number = this.getEloDelta(p1);
+        const p2EloDelta: number = this.getEloDelta(p2);
         const eloDiff: number = Math.abs(p1.elo - p2.elo);
 
         const isP1Skill: boolean = eloDiff <= p1EloDelta;
@@ -180,9 +220,9 @@ export class MatchmakingEngine {
      * @param player
      * @private
      */
-    private static getEloDelta(player: QueueEntry): number {
+    private getEloDelta(player: QueueEntry): number {
         const startingDelta: number = 100;
-        const timeBeforeIncreaseMs: number = 5000;
+        const timeBeforeIncreaseMs: number = this.pollingTime;
 
         // Delta's multiplier depends on time spent in queue
         // The more time he spent there, the more the delta is wide,
@@ -227,6 +267,8 @@ export class MatchmakingEngine {
      * Stops the engine from arranging matches
      */
     public stop(): void {
+        this.log('Stopping the engine...');
+
         if (this.intervalId === null) {
             throw new EngineAlreadyStoppedError();
         }
@@ -234,5 +276,11 @@ export class MatchmakingEngine {
         clearInterval(this.intervalId);
 
         this.intervalId = null;
+    }
+
+    private log(message: string): void {
+        if (this.verbose) {
+            console.log(`[Matchmaking Engine] ${message}`);
+        }
     }
 }
