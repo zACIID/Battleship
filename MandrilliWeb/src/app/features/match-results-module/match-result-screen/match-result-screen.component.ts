@@ -14,13 +14,12 @@ export class MatchResultScreenComponent implements OnInit {
     public matchShowedId: string = '';
     public match?: Match;
     public result: string = '';
-    public matchStats: StatsOverview[] = []
-
+    public matchStats: StatsOverview[] = [];
 
     constructor(
         private route: ActivatedRoute,
         private matchClient: MatchApi,
-        private userIdProvider: UserIdProvider,
+        private userIdProvider: UserIdProvider
     ) {}
 
     ngOnInit(): void {
@@ -33,12 +32,20 @@ export class MatchResultScreenComponent implements OnInit {
 
             this.matchClient.getMatch(this.matchShowedId).subscribe((data: Match) => {
                 this.match = data;
-                this.matchStats.push({title: "Ships Destroyed", value: data.stats.shipsDestroyed});
-                this.matchStats.push({title: "Total Shots", value: data.stats.totalShots});
+                this.matchStats.push({
+                    title: 'Ships Destroyed',
+                    value: data.stats.shipsDestroyed,
+                });
+                this.matchStats.push({ title: 'Total Shots', value: data.stats.totalShots });
+
+                if (this.match.stats.endTime === null) {
+                    throw new Error('End Time is null. Match probably did not end');
+                }
+
                 const duration = Math.abs(
                     this.match.stats.startTime.valueOf() - this.match.stats.endTime.valueOf()
                 );
-                this.matchStats.push({title: "Duration", value: duration});
+                this.matchStats.push({ title: 'Duration', value: duration });
             });
 
             if (userId === this.match?.stats.winner) {

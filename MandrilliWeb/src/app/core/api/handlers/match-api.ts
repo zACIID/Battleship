@@ -34,7 +34,8 @@ export class MatchApi extends BaseAuthenticatedApi {
 
     public getMatch(matchId: string): Observable<Match> {
         const reqPath: string = `${this.baseUrl}/api/matches/${matchId}`;
-        console.log("dentro")
+        console.log('dentro');
+
         return this.httpClient.get<ApiMatch>(reqPath, this.createRequestOptions()).pipe(
             catchError(this.handleError),
             map<ApiMatch, Match>((apiMatch: ApiMatch) => {
@@ -42,10 +43,13 @@ export class MatchApi extends BaseAuthenticatedApi {
                 const actualMatchStats: MatchStats = {
                     winner: apiStats.winner,
                     startTime: new Date(apiStats.startTime),
-                    endTime: new Date(apiStats.endTime),
+                    endTime: apiStats.endTime !== null ? new Date(apiStats.endTime) : null,
                     totalShots: apiStats.totalShots,
                     shipsDestroyed: apiStats.shipsDestroyed,
                 };
+
+                console.log('XDDDDD');
+
                 return {
                     matchId: apiMatch.matchId,
                     player1: apiMatch.player1,
