@@ -172,7 +172,7 @@ router.post(
 
             const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
             if (match === null) {
-                throw new Error(`Match with id ${matchId}not found`);
+                throw new Error(`Match with id ${matchId} not found`);
             }
 
             await match.registerShot(shot);

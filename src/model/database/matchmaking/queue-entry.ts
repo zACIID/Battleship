@@ -61,11 +61,28 @@ export const insertMatchmakingEntry = async (userId: Types.ObjectId): Promise<vo
 /**
  * Removes the user with the specified id from the queue.
  * @param userId
+ * @param ignoreDeletionErrors if true, no exception are raised if deletion was unsuccessful
  */
-export const removeMatchmakingEntry = async (userId: Types.ObjectId): Promise<void> => {
-    const result: DeletionResult = await MatchmakingQueueModel.deleteOne({ userId: userId });
+export const removeMatchmakingEntry = async (
+    userId: Types.ObjectId,
+    ignoreDeletionErrors: boolean = false
+): Promise<void> => {
+    return await removeMultipleMatchmakingEntries([userId], ignoreDeletionErrors);
+};
 
-    if (result.deletedCount === 0) {
-        throw new Error(`User ${userId} not found in the matchmaking queue`);
+/**
+ * @param userIds ids of the users whose entries are to delete
+ * @param ignoreDeletionErrors if true, no exception are raised if deletion was unsuccessful
+ */
+export const removeMultipleMatchmakingEntries = async (
+    userIds: Types.ObjectId[],
+    ignoreDeletionErrors: boolean = false
+): Promise<void> => {
+    const result: DeletionResult = await MatchmakingQueueModel.deleteMany({
+        userId: { $in: userIds },
+    });
+
+    if (result.deletedCount !== userIds.length && !ignoreDeletionErrors) {
+        throw new Error(`Users not found in the matchmaking queue`);
     }
 };
