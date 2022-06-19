@@ -20,14 +20,19 @@ import {
 // Run test server locally on a different port than that of the actual server
 const serverPort: number = parseInt(process.env.PORT, 10) + 1;
 const serverHost: string = 'localhost';
-const ioClientConnectionString: string = `${serverHost}:${serverPort}`;
+const ioClientConnectionString: string = `http://${serverHost}:${serverPort}`;
 
 let httpServer: http.Server;
 let serverTerminator: HttpTerminator;
 let ioServer: io.Server;
 let engine: MatchmakingEngine;
 const enginePollingTimeMs: number = 1000;
+const verboseLog: boolean = true;
 
+/**
+ * Create http and socket.io servers.
+ * Also create matchmaking engine and setup jest to user real timers
+ */
 const baseSetup = async () => {
     httpServer = http.createServer();
     serverTerminator = createHttpTerminator({
@@ -40,17 +45,18 @@ const baseSetup = async () => {
         console.log(chalk.bgBlue(`Started test http server at ${ioClientConnectionString}`));
     });
 
-    engine = new MatchmakingEngine(ioServer, enginePollingTimeMs, true);
+    engine = new MatchmakingEngine(ioServer, enginePollingTimeMs, verboseLog);
 
     jest.useRealTimers();
 };
 
+/**
+ * Teardown http and socket.io servers.
+ * Also stop matchmaking engine and tell jest clear all timers
+ */
 const baseTeardown = async (): Promise<void> => {
-    console.log(chalk.bgMagenta('Teardown 1'));
     await serverTerminator.terminate();
     ioServer.close();
-
-    console.log(chalk.bgMagenta('Teardown 2'));
 
     try {
         engine.stop();
@@ -61,40 +67,29 @@ const baseTeardown = async (): Promise<void> => {
     }
 
     jest.clearAllTimers();
-
-    console.log(chalk.bgMagenta('Teardown 3'));
 };
 
 describe('Engine Start and Stop', () => {
-    let intervals: NodeJS.Timeout[] = [];
     beforeEach(async () => {
         await baseSetup();
     });
 
     afterEach(async () => {
         await baseTeardown();
-
-        intervals.forEach((t: NodeJS.Timeout) => {
-            clearInterval(t);
-        });
     });
 
     test('Should Not Throw', (done) => {
         expect(() => {
             engine.start();
 
-            const int1 = setTimeout(() => {
+            setTimeout(() => {
                 engine.stop();
 
                 // Make sure that no errors are thrown after stop
-                const int2 = setTimeout(() => {
+                setTimeout(() => {
                     done();
                 }, 10000);
-
-                intervals.push(int2);
             }, enginePollingTimeMs * 5);
-
-            intervals.push(int1);
         }).not.toThrow();
     });
 });
@@ -104,6 +99,10 @@ describe('Match arrangements', () => {
     let oddUsers: UserDocument[];
     let clients: ioClient.Socket[] = [];
 
+    /**
+     * Create all the users, each with its respective socket.io client,
+     * and join the server
+     */
     beforeEach(async () => {
         await baseSetup();
 
@@ -126,12 +125,11 @@ describe('Match arrangements', () => {
         oddUsers = await insertMultipleUsers(oddNumberOfUsers);
         oddUsers.forEach((u: UserDocument) => {
             console.log(chalk.bgMagenta('Connecting socket...'));
-            const c: ioClient.Socket = ioClient.io('http://localhost:3001');
+
+            const c: ioClient.Socket = ioClient.io(ioClientConnectionString);
             clients.push(c);
 
             c.on('connect', () => {
-                console.log(chalk.yellow('On Connect (client)'));
-
                 // Join the server after connecting
                 c.emit(serverJoinedEvName, {
                     userId: u._id.toString(),
@@ -141,19 +139,17 @@ describe('Match arrangements', () => {
     });
 
     afterEach(async () => {
-        engine.stop();
-
         await baseTeardown();
+
+        clients.forEach((c: ioClient.Socket) => {
+            c.close();
+        });
 
         const userIds: Types.ObjectId[] = oddUsers.map((u: UserDocument) => u._id);
         await deleteMultipleUsers(userIds);
 
         // Delete all the entries that were created, if still there
         await removeMultipleMatchmakingEntries(userIds, true);
-
-        clients.forEach((c: ioClient.Socket) => {
-            c.close();
-        });
     });
 
     test('All Clients Except One Should Be Paired', (done) => {
@@ -165,7 +161,7 @@ describe('Match arrangements', () => {
         clients.forEach((c: ioClient.Socket) => {
             c.on('match-found', (matchData: MatchData) => {
                 nEventsFired++;
-                console.log(chalk.yellow(`Match found`));
+                console.log(chalk.bgYellow(`Match found`));
 
                 if (nEventsFired === nEventsThatShouldFire) {
                     done();
