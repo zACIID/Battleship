@@ -2,18 +2,11 @@ import { Server, Socket } from 'socket.io';
 import chalk from 'chalk';
 
 import { MatchLeftData } from '../../model/events/match-left-data';
-import {
-    getUserById,
-    setUserStatus,
-    UserDocument,
-    UserStatus,
-} from '../../model/database/user/user';
+import { setUserStatus, UserStatus } from '../../model/database/user/user';
 import { ioServer } from '../../index';
 import { Types } from 'mongoose';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
-import { getMatchById, MatchDocument } from '../../model/database/match/match';
-import { MatchTerminatedReason } from '../../model/events/match-terminated-data';
 
 /**
  * Class that wraps socket.io functionality to listen
