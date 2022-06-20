@@ -112,7 +112,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
         return false;
     }
 
-    private static parseCoord(coord: string): number {
+    private parseRow(coord: string): number {
         coord = coord.toUpperCase();
         switch (coord) {
             case 'A':
@@ -135,8 +135,22 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
                 return 8;
             case 'J':
                 return 9;
-            default:
-                return Number(coord) - 1;
+            default: {
+                this.positioningError.error = true;
+                this.positioningError.errorMessage = "Position is invalid";
+                return -1;
+            }
+        }
+    }
+
+    private parseCol(coord: string): number {
+        let val = Number(coord) - 1;
+        if (!isNaN(val) && val >= 0 && val <=9)
+            return val;
+        else{
+            this.positioningError.error = true;
+            this.positioningError.errorMessage = "Position is invalid";
+            return -1;
         }
     }
 
@@ -219,8 +233,11 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
                 break;
         }
 
-        let startingRow = PreparationPhaseScreenComponent.parseCoord(row);
-        let startingCol = PreparationPhaseScreenComponent.parseCoord(col);
+        let startingRow = this.parseRow(row);
+        let startingCol = this.parseCol(col);
+        if(startingRow === -1 || startingCol === -1){
+            return false;
+        }
 
         if (this.isValidCoords(startingRow, startingCol)) {
             let coords: GridCoordinates[] = [];

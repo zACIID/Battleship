@@ -52,7 +52,6 @@ export class HomepageScreenComponent implements OnInit {
                 // to another screen and the listener is still registered
                 this.matchTerminatedListener.unListen();
 
-                // TODO mostrare un popup a schermo con queste info?
                 console.log(`Match terminated. Reason: ${termData.reason}`);
                 console.log(`Player '${termData.winnerUsername}' has won the game`);
 
