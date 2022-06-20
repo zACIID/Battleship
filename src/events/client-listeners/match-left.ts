@@ -21,21 +21,33 @@ export class MatchLeftListener extends ClientListenerNotifier<MatchLeftData> {
 
     public listen(): void {
         super.listen(async (leaveData: MatchLeftData): Promise<void> => {
-            const { matchId, userId } = leaveData;
-            this.client.leave(matchId);
+            try {
+                const { matchId, userId } = leaveData;
+                this.client.leave(matchId);
 
-            console.log(chalk.red.bold(`Client ${this.client.id} left the match '${matchId}'!`));
+                console.log(
+                    chalk.red.bold(`Client ${this.client.id} left the match '${matchId}'!`)
+                );
+                console.log(chalk.magenta(`Match left with data: ${JSON.stringify(leaveData)}`));
 
-            // The user left the match, so its status is now Online
-            // and not match-related anymore
-            await setUserStatus(ioServer, Types.ObjectId(userId), UserStatus.Online);
+                // The user left the match, so its status is now Online
+                // and not match-related anymore
+                await setUserStatus(ioServer, Types.ObjectId(userId), UserStatus.Online);
 
-            // Leave the match for the user
-            const matchTerminated: MatchTerminatedEmitter = new MatchTerminatedEmitter(
-                this.ioServer,
-                Types.ObjectId(matchId)
-            );
-            await matchTerminated.terminateOnPlayerLeft(Types.ObjectId(userId));
+                // Leave the match for the user
+                const matchTerminated: MatchTerminatedEmitter = new MatchTerminatedEmitter(
+                    this.ioServer,
+                    Types.ObjectId(matchId)
+                );
+                await matchTerminated.terminateOnPlayerLeft(Types.ObjectId(userId));
+            } catch (err) {
+                if (err instanceof Error) {
+                    console.log(
+                        chalk.bgRed(`An error occurred while trying to leave the match. 
+                        Reason: ${err.message}`)
+                    );
+                }
+            }
         });
     }
 }

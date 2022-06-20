@@ -46,21 +46,25 @@ export class MatchTerminatedEmitter extends RoomEmitter<MatchTerminatedData> {
         // The winner is the other user with respect to the one who's leaving the match
         const p1Id: Types.ObjectId = currentMatch.player1.playerId;
         const p2Id: Types.ObjectId = currentMatch.player2.playerId;
-        const winnerId: Types.ObjectId = p1Id === leaverId ? p2Id : p1Id;
+        const winnerId: Types.ObjectId = p1Id.equals(leaverId) ? p2Id : p1Id;
         const winner: UserDocument = await getUserById(winnerId);
 
         await this.emit({
             winnerUsername: winner.username,
             reason: MatchTerminatedReason.PlayerLeftTheGame,
         });
-
-        // TODO set status of pleyr that left to a new status (passed as arg)
     }
 
     public async emit(data: MatchTerminatedData): Promise<void> {
         try {
             const winner: UserDocument = await getUserByUsername(data.winnerUsername);
             const match: MatchDocument = await getMatchById(this.matchId);
+
+            if (match.stats.endTime !== null) {
+                console.log(chalk.bgRed(`Match has already ended! Doing nothing`));
+
+                return;
+            }
 
             const statsUpdate: MatchStatsUpdate = {
                 winner: winner._id.toString(),

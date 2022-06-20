@@ -1,26 +1,25 @@
-import { Match } from './../../../core/model/match/match';
-import { UserApi } from './../../../core/api/handlers/user-api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+
+import { Match } from '../../../core/model/match/match';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { MatchApi } from '../../../core/api/handlers/match-api';
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from '../../../core/model/match/coordinates';
 import { Ship } from '../../../core/model/match/ship';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PlayerStateChangedListener } from 'src/app/core/events/listeners/player-state-changed';
 import { PlayerStateChangedData } from 'src/app/core/model/events/player-state-changed-data';
 import { PositioningCompletedListener } from 'src/app/core/events/listeners/positioning-completed';
 import { GenericMessage } from 'src/app/core/model/events/generic-message';
-import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { MatchTerminatedListener } from '../../../core/events/listeners/match-terminated';
 
 @Component({
     selector: 'app-preparation-phase-screen',
     templateUrl: './preparation-phase-screen.component.html',
     styleUrls: ['./preparation-phase-screen.component.css'],
 })
-export class PreparationPhaseScreenComponent implements OnInit {
+export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
     public opponentsId?: string = undefined;
     public grid: BattleshipGrid = new BattleshipGrid();
     public positioningError: HtmlErrorMessage = new HtmlErrorMessage();
@@ -40,7 +39,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private route: ActivatedRoute,
         private playerStateListener: PlayerStateChangedListener,
         private positioningCompletedListener: PositioningCompletedListener,
-        private matchTerminatedListener: MatchTerminatedListener,
         private userIdProvider: UserIdProvider,
         private router: Router,
         private matchClient: MatchApi,
@@ -54,11 +52,10 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 this.matchId = param['id'];
 
                 this.matchClient.getMatch(this.matchId).subscribe((match: Match) => {
-                    if(match.player1.playerId !== this.userInSessionId)
+                    if (match.player1.playerId !== this.userInSessionId)
                         this.opponentsId = match.player1.playerId;
                     else this.opponentsId = match.player2.playerId;
-                })
-
+                });
             });
         } catch (err) {
             console.log('An error occurred while retrieving the match from the url');
@@ -372,12 +369,15 @@ export class PreparationPhaseScreenComponent implements OnInit {
             throw new Error('Error while leaving the match');
         }
 
+        await this.redirectToHomePage();
+    }
+
+    private async redirectToHomePage() {
         await this.router.navigate(['/homepage']);
     }
 
     ngOnDestroy(): void {
         this.playerStateListener.unListen();
         this.positioningCompletedListener.unListen();
-        this.matchTerminatedListener.unListen();
     }
 }
