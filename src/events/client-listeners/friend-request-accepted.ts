@@ -44,6 +44,8 @@ export class FriendRequestAcceptedListener extends ClientListenerNotifier<Reques
                 }
             }
 
+            // Even if the friend request couldn't be accepted, try to remove the notification
+            // to avoid further errors
             try {
                 // remove the now old notification
                 // from the user that received the friend request
