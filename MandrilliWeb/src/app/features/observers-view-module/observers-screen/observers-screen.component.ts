@@ -51,7 +51,7 @@ export class ObserversScreenComponent implements OnInit {
                 this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
                     this.match = data;
                     this.chatId = data.observersChat;
-
+                    console.log(this.match)
                     // Join the new match as a spectator
                     this.matchJoinedEmitter.emit({
                         matchId: this.matchShowedId,

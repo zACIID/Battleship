@@ -1,4 +1,4 @@
-<div *ngIf="match" class="columns mt-3">
+<div class="columns mt-3">
 
     <div class="column height box has-background-light mr-2 ml-4">
     
@@ -12,7 +12,7 @@
                 <board [state]="match.player1.grid" [triggerUpdate]="trigger"></board>
 
             </div>
-            <div class="column is-half">
+            <div *ngIf="match" class="column is-half">
 
                 <div class="width-80 margin-auto mb-6">
                     <player-info [userId]="match.player2.playerId"></player-info>
@@ -35,7 +35,7 @@
             
     
         <div class="chat-height p-4">
-            <chat-body [chatId]="chatId"></chat-body>
+            <chat-body [chatId]="chatId" [triggerUpdate]="trigger"></chat-body>
         </div>
     
     </div>

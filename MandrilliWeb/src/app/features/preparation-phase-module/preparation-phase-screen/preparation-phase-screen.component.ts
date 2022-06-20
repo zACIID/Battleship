@@ -11,8 +11,6 @@ import { PositioningCompletedListener } from 'src/app/core/events/listeners/posi
 import { GenericMessage } from 'src/app/core/model/events/generic-message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { concat } from 'rxjs/internal/observable/concat';
-import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 
 @Component({
     selector: 'app-preparation-phase-screen',
@@ -42,8 +40,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private userIdProvider: UserIdProvider,
         private router: Router,
         private matchClient: MatchApi,
-        private fleeMatchEmitter: MatchLeftEmitter, 
-        private chatMessageEmitter: ChatJoinedEmitter
+        private fleeMatchEmitter: MatchLeftEmitter
     ) {}
 
     ngOnInit(): void {
@@ -144,8 +141,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
     }
     private randomBool(): boolean {
         // This is a 1/2 prob. for horizontal and 1/2 prob for vertical
-        let generated: boolean = Math.floor(Math.random() * 2) === 0 ? false : true;
-        return generated
+        return Math.floor(Math.random() * 2) === 0 ? false : true;
     }
 
     public randomDeploy() {
@@ -157,7 +153,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 this.randomBool()
             )
         ) {}
-        console.log("deployed carrier")
+       
         for (let i = 0; i < 2; i++) {
             while (
                 !this.deploy(
@@ -168,7 +164,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
-        console.log("deployed 2 battleships")
+        
         for (let i = 0; i < 3; i++) {
             while (
                 !this.deploy(
@@ -179,7 +175,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
-        console.log("deployed 3 Cruisers")
+        
         let i = 0
         for (i = 0; i < 5; i++) {
             
@@ -200,7 +196,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
             }
             
         }
-        console.log("deployed " + i + " Destroyers")
+        
     }
 
     public deploy(shipType: string, row: string, col: string, vertical: boolean): boolean {
