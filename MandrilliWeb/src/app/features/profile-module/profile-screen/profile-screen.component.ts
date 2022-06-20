@@ -1,10 +1,10 @@
 
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { UserStats } from '../../../core/model/user/stats';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserApi } from '../../../core/api/handlers/user-api';
 import { User, UserRoles } from '../../../core/model/user/user';
+import { Location } from '@angular/common'
 
 @Component({
     selector: 'app-profile-screen',
@@ -21,7 +21,8 @@ export class ProfileScreenComponent implements OnInit {
     constructor(
         private userClient: UserApi,
         private route: ActivatedRoute,
-        private userIdProvider: UserIdProvider
+        private userIdProvider: UserIdProvider,
+        private location: Location
     ) {}
 
     ngOnInit(): void {
@@ -46,5 +47,7 @@ export class ProfileScreenComponent implements OnInit {
     }
 
     
-    
+    public back(): void{
+        this.location.back();
+    }
 }
