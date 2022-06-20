@@ -28,7 +28,6 @@ export class MatchLeftListener extends ClientListenerNotifier<MatchLeftData> {
                 console.log(
                     chalk.red.bold(`Client ${this.client.id} left the match '${matchId}'!`)
                 );
-                console.log(chalk.magenta(`Match left with data: ${JSON.stringify(leaveData)}`));
 
                 // The user left the match, so its status is now Online
                 // and not match-related anymore

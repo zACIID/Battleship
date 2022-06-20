@@ -5,6 +5,7 @@ import { AuthApi, LoginInfo, AuthResult } from '../../../core/api/handlers/auth-
 import { Router } from '@angular/router';
 import { ServerJoinedEmitter } from 'src/app/core/events/emitters/server-joined';
 import { UserStatus } from 'src/app/core/model/user/user';
+import { MatchJoinHelper } from '../../../core/events/helpers/match-join-helper';
 
 @Component({
     selector: 'app-login-screen',
@@ -18,7 +19,8 @@ export class LoginScreenComponent implements OnInit {
         private authClient: AuthApi,
         private router: Router,
         private userClient: UserApi,
-        private serverJoinedEmitter: ServerJoinedEmitter
+        private serverJoinedEmitter: ServerJoinedEmitter,
+        private matchJoinHelper: MatchJoinHelper
     ) {}
 
     ngOnInit(): void {}
@@ -32,25 +34,27 @@ export class LoginScreenComponent implements OnInit {
         this.authClient.login(loginInfo).subscribe({
             next: (data: AuthResult) => {
                 this.serverJoinedEmitter.emit({ userId: data.userId });
-                this.userClient.getUser(data.userId).subscribe( async (user) => {
 
-                    if(user.status === UserStatus.TemporaryCredentials){
+                this.userClient.getUser(data.userId).subscribe(async (user) => {
+                    // Setup all the match-join related handlers right after login,
+                    // since such events can be raised at any time.
+                    // Teardown should be done on logout
+                    this.matchJoinHelper.setupEventHandlers();
+
+                    if (user.status === UserStatus.TemporaryCredentials) {
                         await this.router.navigate(['/moderator-credentials']);
-                    }
-                    else{
+                    } else {
                         await this.router.navigate(['/homepage']);
                     }
-                })
-                
+                });
             },
             error: (err: any) => {
                 this.userMessage.error = true;
-                if(err.error === "Unauthorized"){
-                    this.userMessage.errorMessage = "Wrong credentials";
-                }
-                else this.userMessage.errorMessage = JSON.stringify(err.error);
+                if (err.error === 'Unauthorized') {
+                    this.userMessage.errorMessage = 'Wrong credentials';
+                } else this.userMessage.errorMessage = JSON.stringify(err.error);
                 console.log('An error occurred while logging in: ' + JSON.stringify(err));
-            }
+            },
         });
     }
 }

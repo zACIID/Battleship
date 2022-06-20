@@ -1,8 +1,8 @@
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { JwtStorage } from './../../../core/api/jwt-auth/jwt-storage';
-import { UserApi } from './../../../core/api/handlers/user-api';
+import { UserApi } from '../../../core/api/handlers/user-api';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LogoutHelper } from '../../../core/events/helpers/logout-helper';
 
 @Component({
     selector: 'app-setting-screen',
@@ -15,7 +15,7 @@ export class SettingScreenComponent implements OnInit {
     constructor(
         private userClient: UserApi,
         private router: Router,
-        private accessTokenStorage: JwtStorage,
+        private logoutHelper: LogoutHelper,
         private userIdProvider: UserIdProvider
     ) {}
 
@@ -43,8 +43,7 @@ export class SettingScreenComponent implements OnInit {
     }
 
     public async logout() {
-        this.accessTokenStorage.store("");
-        await this.router.navigate(['/authentication/login']);
+        return await this.logoutHelper.logout();
     }
 
     public async deleteProfile() {
