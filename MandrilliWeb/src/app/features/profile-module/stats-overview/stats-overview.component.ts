@@ -1,4 +1,6 @@
-import { Observable } from 'rxjs';
+import { Relationship } from './../../../core/model/user/relationship';
+import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
+
 import { StatsOverview } from './../../../core/model/user/stats-overview';
 import { UserApi } from './../../../core/api/handlers/user-api';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
@@ -19,11 +21,13 @@ export class StatsOverviewComponent implements OnInit {
     @Input() user?: User = undefined;
     public stats?: StatsOverview[] = undefined;
     @Input() myProfile: boolean = false;
+    public alreadyFriend: boolean = false;
 
     constructor(
         private notificationClient: NotificationApi,
         private userIdProvider: UserIdProvider,
-        private userClient: UserApi
+        private userClient: UserApi,
+        private relationshipClient: RelationshipApi
     ) {
       
     }
@@ -42,6 +46,13 @@ export class StatsOverviewComponent implements OnInit {
                 this.stats.push({title: "Total Hits", value: stat.totalHits});
                 
             });
+
+            const userInSessionId = this.userIdProvider.getUserId()
+            this.relationshipClient.getRelationships(userInSessionId).subscribe((rels: Relationship[]) => {
+                rels = rels.filter((r) => r.friendId === this.user?.userId)
+                if (rels.length > 0 ) this.alreadyFriend = true;
+            })
+
         }
         else{
             throw new Error('User is not defined');

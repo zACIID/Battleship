@@ -4,9 +4,9 @@
             <h1 class="is-size-1 has-text-light">{{user.username}}</h1>
         </div>
         <div class="column is-one-quarter">
-            <div *ngIf="!myProfile">
-                
-                <button class="button is-info is-medium mt-4" (click)="addFriend()">Add Friend</button>
+            <div>
+                <button *ngIf="!myProfile && !alreadyFriend" class="button is-info is-medium mt-4" (click)="addFriend()">Add Friend</button>
+                <button *ngIf="alreadyFriend" class="button is-info is-medium mt-4" disabled>Friend</button>
             </div>
         </div>
     </div>
