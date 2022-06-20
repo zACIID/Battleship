@@ -20,7 +20,7 @@ export class ChatJoinedListener extends ClientListener<ChatData> {
             this.client.join(joinData.chatId);
 
             console.log(
-                chalk.bgGreen(`Client ${this.client.id} joined the chat '${joinData.chatId}'!`)
+                chalk.green.bold(`Client ${this.client.id} joined the chat '${joinData.chatId}'!`)
             );
 
             return Promise.resolve();

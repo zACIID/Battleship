@@ -83,6 +83,7 @@ app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 /* Express Requests and Responses logger */
 // TODO function setup expressLogger()
 // TODO make it so that this code is executed only if .env is VERBOSE
+/* TODO uncomment
 expressWinston.requestWhitelist.push('body');
 expressWinston.responseWhitelist.push('body');
 
@@ -99,7 +100,7 @@ app.use(
         meta: true, // Enable logging of metadata
         msg: 'HTTP {{req.method}} {{req.url}} | {{res.statusCode}} {{res.responseTime}}ms',
     })
-);
+);*/
 
 /* Register express routes */
 registerRoutes(app);
@@ -116,10 +117,10 @@ export const ioServer: io.Server = new io.Server(httpServer, {
 });
 
 ioServer.on('connection', async function (client: io.Socket) {
-    console.log(chalk.green(`socket.io client ${client.id} connected`));
+    console.log(chalk.bgGreen(`socket.io client ${client.id} connected`));
 
     client.on('disconnect', function () {
-        console.log(chalk.redBright(`socket.io client ${client.id} disconnected`));
+        console.log(chalk.bgRed(`socket.io client ${client.id} disconnected`));
     });
 
     /* Join listeners are being setup for each client.
@@ -144,7 +145,7 @@ ioServer.on('connection', async function (client: io.Socket) {
     const matchJoined: MatchJoinedListener = new MatchJoinedListener(client);
     matchJoined.listen();
 
-    const matchLeft: MatchLeftListener = new MatchLeftListener(client);
+    const matchLeft: MatchLeftListener = new MatchLeftListener(client, ioServer);
     matchLeft.listen();
 
     /* Other listeners for client events */

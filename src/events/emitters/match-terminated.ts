@@ -2,10 +2,13 @@ import { Types } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { RoomEmitter } from './base/room-emitter';
-import { MatchTerminatedData } from '../../model/events/match-terminated-data';
+import {
+    MatchTerminatedData,
+    MatchTerminatedReason,
+} from '../../model/events/match-terminated-data';
 import { GridCoordinates } from '../../model/database/match/state/grid-coordinates';
 import { getMatchById, MatchDocument, updateMatchStats } from '../../model/database/match/match';
-import { getUserByUsername, UserDocument } from '../../model/database/user/user';
+import { getUserById, getUserByUsername, UserDocument } from '../../model/database/user/user';
 import chalk from 'chalk';
 import { Ship } from '../../model/database/match/state/ship';
 import { BattleshipGrid } from '../../model/database/match/state/battleship-grid';
@@ -31,6 +34,27 @@ export class MatchTerminatedEmitter extends RoomEmitter<MatchTerminatedData> {
         super(ioServer, eventName, matchId.toString());
 
         this.matchId = matchId;
+    }
+
+    /**
+     * Emits a termination event based on the fact that a player left the match.
+     * @param leaverId id of the user that left the match
+     */
+    public async terminateOnPlayerLeft(leaverId: Types.ObjectId) {
+        const currentMatch: MatchDocument = await getMatchById(this.matchId);
+
+        // The winner is the other user with respect to the one who's leaving the match
+        const p1Id: Types.ObjectId = currentMatch.player1.playerId;
+        const p2Id: Types.ObjectId = currentMatch.player2.playerId;
+        const winnerId: Types.ObjectId = p1Id === leaverId ? p2Id : p1Id;
+        const winner: UserDocument = await getUserById(winnerId);
+
+        await this.emit({
+            winnerUsername: winner.username,
+            reason: MatchTerminatedReason.PlayerLeftTheGame,
+        });
+
+        // TODO set status of pleyr that left to a new status (passed as arg)
     }
 
     public async emit(data: MatchTerminatedData): Promise<void> {

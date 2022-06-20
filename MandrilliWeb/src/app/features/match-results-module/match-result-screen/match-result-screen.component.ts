@@ -13,7 +13,7 @@ import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 export class MatchResultScreenComponent implements OnInit {
     public matchShowedId: string = '';
     public match?: Match;
-    public result: string = '';
+    public result?: string = undefined;
     public matchStats: StatsOverview[] = [];
 
     constructor(
@@ -46,11 +46,11 @@ export class MatchResultScreenComponent implements OnInit {
                     this.match.stats.startTime.valueOf() - this.match.stats.endTime.valueOf()
                 );
                 this.matchStats.push({ title: 'Duration', value: duration });
-            });
 
-            if (userId === this.match?.stats.winner) {
-                this.result = 'VICTORY';
-            } else this.result = 'DEFEAT';
+                if (userId === this.match?.stats.winner) {
+                    this.result = 'VICTORY';
+                } else this.result = 'DEFEAT';
+            });
         } catch (err) {
             console.log('An error occurred while retrieving match info');
         }

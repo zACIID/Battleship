@@ -21,7 +21,7 @@ export class ChatLeftListener extends ClientListener<ChatData> {
             this.client.leave(joinData.chatId);
 
             console.log(
-                chalk.bgRed(`Client ${this.client.id} left the chat '${joinData.chatId}'!`)
+                chalk.red.bold(`Client ${this.client.id} left the chat '${joinData.chatId}'!`)
             );
 
             return Promise.resolve();

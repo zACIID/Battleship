@@ -25,7 +25,7 @@ export class MatchJoinedListener extends ClientListener<MatchJoinedData> {
             this.client.join(joinData.matchId);
 
             console.log(
-                chalk.bgGreen(`Client ${this.client.id} joined the match '${joinData.matchId}'!`)
+                chalk.green.bold(`Client ${this.client.id} joined the match '${joinData.matchId}'!`)
             );
 
             // Change the status of the user based on the joining reason

@@ -12,7 +12,6 @@ import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { Types } from 'mongoose';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
 import { getCurrentMatch, MatchDocument } from '../../model/database/match/match';
-import { MatchTerminatedReason } from '../../model/events/match-terminated-data';
 import { removeMatchmakingEntry } from '../../model/database/matchmaking/queue-entry';
 
 /**
@@ -34,12 +33,14 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
         super.listen(async (joinData: UserData): Promise<void> => {
             this.client.join(joinData.userId);
 
-            console.log(chalk.bgGreen(`User ${joinData.userId} joined the server!`));
+            console.log(chalk.green.bold(`User ${joinData.userId} joined the server!`));
 
             // Add disconnect listener that performs teardown operations on the
             // user when he leaves the server (such as setting its status to Offline)
             this.client.on('disconnect', async () => {
-                console.log(chalk.bgRed(`User ${joinData.userId} disconnected from the server!`));
+                console.log(
+                    chalk.red.bold(`User ${joinData.userId} disconnected from the server!`)
+                );
 
                 await this.userTeardown(joinData.userId);
             });
@@ -75,6 +76,11 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
         }
     }
 
+    /**
+     * Leaves the current match of the provided user, only if he's currently in a game
+     * @param userId id of the user to try to leave the match for
+     * @private
+     */
     private async leaveCurrentMatchIfAny(userId: string): Promise<void> {
         const userObjId: Types.ObjectId = Types.ObjectId(userId);
         const user: UserDocument = await getUserById(userObjId);
@@ -87,19 +93,16 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
                 currentMatch._id
             );
 
-            // The winner is the other user with respect to the one who's leaving the match
-            const p1Id: Types.ObjectId = currentMatch.player1.playerId;
-            const p2Id: Types.ObjectId = currentMatch.player2.playerId;
-            const winnerId: Types.ObjectId = p1Id === userObjId ? p2Id : p1Id;
-            const winner: UserDocument = await getUserById(winnerId);
-
-            await matchTerminated.emit({
-                winnerUsername: winner.username,
-                reason: MatchTerminatedReason.PlayerLeftTheGame,
-            });
+            // Terminate the match because the current user has left it
+            await matchTerminated.terminateOnPlayerLeft(userObjId);
         }
     }
 
+    /**
+     *  Leaves the matchmaking queue if the user was previously enqueued
+     * @param userId
+     * @private
+     */
     private static async leaveMatchmakingQueueIfEnqueued(userId: string) {
         const userObjId: Types.ObjectId = Types.ObjectId(userId);
         const user: UserDocument = await getUserById(userObjId);

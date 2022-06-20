@@ -15,7 +15,7 @@
             <div class="container is-widescreen">
 
             </div>
-            
+
         </div>
 
         <div class="column is-one-quarter margin-auto">
@@ -27,12 +27,12 @@
                     <div class="column ">
                         <strong class="is-size-4 has-text-light has-weight-semibold">CLOSE</strong>
                     </div>
-            
+
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="width-80 columns is-vcentered margin-auto mt-4">
         <div class="column">
             <player-info [userId]="match.player1.playerId"></player-info>
@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="width-80 margin-auto has-text-centered has-text-danger mt-5">
-        <h1 class="has-text-weight-semibold is-family-sans-serif is-size-1"> {{ result }} </h1>
+        <h1 *ngIf="result" class="has-text-weight-semibold is-family-sans-serif is-size-1"> {{ result }} </h1>
     </div>
 </div>
 
