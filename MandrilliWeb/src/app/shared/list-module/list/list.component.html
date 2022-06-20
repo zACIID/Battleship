@@ -38,40 +38,4 @@
 
 
 
-<!-- List crafted for the battle requests -->
-<div *ngIf="notificationList && refuse && accept" class="list-height overflow-scroll">
-
-    <div *ngFor="let item of notificationList">
-        <div *ngIf="item.type == 'MatchRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer is-flex">
-            <div class="column is-three-quarters has-text-left">
-                <strong>{{item.senderUsername}}</strong> wants to battle you !
-            </div>
-            <div class="column is-one-quarter">
-                <button class="button is-success mr-2" (click)="accept(item.sender)">Battle!</button>
-                <button class="button is-danger" (click)="refuse(item.sender)">Deny</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-
-<!-- List crafted for the friend requests -->
-<div *ngIf="notificationList && refuse && accept" class="list-height overflow-scroll">
-
-    <div *ngFor="let item of notificationList">
-        <div *ngIf="item.type == 'FriendRequest'" class= "box has-background-light is-widescreen mb-1 has-text-centered pointer is-flex">
-            <div class="column is-three-quarters has-text-left">
-                <strong>{{item.senderUsername}}</strong> wants to be your friend !
-            </div>
-            <div class="column is-one-quarter">
-                <button class="button is-success mr-2" (click)="accept(item.sender)">Accept</button>
-                <button class="button is-danger" (click)="refuse(item.sender)">Refuse</button>
-            </div>
-        </div>
-        
-    </div>
-
-</div>
-
 

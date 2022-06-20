@@ -67,16 +67,29 @@ export class NotificationScreenComponent implements OnInit {
                     sender: notification.sender,
                     senderUsername: user.username,
                 });
-                this.friendNotifications = [...this.friendNotifications];
+                if(notification.type === NotificationType.FriendRequest){
+                    this.friendNotifications = [...this.friendNotifications];
+                }
+                else{
+                    this.battleNotifications = [...this.battleNotifications]
+                }
+                
             });
         };
         pollingNotifications.bind(this);
         this.notificationListener.listen(pollingNotifications);
         
         const pollingDeletedNotifications = (notification: NotificationData) => {
-            this.friendNotifications = this.friendNotifications.filter((not) => {
-                return notification.sender === not.sender && notification.type === not.type;
-            });
+            if(notification.type === NotificationType.FriendRequest){
+                this.friendNotifications = this.friendNotifications.filter((not) => {
+                    return notification.sender === not.sender && notification.type === not.type;
+                });
+            }
+            else{
+                this.battleNotifications = this.battleNotifications.filter((not) => {
+                    return notification.sender === not.sender && notification.type === not.type;
+                });
+            }
         }
         pollingDeletedNotifications.bind(this);
         this.notificationDelListener.listen(pollingDeletedNotifications);
@@ -90,10 +103,18 @@ export class NotificationScreenComponent implements OnInit {
 
     private dropNotification(no: NotificationData){
         
-        this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
-            
-            return (not.sender !== no.sender);
-        });
+        if(no.type === NotificationType.FriendRequest){
+            this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
+                
+                return (not.sender !== no.sender);
+            });
+        }
+        else{
+            this.battleNotifications = this.battleNotifications.filter((not: NotificationOverview) => {
+                
+                return (not.sender !== no.sender);
+            });
+        }
         
     }
 
@@ -134,9 +155,9 @@ export class NotificationScreenComponent implements OnInit {
             type: NotificationType.MatchRequest,
             sender: friendId,
         })
-        .subscribe(()=>{
-            this.dropNotification({sender: friendId, type: NotificationType.MatchRequest});
-        });
+        .subscribe();
+        this.dropNotification({sender: friendId, type: NotificationType.MatchRequest});
+        console.log("dropped")
        
     }
 }

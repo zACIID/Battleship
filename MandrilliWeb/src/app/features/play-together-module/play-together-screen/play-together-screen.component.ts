@@ -78,7 +78,7 @@ export class PlayTogetherScreenComponent implements OnInit {
 
     public askToBattle(friendId: string){
 
-        this.notificationApi.addNotification(friendId, {sender: this.userInSessionId, type: NotificationType.MatchRequest})
+        this.notificationApi.addNotification(friendId, {type: NotificationType.MatchRequest, sender: this.userInSessionId})
         .subscribe((not: Notification) => {
             console.log("Correctly Added: " + JSON.stringify(not));
         })

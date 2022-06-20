@@ -16,17 +16,10 @@ export class ListComponent implements OnInit {
     public userId: string = '';
     @Input() matchList?: MatchOverview[];
     @Input() friendsList?: RelationshipOverview[];
-    @Input() notificationList?: NotificationOverview[];
 
-
-    /** Particular props for accepting or refusing an incoming notification */
-    @Input() accept?: Function;
-    @Input() refuse?: Function;
 
     constructor(
         private router: Router,
-        private notificationApi: NotificationApi,
-        private friendAcceptClient: FriendRequestAcceptedEmitter,
         private userIdProvider: UserIdProvider    
     ) {}
 

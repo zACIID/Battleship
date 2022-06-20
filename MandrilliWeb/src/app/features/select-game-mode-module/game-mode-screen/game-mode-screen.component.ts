@@ -30,11 +30,7 @@ export class GameModeScreenComponent implements OnInit {
 
     ngOnDestroy(): void {
         this.matchListener.unListen();
-        this.queue.removeFromQueue(this.userIdProvider.getUserId()).subscribe({
-            error: (err: Error) => {
-                console.log(`Could not remove user from matchmaking queue. Reason: ${err.message}`);
-            },
-        });
+        this.queue.removeFromQueue(this.userIdProvider.getUserId()).subscribe();
     }
 
     public startMatchmaking() {
