@@ -14,7 +14,7 @@ export class MatchResultScreenComponent implements OnInit {
     public matchShowedId: string = '';
     public match?: Match;
     public result?: string = undefined;
-    public matchStats: StatsOverview[] = [];
+    public matchStats?: StatsOverview[] = undefined;
 
     constructor(
         private route: ActivatedRoute,
@@ -28,29 +28,32 @@ export class MatchResultScreenComponent implements OnInit {
 
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
-            });
 
-            this.matchClient.getMatch(this.matchShowedId).subscribe((data: Match) => {
-                this.match = data;
-                this.matchStats.push({
-                    title: 'Ships Destroyed',
-                    value: data.stats.shipsDestroyed,
+                this.matchClient.getMatch(this.matchShowedId).subscribe((data: Match) => {
+                    this.match = data;
+                    this.matchStats = [];
+                    this.matchStats.push({
+                        title: 'Ships Destroyed',
+                        value: data.stats.shipsDestroyed,
+                    });
+                    this.matchStats.push({ title: 'Total Shots', value: data.stats.totalShots });
+    
+                    if (this.match.stats.endTime === null) {
+                        throw new Error('End Time is null. Match probably did not end');
+                    }
+    
+                    const duration = Math.abs(
+                        this.match.stats.startTime.valueOf() - this.match.stats.endTime.valueOf()
+                    );
+                    this.matchStats.push({ title: 'Duration', value: duration });
+    
+                    if (userId === this.match?.stats.winner) {
+                        this.result = 'VICTORY';
+                    } else this.result = 'DEFEAT';
                 });
-                this.matchStats.push({ title: 'Total Shots', value: data.stats.totalShots });
-
-                if (this.match.stats.endTime === null) {
-                    throw new Error('End Time is null. Match probably did not end');
-                }
-
-                const duration = Math.abs(
-                    this.match.stats.startTime.valueOf() - this.match.stats.endTime.valueOf()
-                );
-                this.matchStats.push({ title: 'Duration', value: duration });
-
-                if (userId === this.match?.stats.winner) {
-                    this.result = 'VICTORY';
-                } else this.result = 'DEFEAT';
             });
+
+            
         } catch (err) {
             console.log('An error occurred while retrieving match info');
         }
