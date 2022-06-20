@@ -8,7 +8,7 @@
                 
                 
             <div class="columns">
-                <div class="column">
+                <div *ngIf="friend" class="column">
                     <player-info [userId]="friend"></player-info>
                 </div>
                 <div class="column is-one-quarter pointer" (click)="leaveChat()">

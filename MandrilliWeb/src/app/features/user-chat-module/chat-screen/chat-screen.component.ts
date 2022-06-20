@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 })
 export class ChatScreenComponent implements OnInit, OnDestroy {
     public chatId: string = '';
-    public friend: string = '';
+    public friend?: string = undefined;
     public trigger: number = 0;
 
     constructor(
@@ -25,7 +25,8 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
         private joinEmitter: ChatJoinedEmitter,
         private fleeEmitter: ChatLeftEmitter,
         private userIdProvider: UserIdProvider,
-        private router: Router
+        private router: Router,
+        
     ) {}
 
     ngOnInit(): void {
@@ -60,6 +61,7 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
 
     public async leaveChat() {
         this.fleeEmitter.emit({ chatId: this.chatId });
+        
         await this.router.navigate(['/relationships']);
     }
 }
