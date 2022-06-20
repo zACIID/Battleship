@@ -1,3 +1,4 @@
+import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
 import { Relationship } from 'src/app/core/model/user/relationship';
 import { Notification } from '../../../core/model/user/notification';
 import { NotificationApi } from '../../../core/api/handlers/notification-api';
@@ -20,6 +21,8 @@ import { NotificationType } from 'src/app/core/model/user/notification';
 export class PlayTogetherScreenComponent implements OnInit, OnDestroy {
     public friends: Overview[] = [];
     private userInSessionId: string = '';
+    public userMessage: HtmlErrorMessage = new HtmlErrorMessage();
+
     constructor(
         private relationshipClient: RelationshipApi,
         private userClient: UserApi,
@@ -80,8 +83,15 @@ export class PlayTogetherScreenComponent implements OnInit, OnDestroy {
                 type: NotificationType.MatchRequest,
                 sender: this.userInSessionId,
             })
-            .subscribe((not: Notification) => {
-                console.log('Correctly Added: ' + JSON.stringify(not));
+            .subscribe({
+                next: (not: Notification) => {
+                    this.userMessage.error = true;
+                    this.userMessage.errorMessage = "Notification sent!";
+                },
+                error: (err) => {
+                    this.userMessage.error = true;
+                    this.userMessage.errorMessage = "Notification already sent";
+                }
             });
     }
 }
