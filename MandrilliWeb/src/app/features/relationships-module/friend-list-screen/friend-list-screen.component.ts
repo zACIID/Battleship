@@ -2,7 +2,7 @@ import { FriendStatusChangedData } from 'src/app/core/model/events/friend-status
 import { FriendStatusChangedListener } from 'src/app/core/events/listeners/friend-status-changed';
 import { Relationship } from 'src/app/core/model/user/relationship';
 import { UserApi } from './../../../core/api/handlers/user-api';
-import { User } from 'src/app/core/model/user/user';
+import { User, UserStatus } from 'src/app/core/model/user/user';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { RelationshipApi } from './../../../core/api/handlers/relationship-api';
 import { Component, OnInit } from '@angular/core';
@@ -25,6 +25,7 @@ export class FriendListScreenComponent implements OnInit {
 
     ngOnInit(): void {
         try {
+            this.friends = [];
             let userId: string = this.userIdProvider.getUserId();
             this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
                 
@@ -36,35 +37,52 @@ export class FriendListScreenComponent implements OnInit {
                         friendUsername: "",
                         matchId: ""
                     }
-
-                    this.userClient.getCurrentMatch(rel.friendId).subscribe({
-                        next: (match: string) => {
-                            obj.matchId = match;
-                        },
-                        error: (err: Error) => {}
-                    })
-
+                    
                     this.userClient.getUser(rel.friendId).subscribe((user: User) => {
                         obj.friendUsername = user.username;
+                        
                         this.friends.push(obj);
+                        if(user.status === UserStatus.InGame){
+                            this.userClient.getCurrentMatch(rel.friendId).subscribe({
+                                next: (match: string) => {
+                                    obj.matchId = match;
+                                },
+                                error: (err: Error) => {}
+                            })
+                        }
                     })
-                
+
                 }
                 
             });
-
-            
 
 
         } catch (err) {
             console.log('An error occurred while retrieving the friends list: ' + err);
         }
 
-        const newFriend = (newF: FriendStatusChangedData) => {
-            this.ngOnInit();
+        const newStatusFriend = (newF: FriendStatusChangedData) => {
+            if(newF.status === UserStatus.Online){
+                this.ngOnInit();
+            }
+            else{
+                for(let friend of this.friends){
+                    if(friend.friendId === newF.friendId){
+                        if(newF.status === UserStatus.InGame){
+                            this.userClient.getCurrentMatch(friend.friendId).subscribe({
+                                next: (match: string) => {
+                                    friend.matchId = match;
+                                },
+                                error: (err: Error) => {}
+                            })
+                        }
+                    }
+                }
+            }
+            
         }
-        newFriend.bind(this);
-        this.friendStatus.listen(newFriend);
+        newStatusFriend.bind(this);
+        this.friendStatus.listen(newStatusFriend);
 
         
     }
