@@ -4,7 +4,7 @@ import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from '../../../core/model/match/coordinates';
 import { Ship } from '../../../core/model/match/ship';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PlayerStateChangedListener } from 'src/app/core/events/listeners/player-state-changed';
 import { PlayerStateChangedData } from 'src/app/core/model/events/player-state-changed-data';
 import { PositioningCompletedListener } from 'src/app/core/events/listeners/positioning-completed';
@@ -18,7 +18,7 @@ import { MatchTerminatedListener } from '../../../core/events/listeners/match-te
     templateUrl: './preparation-phase-screen.component.html',
     styleUrls: ['./preparation-phase-screen.component.css'],
 })
-export class PreparationPhaseScreenComponent implements OnInit {
+export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
     public opponentsId: string = '';
     public grid: BattleshipGrid = new BattleshipGrid();
     public positioningError: HtmlErrorMessage = new HtmlErrorMessage();
@@ -42,7 +42,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private userIdProvider: UserIdProvider,
         private router: Router,
         private matchClient: MatchApi,
-        private fleeMatchEmitter: MatchLeftEmitter
+        private matchLeftEmitter: MatchLeftEmitter
     ) {}
 
     ngOnInit(): void {
@@ -106,7 +106,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
         return false;
     }
 
-    private parseCoord(coord: string): number {
+    private static parseCoord(coord: string): number {
         coord = coord.toUpperCase();
         switch (coord) {
             case 'A':
@@ -134,23 +134,23 @@ export class PreparationPhaseScreenComponent implements OnInit {
         }
     }
 
-    private randomInteger(): number {
+    private static randomInteger(): number {
         let min = 0;
         let max = 9;
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-    private randomBool(): boolean {
+    private static randomBool(): boolean {
         // This is a 1/2 prob. for horizontal and 1/2 prob for vertical
-        return Math.floor(Math.random() * 2) === 0 ? false : true;
+        return Math.floor(Math.random() * 2) !== 0;
     }
 
     public randomDeploy() {
         while (
             !this.deploy(
                 'Carrier',
-                this.randomInteger().toString(),
-                this.randomInteger().toString(),
-                this.randomBool()
+                PreparationPhaseScreenComponent.randomInteger().toString(),
+                PreparationPhaseScreenComponent.randomInteger().toString(),
+                PreparationPhaseScreenComponent.randomBool()
             )
         ) {}
 
@@ -158,9 +158,9 @@ export class PreparationPhaseScreenComponent implements OnInit {
             while (
                 !this.deploy(
                     'Battleship',
-                    this.randomInteger().toString(),
-                    this.randomInteger().toString(),
-                    this.randomBool()
+                    PreparationPhaseScreenComponent.randomInteger().toString(),
+                    PreparationPhaseScreenComponent.randomInteger().toString(),
+                    PreparationPhaseScreenComponent.randomBool()
                 )
             ) {}
         }
@@ -169,9 +169,9 @@ export class PreparationPhaseScreenComponent implements OnInit {
             while (
                 !this.deploy(
                     'Cruiser',
-                    this.randomInteger().toString(),
-                    this.randomInteger().toString(),
-                    this.randomBool()
+                    PreparationPhaseScreenComponent.randomInteger().toString(),
+                    PreparationPhaseScreenComponent.randomInteger().toString(),
+                    PreparationPhaseScreenComponent.randomBool()
                 )
             ) {}
         }
@@ -213,8 +213,8 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 break;
         }
 
-        let startingRow = this.parseCoord(row);
-        let startingCol = this.parseCoord(col);
+        let startingRow = PreparationPhaseScreenComponent.parseCoord(row);
+        let startingCol = PreparationPhaseScreenComponent.parseCoord(col);
 
         if (this.isValidCoords(startingRow, startingCol)) {
             let coords: GridCoordinates[] = [];
@@ -322,7 +322,9 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
             // TODO
             // Add set ready request after the observable has been executed
-            temp.add(this.matchClient.setReadyState(this.matchId, this.userInSessionId, true).subscribe());
+            temp.add(
+                this.matchClient.setReadyState(this.matchId, this.userInSessionId, true).subscribe()
+            );
 
             // Disabling battle button
             let battleBtn: HTMLButtonElement | null = <HTMLButtonElement>(
@@ -350,9 +352,17 @@ export class PreparationPhaseScreenComponent implements OnInit {
     }
 
     public async leaveMatch() {
-        if (this.matchId)
-            this.fleeMatchEmitter.emit({ matchId: this.matchId, userId: this.userInSessionId });
-        else throw new Error('Error while leaving the match');
+        if (this.matchId) {
+            console.log('JESUS');
+
+            this.matchLeftEmitter.emit({
+                matchId: this.matchId,
+                userId: this.userInSessionId,
+            });
+        } else {
+            throw new Error('Error while leaving the match');
+        }
+
         await this.router.navigate(['/homepage']);
     }
 

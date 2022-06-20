@@ -4,7 +4,7 @@ import { ChatMessageListener } from '../../../core/events/listeners/chat-message
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from '../../../../../../src/model/database/match/state/grid-coordinates';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
@@ -19,7 +19,7 @@ import { MatchTerminatedListener } from '../../../core/events/listeners/match-te
     templateUrl: './game-screen.component.html',
     styleUrls: ['./game-screen.component.css'],
 })
-export class GameScreenComponent implements OnInit {
+export class GameScreenComponent implements OnInit, OnDestroy {
     public userInSessionId: string = '';
     private match: Match = new Match();
     public playerGrid: BattleshipGrid = new BattleshipGrid();

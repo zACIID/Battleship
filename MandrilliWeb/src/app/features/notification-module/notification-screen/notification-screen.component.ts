@@ -3,7 +3,7 @@ import { UserApi } from '../../../core/api/handlers/user-api';
 import { NotificationOverview } from '../../../core/model/user/notification-overview';
 import { FriendRequestAcceptedEmitter } from '../../../core/events/emitters/friend-request-accepted';
 import { NotificationApi } from '../../../core/api/handlers/notification-api';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationType } from '../../../core/model/user/notification';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { NotificationReceivedListener } from 'src/app/core/events/listeners/notification-received';
@@ -15,7 +15,7 @@ import { NotificationDeletedListener } from 'src/app/core/events/listeners/notif
     templateUrl: './notification-screen.component.html',
     styleUrls: ['./notification-screen.component.css'],
 })
-export class NotificationScreenComponent implements OnInit {
+export class NotificationScreenComponent implements OnInit, OnDestroy {
     public userId: string = '';
     public friendNotifications: NotificationOverview[] = [];
     public battleNotifications: NotificationOverview[] = [];
@@ -58,84 +58,76 @@ export class NotificationScreenComponent implements OnInit {
             console.log(err);
         }
 
-
         const pollingNotifications = (notification: NotificationData) => {
-
             this.userApi.getUser(notification.sender).subscribe((user) => {
                 this.friendNotifications.push({
                     type: notification.type,
                     sender: notification.sender,
                     senderUsername: user.username,
                 });
-                if(notification.type === NotificationType.FriendRequest){
+                if (notification.type === NotificationType.FriendRequest) {
                     this.friendNotifications = [...this.friendNotifications];
+                } else {
+                    this.battleNotifications = [...this.battleNotifications];
                 }
-                else{
-                    this.battleNotifications = [...this.battleNotifications]
-                }
-                
             });
         };
         pollingNotifications.bind(this);
         this.notificationListener.listen(pollingNotifications);
-        
+
         const pollingDeletedNotifications = (notification: NotificationData) => {
-            if(notification.type === NotificationType.FriendRequest){
+            if (notification.type === NotificationType.FriendRequest) {
                 this.friendNotifications = this.friendNotifications.filter((not) => {
                     return notification.sender === not.sender && notification.type === not.type;
                 });
-            }
-            else{
+            } else {
                 this.battleNotifications = this.battleNotifications.filter((not) => {
                     return notification.sender === not.sender && notification.type === not.type;
                 });
             }
-        }
+        };
         pollingDeletedNotifications.bind(this);
         this.notificationDelListener.listen(pollingDeletedNotifications);
     }
 
-    ngOnDestroy() : void {
-        this.notificationListener.unListen()
-        this.notificationDelListener.unListen()
+    ngOnDestroy(): void {
+        this.notificationListener.unListen();
+        this.notificationDelListener.unListen();
     }
 
-
-    private dropNotification(no: NotificationData){
-        
-        if(no.type === NotificationType.FriendRequest){
-            this.friendNotifications = this.friendNotifications.filter((not: NotificationOverview) => {
-                
-                return (not.sender !== no.sender);
-            });
+    private dropNotification(no: NotificationData) {
+        if (no.type === NotificationType.FriendRequest) {
+            this.friendNotifications = this.friendNotifications.filter(
+                (not: NotificationOverview) => {
+                    return not.sender !== no.sender;
+                }
+            );
+        } else {
+            this.battleNotifications = this.battleNotifications.filter(
+                (not: NotificationOverview) => {
+                    return not.sender !== no.sender;
+                }
+            );
         }
-        else{
-            this.battleNotifications = this.battleNotifications.filter((not: NotificationOverview) => {
-                
-                return (not.sender !== no.sender);
-            });
-        }
-        
     }
 
-    
     public acceptFriend(friendId: string) {
         this.friendAcceptClient.emit({
             senderId: friendId,
-            receiverId: this.userId
+            receiverId: this.userId,
         });
-        this.dropNotification({sender: friendId, type: NotificationType.FriendRequest});
+        this.dropNotification({ sender: friendId, type: NotificationType.FriendRequest });
     }
-
 
     public refuseFriend(friendId: string) {
         try {
-            this.notificationApi.removeNotification(this.userId, {
-                type: NotificationType.FriendRequest,
-                sender: friendId,
-            }).subscribe();
-            this.dropNotification({sender: friendId, type: NotificationType.FriendRequest});
-            
+            this.notificationApi
+                .removeNotification(this.userId, {
+                    type: NotificationType.FriendRequest,
+                    sender: friendId,
+                })
+                .subscribe();
+            this.dropNotification({ sender: friendId, type: NotificationType.FriendRequest });
         } catch (err) {
             console.log('error removing friend notification: ' + err);
         }
@@ -146,18 +138,17 @@ export class NotificationScreenComponent implements OnInit {
             receiverId: this.userId,
             senderId: friendId,
         });
-        this.dropNotification({sender: friendId, type: NotificationType.MatchRequest});
+        this.dropNotification({ sender: friendId, type: NotificationType.MatchRequest });
     }
 
     public refuseBattle(friendId: string) {
-        
-        this.notificationApi.removeNotification(this.userId, {
-            type: NotificationType.MatchRequest,
-            sender: friendId,
-        })
-        .subscribe();
-        this.dropNotification({sender: friendId, type: NotificationType.MatchRequest});
-        console.log("dropped")
-       
+        this.notificationApi
+            .removeNotification(this.userId, {
+                type: NotificationType.MatchRequest,
+                sender: friendId,
+            })
+            .subscribe();
+        this.dropNotification({ sender: friendId, type: NotificationType.MatchRequest });
+        console.log('dropped');
     }
 }

@@ -8,7 +8,7 @@
 
         <div class="columns">
             <div class="column is-half height-100">
-                
+
                 <div class="board-height">
                     <board [state]="grid" [triggerUpdate]="trigger" [userId]="userInSessionId"></board>
                 </div>
@@ -20,7 +20,7 @@
                     <button id="random-deploy-button" class="button width-40 is-medium is-primary is-outlined mr-2" (click)="randomDeploy()" [disabled]="allowRandomDeploy">Random Deploy</button>
                     <button id="reset-button" class="button width-40 is-medium is-primary is-outlined"  (click)="reset()">Reset</button>
                 </div>
-                
+
 
             </div>
             <div class="column">
@@ -38,16 +38,16 @@
                         <div class="columns mb-0">
                             <div class="column">
                                 <strong class="has-weight-semibold mb-1 "><span class="carrier-color">Carrier</span> - {{carrierCount}} left</strong>
-                            
+
                                 <div>
-                                    
+
                                     <label class="radio mr-3">
                                         <input type="radio" name="carrierDirection" value="vertical" checked #carrierVertical>Vertical
                                     </label>
                                     <label class="radio">
                                         <input type="radio" name="carrierDirection" value="horizontal" >Horizontal
                                     </label>
-                                    
+
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="columns">
-                    
+
                     <div class="box width-80 margin-auto column is-half">
                         <figure class="image">
                             <img class="ships-height" src="assets/images/battleship.png">
@@ -75,16 +75,16 @@
                         <div class="columns mb-0">
                             <div class="column">
                                 <strong class="has-weight-semibold mb-1"><span class="battleship-color">Battleship</span> - {{battleshipCount}} left</strong>
-                            
+
                                 <div>
-                                    
+
                                     <label class="radio mr-3">
                                         <input type="radio" name="battleshipDirection" value="vertical" checked #battleshipVertical >Vertical
                                     </label>
                                     <label class="radio">
                                         <input type="radio" name="battleshipDirection" value="horizontal">Horizontal
                                     </label>
-                                    
+
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="columns">
-                    
+
                     <div class="box width-80 margin-auto column is-half">
                         <figure class="image">
                             <img class="ships-height" src="assets/images/cruiser.png">
@@ -112,16 +112,16 @@
                         <div class="columns mb-0">
                             <div class="column">
                                 <strong class="has-weight-semibold mb-1"><span class="cruiser-color">Cruiser</span> - {{cruiserCount}} left</strong>
-                            
+
                                 <div>
-                                    
+
                                     <label class="radio mr-3">
                                         <input type="radio" name="cruiserDirection" value="vertical" checked #cruiserVertical >Vertical
                                     </label>
                                     <label class="radio">
                                         <input type="radio" name="cruiserDirection" value="horizontal" >Horizontal
                                     </label>
-                                    
+
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
@@ -137,7 +137,7 @@
                 </div>
 
                 <div class="columns ship-section-height">
-                    
+
                     <div class="box width-80 margin-auto column is-half">
                         <figure class="image">
                             <img class="ships-height" src="assets/images/destroyer.png">
@@ -149,16 +149,16 @@
                         <div class="columns mb-0">
                             <div class="column">
                                 <strong class="has-weight-semibold mb-1"><span class="destroyer-color">Destroyer</span> - {{destroyerCount}} left</strong>
-                            
+
                                 <div>
-                                    
+
                                     <label class="radio mr-3">
                                         <input type="radio" name="destroyerDirection" value="vertical" checked #destroyerVertical>Vertical
                                     </label>
                                     <label class="radio">
                                         <input type="radio" name="destroyerDirection" value="horizontal">Horizontal
                                     </label>
-                                    
+
                                 </div>
                             </div>
                             <div class="column is-one-quarter">
@@ -187,7 +187,7 @@
         <div class="columns">
 
             <div class="column mr-3">
-                <player-info [userId]="opponentsId" (redirection)="false"></player-info>
+                <player-info [userId]="opponentsId" [redirection]="false"></player-info>
             </div>
 
             <div class="column is-one-quarter">
@@ -199,7 +199,7 @@
             </div>
 
         </div>
-        
+
         <div class="chat-height p-4 mt-6">
             <div class="box has-background-light has-text-centered">
                 <strong class="is-size-4 has-weight-bold">Chat will be available after the preparation phase</strong>

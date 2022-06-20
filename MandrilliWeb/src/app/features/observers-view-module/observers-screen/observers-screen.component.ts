@@ -1,5 +1,5 @@
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { ChatMessageListener } from '../../../core/events/listeners/chat-message';
 import { MatchApi } from '../../../core/api/handlers/match-api';
@@ -20,13 +20,12 @@ import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
     templateUrl: './observers-screen.component.html',
     styleUrls: ['./observers-screen.component.css'],
 })
-export class ObserversScreenComponent implements OnInit {
+export class ObserversScreenComponent implements OnInit, OnDestroy {
     public matchShowedId: string = '';
     public match?: Match = undefined;
     public chatId?: string = undefined;
     public generalEnd: string = '';
     public trigger: number = 0;
-
 
     constructor(
         private route: ActivatedRoute,
@@ -44,14 +43,13 @@ export class ObserversScreenComponent implements OnInit {
 
     ngOnInit(): void {
         try {
-
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
 
                 this.matchClient.getMatch(this.matchShowedId).subscribe((data) => {
                     this.match = data;
                     this.chatId = data.observersChat;
-                    console.log(this.match)
+                    console.log(this.match);
                     // Join the new match as a spectator
                     this.matchJoinedEmitter.emit({
                         matchId: this.matchShowedId,
@@ -70,38 +68,35 @@ export class ObserversScreenComponent implements OnInit {
                     this.playersShotListener.listen(pollingPlayerHits);
 
                     const pollingMatchResult = async (data: MatchTerminatedData): Promise<void> => {
-                        if(this.match){
+                        if (this.match) {
                             const path: string = '/match-results/' + this.match.matchId;
                             this.generalEnd = data.reason.valueOf();
                             await this.router.navigate([path]);
-                        }
-                        else{
-                            throw new Error("Error with match inizialization")
+                        } else {
+                            throw new Error('Error with match inizialization');
                         }
                     };
                     pollingMatchResult.bind(this);
                     this.matchTerminatedListener.listen(pollingMatchResult);
 
-
                     this.chatMessageListener.listen(() => {
                         this.trigger++;
                     });
-
                 });
             });
-
-
         } catch (err) {
             console.log('An error occurred while retrieving the match: ' + err);
         }
     }
 
     ngOnDestroy(): void {
-        
-        if(this.match){
-            this.matchLeftEmitter.emit({ matchId: this.match.matchId, userId: this.userIdProvider.getUserId() });
+        if (this.match) {
+            this.matchLeftEmitter.emit({
+                matchId: this.match.matchId,
+                userId: this.userIdProvider.getUserId(),
+            });
         }
-        if(this.chatId){
+        if (this.chatId) {
             this.chatLeftEmitter.emit({ chatId: this.chatId });
         }
 

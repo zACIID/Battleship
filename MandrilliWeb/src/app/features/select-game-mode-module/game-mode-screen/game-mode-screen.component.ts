@@ -1,6 +1,6 @@
 import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 import { EnqueueResponse, MatchmakingApi } from '../../../core/api/handlers/matchmaking-api';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
     templateUrl: './game-mode-screen.component.html',
     styleUrls: ['./game-mode-screen.component.css'],
 })
-export class GameModeScreenComponent implements OnInit {
+export class GameModeScreenComponent implements OnInit, OnDestroy {
     public userInSessionId: string = '';
     public inQueue: boolean = false;
 
