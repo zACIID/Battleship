@@ -84,12 +84,23 @@ export class PreparationPhaseScreenComponent implements OnInit {
         if (!isNaN(row) && !isNaN(col)) {
             if (row <= 9 && row >= 0 && col <= 9 && col >= 0) {
                 for (let ship of this.grid.ships) {
-                    for (let coord of ship.coordinates)
+                    for (let coord of ship.coordinates){
                         if (coord.row == row && coord.col == col) {
                             this.positioningError.errorMessage =
                                 ' position is invalid: overlapping';
                             return false;
                         }
+                        
+                        if ((coord.row === row + 1 && coord.col === col + 1) || (coord.row === row - 1 && coord.col === col - 1) || 
+                            (coord.row === row + 1 && coord.col === col - 1) || (coord.row === row - 1 && coord.col === col + 1) ||
+                            (coord.row === row + 1 && coord.col === col) || (coord.row === row && coord.col === col + 1) ||
+                            (coord.row === row - 1 && coord.col === col) || (coord.row === row && coord.col === col - 1)){
+                            this.positioningError.errorMessage =
+                                ' position is invalid: too close';
+                                return false;
+                        }
+                        
+                    }
                 }
                 return true;
             }
@@ -132,7 +143,9 @@ export class PreparationPhaseScreenComponent implements OnInit {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     private randomBool(): boolean {
-        return Math.floor(Math.random() * 2) == 0 ? true : false;
+        // This is a 1/2 prob. for horizontal and 1/2 prob for vertical
+        let generated: boolean = Math.floor(Math.random() * 2) === 0 ? false : true;
+        return generated
     }
 
     public randomDeploy() {
@@ -144,7 +157,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 this.randomBool()
             )
         ) {}
-
+        console.log("deployed carrier")
         for (let i = 0; i < 2; i++) {
             while (
                 !this.deploy(
@@ -155,6 +168,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
+        console.log("deployed 2 battleships")
         for (let i = 0; i < 3; i++) {
             while (
                 !this.deploy(
@@ -165,16 +179,28 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
-        for (let i = 0; i < 5; i++) {
-            while (
-                !this.deploy(
-                    'Destroyer',
-                    this.randomInteger().toString(),
-                    this.randomInteger().toString(),
-                    this.randomBool()
-                )
-            ) {}
+        console.log("deployed 3 Cruisers")
+        let i = 0
+        for (i = 0; i < 5; i++) {
+            
+            for(let r = 0; r < 11; r++){
+                let deployed = false;
+                for(let c = 0; c < 11; c++){
+                    if(this.deploy('Destroyer', r.toString(), c.toString(), true)){
+                        deployed = true;
+                        break;
+                    }
+                    else if(this.deploy('Destroyer', r.toString(), c.toString(), false)){
+                        deployed = true;
+                        break;
+                    }
+                    
+                }
+                if (deployed) break;
+            }
+            
         }
+        console.log("deployed " + i + " Destroyers")
     }
 
     public deploy(shipType: string, row: string, col: string, vertical: boolean): boolean {
