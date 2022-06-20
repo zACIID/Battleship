@@ -35,6 +35,8 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
     public cruiserCount: number = 3;
     public destroyerCount: number = 5;
 
+ 
+
     constructor(
         private route: ActivatedRoute,
         private playerStateListener: PlayerStateChangedListener,
@@ -159,16 +161,20 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
         let max = 9;
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
     private static randomBool(): boolean {
         // This is a 1/2 prob. for horizontal and 1/2 prob for vertical
         return Math.floor(Math.random() * 2) !== 0;
     }
 
+
+
     public randomDeploy() {
+        let letters: string[] = ["a", "b", "c", "d", "e", "f", "g", "j"]
         while (
             !this.deploy(
                 'Carrier',
-                PreparationPhaseScreenComponent.randomInteger().toString(),
+                letters[PreparationPhaseScreenComponent.randomInteger()],
                 PreparationPhaseScreenComponent.randomInteger().toString(),
                 PreparationPhaseScreenComponent.randomBool()
             )
@@ -178,7 +184,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
             while (
                 !this.deploy(
                     'Battleship',
-                    PreparationPhaseScreenComponent.randomInteger().toString(),
+                    letters[PreparationPhaseScreenComponent.randomInteger()],
                     PreparationPhaseScreenComponent.randomInteger().toString(),
                     PreparationPhaseScreenComponent.randomBool()
                 )
@@ -189,7 +195,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
             while (
                 !this.deploy(
                     'Cruiser',
-                    PreparationPhaseScreenComponent.randomInteger().toString(),
+                    letters[PreparationPhaseScreenComponent.randomInteger()],
                     PreparationPhaseScreenComponent.randomInteger().toString(),
                     PreparationPhaseScreenComponent.randomBool()
                 )
@@ -201,10 +207,10 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
             for (let r = 0; r < 11; r++) {
                 let deployed = false;
                 for (let c = 0; c < 11; c++) {
-                    if (this.deploy('Destroyer', r.toString(), c.toString(), true)) {
+                    if (this.deploy('Destroyer', letters[r % 10], c.toString(), true)) {
                         deployed = true;
                         break;
-                    } else if (this.deploy('Destroyer', r.toString(), c.toString(), false)) {
+                    } else if (this.deploy('Destroyer', letters[r % 10], c.toString(), false)) {
                         deployed = true;
                         break;
                     }
