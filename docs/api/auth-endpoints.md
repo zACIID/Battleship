@@ -4,7 +4,6 @@
 
 - [Authentication Endpoints Documentation](#authentication-endpoints-documentation)
   - [Table of Contents](#table-of-contents)
-  - [How API Authentication works](#how-api-authentication-works)
   - [Resources](#resources)
     - [Error](#error)
     - [LoginInfo](#logininfo)
@@ -17,11 +16,6 @@
     - [User Registration](#user-registration)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-1)
-
-## How API Authentication works
-
-define how authenticating for the API works: Basic Authentication, use of jwt and how to retrieve it, what error is returned if auth fails (401=?)
-**TODO**
 
 ## Resources
 
