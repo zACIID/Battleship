@@ -120,16 +120,18 @@ export class UserApi extends BaseAuthenticatedApi {
         );
     }
 
-    public getUserMatches(userId: string): Observable<Match[]> {
-        const reqPath: string = `${this.baseUrl}/api/users/${userId}/matches`;
+    public getUserMatches(userId: string, skip?: number, limit?: number): Observable<Match[]> {
+        // Add query only if both skip and limit are defined
+        const areQueryParamsUndefined: boolean = skip === undefined || limit === undefined;
+        const query: string = !areQueryParamsUndefined ? `?skip=${skip}&limit=${limit}` : '';
+        const reqPath: string = `${this.baseUrl}/api/users/${userId}/matches${query}`;
 
-        return this.httpClient
-            .get<GetMatchesResponse>(reqPath, this.createRequestOptions()).pipe(
-                catchError(this.handleError),
-                map<GetMatchesResponse, Match[]>((data: GetMatchesResponse) => {
-                    return data.matches
-                })
-            );
+        return this.httpClient.get<GetMatchesResponse>(reqPath, this.createRequestOptions()).pipe(
+            catchError(this.handleError),
+            map<GetMatchesResponse, Match[]>((data: GetMatchesResponse) => {
+                return data.matches;
+            })
+        );
     }
 
     public updateStats(userId: string, statsUpdate: ApiUserStats): Observable<ApiUserStats> {

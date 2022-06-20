@@ -30,6 +30,7 @@ export class HomepageScreenComponent implements OnInit {
     ngOnInit(): void {
         this.userInSessionId = this.userIdProvider.getUserId();
 
+        // TODO find a way to remove listeners
         // match-found event should be listened right as the user enters the app.
         // This is because another user can accept a match at any time,
         // even after the current user has logged out and logged in multiple times.
