@@ -38,15 +38,18 @@ export class NotificationScreenComponent implements OnInit, OnDestroy {
         // Set up the notification listeners
         const pollingNotifications = (notification: NotificationData) => {
             this.userApi.getUser(notification.sender).subscribe((user) => {
-                this.friendNotifications.push({
+                const newNotification: NotificationOverview = {
                     type: notification.type,
                     sender: notification.sender,
                     senderUsername: user.username,
-                });
+                };
+
                 if (notification.type === NotificationType.FriendRequest) {
-                    this.friendNotifications = [...this.friendNotifications];
+                    this.friendNotifications.push(newNotification);
+                } else if (notification.type === NotificationType.MatchRequest) {
+                    this.battleNotifications.push(newNotification);
                 } else {
-                    this.battleNotifications = [...this.battleNotifications];
+                    throw new Error(`Unhandled notification type '${notification.type}'`);
                 }
             });
         };
@@ -55,13 +58,17 @@ export class NotificationScreenComponent implements OnInit, OnDestroy {
 
         const pollingDeletedNotifications = (notification: NotificationData) => {
             if (notification.type === NotificationType.FriendRequest) {
-                this.friendNotifications = this.friendNotifications.filter((not) => {
-                    return notification.sender === not.sender && notification.type === not.type;
-                });
+                this.friendNotifications = this.friendNotifications.filter(
+                    (not: NotificationOverview) => {
+                        return notification.sender === not.sender && notification.type === not.type;
+                    }
+                );
             } else {
-                this.battleNotifications = this.battleNotifications.filter((not) => {
-                    return notification.sender === not.sender && notification.type === not.type;
-                });
+                this.battleNotifications = this.battleNotifications.filter(
+                    (not: NotificationOverview) => {
+                        return notification.sender === not.sender && notification.type === not.type;
+                    }
+                );
             }
         };
         pollingDeletedNotifications.bind(this);
