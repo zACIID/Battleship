@@ -12,7 +12,7 @@
             <p class="is-size-4"> <strong>Match History</strong> </p>
         </div>
        
-        <div class="match-list-height overflow-scroll">
+        <div *ngIf="matchHistory" class="match-list-height overflow-scroll">
 
             <app-list [matchList]="matchHistory"></app-list>
         

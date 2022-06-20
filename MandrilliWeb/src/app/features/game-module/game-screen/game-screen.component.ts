@@ -81,7 +81,7 @@ export class GameScreenComponent implements OnInit {
                             this.shipsCoordinates.push(coord);
                         }
                     }
-                    console.log(this.playerTurn)
+                    
                     // TODO remove since the match at this point is already joined?
                     //  the join is made right after the match-found event is raised
                     // this.joinMatch();

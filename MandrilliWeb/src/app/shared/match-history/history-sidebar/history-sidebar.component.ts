@@ -12,7 +12,7 @@ import { MatchApi } from '../../../core/api/handlers/match-api';
     styleUrls: ['./history-sidebar.component.css'],
 })
 export class HistorySidebarComponent implements OnInit {
-    public matchHistory: MatchOverview[] = [];
+    public matchHistory?: MatchOverview[] = undefined;
 
     constructor(
         private matchClient: MatchApi,
@@ -33,31 +33,29 @@ export class HistorySidebarComponent implements OnInit {
                     matches = [...match];
 
                     if (matches) {
-                        this.matchHistory = matches.map((x) => {
-                            // TODO uncomment when our spaghetti works
-                            //if (x.stats.winner === null) {
-                            //    throw new Error("A match shouldn't be completed without a winner");
-                            //}
-
-                            let usr1: string = '';
+                        for(let x of matches){
                             this.userClient
-                                .getUser(x.player1.playerId)
-                                .subscribe((usr: User) => (usr1 = usr.username));
-
-                            let usr2: string = '';
-                            this.userClient
+                            .getUser(x.player1.playerId)
+                            .subscribe((usr1: User) => {
+                                
+                                this.userClient
                                 .getUser(x.player2.playerId)
-                                .subscribe((usr: User) => (usr2 = usr.username));
+                                .subscribe((usr2: User) => {
+                                    this.matchHistory = [];
+                                    this.matchHistory.push({
+                                        matchId: x.matchId,
+                                        player1Id: x.player1.playerId,
+                                        player2Id: x.player2.playerId,
+                                        username1: usr1.username,
+                                        username2: usr2.username,
+                                        winner: x.stats.winner === null ? 'No Winner' : x.stats.winner,
+                                    })
+                                });
+                            
+                            });
 
-                            return {
-                                matchId: x.matchId,
-                                player1Id: x.player1.playerId,
-                                player2Id: x.player2.playerId,
-                                username1: usr1,
-                                username2: usr2,
-                                winner: x.stats.winner === null ? 'No Winner' : x.stats.winner,
-                            };
-                        });
+                        }
+
                     }
                 },
                 error: (err: Error) => {
