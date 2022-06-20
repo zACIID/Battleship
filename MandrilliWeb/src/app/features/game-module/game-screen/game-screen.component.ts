@@ -174,7 +174,10 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                     playerId: this.userInSessionId,
                     coordinates: { row: shotRow, col: shotCol },
                 })
-                .subscribe();
+                .subscribe({error: (err) => {
+                    this.userMessage.error = true;
+                    this.userMessage.errorMessage = "(" + row.toUpperCase() + ", " + col + ") has already been shot";
+                }});
         }
     }
 
