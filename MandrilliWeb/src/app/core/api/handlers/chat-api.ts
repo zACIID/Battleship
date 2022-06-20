@@ -73,11 +73,11 @@ export class ChatApi extends BaseAuthenticatedApi {
     public getMessages(chatId: string, skip?: number, limit?: number): Observable<Message[]> {
         
         // Add query only if both skip and limit are defined
-        const areQueryParamsUndefined: boolean = !skip || !limit;
+        const areQueryParamsUndefined: boolean = skip === undefined || limit === undefined;
         const query: string = !areQueryParamsUndefined ? `?skip=${skip}&limit=${limit}` : '';
 
         const reqPath: string = `${this.baseUrl}/api/chats/${chatId}/messages${query}`;
-
+        
         return this.httpClient.get<GetMessagesResponse>(reqPath, this.createRequestOptions()).pipe(
             catchError(this.handleError),
             map<GetMessagesResponse, Message[]>((res: GetMessagesResponse) => {
