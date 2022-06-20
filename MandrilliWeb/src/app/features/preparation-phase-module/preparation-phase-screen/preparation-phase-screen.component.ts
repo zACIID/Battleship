@@ -29,7 +29,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
     public trigger: number = 0;
     public ready: boolean = false;
     public opponentReady: boolean = false;
-    private userId: string = '';
+    public userInSessionId: string = '';
     private matchId: string = '';
     public allowRandomDeploy: boolean = false;
 
@@ -51,7 +51,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     ngOnInit(): void {
         try {
-            this.userId = this.userIdProvider.getUserId();
+            this.userInSessionId = this.userIdProvider.getUserId();
             this.route.params.subscribe((param) => {
                 this.matchId = param['id'];
             });
@@ -345,12 +345,12 @@ export class PreparationPhaseScreenComponent implements OnInit {
             // concat(this.matchClient.updatePlayerGrid(this.matchId, this.userId, this.grid),
             //     this.matchClient.setReadyState(this.matchId, this.userId, true)).subscribe();
             const temp = this.matchClient
-                .updatePlayerGrid(this.matchId, this.userId, this.grid)
+                .updatePlayerGrid(this.matchId, this.userInSessionId, this.grid)
                 .subscribe();
 
             // TODO
             // Add set ready request after the observable has been executed
-            temp.add(this.matchClient.setReadyState(this.matchId, this.userId, true).subscribe());
+            temp.add(this.matchClient.setReadyState(this.matchId, this.userInSessionId, true).subscribe());
 
             // Disabling battle button
             let battleBtn: HTMLButtonElement | null = <HTMLButtonElement>(
@@ -379,7 +379,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
 
     public async leaveMatch() {
         if (this.matchId)
-            this.fleeMatchEmitter.emit({ matchId: this.matchId, userId: this.userId });
+            this.fleeMatchEmitter.emit({ matchId: this.matchId, userId: this.userInSessionId });
         else throw new Error('Error while leaving the match');
         await this.router.navigate(['/homepage']);
     }

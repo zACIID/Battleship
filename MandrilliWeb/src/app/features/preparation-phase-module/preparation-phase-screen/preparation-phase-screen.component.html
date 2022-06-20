@@ -10,7 +10,7 @@
             <div class="column is-half height-100">
                 
                 <div class="board-height">
-                    <board [state]="grid" [triggerUpdate]="trigger"></board>
+                    <board [state]="grid" [triggerUpdate]="trigger" [userId]="userInSessionId"></board>
                 </div>
                 <div  class="width-80 margin-auto has-text-centered mt-0 height-20px mb-4">
                     <p *ngIf="positioningError.error" class="has-text-danger is-size-5">{{positioningError.errorMessage}}</p>

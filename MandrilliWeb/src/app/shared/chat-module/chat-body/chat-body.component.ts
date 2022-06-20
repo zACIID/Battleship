@@ -28,7 +28,7 @@ export class ChatBodyComponent implements OnInit, AfterViewChecked {
     };
 
     ngOnChanges(): void {
-        this.options = { skip: 0, limit: 5 };
+        this.options = { skip: 0, limit: 10 };
         this.ngOnInit()
     }
 
