@@ -170,7 +170,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
 
 
     public randomDeploy() {
-        let letters: string[] = ["a", "b", "c", "d", "e", "f", "g", "j"]
+        let letters: string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
         while (
             !this.deploy(
                 'Carrier',
@@ -202,8 +202,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
             ) {}
         }
 
-        let i = 0;
-        for (i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             for (let r = 0; r < 11; r++) {
                 let deployed = false;
                 for (let c = 0; c < 11; c++) {
