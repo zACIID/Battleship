@@ -11,5 +11,14 @@ export enum MatchTerminatedReason {
  * Contains the reason of why the match was terminated.
  */
 export interface MatchTerminatedData {
+    /**
+     * Username of the player that won.
+     * A match always terminates with a winner.
+     */
+    winnerUsername: string;
+
+    /**
+     * Reason why the game terminated
+     */
     reason: MatchTerminatedReason;
 }

@@ -9,6 +9,8 @@ import { Shot } from './state/shot';
 import { GridCoordinates } from './state/grid-coordinates';
 import * as usr from '../user/user';
 import { UserDocument, UserStatus } from '../user/user';
+import { MatchStatsUpdate } from '../../api/match/stats-update';
+import { fromUnixSeconds } from '../../../routes/utils/date-utils';
 
 export interface Match {
     player1: PlayerState;
@@ -146,28 +148,22 @@ export async function deleteMatch(matchId: Types.ObjectId): Promise<void> {
 
 /**
  * @param matchId id of the match to update
- * @param winner id of the user that won the match
- * @param totalShots total number of shots fired in the match
- * @param shipsDestroyed total number of ships destroyed in the match
- * @param endTime match ending time in unix seconds
+ * @param statsUpdate object containing the new stats of the match
  */
 export async function updateMatchStats(
     matchId: Types.ObjectId,
-    winner: Types.ObjectId,
-    totalShots: number,
-    shipsDestroyed: number,
-    endTime: number
+    statsUpdate: MatchStatsUpdate
 ): Promise<MatchDocument> {
     const match: MatchDocument = await MatchModel.findOne({ _id: matchId }).catch((err: Error) => {
         return Promise.reject(new Error('No match with that id'));
     });
 
     const updatedStats: MatchStats = {
-        winner: winner,
+        winner: Types.ObjectId(statsUpdate.winner),
         startTime: match.stats.startTime,
-        endTime: new Date(endTime * 1000),
-        totalShots: totalShots,
-        shipsDestroyed: shipsDestroyed,
+        endTime: fromUnixSeconds(statsUpdate.endTime),
+        totalShots: statsUpdate.totalShots,
+        shipsDestroyed: statsUpdate.shipsDestroyed,
     };
     match.set('stats', updatedStats);
 

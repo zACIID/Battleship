@@ -17,5 +17,5 @@ export interface MatchStatsUpdate {
     /**
      * Number of ships destroyed during the match
      */
-    totalHits: number;
+    shipsDestroyed: number;
 }

@@ -5,6 +5,7 @@ import { ClientListenerNotifier } from './base/client-listener-notifier';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
 import { Types } from 'mongoose';
 import { MatchTerminatedReason } from '../../model/events/match-terminated-data';
+import { getUserById, UserDocument } from '../../model/database/user/user';
 
 /**
  * Class that wraps socket.io functionality to listen
@@ -25,14 +26,11 @@ export class PlayerWonListener extends ClientListenerNotifier<PlayerWonData> {
                 Types.ObjectId(eventData.matchId)
             );
 
-            matchTerminatedNotifier.emit({
+            const winner: UserDocument = await getUserById(Types.ObjectId(eventData.winnerId));
+            await matchTerminatedNotifier.emit({
+                winnerUsername: winner.username,
                 reason: MatchTerminatedReason.PlayerWon,
             });
-
-            // TODO update stats here instead of delegating one of the
-            //  players (the winner) to do it?
-
-            return Promise.resolve();
         });
     }
 }

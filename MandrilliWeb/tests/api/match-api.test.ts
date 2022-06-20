@@ -186,7 +186,7 @@ describe('Update Stats', () => {
             winner: insMatches[0].playerIds[0],
             endTime: 0,
             totalShots: 0,
-            totalHits: 0,
+            shipsDestroyed: 0,
         };
         matchApi.updateStats(insMatches[0].matchId, matchStats).subscribe({
             next: (matchStats: MatchStatsUpdate) => {
@@ -199,7 +199,7 @@ describe('Update Stats', () => {
                         winner: expect.any(String),
                         endTime: expect.any(Number),
                         totalShots: expect.any(Number),
-                        totalHits: expect.any(Number),
+                        shipsDestroyed: expect.any(Number),
                     })
                 );
             },
@@ -218,7 +218,7 @@ describe('Update Stats', () => {
             winner: insMatches[0].playerIds[0],
             endTime: 0,
             totalShots: 0,
-            totalHits: 0,
+            shipsDestroyed: 0,
         };
 
         matchApi.updateStats(wrongMatchId, matchStats).subscribe({
@@ -241,7 +241,7 @@ describe('Update Stats', () => {
             winner: insMatches[0].playerIds[0],
             endTime: 0,
             totalShots: 0,
-            totalHits: 0,
+            shipsDestroyed: 0,
         };
 
         matchApi.updateStats(insMatches[0].matchId, matchStats).subscribe({

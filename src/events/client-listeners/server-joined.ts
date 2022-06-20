@@ -86,7 +86,15 @@ export class ServerJoinedListener extends ClientListenerNotifier<UserData> {
                 this.ioServer,
                 currentMatch._id
             );
-            matchTerminated.emit({
+
+            // The winner is the other user with respect to the one who's leaving the match
+            const p1Id: Types.ObjectId = currentMatch.player1.playerId;
+            const p2Id: Types.ObjectId = currentMatch.player2.playerId;
+            const winnerId: Types.ObjectId = p1Id === userObjId ? p2Id : p1Id;
+            const winner: UserDocument = await getUserById(winnerId);
+
+            await matchTerminated.emit({
+                winnerUsername: winner.username,
                 reason: MatchTerminatedReason.PlayerLeftTheGame,
             });
         }

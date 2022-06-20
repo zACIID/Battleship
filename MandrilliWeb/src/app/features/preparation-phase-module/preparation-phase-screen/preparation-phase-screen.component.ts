@@ -1,9 +1,9 @@
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
-import { MatchApi } from './../../../core/api/handlers/match-api';
-import { HtmlErrorMessage } from './../../../core/model/utils/htmlErrorMessage';
-import { GridCoordinates } from './../../../core/model/match/coordinates';
-import { Ship } from './../../../core/model/match/ship';
-import { BattleshipGrid } from './../../../core/model/match/battleship-grid';
+import { MatchApi } from '../../../core/api/handlers/match-api';
+import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
+import { GridCoordinates } from '../../../core/model/match/coordinates';
+import { Ship } from '../../../core/model/match/ship';
+import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
 import { Component, OnInit } from '@angular/core';
 import { PlayerStateChangedListener } from 'src/app/core/events/listeners/player-state-changed';
 import { PlayerStateChangedData } from 'src/app/core/model/events/player-state-changed-data';
@@ -12,10 +12,6 @@ import { GenericMessage } from 'src/app/core/model/events/generic-message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { MatchTerminatedListener } from '../../../core/events/listeners/match-terminated';
-import {
-    MatchTerminatedData,
-    MatchTerminatedReason,
-} from '../../../core/model/events/match-terminated-data';
 
 @Component({
     selector: 'app-preparation-phase-screen',
@@ -75,30 +71,6 @@ export class PreparationPhaseScreenComponent implements OnInit {
         };
         onPositioningCompleted.bind(this);
         this.positioningCompletedListener.listen(onPositioningCompleted);
-
-        const onMatchTerminated = async (data: MatchTerminatedData) => {
-            // remember to un-listen after this event, else there is a redirection
-            // to another screen and the listener is still registered
-            this.matchTerminatedListener.unListen();
-
-            if (data.reason === MatchTerminatedReason.PlayerLeftTheGame) {
-                // If this is the reason but this player is still listening,
-                // it means that he is the only one left in the game,
-                // so he is the winner
-                // TODO update match stats (shots + ships = 0) + redirect match result
-            } else {
-                throw new Error(`There shouldn't be another reason other
-                than ${MatchTerminatedReason.PlayerLeftTheGame}. Actual: ${data.reason}`);
-            }
-        };
-        onMatchTerminated.bind(this);
-        this.matchTerminatedListener.listen(onMatchTerminated);
-    }
-
-    ngOnDestroy(): void {
-        this.playerStateListener.unListen();
-        this.positioningCompletedListener.unListen();
-        this.matchTerminatedListener.unListen();
     }
 
     private isValidCoords(row: number, col: number): boolean {
@@ -382,5 +354,11 @@ export class PreparationPhaseScreenComponent implements OnInit {
             this.fleeMatchEmitter.emit({ matchId: this.matchId, userId: this.userInSessionId });
         else throw new Error('Error while leaving the match');
         await this.router.navigate(['/homepage']);
+    }
+
+    ngOnDestroy(): void {
+        this.playerStateListener.unListen();
+        this.positioningCompletedListener.unListen();
+        this.matchTerminatedListener.unListen();
     }
 }

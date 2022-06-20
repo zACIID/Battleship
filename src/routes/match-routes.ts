@@ -21,6 +21,7 @@ import { AuthenticatedRequest } from './utils/authenticated-request';
 import { toApiMatchStats } from './utils/model-to-api-conversion';
 import chalk from 'chalk';
 import { toUnixSeconds } from './utils/date-utils';
+import { MatchStatsUpdate } from '../model/api/match/stats-update';
 
 export const router = Router();
 
@@ -66,15 +67,8 @@ router.get(
     }
 );
 
-interface UpdateStatsBody {
-    winner: string;
-    totalShots: number;
-    shipsDestroyed: number;
-    endTime: number;
-}
-
 interface UpdateStatsRequest extends AuthenticatedRequest {
-    body: UpdateStatsBody;
+    body: MatchStatsUpdate;
 }
 
 /**
@@ -88,15 +82,7 @@ router.patch(
     async (req: UpdateStatsRequest, res: MatchEndpointResponse) => {
         try {
             const matchId: Types.ObjectId = res.locals.matchId;
-            const { winner, totalShots, shipsDestroyed, endTime } = req.body;
-
-            await updateMatchStats(
-                matchId,
-                Types.ObjectId(winner),
-                totalShots,
-                shipsDestroyed,
-                endTime
-            );
+            await updateMatchStats(matchId, req.body);
 
             return res.status(200).json(req.body);
         } catch (err) {

@@ -88,6 +88,7 @@ describe('Player Won - Match Terminated', () => {
         const assertMatchTerminatedEvent = (eventData: MatchTerminatedData) => {
             // Match id could be any string
             expect(eventData.reason).toEqual(expect.any(String));
+            expect(eventData.winnerUsername).toEqual(expect.any(String));
 
             // End only after having listened to both events
             if (bothEventsFired()) {

@@ -1,4 +1,6 @@
-import { ChatMessageListener } from './../../../core/events/listeners/chat-message';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { ChatMessageListener } from '../../../core/events/listeners/chat-message';
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from '../../../../../../src/model/database/match/state/grid-coordinates';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
@@ -7,17 +9,11 @@ import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 import { Match } from 'src/app/core/model/match/match';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { ShotData } from 'src/app/core/model/events/shot-data';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
-import {
-    MatchTerminatedData,
-    MatchTerminatedReason,
-} from '../../../core/model/events/match-terminated-data';
 import { MatchTerminatedListener } from '../../../core/events/listeners/match-terminated';
-
 @Component({
     selector: 'app-game-screen',
     templateUrl: './game-screen.component.html',
@@ -41,9 +37,9 @@ export class GameScreenComponent implements OnInit {
         private matchTerminatedListener: MatchTerminatedListener,
         private chatMessageEmitter: ChatJoinedEmitter,
         private leaveMatchEmitter: MatchLeftEmitter,
-        private fleeWinnerEmitter: PlayerWonEmitter,
+        private playerWonEmitter: PlayerWonEmitter,
         private userIdProvider: UserIdProvider,
-        private matchClient: MatchApi,
+        private matchApi: MatchApi,
         private router: Router,
         private shotListener: ShotFiredListener
     ) {}
@@ -55,7 +51,7 @@ export class GameScreenComponent implements OnInit {
             this.route.params.subscribe((params) => {
                 this.match.matchId = params['id'];
 
-                this.matchClient.getMatch(this.match.matchId).subscribe((data) => {
+                this.matchApi.getMatch(this.match.matchId).subscribe((data) => {
                     this.match = data;
                     if (data.player1.playerId === this.userInSessionId) {
                         this.playerGrid = data.player1.grid;
@@ -111,30 +107,16 @@ export class GameScreenComponent implements OnInit {
                 };
                 refreshChat.bind(this);
                 this.chatMessageListener.listen(refreshChat);
-
-                const onMatchTerminated = async (data: MatchTerminatedData) => {
-                    // remember to un-listen after this event, else there is a redirection
-                    // to another screen and the listener is still registered
-                    this.matchTerminatedListener.unListen();
-
-                    if (data.reason === MatchTerminatedReason.PlayerLeftTheGame) {
-                        // If this is the reason but this player is still listening,
-                        // it means that he is the only one left in the game,
-                        // so he is the winner
-                        // TODO update match stats  + redirect match result
-                    } else if (data.reason === MatchTerminatedReason.PlayerWon) {
-                        // TODO redirect to match result: the player that won (or lost)
-                        //  should have already updated the stats
-                    } else {
-                        throw new Error(`Unknown reason`);
-                    }
-                };
-                onMatchTerminated.bind(this);
-                this.matchTerminatedListener.listen(onMatchTerminated);
             });
         } catch (err) {
             console.log('An error occurred while initializing the game screen: ' + err);
         }
+    }
+
+    private async redirectToMatchResultScreen() {
+        const path: string = '/match-results/' + this.match.matchId;
+
+        await this.router.navigate([path]);
     }
 
     ngOnDestroy(): void {
@@ -187,7 +169,7 @@ export class GameScreenComponent implements OnInit {
         let shotCol: number = this.parseCoord(col);
 
         if (this.isValidCoords(shotRow, shotCol)) {
-            this.matchClient
+            this.matchApi
                 .fireShot(this.match.matchId, {
                     playerId: this.userInSessionId,
                     coordinates: { row: shotRow, col: shotCol },
@@ -197,25 +179,21 @@ export class GameScreenComponent implements OnInit {
     }
 
     public async leaveMatch() {
-        const path: string = '/match-results/' + this.match.matchId;
         if (this.match.matchId)
             this.leaveMatchEmitter.emit({
                 matchId: this.match.matchId,
                 userId: this.userInSessionId,
             });
-        else throw new Error('MatchId not found');
-        await this.router.navigate([path]);
-    }
+        else {
+            throw new Error('MatchId not found');
+        }
 
-    // TODO remove? see TODO above
-    //private joinMatch() {
-    //    if (this.match?.matchId) this.joinMatchEmitter.emit({ matchId: this.match.matchId });
-    //    else throw new Error('MatchId not found');
-    //}
+        await this.redirectToMatchResultScreen();
+    }
 
     private lostAndSauced() {
         if (this.match !== undefined) {
-            this.fleeWinnerEmitter.emit({
+            this.playerWonEmitter.emit({
                 winnerId: this.opponentsId,
                 matchId: this.match.matchId,
             });

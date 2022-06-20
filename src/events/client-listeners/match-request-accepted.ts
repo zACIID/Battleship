@@ -34,7 +34,7 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<Request
                 //  notify the user that the request couldn't be accepted,
                 //  and send a reason for its
                 console.log(
-                    chalk.yellow(
+                    chalk.bgYellow(
                         `[${MatchRequestAcceptedListener.name}] Match request could not be accepted 
                         because at least one user is not available`
                     )
