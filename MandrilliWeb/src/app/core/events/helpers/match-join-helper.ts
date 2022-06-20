@@ -8,6 +8,7 @@ import { UserIdProvider } from '../../api/userId-auth/userId-provider';
 import { MatchData } from '../../model/events/match-data';
 import { JoinReason } from '../../model/events/match-joined-data';
 import { MatchTerminatedData } from '../../model/events/match-terminated-data';
+import { MatchLeftEmitter } from '../emitters/match-left';
 
 /**
  * Class that helps to handle all the match-join related event handlers.
@@ -20,8 +21,9 @@ import { MatchTerminatedData } from '../../model/events/match-terminated-data';
 export class MatchJoinHelper {
     constructor(
         private userIdProvider: UserIdProvider,
-        private matchJoined: MatchJoinedEmitter,
         private matchFound: MatchFoundListener,
+        private matchJoined: MatchJoinedEmitter,
+        private matchLeftEmitter: MatchLeftEmitter,
         private matchTerminated: MatchTerminatedListener,
         private router: Router
     ) {}
@@ -31,6 +33,7 @@ export class MatchJoinHelper {
      * - listening for the match found event;
      * - joining a match when found;
      * - listening for the match terminated event after the match has been found;
+     * - leaving the match after it has terminated;
      * - handling all the redirections associated with such events.
      */
     public setupEventHandlers() {
@@ -39,11 +42,12 @@ export class MatchJoinHelper {
         // even after the current user has logged out and logged in multiple times.
         const onMatchFound = async (matchFoundData: MatchData): Promise<void> => {
             console.log('Match found');
+            const currentUserId: string = this.userIdProvider.getUserId();
 
             // Join the new match as a player
             this.matchJoined.emit({
                 matchId: matchFoundData.matchId,
-                userId: this.userIdProvider.getUserId(),
+                userId: currentUserId,
                 joinReason: JoinReason.Player,
             });
 
@@ -58,6 +62,13 @@ export class MatchJoinHelper {
 
                 console.log(`Match terminated. Reason: ${termData.reason}`);
                 console.log(`Player '${termData.winnerUsername}' has won the game`);
+
+                // Since the match has ended, notify the server that
+                // the current user is leaving the match
+                this.matchLeftEmitter.emit({
+                    matchId: matchFoundData.matchId,
+                    userId: currentUserId,
+                });
 
                 await this.redirectToMatchResultScreen(matchFoundData.matchId);
             };

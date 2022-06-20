@@ -61,7 +61,7 @@ export class MatchTerminatedEmitter extends RoomEmitter<MatchTerminatedData> {
             const match: MatchDocument = await getMatchById(this.matchId);
 
             if (match.stats.endTime !== null) {
-                console.log(chalk.bgRed(`Match has already ended! Doing nothing`));
+                console.log(chalk.bgYellow(`Match has already ended! Doing nothing`));
 
                 return;
             }
