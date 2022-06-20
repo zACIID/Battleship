@@ -186,7 +186,7 @@
 
         <div class="columns">
 
-            <div class="column mr-3">
+            <div *ngIf="opponentsId" class="column mr-3">
                 <player-info [userId]="opponentsId" [redirection]="false"></player-info>
             </div>
 

@@ -7,7 +7,7 @@
             <div *ngIf="match" class="column is-half">
 
                 <div class="width-80 margin-auto mb-6">
-                    <player-info [userId]="match.player1.playerId" (redirection)="false"></player-info>
+                    <player-info [userId]="match.player1.playerId" [redirection]="false"></player-info>
                 </div>
                 <board [state]="match.player1.grid" [triggerUpdate]="trigger" [userId]="match.player1.playerId"></board>
 
@@ -15,7 +15,7 @@
             <div *ngIf="match" class="column is-half">
 
                 <div class="width-80 margin-auto mb-6">
-                    <player-info [userId]="match.player2.playerId" (redirection)="false"></player-info>
+                    <player-info [userId]="match.player2.playerId" [redirection]="false"></player-info>
                 </div>
                 <board [state]="match.player2.grid" [triggerUpdate]="trigger" [userId]="match.player2.playerId"></board>
             </div>

@@ -1,3 +1,5 @@
+import { Match } from './../../../core/model/match/match';
+import { UserApi } from './../../../core/api/handlers/user-api';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { MatchApi } from '../../../core/api/handlers/match-api';
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
@@ -18,8 +20,8 @@ import { MatchTerminatedListener } from '../../../core/events/listeners/match-te
     templateUrl: './preparation-phase-screen.component.html',
     styleUrls: ['./preparation-phase-screen.component.css'],
 })
-export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
-    public opponentsId: string = '';
+export class PreparationPhaseScreenComponent implements OnInit {
+    public opponentsId?: string = undefined;
     public grid: BattleshipGrid = new BattleshipGrid();
     public positioningError: HtmlErrorMessage = new HtmlErrorMessage();
     public trigger: number = 0;
@@ -50,6 +52,13 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
             this.userInSessionId = this.userIdProvider.getUserId();
             this.route.params.subscribe((param) => {
                 this.matchId = param['id'];
+
+                this.matchClient.getMatch(this.matchId).subscribe((match: Match) => {
+                    if(match.player1.playerId !== this.userInSessionId)
+                        this.opponentsId = match.player1.playerId;
+                    else this.opponentsId = match.player2.playerId;
+                })
+
             });
         } catch (err) {
             console.log('An error occurred while retrieving the match from the url');
