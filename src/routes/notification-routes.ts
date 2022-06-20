@@ -27,11 +27,7 @@ interface NotificationRequest extends AuthenticatedRequest {
     body: PostBody;
 }
 
-const errorMessages: string[] = [
-    'No user with that identifier',
-    'Notification not found',
-    'Notification already sent',
-];
+const errorMessages: string[] = ['No user with that identifier', 'Notification not found'];
 
 /**
  *    /users/:userId/notifications | GET | Retrieve the notifications of the specified user
@@ -148,7 +144,7 @@ router.delete(
 
             return res.status(204).json();
         } catch (err) {
-            const status: number = errorMessages.find((e) => e === err.message) ? 404 : 500;
+            const status: number = errorMessages.find((e) => e === err.message) ? 404 : 400;
             return res.status(status).json({
                 timestamp: toUnixSeconds(new Date()),
                 errorMessage: err.message,

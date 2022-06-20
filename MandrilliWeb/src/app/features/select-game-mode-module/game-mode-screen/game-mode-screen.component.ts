@@ -30,7 +30,11 @@ export class GameModeScreenComponent implements OnInit {
 
     ngOnDestroy(): void {
         this.matchListener.unListen();
-        this.queue.removeFromQueue(this.userIdProvider.getUserId()).subscribe();
+        this.queue.removeFromQueue(this.userIdProvider.getUserId()).subscribe({
+            error: (err: Error) => {
+                console.log(`Could not remove user from matchmaking queue. Reason: ${err.message}`);
+            },
+        });
     }
 
     public startMatchmaking() {
@@ -45,7 +49,8 @@ export class GameModeScreenComponent implements OnInit {
                 //  this is because another user can accept a match at any time,
                 //  even after the current user has logged out and logged in multiple times
                 const matchFound = async (data: MatchData): Promise<void> => {
-                    console.log('Beeagus found');
+                    console.log('Match found');
+
                     // Join the new match as a player
                     this.matchJoined.emit({
                         matchId: data.matchId,
