@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class PlayerInfoComponent implements OnInit {
     @Input() userId?: string;
     public user?: Overview = undefined;
+    @Input() redirection: boolean = true;
 
     constructor(private router: Router, private userClient: UserApi) {}
 
@@ -35,9 +36,10 @@ export class PlayerInfoComponent implements OnInit {
     }
 
     public async show_profile() {
-        let url: string = '/profile/' + this.userId;
-
-        await this.router.navigate([url]);
+        if(this.redirection){
+            let url: string = '/profile/' + this.userId;
+            await this.router.navigate([url]);
+        }
     }
 
 

@@ -23,7 +23,7 @@ import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 export class ObserversScreenComponent implements OnInit {
     public matchShowedId: string = '';
     public match?: Match = undefined;
-    public chatId: string = '';
+    public chatId?: string = undefined;
     public generalEnd: string = '';
     public trigger: number = 0;
 
@@ -70,12 +70,14 @@ export class ObserversScreenComponent implements OnInit {
                     this.playersShotListener.listen(pollingPlayerHits);
 
                     const pollingMatchResult = async (data: MatchTerminatedData): Promise<void> => {
-                        const matchId: string = this.match?.matchId || '';
-                        const path: string = '/match-results/' + matchId;
-
-                        this.generalEnd = data.reason.valueOf();
-
-                        await this.router.navigate([path]);
+                        if(this.match){
+                            const path: string = '/match-results/' + this.match.matchId;
+                            this.generalEnd = data.reason.valueOf();
+                            await this.router.navigate([path]);
+                        }
+                        else{
+                            throw new Error("Error with match inizialization")
+                        }
                     };
                     pollingMatchResult.bind(this);
                     this.matchTerminatedListener.listen(pollingMatchResult);
@@ -95,10 +97,13 @@ export class ObserversScreenComponent implements OnInit {
     }
 
     ngOnDestroy(): void {
-        const matchId: string = this.match?.matchId || '';
-
-        this.matchLeftEmitter.emit({ matchId: matchId, userId: this.userIdProvider.getUserId() });
-        this.chatLeftEmitter.emit({ chatId: this.chatId });
+        
+        if(this.match){
+            this.matchLeftEmitter.emit({ matchId: this.match.matchId, userId: this.userIdProvider.getUserId() });
+        }
+        if(this.chatId){
+            this.chatLeftEmitter.emit({ chatId: this.chatId });
+        }
 
         this.chatMessageListener.unListen();
         this.matchTerminatedListener.unListen();
