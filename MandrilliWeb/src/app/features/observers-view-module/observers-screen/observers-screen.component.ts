@@ -106,6 +106,6 @@ export class ObserversScreenComponent implements OnInit {
     }
 
     public async quitView() {
-        await this.router.navigate(['/relationship']);
+        await this.router.navigate(['/relationships']);
     }
 }
