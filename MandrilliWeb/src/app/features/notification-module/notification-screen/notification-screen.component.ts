@@ -4,11 +4,13 @@ import { NotificationOverview } from '../../../core/model/user/notification-over
 import { FriendRequestAcceptedEmitter } from '../../../core/events/emitters/friend-request-accepted';
 import { NotificationApi } from '../../../core/api/handlers/notification-api';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NotificationType } from '../../../core/model/user/notification';
+import { Notification, NotificationType } from '../../../core/model/user/notification';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
 import { NotificationReceivedListener } from 'src/app/core/events/listeners/notification-received';
 import { NotificationData } from 'src/app/core/model/events/notification-data';
 import { NotificationDeletedListener } from 'src/app/core/events/listeners/notification-deleted';
+import { merge, Observable } from 'rxjs';
+import { User } from '../../../core/model/user/user';
 
 @Component({
     selector: 'app-notification-screen',
@@ -31,33 +33,9 @@ export class NotificationScreenComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        try {
-            this.userId = this.userIdProvider.getUserId();
-            this.notificationApi.getNotifications(this.userId).subscribe((data) => {
-                for (let not of data) {
-                    if (not.type === NotificationType.FriendRequest) {
-                        this.userApi.getUser(not.sender).subscribe((usr) => {
-                            this.friendNotifications.push({
-                                type: not.type,
-                                sender: not.sender,
-                                senderUsername: usr.username,
-                            });
-                        });
-                    } else {
-                        this.userApi.getUser(not.sender).subscribe((usr) => {
-                            this.battleNotifications.push({
-                                type: not.type,
-                                sender: not.sender,
-                                senderUsername: usr.username,
-                            });
-                        });
-                    }
-                }
-            });
-        } catch (err) {
-            console.log(err);
-        }
+        this.populateNotificationsComponent();
 
+        // Set up the notification listeners
         const pollingNotifications = (notification: NotificationData) => {
             this.userApi.getUser(notification.sender).subscribe((user) => {
                 this.friendNotifications.push({
@@ -88,6 +66,66 @@ export class NotificationScreenComponent implements OnInit, OnDestroy {
         };
         pollingDeletedNotifications.bind(this);
         this.notificationDelListener.listen(pollingDeletedNotifications);
+    }
+
+    /**
+     * Fetches the notifications for the user and populates the component
+     * @private
+     */
+    private populateNotificationsComponent() {
+        try {
+            this.userId = this.userIdProvider.getUserId();
+            this.notificationApi
+                .getNotifications(this.userId)
+                .subscribe((notifications: Notification[]) => {
+                    // Extract the unique sender ids. They will be later used to fetch
+                    // the username of each sender
+                    const senderIds: string[] = notifications.map((n: Notification) => {
+                        return n.sender;
+                    });
+                    const uniqueSenderIds: string[] = Array.from(new Set(senderIds));
+
+                    // Merge all the observable of the senders into one
+                    const senderFetchers: Observable<User>[] = uniqueSenderIds.map(
+                        (sId: string) => {
+                            return this.userApi.getUser(sId);
+                        }
+                    );
+                    const mergedFetchers: Observable<User> = merge(...senderFetchers);
+
+                    // First fetch the username of each sender,
+                    // then, on completion, populate the notification component
+                    const usernamesById: { [id: string]: string } = {};
+                    mergedFetchers.subscribe({
+                        next: (sender: User) => {
+                            usernamesById[sender.userId] = sender.username;
+                        },
+                        complete: () => {
+                            notifications.forEach((n: Notification) => {
+                                const notificationOverview: NotificationOverview = {
+                                    type: n.type,
+                                    sender: n.sender,
+                                    senderUsername: usernamesById[n.sender],
+                                };
+
+                                if (n.type === NotificationType.FriendRequest) {
+                                    this.friendNotifications.push(notificationOverview);
+                                } else if (n.type === NotificationType.MatchRequest) {
+                                    this.battleNotifications.push(notificationOverview);
+                                } else {
+                                    throw new Error(`Unhandled case of notification type.
+                                    Unknown type: ${n.type}`);
+                                }
+                            });
+                        },
+                    });
+                });
+        } catch (err) {
+            if (err instanceof Error) {
+                console.log(`An error occurred while trying to populate the notification component.
+                Reason: ${err.message}`);
+            }
+        }
     }
 
     ngOnDestroy(): void {
