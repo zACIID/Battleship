@@ -11,6 +11,11 @@ import { PositioningCompletedListener } from 'src/app/core/events/listeners/posi
 import { GenericMessage } from 'src/app/core/model/events/generic-message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
+import { MatchTerminatedListener } from '../../../core/events/listeners/match-terminated';
+import {
+    MatchTerminatedData,
+    MatchTerminatedReason,
+} from '../../../core/model/events/match-terminated-data';
 
 @Component({
     selector: 'app-preparation-phase-screen',
@@ -37,6 +42,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
         private route: ActivatedRoute,
         private playerStateListener: PlayerStateChangedListener,
         private positioningCompletedListener: PositioningCompletedListener,
+        private matchTerminatedListener: MatchTerminatedListener,
         private userIdProvider: UserIdProvider,
         private router: Router,
         private matchClient: MatchApi,
@@ -53,6 +59,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
             console.log('An error occurred while retrieving the match from the url');
         }
 
+        // Setup all the listeners
         const onPlayerStateChanged = (data: PlayerStateChangedData): void => {
             console.log(`Player ${data.playerId} is ready`);
 
@@ -63,40 +70,61 @@ export class PreparationPhaseScreenComponent implements OnInit {
         this.playerStateListener.listen(onPlayerStateChanged);
 
         const onPositioningCompleted = async (data: GenericMessage): Promise<void> => {
-
             const path: string = '/game/' + this.matchId;
             await this.router.navigate([path]);
         };
         onPositioningCompleted.bind(this);
         this.positioningCompletedListener.listen(onPositioningCompleted);
 
+        const onMatchTerminated = async (data: MatchTerminatedData) => {
+            // remember to un-listen after this event, else there is a redirection
+            // to another screen and the listener is still registered
+            this.matchTerminatedListener.unListen();
+
+            if (data.reason === MatchTerminatedReason.PlayerLeftTheGame) {
+                // If this is the reason but this player is still listening,
+                // it means that he is the only one left in the game,
+                // so he is the winner
+                // TODO update match stats (shots + ships = 0) + redirect match result
+            } else {
+                throw new Error(`There shouldn't be another reason other
+                than ${MatchTerminatedReason.PlayerLeftTheGame}. Actual: ${data.reason}`);
+            }
+        };
+        onMatchTerminated.bind(this);
+        this.matchTerminatedListener.listen(onMatchTerminated);
     }
 
     ngOnDestroy(): void {
         this.playerStateListener.unListen();
         this.positioningCompletedListener.unListen();
+        this.matchTerminatedListener.unListen();
     }
 
     private isValidCoords(row: number, col: number): boolean {
         if (!isNaN(row) && !isNaN(col)) {
             if (row <= 9 && row >= 0 && col <= 9 && col >= 0) {
                 for (let ship of this.grid.ships) {
-                    for (let coord of ship.coordinates){
+                    for (let coord of ship.coordinates) {
                         if (coord.row == row && coord.col == col) {
                             this.positioningError.errorMessage =
                                 ' position is invalid: overlapping';
                             return false;
                         }
-                        
-                        if ((coord.row === row + 1 && coord.col === col + 1) || (coord.row === row - 1 && coord.col === col - 1) || 
-                            (coord.row === row + 1 && coord.col === col - 1) || (coord.row === row - 1 && coord.col === col + 1) ||
-                            (coord.row === row + 1 && coord.col === col) || (coord.row === row && coord.col === col + 1) ||
-                            (coord.row === row - 1 && coord.col === col) || (coord.row === row && coord.col === col - 1)){
-                            this.positioningError.errorMessage =
-                                ' position is invalid: too close';
-                                return false;
+
+                        if (
+                            (coord.row === row + 1 && coord.col === col + 1) ||
+                            (coord.row === row - 1 && coord.col === col - 1) ||
+                            (coord.row === row + 1 && coord.col === col - 1) ||
+                            (coord.row === row - 1 && coord.col === col + 1) ||
+                            (coord.row === row + 1 && coord.col === col) ||
+                            (coord.row === row && coord.col === col + 1) ||
+                            (coord.row === row - 1 && coord.col === col) ||
+                            (coord.row === row && coord.col === col - 1)
+                        ) {
+                            this.positioningError.errorMessage = ' position is invalid: too close';
+                            return false;
                         }
-                        
                     }
                 }
                 return true;
@@ -153,7 +181,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 this.randomBool()
             )
         ) {}
-       
+
         for (let i = 0; i < 2; i++) {
             while (
                 !this.deploy(
@@ -164,7 +192,7 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
-        
+
         for (let i = 0; i < 3; i++) {
             while (
                 !this.deploy(
@@ -175,28 +203,23 @@ export class PreparationPhaseScreenComponent implements OnInit {
                 )
             ) {}
         }
-        
-        let i = 0
+
+        let i = 0;
         for (i = 0; i < 5; i++) {
-            
-            for(let r = 0; r < 11; r++){
+            for (let r = 0; r < 11; r++) {
                 let deployed = false;
-                for(let c = 0; c < 11; c++){
-                    if(this.deploy('Destroyer', r.toString(), c.toString(), true)){
+                for (let c = 0; c < 11; c++) {
+                    if (this.deploy('Destroyer', r.toString(), c.toString(), true)) {
+                        deployed = true;
+                        break;
+                    } else if (this.deploy('Destroyer', r.toString(), c.toString(), false)) {
                         deployed = true;
                         break;
                     }
-                    else if(this.deploy('Destroyer', r.toString(), c.toString(), false)){
-                        deployed = true;
-                        break;
-                    }
-                    
                 }
                 if (deployed) break;
             }
-            
         }
-        
     }
 
     public deploy(shipType: string, row: string, col: string, vertical: boolean): boolean {

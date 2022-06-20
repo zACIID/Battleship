@@ -4,7 +4,6 @@ import { GridCoordinates } from '../../../../../../src/model/database/match/stat
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
 import { Component, OnInit } from '@angular/core';
 import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
-import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
 import { PlayerWonEmitter } from 'src/app/core/events/emitters/player-won';
 import { Match } from 'src/app/core/model/match/match';
@@ -13,8 +12,11 @@ import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { ShotData } from 'src/app/core/model/events/shot-data';
 import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
-import { JoinReason } from 'src/app/core/model/events/match-joined-data';
-import { createSocket } from 'dgram';
+import {
+    MatchTerminatedData,
+    MatchTerminatedReason,
+} from '../../../core/model/events/match-terminated-data';
+import { MatchTerminatedListener } from '../../../core/events/listeners/match-terminated';
 
 @Component({
     selector: 'app-game-screen',
@@ -36,13 +38,14 @@ export class GameScreenComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private chatMessageListener: ChatMessageListener,
+        private matchTerminatedListener: MatchTerminatedListener,
         private chatMessageEmitter: ChatJoinedEmitter,
         private leaveMatchEmitter: MatchLeftEmitter,
         private fleeWinnerEmitter: PlayerWonEmitter,
         private userIdProvider: UserIdProvider,
         private matchClient: MatchApi,
         private router: Router,
-        private shotListener: ShotFiredListener,
+        private shotListener: ShotFiredListener
     ) {}
 
     ngOnInit(): void {
@@ -64,30 +67,27 @@ export class GameScreenComponent implements OnInit {
                         this.opponentsId = data.player1.playerId;
                     }
                     this.chatId = data.playersChat;
-                    this.chatMessageEmitter.emit({chatId: this.match.playersChat})
-                  
+                    this.chatMessageEmitter.emit({ chatId: this.match.playersChat });
+
                     let rnd: number = this.match.matchId.charCodeAt(0);
 
                     if (rnd % 2 == 0) {
-                        if (this.match.player1.playerId === this.userInSessionId) this.playerTurn = true;
+                        if (this.match.player1.playerId === this.userInSessionId)
+                            this.playerTurn = true;
                         else this.playerTurn = false;
                     } else {
-                        if (this.match.player2.playerId === this.userInSessionId) this.playerTurn = true;
+                        if (this.match.player2.playerId === this.userInSessionId)
+                            this.playerTurn = true;
                         else this.playerTurn = false;
                     }
-                    
+
                     for (let ships of this.playerGrid.ships) {
                         for (let coord of ships.coordinates) {
                             this.shipsCoordinates.push(coord);
                         }
                     }
-                    
-                    // TODO remove since the match at this point is already joined?
-                    //  the join is made right after the match-found event is raised
-                    // this.joinMatch();
-                    const pollingOpponentHits = (data: ShotData) => {
-                        
 
+                    const pollingOpponentHits = (data: ShotData) => {
                         if (this.match.player1.playerId !== data.playerId) {
                             this.match.player1.grid.shotsReceived.push(data.coordinates);
                         } else this.match.player2.grid.shotsReceived.push(data.coordinates);
@@ -100,30 +100,47 @@ export class GameScreenComponent implements OnInit {
                             this.lostAndSauced();
                         }
                         this.trigger++;
-                        this.playerTurn = !this.playerTurn
-
-                    }
+                        this.playerTurn = !this.playerTurn;
+                    };
                     pollingOpponentHits.bind(this);
                     this.shotListener.listen(pollingOpponentHits);
+                });
 
-                    
-                    const refreshChat = () => {
-                        this.trigger++;
-                    };
-                    refreshChat.bind(this);
-                    this.chatMessageListener.listen(refreshChat);
-                })
+                const refreshChat = () => {
+                    this.trigger++;
+                };
+                refreshChat.bind(this);
+                this.chatMessageListener.listen(refreshChat);
+
+                const onMatchTerminated = async (data: MatchTerminatedData) => {
+                    // remember to un-listen after this event, else there is a redirection
+                    // to another screen and the listener is still registered
+                    this.matchTerminatedListener.unListen();
+
+                    if (data.reason === MatchTerminatedReason.PlayerLeftTheGame) {
+                        // If this is the reason but this player is still listening,
+                        // it means that he is the only one left in the game,
+                        // so he is the winner
+                        // TODO update match stats  + redirect match result
+                    } else if (data.reason === MatchTerminatedReason.PlayerWon) {
+                        // TODO redirect to match result: the player that won (or lost)
+                        //  should have already updated the stats
+                    } else {
+                        throw new Error(`Unknown reason`);
+                    }
+                };
+                onMatchTerminated.bind(this);
+                this.matchTerminatedListener.listen(onMatchTerminated);
             });
-            
         } catch (err) {
             console.log('An error occurred while initializing the game screen: ' + err);
         }
-
     }
 
     ngOnDestroy(): void {
         this.shotListener.unListen();
         this.chatMessageListener.unListen();
+        this.matchTerminatedListener.unListen();
     }
 
     private isValidCoords(row: number, col: number): boolean {
@@ -170,12 +187,13 @@ export class GameScreenComponent implements OnInit {
         let shotCol: number = this.parseCoord(col);
 
         if (this.isValidCoords(shotRow, shotCol)) {
-            this.matchClient.fireShot(this.match.matchId, {
-                playerId: this.userInSessionId,
-                coordinates: { row: shotRow, col: shotCol },
-            }).subscribe();
+            this.matchClient
+                .fireShot(this.match.matchId, {
+                    playerId: this.userInSessionId,
+                    coordinates: { row: shotRow, col: shotCol },
+                })
+                .subscribe();
         }
-
     }
 
     public async leaveMatch() {
