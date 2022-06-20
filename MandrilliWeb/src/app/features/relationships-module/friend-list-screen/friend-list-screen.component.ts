@@ -84,7 +84,10 @@ export class FriendListScreenComponent implements OnInit {
         newStatusFriend.bind(this);
         this.friendStatus.listen(newStatusFriend);
 
-        
+    }
+
+    ngOnDestroy(): void{
+        this.friendStatus.unListen();       
     }
 
 }
