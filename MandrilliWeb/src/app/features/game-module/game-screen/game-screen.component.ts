@@ -170,6 +170,10 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                     },
                 });
         }
+        else{
+            this.userMessage.error = true;
+            this.userMessage.errorMessage = 'Invalid Coordinates';
+        }
     }
 
     public async leaveMatch() {
