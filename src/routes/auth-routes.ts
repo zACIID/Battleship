@@ -101,11 +101,22 @@ router.post(
             expiresIn: '1h',
         });
 
+        // Block login if the user is already logged and online
+        if (
+            req.user.status !== UserStatus.Offline &&
+            req.user.status !== UserStatus.TemporaryCredentials
+        ) {
+            return res.status(401).json({
+                timestamp: toUnixSeconds(new Date()),
+                errorMessage: `User ${req.user.username} is already online`,
+                requestPath: req.path,
+            });
+        }
+
         // The user comes online after login, only if its status isn't Temporary
         // in that case, the status is preserved, because it is a flag that
         // the user (a new moderator) has to update his credentials.
         if (req.user.status !== UserStatus.TemporaryCredentials) {
-            // TODO side-effect needs to be tested
             await setUserStatus(ioServer, req.user._id, UserStatus.Online);
         }
 
