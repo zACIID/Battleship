@@ -4,7 +4,7 @@ import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { Router } from '@angular/router';
 import { RelationshipOverview } from './../../../core/model/user/relationship-overview';
 import { MatchOverview } from './../../../core/model/match/match-overview';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, SimpleChange, SimpleChanges } from '@angular/core';
 import { NotificationOverview } from 'src/app/core/model/user/notification-overview';
 
 @Component({
@@ -25,6 +25,12 @@ export class ListComponent implements OnInit {
 
     ngOnInit(): void {
         this.userId = this.userIdProvider.getUserId();
+    }
+
+
+    ngOnChanges(data: SimpleChanges): void {
+        console.log(this.friendsList);
+        
     }
 
     public num_matches(): number {

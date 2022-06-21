@@ -23,7 +23,7 @@
             <hr class="mb-4">
 
 
-            <div class="friends-list-height overflow-scroll p-1">
+            <div *ngIf="friends" class="friends-list-height overflow-scroll p-1">
                 <app-list [friendsList]="friends"></app-list>
             </div>
 

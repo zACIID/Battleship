@@ -52,7 +52,7 @@ export class LoginScreenComponent implements OnInit {
                 this.userMessage.error = true;
                 if (err.error === 'Unauthorized') {
                     this.userMessage.errorMessage = 'Wrong credentials';
-                } else this.userMessage.errorMessage = JSON.stringify(err.error);
+                } else this.userMessage.errorMessage = JSON.stringify(err.error.errorMessage);
                 console.log('An error occurred while logging in: ' + JSON.stringify(err));
             },
         });

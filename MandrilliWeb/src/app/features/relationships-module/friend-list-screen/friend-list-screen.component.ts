@@ -14,7 +14,7 @@ import { UserIdProvider } from 'src/app/core/api/userId-auth/userId-provider';
     styleUrls: ['./friend-list-screen.component.css'],
 })
 export class FriendListScreenComponent implements OnInit, OnDestroy {
-    public friends: RelationshipOverview[] = [];
+    public friends?: RelationshipOverview[] = undefined;
 
     constructor(
         private relationshipsClient: RelationshipApi,
@@ -29,26 +29,9 @@ export class FriendListScreenComponent implements OnInit, OnDestroy {
             let userId: string = this.userIdProvider.getUserId();
             this.relationshipsClient.getRelationships(userId).subscribe((data: Relationship[]) => {
                 for (let rel of data) {
-                    const obj = {
-                        friendId: rel.friendId,
-                        chatId: rel.chatId,
-                        friendUsername: '',
-                        matchId: '',
-                    };
-
-                    this.userClient.getUser(rel.friendId).subscribe((user: User) => {
-                        obj.friendUsername = user.username;
-
-                        this.friends.push(obj);
-                        if (user.status === UserStatus.InGame) {
-                            this.userClient.getCurrentMatch(rel.friendId).subscribe({
-                                next: (match: string) => {
-                                    obj.matchId = match;
-                                },
-                                error: (err: Error) => {},
-                            });
-                        }
-                    });
+                    
+                    this.retrieveRelationshipInfo(rel.friendId, rel.chatId);
+                    
                 }
             });
         } catch (err) {
@@ -57,17 +40,22 @@ export class FriendListScreenComponent implements OnInit, OnDestroy {
 
         const newStatusFriend = (newF: FriendStatusChangedData) => {
             if (newF.status === UserStatus.Online) {
-                this.ngOnInit();
+                if(this.friends){
+                    this.friends = this.friends.filter((el) => el.friendId !== newF.friendId);
+                    this.retrieveRelationshipInfo(newF.friendId, "");
+                }
             } else {
-                for (let friend of this.friends) {
-                    if (friend.friendId === newF.friendId) {
-                        if (newF.status === UserStatus.InGame) {
-                            this.userClient.getCurrentMatch(friend.friendId).subscribe({
-                                next: (match: string) => {
-                                    friend.matchId = match;
-                                },
-                                error: (err: Error) => {},
-                            });
+                if(this.friends){
+                    for (let friend of this.friends) {
+                        if (friend.friendId === newF.friendId) {
+                            if (newF.status === UserStatus.InGame) {
+                                this.userClient.getCurrentMatch(friend.friendId).subscribe({
+                                    next: (match: string) => {
+                                        friend.matchId = match;
+                                    },
+                                    error: (err: Error) => {},
+                                });
+                            }
                         }
                     }
                 }
@@ -75,6 +63,34 @@ export class FriendListScreenComponent implements OnInit, OnDestroy {
         };
         newStatusFriend.bind(this);
         this.friendStatus.listen(newStatusFriend);
+    }
+
+
+    private retrieveRelationshipInfo(friendId: string, chatId: string): void{
+        this.userClient.getUser(friendId).subscribe((user: User) => {
+            const obj = {
+                friendId: friendId,
+                chatId: chatId,
+                friendUsername: user.username,
+                matchId: '',
+            };
+
+            if (user.status === UserStatus.InGame) {
+                this.userClient.getCurrentMatch(friendId).subscribe({
+                    next: (match: string) => {
+                        obj.matchId = match;
+                        if(this.friends)
+                            this.friends.push(obj);
+                    },
+                    error: (err: Error) => { },
+                });
+            }
+            else{
+                if(this.friends){
+                    this.friends.push(obj);
+                }
+            }
+        });
     }
 
     ngOnDestroy(): void {
