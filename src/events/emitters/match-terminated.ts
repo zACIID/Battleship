@@ -8,12 +8,30 @@ import {
 } from '../../model/events/match-terminated-data';
 import { GridCoordinates } from '../../model/database/match/state/grid-coordinates';
 import { getMatchById, MatchDocument, updateMatchStats } from '../../model/database/match/match';
-import { getUserById, getUserByUsername, UserDocument } from '../../model/database/user/user';
+import {
+    addMatchStats,
+    getUserById,
+    getUserByUsername,
+    UserDocument,
+} from '../../model/database/user/user';
 import chalk from 'chalk';
 import { Ship } from '../../model/database/match/state/ship';
 import { BattleshipGrid } from '../../model/database/match/state/battleship-grid';
 import { MatchStatsUpdate } from '../../model/api/match/stats-update';
 import { toUnixSeconds } from '../../routes/utils/date-utils';
+import { PlayerStateSubDocument } from '../../model/database/match/state/player-state';
+
+interface PlayerShipsStats {
+    /**
+     * Number of hits on the ships
+     */
+    hits: number;
+
+    /**
+     * Number of ships destroyed
+     */
+    destroyed: number;
+}
 
 /**
  * Class that wraps socket.io functionality to generate a "match-terminated" event.
@@ -66,14 +84,54 @@ export class MatchTerminatedEmitter extends RoomEmitter<MatchTerminatedData> {
                 return;
             }
 
+            // Get the stats of each player and aggregate them to create the match stats
+            const p1ShotsReceived: number = MatchTerminatedEmitter.getPlayerShotsReceived(
+                match.player1
+            );
+            const p2ShotsReceived: number = MatchTerminatedEmitter.getPlayerShotsReceived(
+                match.player2
+            );
+
+            // NOTE: These are the stats relative to the ships OF the player,
+            // not the ships hit/destroyed BY the player
+            const p1ShipsStats: PlayerShipsStats = MatchTerminatedEmitter.getPlayerShipsStats(
+                match.player1
+            );
+            const p2ShipsStats: PlayerShipsStats = MatchTerminatedEmitter.getPlayerShipsStats(
+                match.player2
+            );
+
+            const totalShots: number = p1ShotsReceived + p2ShotsReceived;
+            const totalShipsDestroyed: number = p1ShipsStats.destroyed + p2ShipsStats.destroyed;
             const statsUpdate: MatchStatsUpdate = {
                 winner: winner._id.toString(),
                 endTime: toUnixSeconds(new Date()),
-                totalShots: MatchTerminatedEmitter.getTotalShotsFired(match),
-                shipsDestroyed: MatchTerminatedEmitter.getTotalShipsDestroyed(match),
+                totalShots: totalShots,
+                shipsDestroyed: totalShipsDestroyed,
             };
 
+            // Update match stats
             await updateMatchStats(this.matchId, statsUpdate);
+
+            // Update the stats of each player
+            const { player1, player2 } = match;
+            const isP1Winner: boolean = winner._id.equals(player1.playerId);
+
+            // Add the stats of a player to its opponent
+            await addMatchStats(
+                player1.playerId,
+                p2ShipsStats.destroyed,
+                p2ShotsReceived,
+                p2ShipsStats.hits,
+                isP1Winner
+            );
+            await addMatchStats(
+                player2.playerId,
+                p1ShipsStats.destroyed,
+                p1ShotsReceived,
+                p1ShipsStats.hits,
+                !isP1Winner
+            );
         } catch (err) {
             if (err instanceof Error) {
                 console.log(
@@ -89,46 +147,50 @@ export class MatchTerminatedEmitter extends RoomEmitter<MatchTerminatedData> {
     }
 
     /**
-     * Returns the total number of shots fired during the match
+     * Returns the total number of shots received by a player during the match
      * @private
      */
-    private static getTotalShotsFired(match: MatchDocument): number {
-        const { player1, player2 } = match;
-        const p1ReceivedShots: GridCoordinates[] = player1.grid.shotsReceived;
-        const p2ReceivedShots: GridCoordinates[] = player2.grid.shotsReceived;
-
-        return p1ReceivedShots.length + p2ReceivedShots.length;
+    private static getPlayerShotsReceived(player: PlayerStateSubDocument): number {
+        return player.grid.shotsReceived.length;
     }
 
     /**
-     * Returns the total number of ships destroyed during the match
+     * Returns the total number of ships destroyed of the provided player.
+     *
+     * NOTE: this number does not refer to the ships destroyed BY the player, but
+     *  to the ships OF the player that were destroyed
      * @private
      */
-    private static getTotalShipsDestroyed(match: MatchDocument): number {
-        const { player1, player2 } = match;
-        let grids: BattleshipGrid[] = [player1.grid, player2.grid];
+    private static getPlayerShipsStats(player: PlayerStateSubDocument): PlayerShipsStats {
+        let grid: BattleshipGrid = player.grid;
         let totShipsDestroyed: number = 0;
+        let totalHits: number = 0;
 
-        // Check each ship of each grid
-        grids.forEach((g: BattleshipGrid) => {
-            g.ships.forEach((ship: Ship) => {
-                if (MatchTerminatedEmitter.isShipDestroyed(ship, g.shotsReceived)) {
-                    totShipsDestroyed++;
-                }
-            });
+        grid.ships.forEach((ship: Ship) => {
+            const hitsOnShip: number = MatchTerminatedEmitter.getHitsOnShip(
+                ship,
+                grid.shotsReceived
+            );
+            totalHits += hitsOnShip;
+
+            if (MatchTerminatedEmitter.isShipDestroyed(ship, hitsOnShip)) {
+                totShipsDestroyed++;
+            }
         });
 
-        return totShipsDestroyed;
+        return {
+            hits: totalHits,
+            destroyed: totShipsDestroyed,
+        };
     }
 
     /**
-     * Returns true if the provided ship, based on the provided shots received,
-     * is destroyed, false otherwise. Destroyed means that all the cells of the ship have been hit.
-     * @param ship Ship to check
-     * @param shotsReceived Array containing the shots received on the grid
+     * Returns the total number of hits on the provided ship
+     * @param ship
+     * @param shotsReceived
      * @private
      */
-    private static isShipDestroyed(ship: Ship, shotsReceived: GridCoordinates[]): boolean {
+    private static getHitsOnShip(ship: Ship, shotsReceived: GridCoordinates[]): number {
         const shipRows: number[] = [];
         const shipCols: number[] = [];
         ship.coordinates.forEach((coords: GridCoordinates) => {
@@ -145,7 +207,21 @@ export class MatchTerminatedEmitter extends RoomEmitter<MatchTerminatedData> {
             }
         });
 
-        // TODO for debug purposes; remove later
+        if (hits > ship.coordinates.length) {
+            throw new Error("Ship hits shouldn't be higher than the number of pieces of the ships");
+        }
+
+        return hits;
+    }
+
+    /**
+     * Returns true if the provided ship, based on the provided number of hits,
+     * is destroyed, false otherwise. Destroyed means that all the cells of the ship have been hit.
+     * @param ship Ship to check
+     * @param hits number of hits received by the ship
+     * @private
+     */
+    private static isShipDestroyed(ship: Ship, hits: number): boolean {
         if (hits > ship.coordinates.length) {
             throw new Error("Ship hits shouldn't be higher than the number of pieces of the ships");
         }

@@ -487,41 +487,66 @@ export async function getMostRecentNotifications(
 
 /**
  * @param userId id of the user to update
- * @param elo new elo of the user
- * @param topElo top elo reached by the user
- * @param wins total number of wins of the user
- * @param losses total number of losses of the user
- * @param shipsDestroyed total number of ships destroyed
- * @param totalShots total number of shots fired by the user
- * @param totalHits total number of hits on enemy ships by the user
+ * @param updatedStats object containing the updated stats of the user
  */
 export async function updateUserStats(
     userId: Types.ObjectId,
-    elo: number,
-    topElo: number,
-    wins: number,
-    losses: number,
-    shipsDestroyed: number,
-    totalShots: number,
-    totalHits: number
+    updatedStats: UserStats
 ): Promise<UserDocument> {
-    let user: UserDocument;
     try {
-        user = await getUserById(userId);
+        const user: UserDocument = await getUserById(userId);
+
+        user.stats.topElo = updatedStats.topElo;
+        user.stats.elo = updatedStats.elo;
+        user.stats.wins = updatedStats.wins;
+        user.stats.losses = updatedStats.losses;
+        user.stats.shipsDestroyed = updatedStats.shipsDestroyed;
+        user.stats.totalShots = updatedStats.totalShots;
+        user.stats.totalHits = updatedStats.totalHits;
+
+        return user.save();
     } catch (err) {
         return Promise.reject(new Error(err.message));
     }
-
-    user.stats.topElo = topElo;
-    user.stats.elo = elo;
-    user.stats.wins = wins;
-    user.stats.losses = losses;
-    user.stats.shipsDestroyed = shipsDestroyed;
-    user.stats.totalShots = totalShots;
-    user.stats.totalHits = totalHits;
-
-    return user.save();
 }
+
+/**
+ * Adds the stats of the match to the stats of the user
+ * @param userId
+ * @param newShipsDestroyed
+ * @param newShots
+ * @param newHits
+ * @param didUserWin
+ */
+export const addMatchStats = async (
+    userId: Types.ObjectId,
+    newShipsDestroyed: number,
+    newShots: number,
+    newHits: number,
+    didUserWin: boolean
+): Promise<UserDocument> => {
+    try {
+        const user: UserDocument = await getUserById(userId);
+
+        // Since newElo can be negative in case of a loss, check that the total
+        // elo doesn't go below 0
+        const newElo: number = didUserWin ? 30 : -20;
+        let newUserElo: number = (user.stats.elo += newElo);
+        newUserElo = newUserElo < 0 ? 0 : newUserElo;
+
+        user.stats.elo = newUserElo;
+        user.stats.topElo = newUserElo > user.stats.topElo ? newUserElo : user.stats.topElo;
+        user.stats.wins += didUserWin ? 1 : 0;
+        user.stats.losses += !didUserWin ? 1 : 0;
+        user.stats.shipsDestroyed += newShipsDestroyed;
+        user.stats.totalShots += newShots;
+        user.stats.totalHits += newHits;
+
+        return user.save();
+    } catch (err) {
+        return Promise.reject(new Error(err.message));
+    }
+};
 
 /**
  * Sets the status of the provided user to the provided value

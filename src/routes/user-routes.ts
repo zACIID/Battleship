@@ -292,16 +292,15 @@ router.put(
         const { elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits } = req.body;
 
         try {
-            await usr.updateUserStats(
-                userId,
-                elo,
-                topElo,
-                wins,
-                losses,
-                shipsDestroyed,
-                totalShots,
-                totalHits
-            );
+            await usr.updateUserStats(userId, {
+                elo: elo,
+                topElo: topElo,
+                wins: wins,
+                losses: losses,
+                shipsDestroyed: shipsDestroyed,
+                totalShots: totalShots,
+                totalHits: totalHits,
+            });
             return res
                 .status(200)
                 .json({ elo, topElo, wins, losses, shipsDestroyed, totalShots, totalHits });
