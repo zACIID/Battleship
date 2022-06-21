@@ -123,7 +123,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
         return false;
     }
 
-    private parseCoord(coord: string): number {
+    private parseRow(coord: string): number {
         coord = coord.toUpperCase();
         switch (coord) {
             case 'A':
@@ -146,15 +146,29 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                 return 8;
             case 'J':
                 return 9;
-            default:
-                return Number(coord) - 1;
+            default: {
+                this.userMessage.error = true;
+                this.userMessage.errorMessage = "Position is invalid";
+                return -1;
+            }
+        }
+    }
+
+    private parseCol(coord: string): number {
+        let val = Number(coord) - 1;
+        if (!isNaN(val) && val >= 0 && val <=9)
+            return val;
+        else{
+            this.userMessage.error = true;
+            this.userMessage.errorMessage = "Position is invalid";
+            return -1;
         }
     }
 
     public shot(row: string, col: string) {
         this.userMessage.error = false;
-        let shotRow: number = this.parseCoord(row);
-        let shotCol: number = this.parseCoord(col);
+        let shotRow: number = this.parseRow(row);
+        let shotCol: number = this.parseCol(col);
 
         if (this.isValidCoords(shotRow, shotCol)) {
             this.matchApi
