@@ -78,9 +78,24 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                             this.match.player1.grid.shotsReceived.push(data.coordinates);
                         } else this.match.player2.grid.shotsReceived.push(data.coordinates);
 
-                        this.shipsCoordinates = this.shipsCoordinates.filter(
-                            (e) => e.row !== data.coordinates.row && e.col !== data.coordinates.col
-                        );
+                        // Mark the shot as a hit only if the player
+                        // who shot it is the opponent
+                        if (this.userInSessionId !== data.playerId) {
+                            this.shipsCoordinates = this.shipsCoordinates.filter((e) => {
+                                const isHit: boolean =
+                                    e.row === data.coordinates.row &&
+                                    e.col === data.coordinates.col;
+                                if (!isHit) {
+                                    console.log(`Hit: ${e}`);
+                                }
+
+                                return !isHit;
+                            });
+
+                            console.log(`Shot: ${JSON.stringify(data)}`);
+                            console.log(`Ships: ${JSON.stringify(this.shipsCoordinates)}`);
+                            console.log(`Length: ${JSON.stringify(this.shipsCoordinates.length)}`);
+                        }
 
                         if (this.shipsCoordinates.length === 0) {
                             this.lostAndSauced();
@@ -201,15 +216,12 @@ export class GameScreenComponent implements OnInit, OnDestroy {
     }
 
     private lostAndSauced() {
+        console.log('Lost and sauced');
+
         if (this.match !== undefined) {
             this.playerWonEmitter.emit({
                 winnerId: this.opponentsId,
                 matchId: this.match.matchId,
-            });
-
-            this.leaveMatchEmitter.emit({
-                matchId: this.match.matchId,
-                userId: this.userInSessionId,
             });
         } else {
             throw new Error('Match has not been set');
