@@ -191,7 +191,7 @@ export const UserSchema = new Schema<UserDocument>({
     status: {
         type: SchemaTypes.String,
         enum: UserStatus,
-        default: UserStatus.Online,
+        default: UserStatus.Offline,
     },
 });
 
