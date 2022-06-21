@@ -39,16 +39,7 @@ export class PlayTogetherScreenComponent implements OnInit, OnDestroy {
                 .getRelationships(this.userInSessionId)
                 .subscribe((rels: Relationship[]) => {
                     for (let relation of rels) {
-                        this.userClient.getUser(relation.friendId).subscribe((friend) => {
-                            if (friend.status === UserStatus.Online) {
-                                this.friends.push({
-                                    userId: friend.userId,
-                                    username: friend.username,
-                                    elo: friend.elo,
-                                    rank: getRank(friend.elo),
-                                });
-                            }
-                        });
+                        this.retrieveUserInfo(relation.friendId);
                     }
                 });
         } catch (err) {
@@ -56,17 +47,31 @@ export class PlayTogetherScreenComponent implements OnInit, OnDestroy {
         }
 
         const pollingFriends = (data: FriendStatusChangedData) => {
-            this.userClient.getUser(data.friendId).subscribe((user) => {
-                this.friends.push({
-                    userId: user.userId,
-                    username: user.username,
-                    elo: user.elo,
-                    rank: getRank(user.elo),
-                });
-            });
+            if(data.status === UserStatus.Online){
+                this.friends = this.friends.filter((el: Overview) => { el.userId !== data.friendId })
+                this.retrieveUserInfo(data.friendId);
+            }
+            else if(data.status === UserStatus.Offline){
+                this.friends = this.friends.filter((el: Overview) => { el.userId !== data.friendId })
+            }
+            
         };
         pollingFriends.bind(this);
         this.friendListener.listen(pollingFriends);
+    }
+
+
+    private retrieveUserInfo(userId: string){
+        this.userClient.getUser(userId).subscribe((friend) => {
+            if (friend.status === UserStatus.Online) {
+                this.friends.push({
+                    userId: friend.userId,
+                    username: friend.username,
+                    elo: friend.elo,
+                    rank: getRank(friend.elo),
+                });
+            }
+        });
     }
 
     ngOnDestroy(): void {
