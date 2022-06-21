@@ -16,6 +16,8 @@
     - [User Registration](#user-registration)
       - [Example Request Body](#example-request-body-1)
       - [Example Response Body](#example-response-body-1)
+    - [User Logout](#user-logout)
+      - [Example Response](#example-response)
 
 ## Resources
 
@@ -132,6 +134,31 @@
 ##### Error
 
 - Status Code: 400, 500
+- [Error](#error) resource
+
+```json
+{
+    "timestamp": 1651881600,
+    "errorMessage": "some error message",
+    "requestPath": "error/request/path"
+}
+```
+
+### User Logout
+
+| Endpoint | Method | Description |
+| :------- | :----- | :---------- |
+| /api/auth/signout | POST | User logout |
+
+#### Example Response
+
+##### Success
+
+- Status Code: 204
+
+##### Error
+
+- Status Code: 400, 403
 - [Error](#error) resource
 
 ```json

@@ -6,6 +6,8 @@ import { BaseApi } from './base/base-api';
 import { User } from '../../model/user/user';
 import { JwtStorage } from '../jwt-auth/jwt-storage';
 import { UserIdStorage } from '../userId-auth/userId-storage';
+import { BaseAuthenticatedApi } from './base/base-authenticated-api';
+import { JwtProvider } from '../jwt-auth/jwt-provider';
 
 export interface LoginInfo {
     /**
@@ -70,6 +72,8 @@ export class AuthApi extends BaseApi {
     public register(credentials: LoginInfo): Observable<User> {
         const reqPath: string = `${this.baseUrl}/api/auth/signup`;
 
-        return this.httpClient.post<User>(reqPath, credentials).pipe(catchError(this.handleError));
+        return this.httpClient
+            .post<User>(reqPath, credentials, this.createRequestOptions())
+            .pipe(catchError(this.handleError));
     }
 }

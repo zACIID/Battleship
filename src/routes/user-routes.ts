@@ -1,5 +1,4 @@
-import { getCurrentMatch, MatchDocument } from '../model/database/match/match';
-import { UserDocument, UserStatus } from '../model/database/user/user';
+import { MatchDocument } from '../model/database/match/match';
 import * as match from '../model/database/match/match';
 import { Types } from 'mongoose';
 import { Router, Response } from 'express';

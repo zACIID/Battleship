@@ -11,11 +11,13 @@ import {
     UserDocument,
     UserStatus,
 } from '../model/database/user/user';
-import { AnyKeys } from 'mongoose';
+import { AnyKeys, Types } from 'mongoose';
 import { ioServer } from '../index';
 import { JwtData } from '../model/api/auth/jwt-data';
 import { AuthenticatedRequest } from './utils/authenticated-request';
 import { toUnixSeconds } from './utils/date-utils';
+import { Socket } from 'socket.io';
+import chalk from 'chalk';
 
 export const router = Router();
 
@@ -140,7 +142,10 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
         // A user that registers through this endpoint becomes online right away
         const userData: AnyKeys<UserDocument> = {
             username: req.body.username,
-            status: UserStatus.Online,
+
+            // User is created with status Offline.
+            // He will be set to online when he logs in
+            status: UserStatus.Offline,
         };
         const newUser: UserDocument = await createUser(userData);
 
@@ -161,3 +166,46 @@ router.post('/auth/signup', async (req: SignUpRequest, res: Response) => {
         });
     }
 });
+
+router.post(
+    '/auth/signout',
+    authenticateToken,
+    async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const userId: string = req.jwtContent.userId;
+
+            // Get the client of the user that is logging out and remove it
+            // from the room of that user
+            // If the room doesn't exist, clientIds is undefined
+            const clientIds: Set<string> | undefined = ioServer.sockets.adapter.rooms.get(userId);
+            if (clientIds) {
+                if (clientIds.size > 1) {
+                    throw new Error(
+                        "There shouldn't be more than one client listening to a specific user room"
+                    );
+                }
+
+                // Logout could be called even by a client that
+                // didn't connect to the socket.io server
+                if (clientIds.size === 1) {
+                    const logoutClientId: string = clientIds.values().next().value;
+                    const logoutClient: Socket = ioServer.sockets.sockets.get(logoutClientId);
+                    logoutClient.leave(userId);
+
+                    console.log(chalk.red.bold(`User ${userId} left the server`));
+                }
+            }
+
+            // Set the status of the user to Offline since it's logging out
+            await setUserStatus(ioServer, Types.ObjectId(userId), UserStatus.Offline);
+
+            return res.status(204).json();
+        } catch (err) {
+            return res.status(400).json({
+                timestamp: toUnixSeconds(new Date()),
+                errorMessage: err.message,
+                requestPath: req.path,
+            });
+        }
+    }
+);
