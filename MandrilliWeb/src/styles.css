@@ -73,6 +73,10 @@
   height:95%;
 }
 
+.less-chat-height{
+  height:80%;
+}
+
 .request-list-height{
   max-height:200px;
 }
