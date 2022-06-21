@@ -29,7 +29,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 export const app: Express = express();
 
 /* Endpoints base url */
-export const API_BASE_URL: string = process.env.API_BASE_URL;
+export const API_BASE_URL: string = '/api';
 
 /* True if testing, false otherwise. Allows other modules to know if we're in testing mode */
 export const IS_TESTING_MODE: boolean = process.env.TEST === 'true';
