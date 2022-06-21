@@ -82,25 +82,26 @@ app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
 /* Express Requests and Responses logger */
 // TODO function setup expressLogger()
-// TODO make it so that this code is executed only if .env is VERBOSE
-/* TODO uncomment
-expressWinston.requestWhitelist.push('body');
-expressWinston.responseWhitelist.push('body');
+const verboseLogging: boolean = process.env.VERBOSE === 'true';
+if (verboseLogging) {
+    expressWinston.requestWhitelist.push('body');
+    expressWinston.responseWhitelist.push('body');
 
-app.use(
-    expressWinston.logger({
-        transports: [new winston.transports.Console()],
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.json(),
-            winston.format.prettyPrint({
-                colorize: true,
-            })
-        ),
-        meta: true, // Enable logging of metadata
-        msg: 'HTTP {{req.method}} {{req.url}} | {{res.statusCode}} {{res.responseTime}}ms',
-    })
-);*/
+    app.use(
+        expressWinston.logger({
+            transports: [new winston.transports.Console()],
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.json(),
+                winston.format.prettyPrint({
+                    colorize: true,
+                })
+            ),
+            meta: true, // Enable logging of metadata
+            msg: 'HTTP {{req.method}} {{req.url}} | {{res.statusCode}} {{res.responseTime}}ms',
+        })
+    );
+}
 
 /* Register express routes */
 registerRoutes(app);
