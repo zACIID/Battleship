@@ -110,10 +110,8 @@ registerRoutes(app);
 // TODO function setupIoServer in "registerRoutes" style which contains the below code
 export const ioServer: io.Server = new io.Server(httpServer, {
     cors: {
-        // TODO how to set this? because origin of course depends on the address of every client that connects
-        origin: 'http://localhost:4200',
         methods: ['GET', 'POST'],
-        credentials: true,
+        credentials: false,
     },
 });
 

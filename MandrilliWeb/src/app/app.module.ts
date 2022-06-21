@@ -8,7 +8,9 @@ import { environment } from '../environments/environment';
 
 const sIoConfig: SocketIoConfig = {
     url: environment.serverBaseUrl,
-    options: {},
+    options: {
+        withCredentials: false,
+    },
 };
 
 @NgModule({
