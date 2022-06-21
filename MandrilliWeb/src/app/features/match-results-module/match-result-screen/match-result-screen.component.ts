@@ -42,10 +42,11 @@ export class MatchResultScreenComponent implements OnInit {
                         throw new Error('End Time is null. Match probably did not end');
                     }
     
-                    const duration = Math.abs(
+                    let duration = Math.abs(
                         this.match.stats.startTime.valueOf() - this.match.stats.endTime.valueOf()
                     );
-                    this.matchStats.push({ title: 'Duration', value: duration });
+                    let stringDuration = Math.floor(duration / 60).toString() + " minutes, " + (duration % 60).toString() +  " seconds"
+                    this.matchStats.push({ title: 'Duration', value: stringDuration });
     
                     if (userId === this.match?.stats.winner) {
                         this.result = 'VICTORY';
