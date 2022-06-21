@@ -211,7 +211,6 @@ router.put(
             // Update the ready state of the player
             await setReadyState(match, playerId, newReadyState);
 
-            // TODO move in setReadyState()?
             // Send notifications to the players based on their states
             await notifyPlayers(match, playerId, newReadyState);
 

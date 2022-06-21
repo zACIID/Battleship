@@ -81,7 +81,6 @@ app.use(function (req, res, next) {
 app.use(filter({ methodList: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 
 /* Express Requests and Responses logger */
-// TODO function setup expressLogger()
 const verboseLogging: boolean = process.env.VERBOSE === 'true';
 if (verboseLogging) {
     expressWinston.requestWhitelist.push('body');
@@ -107,7 +106,6 @@ if (verboseLogging) {
 registerRoutes(app);
 
 /* socket.io server setup */
-// TODO function setupIoServer in "registerRoutes" style which contains the below code
 export const ioServer: io.Server = new io.Server(httpServer, {
     cors: {
         methods: ['GET', 'POST'],
@@ -168,7 +166,6 @@ ioServer.on('connection', async function (client: io.Socket) {
     playerWon.listen();
 });
 
-// TODO function setupMatchmakingEngine
 /* Start the matchmaking engine and tell him to try to look
  * for match arrangements every 1.5 seconds
  */
@@ -186,4 +183,4 @@ createUser({
             return;
         });
     })
-    .catch((err: Error) => console.log(chalk.yellow('Admin already existent'))); // TODO better error handling?
+    .catch((err: Error) => console.log(chalk.yellow('Admin already existent')));

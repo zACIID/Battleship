@@ -90,8 +90,6 @@ describe('Get Match', () => {
                 expect(match).toBeTruthy();
 
                 // Expect an object with the correct fields
-                // TODO try to make it work with PlayerState and MatchStats
-                //  response is correct btw
                 expect(match).toEqual(
                     expect.objectContaining<Match>({
                         matchId: expect.any(String),

@@ -175,8 +175,6 @@ interface MessagePostRequest extends AuthenticatedRequest {
 router.get(
     '/chats/:chatId/messages',
     authenticateToken,
-    // TODO skipLimitChecker could be a function that accepts default values for skip and limit and
-    //  returns a middleware function based on those
     skipLimitChecker,
     retrieveChatId,
     async (req: AuthenticatedRequest, res: ChatEndpointResponse) => {

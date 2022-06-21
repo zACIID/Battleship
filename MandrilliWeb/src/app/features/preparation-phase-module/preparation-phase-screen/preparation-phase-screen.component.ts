@@ -35,8 +35,6 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
     public cruiserCount: number = 3;
     public destroyerCount: number = 5;
 
- 
-
     constructor(
         private route: ActivatedRoute,
         private playerStateListener: PlayerStateChangedListener,
@@ -65,8 +63,6 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
 
         // Setup all the listeners
         const onPlayerStateChanged = (data: PlayerStateChangedData): void => {
-            console.log(`Player ${data.playerId} is ready`);
-
             this.opponentReady = data.isReady;
             this.opponentsId = data.playerId;
         };
@@ -139,7 +135,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
                 return 9;
             default: {
                 this.positioningError.error = true;
-                this.positioningError.errorMessage = "Position is invalid";
+                this.positioningError.errorMessage = 'Position is invalid';
                 return -1;
             }
         }
@@ -147,11 +143,10 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
 
     private parseCol(coord: string): number {
         let val = Number(coord) - 1;
-        if (!isNaN(val) && val >= 0 && val <=9)
-            return val;
-        else{
+        if (!isNaN(val) && val >= 0 && val <= 9) return val;
+        else {
             this.positioningError.error = true;
-            this.positioningError.errorMessage = "Position is invalid";
+            this.positioningError.errorMessage = 'Position is invalid';
             return -1;
         }
     }
@@ -167,10 +162,8 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
         return Math.floor(Math.random() * 2) !== 0;
     }
 
-
-
     public randomDeploy() {
-        let letters: string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
+        let letters: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
         while (
             !this.deploy(
                 'Carrier',
@@ -240,7 +233,7 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
 
         let startingRow = this.parseRow(row);
         let startingCol = this.parseCol(col);
-        if(startingRow === -1 || startingCol === -1){
+        if (startingRow === -1 || startingCol === -1) {
             return false;
         }
 
@@ -341,14 +334,10 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
 
     public beReady() {
         try {
-            // TODO debug
-            // concat(this.matchClient.updatePlayerGrid(this.matchId, this.userId, this.grid),
-            //     this.matchClient.setReadyState(this.matchId, this.userId, true)).subscribe();
             const temp = this.matchClient
                 .updatePlayerGrid(this.matchId, this.userInSessionId, this.grid)
                 .subscribe();
 
-            // TODO
             // Add set ready request after the observable has been executed
             temp.add(
                 this.matchClient.setReadyState(this.matchId, this.userInSessionId, true).subscribe()
@@ -381,8 +370,6 @@ export class PreparationPhaseScreenComponent implements OnInit, OnDestroy {
 
     public async leaveMatch() {
         if (this.matchId) {
-            console.log('JESUS');
-
             this.matchLeftEmitter.emit({
                 matchId: this.matchId,
                 userId: this.userInSessionId,

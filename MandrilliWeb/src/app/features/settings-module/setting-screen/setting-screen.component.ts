@@ -36,7 +36,6 @@ export class SettingScreenComponent implements OnInit {
     public changePwd(newPwd: string) {
         try {
             this.userClient.updatePassword(this.userInSessionId, newPwd).subscribe();
-            console.log('Password correctly updated!');
         } catch (err) {
             console.log('An error occurred while updating the password: ' + err);
         }

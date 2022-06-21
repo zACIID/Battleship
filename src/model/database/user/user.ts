@@ -30,7 +30,7 @@ export enum UserStatus {
     Online = 'Online',
     PrepPhase = 'Preparation Phase',
     InGame = 'In Game',
-    Spectating = 'Spectating', // TODO no way of setting this status currently. New event?
+    Spectating = 'Spectating',
     InQueue = 'In Queue',
 
     /**
@@ -307,7 +307,6 @@ UserSchema.methods.addRelationshipSymmetrically = async function (
         return false;
     };
 
-    // TODO friendId could be set to unique to avoid this check
     if (doesUserContainRelationship(this)) {
         return Promise.reject(new Error('Relationship already existent'));
     }

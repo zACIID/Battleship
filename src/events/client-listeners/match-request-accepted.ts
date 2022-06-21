@@ -30,9 +30,6 @@ export class MatchRequestAcceptedListener extends ClientListenerNotifier<Request
             // Check that both players can actually play the game
             // If not, do not create it and do not remove the notification
             if (!(await MatchRequestAcceptedListener.arePlayersAvailable(eventData))) {
-                // TODO maybe create an event like 'accept-error' to
-                //  notify the user that the request couldn't be accepted,
-                //  and send a reason for its
                 console.log(
                     chalk.bgYellow(
                         `[${MatchRequestAcceptedListener.name}] Match request could not be accepted 

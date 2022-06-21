@@ -17,20 +17,10 @@ export class ListComponent implements OnInit {
     @Input() matchList?: MatchOverview[];
     @Input() friendsList?: RelationshipOverview[];
 
-
-    constructor(
-        private router: Router,
-        private userIdProvider: UserIdProvider    
-    ) {}
+    constructor(private router: Router, private userIdProvider: UserIdProvider) {}
 
     ngOnInit(): void {
         this.userId = this.userIdProvider.getUserId();
-    }
-
-
-    ngOnChanges(data: SimpleChanges): void {
-        console.log(this.friendsList);
-        
     }
 
     public num_matches(): number {
@@ -54,9 +44,8 @@ export class ListComponent implements OnInit {
         await this.router.navigate([url]);
     }
 
-    public async spectateMatch(matchId: string) : Promise<void> {
+    public async spectateMatch(matchId: string): Promise<void> {
         let url = '/observers/' + matchId;
         await this.router.navigate([url]);
     }
-
 }

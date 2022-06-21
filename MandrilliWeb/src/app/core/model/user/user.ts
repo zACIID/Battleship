@@ -6,7 +6,7 @@ export enum UserStatus {
     Online = 'Online',
     PrepPhase = 'Preparation Phase',
     InGame = 'In Game',
-    Spectating = 'Spectating', // TODO no way of setting this status currently. New event?
+    Spectating = 'Spectating',
     InQueue = 'In Queue',
 
     /**

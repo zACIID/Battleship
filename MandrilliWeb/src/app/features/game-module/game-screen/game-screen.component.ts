@@ -85,16 +85,9 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                                 const isHit: boolean =
                                     e.row === data.coordinates.row &&
                                     e.col === data.coordinates.col;
-                                if (!isHit) {
-                                    console.log(`Hit: ${e}`);
-                                }
 
                                 return !isHit;
                             });
-
-                            console.log(`Shot: ${JSON.stringify(data)}`);
-                            console.log(`Ships: ${JSON.stringify(this.shipsCoordinates)}`);
-                            console.log(`Length: ${JSON.stringify(this.shipsCoordinates.length)}`);
                         }
 
                         if (this.shipsCoordinates.length === 0) {
@@ -198,8 +191,6 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                 userId: this.userInSessionId,
             };
 
-            console.log(`quitting match and sending data: ${JSON.stringify(matchLeftData)}`);
-
             this.leaveMatchEmitter.emit({
                 matchId: this.match.matchId,
                 userId: this.userInSessionId,
@@ -216,8 +207,6 @@ export class GameScreenComponent implements OnInit, OnDestroy {
     }
 
     private lostAndSauced() {
-        console.log('Lost and sauced');
-
         if (this.match !== undefined) {
             this.playerWonEmitter.emit({
                 winnerId: this.opponentsId,

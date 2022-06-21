@@ -16,6 +16,7 @@ interface MongoDpApiCredentials {
  * This route is important because it allows the client to retrieve the required secrets
  * (notably the api-key) to make requests to the MongoDb Data Api. This allows the client to directly
  * perform operations in the database, which is useful for integration testing purposes.
+ * This route is registered in the app only if the project is in testing mode.
  */
 router.get('/testing/mongoDbApi/credentials', async (req: Request, res: Response) => {
     try {

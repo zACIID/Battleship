@@ -194,6 +194,5 @@ export class NotificationScreenComponent implements OnInit, OnDestroy {
             })
             .subscribe();
         this.dropNotification({ sender: friendId, type: NotificationType.MatchRequest });
-        console.log('dropped');
     }
 }
