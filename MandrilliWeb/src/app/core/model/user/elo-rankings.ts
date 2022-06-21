@@ -5,7 +5,7 @@ export enum EloRankings {
     Lieutenant = 'Lieutenant',
     Captain = 'Captain',
     Colonel = 'Colonel',
-    GeneralOfTheArmy = 'General_of_the_army',
+    GeneralOfTheArmy = 'General Of The Army',
 }
 
 export const getRank = (elo: number): EloRankings => {
