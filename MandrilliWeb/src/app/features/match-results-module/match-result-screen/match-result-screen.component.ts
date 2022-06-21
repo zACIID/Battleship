@@ -1,3 +1,5 @@
+import { User } from './../../../core/model/user/user';
+import { UserApi } from './../../../core/api/handlers/user-api';
 import { StatsOverview } from './../../../core/model/user/stats-overview';
 import { Match } from './../../../core/model/match/match';
 import { MatchApi } from './../../../core/api/handlers/match-api';
@@ -19,12 +21,13 @@ export class MatchResultScreenComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private matchClient: MatchApi,
-        private userIdProvider: UserIdProvider
+        private userIdProvider: UserIdProvider,
+        private userClient: UserApi
     ) {}
 
     ngOnInit(): void {
         try {
-            let userId = this.userIdProvider.getUserId();
+            let userInSessionId = this.userIdProvider.getUserId();
 
             this.route.params.subscribe((params) => {
                 this.matchShowedId = params['id'];
@@ -48,9 +51,16 @@ export class MatchResultScreenComponent implements OnInit {
                     let stringDuration = Math.floor(duration / 60).toString() + " minutes, " + (duration % 60).toString() +  " seconds"
                     this.matchStats.push({ title: 'Duration', value: stringDuration });
     
-                    if (userId === this.match?.stats.winner) {
+                    if (userInSessionId === this.match?.stats.winner) {
                         this.result = 'VICTORY';
                     } else this.result = 'DEFEAT';
+                    if(this.match.player1.playerId !== userInSessionId && this.match.player2.playerId !== userInSessionId){
+                        if(this.match.stats.winner){
+                            this.userClient.getUser(this.match.stats.winner).subscribe((winner: User) => {
+                                this.result = winner.username + " won !";
+                            })
+                        }
+                    }
                 });
             });
 
