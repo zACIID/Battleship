@@ -5,10 +5,10 @@
         </div>
         <div class="column is-one-quarter">
             <div>
-                <button *ngIf="!myProfile && !alreadyFriend" class="button is-info is-medium mt-4" (click)="addFriend()">Add Friend</button>
+                <button *ngIf="!myProfile && !alreadyFriend" class="button is-info is-medium mt-4" (click)="addFriend()" #addButton>Add Friend</button>
                 <button *ngIf="alreadyFriend" class="button is-info is-medium mt-4" disabled>Friend</button>
             </div>
-        </div>
+        </div> 
     </div>
     <div *ngIf="stats">          
         <stats-grid [stats]="stats"></stats-grid>

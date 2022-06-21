@@ -8,7 +8,7 @@ import { NotificationType } from './../../../core/model/user/notification';
 import { NotificationApi } from './../../../core/api/handlers/notification-api';
 import { UserStats } from '../../../core/model/user/stats';
 import { User } from './../../../core/model/user/user';
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
     selector: 'stats-overview',
@@ -22,6 +22,7 @@ export class StatsOverviewComponent implements OnInit {
     public stats?: StatsOverview[] = undefined;
     @Input() myProfile: boolean = false;
     public alreadyFriend: boolean = false;
+    @ViewChild("addButton") addButton?: ElementRef;
 
     constructor(
         private notificationClient: NotificationApi,
@@ -62,7 +63,10 @@ export class StatsOverviewComponent implements OnInit {
 
     public addFriend() {
         let userInSessionId = this.userIdProvider.getUserId();
-
+        if(this.addButton){
+            this.addButton.nativeElement.disabled = true;
+            this.addButton.nativeElement.innerText = "Pending...";
+        }
         if(this.user){
             this.notificationClient
                 .addNotification(this.user.userId, {
