@@ -13,7 +13,7 @@ import {
 import { ioServer } from '../index';
 import { ChatMessageEmitter } from '../events/emitters/chat-message';
 import { AuthenticatedRequest } from './utils/authenticated-request';
-import { toUnixSeconds } from './utils/date-utils';
+import { fromUnixSeconds, toUnixSeconds } from './utils/date-utils';
 
 export const router = Router();
 
@@ -207,13 +207,10 @@ router.get(
                 };
             });
 
-            // Apply pagination params
-            const paginatedMessages: ResponseMessage[] = resMessages.slice(skip, skip + limit);
-
             // Sort messages by most recent timestamp (bigger = first)
-            paginatedMessages.sort((a: ResponseMessage, b: ResponseMessage) => {
-                const timeA = new Date(a.timestamp);
-                const timeB = new Date(b.timestamp);
+            resMessages.sort((a: ResponseMessage, b: ResponseMessage) => {
+                const timeA = fromUnixSeconds(a.timestamp);
+                const timeB = fromUnixSeconds(b.timestamp);
 
                 if (timeA < timeB) {
                     return 1;
@@ -223,6 +220,9 @@ router.get(
                     return 0;
                 }
             });
+
+            // Apply pagination params
+            let paginatedMessages: ResponseMessage[] = resMessages.slice(skip, skip + limit);
 
             const nextPage = `${req.path}?skip=${skip + limit}&limit=${limit}`;
             return res.status(200).json({

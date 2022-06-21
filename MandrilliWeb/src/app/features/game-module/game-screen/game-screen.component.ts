@@ -1,7 +1,6 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { ChatMessageListener } from '../../../core/events/listeners/chat-message';
 import { HtmlErrorMessage } from '../../../core/model/utils/htmlErrorMessage';
 import { GridCoordinates } from '../../../../../../src/model/database/match/state/grid-coordinates';
 import { BattleshipGrid } from '../../../core/model/match/battleship-grid';
@@ -12,7 +11,6 @@ import { Match } from 'src/app/core/model/match/match';
 import { MatchApi } from 'src/app/core/api/handlers/match-api';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { ShotData } from 'src/app/core/model/events/shot-data';
-import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 import { MatchLeftData } from '../../../core/model/events/match-left-data';
 @Component({
     selector: 'app-game-screen',
@@ -33,8 +31,6 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
-        private chatMessageListener: ChatMessageListener,
-        private chatMessageEmitter: ChatJoinedEmitter,
         private leaveMatchEmitter: MatchLeftEmitter,
         private playerWonEmitter: PlayerWonEmitter,
         private userIdProvider: UserIdProvider,
@@ -62,7 +58,6 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                         this.opponentsId = data.player1.playerId;
                     }
                     this.chatId = data.playersChat;
-                    this.chatMessageEmitter.emit({ chatId: this.match.playersChat });
 
                     let rnd: number = this.match.matchId.charCodeAt(0);
 
@@ -96,12 +91,6 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                     pollingOpponentHits.bind(this);
                     this.shotListener.listen(pollingOpponentHits);
                 });
-
-                const refreshChat = () => {
-                    this.trigger++;
-                };
-                refreshChat.bind(this);
-                this.chatMessageListener.listen(refreshChat);
             });
         } catch (err) {
             console.log('An error occurred while initializing the game screen: ' + err);
@@ -110,7 +99,6 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.shotListener.unListen();
-        this.chatMessageListener.unListen();
     }
 
     private isValidCoords(row: number, col: number): boolean {
@@ -148,7 +136,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                 return 9;
             default: {
                 this.userMessage.error = true;
-                this.userMessage.errorMessage = "Position is invalid";
+                this.userMessage.errorMessage = 'Position is invalid';
                 return -1;
             }
         }
@@ -156,11 +144,10 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 
     private parseCol(coord: string): number {
         let val = Number(coord) - 1;
-        if (!isNaN(val) && val >= 0 && val <=9)
-            return val;
-        else{
+        if (!isNaN(val) && val >= 0 && val <= 9) return val;
+        else {
             this.userMessage.error = true;
-            this.userMessage.errorMessage = "Position is invalid";
+            this.userMessage.errorMessage = 'Position is invalid';
             return -1;
         }
     }
@@ -183,8 +170,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
                             '(' + row.toUpperCase() + ', ' + col + ') has already been shot';
                     },
                 });
-        }
-        else{
+        } else {
             this.userMessage.error = true;
             this.userMessage.errorMessage = 'Invalid Coordinates';
         }

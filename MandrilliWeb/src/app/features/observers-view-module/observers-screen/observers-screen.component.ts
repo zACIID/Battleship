@@ -1,17 +1,14 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { ChatMessageListener } from '../../../core/events/listeners/chat-message';
 import { MatchApi } from '../../../core/api/handlers/match-api';
 import { Match } from '../../../core/model/match/match';
-import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
 import { ShotFiredListener } from 'src/app/core/events/listeners/shot-fired';
 import { Shot } from 'src/app/core/model/api/match/shot';
 import { MatchTerminatedListener } from 'src/app/core/events/listeners/match-terminated';
 import { MatchTerminatedData } from 'src/app/core/model/events/match-terminated-data';
 import { MatchJoinedEmitter } from 'src/app/core/events/emitters/match-joined';
 import { MatchLeftEmitter } from 'src/app/core/events/emitters/match-left';
-import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
 import { JoinReason } from '../../../core/model/events/match-joined-data';
 import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
 
@@ -32,11 +29,8 @@ export class ObserversScreenComponent implements OnInit, OnDestroy {
         private router: Router,
         private userIdProvider: UserIdProvider,
         private matchClient: MatchApi,
-        private chatJoinedEmitter: ChatJoinedEmitter,
-        private chatLeftEmitter: ChatLeftEmitter,
         private matchJoinedEmitter: MatchJoinedEmitter,
         private matchLeftEmitter: MatchLeftEmitter,
-        private chatMessageListener: ChatMessageListener,
         private playersShotListener: ShotFiredListener,
         private matchTerminatedListener: MatchTerminatedListener
     ) {}
@@ -56,7 +50,6 @@ export class ObserversScreenComponent implements OnInit, OnDestroy {
                         userId: this.userIdProvider.getUserId(),
                         joinReason: JoinReason.Spectator,
                     });
-                    this.chatJoinedEmitter.emit({ chatId: this.chatId });
 
                     const pollingPlayerHits = (data: Shot): void => {
                         if (data.playerId !== this.match?.player1.playerId)
@@ -78,10 +71,6 @@ export class ObserversScreenComponent implements OnInit, OnDestroy {
                     };
                     pollingMatchResult.bind(this);
                     this.matchTerminatedListener.listen(pollingMatchResult);
-
-                    this.chatMessageListener.listen(() => {
-                        this.trigger++;
-                    });
                 });
             });
         } catch (err) {
@@ -96,11 +85,7 @@ export class ObserversScreenComponent implements OnInit, OnDestroy {
                 userId: this.userIdProvider.getUserId(),
             });
         }
-        if (this.chatId) {
-            this.chatLeftEmitter.emit({ chatId: this.chatId });
-        }
 
-        this.chatMessageListener.unListen();
         this.matchTerminatedListener.unListen();
         this.playersShotListener.unListen();
     }

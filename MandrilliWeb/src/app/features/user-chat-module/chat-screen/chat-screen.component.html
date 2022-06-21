@@ -5,8 +5,8 @@
     <div class = "column">
 
         <div class="box has-background-primary height mt-2 is-vcentered mr-2">
-                
-                
+
+
             <div class="columns">
                 <div *ngIf="friend" class="column">
                     <player-info [userId]="friend"></player-info>
@@ -19,12 +19,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <hr class="mb-3">
 
-            <chat-body [chatId]="chatId" [triggerUpdate]="trigger"></chat-body>
+            <chat-body [chatId]="chatId"></chat-body>
 
-            
+
         </div>
 
     </div>

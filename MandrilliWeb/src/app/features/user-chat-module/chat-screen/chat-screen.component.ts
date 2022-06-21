@@ -1,11 +1,8 @@
 import { Chat } from '../../../core/model/chat/chat';
-import { ChatMessageListener } from '../../../core/events/listeners/chat-message';
 import { ChatApi } from '../../../core/api/handlers/chat-api';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserIdProvider } from '../../../core/api/userId-auth/userId-provider';
-import { ChatJoinedEmitter } from 'src/app/core/events/emitters/chat-joined';
-import { ChatLeftEmitter } from 'src/app/core/events/emitters/chat-left';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,17 +13,12 @@ import { Router } from '@angular/router';
 export class ChatScreenComponent implements OnInit, OnDestroy {
     public chatId: string = '';
     public friend?: string = undefined;
-    public trigger: number = 0;
 
     constructor(
         private route: ActivatedRoute,
         private chatClient: ChatApi,
-        private chatMessageListener: ChatMessageListener,
-        private joinEmitter: ChatJoinedEmitter,
-        private fleeEmitter: ChatLeftEmitter,
         private userIdProvider: UserIdProvider,
-        private router: Router,
-        
+        private router: Router
     ) {}
 
     ngOnInit(): void {
@@ -41,27 +33,16 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
                             this.friend = user;
                         }
                     }
-                    this.joinEmitter.emit({ chatId: data.chatId });
                 });
             });
         } catch (err) {
             console.log('An error occurred while retrieving the chat: ' + err);
         }
-
-        const refreshChat = () => {
-            this.trigger++;
-        };
-        refreshChat.bind(this);
-        this.chatMessageListener.listen(refreshChat);
     }
 
-    ngOnDestroy(): void {
-        this.chatMessageListener.unListen();
-    }
+    ngOnDestroy(): void {}
 
     public async leaveChat() {
-        this.fleeEmitter.emit({ chatId: this.chatId });
-        
         await this.router.navigate(['/relationships']);
     }
 }

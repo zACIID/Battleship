@@ -1,7 +1,7 @@
 <div class="columns mt-3">
 
     <div class="column height box has-background-light mr-2 ml-4">
-    
+
         <div class="columns mt-5">
 
             <div *ngIf="match" class="column is-half">
@@ -22,22 +22,22 @@
 
         </div>
     </div>
-    
-    
+
+
     <div class="column height is-one-quarter mr-5">
-    
+
         <div class="box has-background-primary pointer width-80 margin-auto">
             <div class="has-text-centered">
                 <strong class="is-size-5 has-weight-semibold has-text-danger" (click)="quitView()">Quit Game</strong>
             </div>
         </div>
-            
-    
+
+
         <div *ngIf="chatId" class="chat-height p-4">
-            <chat-body [chatId]="chatId" [triggerUpdate]="trigger"></chat-body>
+            <chat-body [chatId]="chatId"></chat-body>
         </div>
-    
+
     </div>
-    
+
 </div>
-    
+

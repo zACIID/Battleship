@@ -1,7 +1,7 @@
 <div *ngIf = "chatId" class="columns mt-3">
 
     <div class="column height box has-background-light mr-2 ml-4">
-    
+
         <div class="columns">
 
             <div class="column is-half">
@@ -26,7 +26,7 @@
                             </figure>
                             <p class="has-weight-semibold mb-1">Cruiser - 3 x 1</p>
                         </div>
-    
+
                     </div>
 
                     <div clas="column is-half">
@@ -44,7 +44,7 @@
                             </figure>
                             <p class="has-weight-semibold mb-1">Carrier - 5 x 1</p>
                         </div>
-    
+
                     </div>
 
 
@@ -52,9 +52,9 @@
                 <div class="width-80 margin-auto">
                     <opponent-board [state]="opponentGrid" [triggerUpdate]="trigger"></opponent-board>
                 </div>
-                
-                
-                
+
+
+
             </div>
             <div class="column is-half">
 
@@ -70,34 +70,34 @@
                     <div class="column is-one-third ">
                         <input type="text" class="input is-small" #rowShot> Insert row
                     </div>
-                    
-                    <div class="column is-one-third"> 
+
+                    <div class="column is-one-third">
                         <input type="text" class="input is-small" #colShot> Insert column
                     </div>
 
-                    <div class="column"> 
+                    <div class="column">
                         <button class="button is-medium is-danger" (click)="shot(rowShot.value, colShot.value)" [disabled]="!playerTurn">Fire!</button>
                     </div>
-                    
+
                 </div>
 
                 <div  class="width-80 margin-auto has-text-centered ">
                     <p  *ngIf="userMessage.error" class="has-text-danger is-size-5">{{userMessage.errorMessage}}</p>
                 </div>
 
-                
+
 
             </div>
 
         </div>
-    
-    
+
+
     </div>
-    
-    
+
+
     <div class="column height is-one-quarter mr-5">
-    
-            
+
+
         <div class="columns">
 
             <div class="column mr-3">
@@ -113,13 +113,13 @@
             </div>
 
         </div>
-        
+
         <div *ngIf="chatId" class="chat-height p-4">
-            <chat-body [chatId]="chatId" [triggerUpdate]="trigger"></chat-body>
+            <chat-body [chatId]="chatId"></chat-body>
         </div>
 
     </div>
-    
+
 </div>
-    
+
 
