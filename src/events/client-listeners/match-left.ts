@@ -7,6 +7,7 @@ import { ioServer } from '../../index';
 import { Types } from 'mongoose';
 import { MatchTerminatedEmitter } from '../emitters/match-terminated';
 import { ClientListenerNotifier } from './base/client-listener-notifier';
+import { isUserSpectator } from '../../model/database/match/match';
 
 /**
  * Class that wraps socket.io functionality to listen
@@ -23,6 +24,9 @@ export class MatchLeftListener extends ClientListenerNotifier<MatchLeftData> {
         super.listen(async (leaveData: MatchLeftData): Promise<void> => {
             try {
                 const { matchId, userId } = leaveData;
+                const objUserId: Types.ObjectId = Types.ObjectId(userId);
+                const objMatchId: Types.ObjectId = Types.ObjectId(matchId);
+
                 this.client.leave(matchId);
 
                 console.log(
@@ -31,14 +35,17 @@ export class MatchLeftListener extends ClientListenerNotifier<MatchLeftData> {
 
                 // The user left the match, so its status is now Online
                 // and not match-related anymore
-                await setUserStatus(ioServer, Types.ObjectId(userId), UserStatus.Online);
+                await setUserStatus(ioServer, objUserId, UserStatus.Online);
 
-                // Leave the match for the user
-                const matchTerminated: MatchTerminatedEmitter = new MatchTerminatedEmitter(
-                    this.ioServer,
-                    Types.ObjectId(matchId)
-                );
-                await matchTerminated.terminateOnPlayerLeft(Types.ObjectId(userId));
+                const isUserPlayer: boolean = !(await isUserSpectator(objMatchId, objUserId));
+                if (isUserPlayer) {
+                    // Only if the user is a player, terminate the match
+                    const matchTerminated: MatchTerminatedEmitter = new MatchTerminatedEmitter(
+                        this.ioServer,
+                        objMatchId
+                    );
+                    await matchTerminated.terminateOnPlayerLeft(Types.ObjectId(userId));
+                }
             } catch (err) {
                 if (err instanceof Error) {
                     console.log(

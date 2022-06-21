@@ -215,5 +215,22 @@ export const getUserMostRecentMatches = async (
         : Promise.resolve(mostRecentMatches);
 };
 
+/**
+ * Returns true if the provided user is a spectator of the provided match, false otherwise
+ * @param matchId
+ * @param userId
+ */
+export const isUserSpectator = async (
+    matchId: Types.ObjectId,
+    userId: Types.ObjectId
+): Promise<boolean> => {
+    const match: MatchDocument = await MatchModel.findOne({ _id: matchId });
+    const { player1, player2 } = match;
+    const p1Id: Types.ObjectId = player1.playerId;
+    const p2Id: Types.ObjectId = player2.playerId;
+
+    return !(userId.equals(p1Id) || userId.equals(p2Id));
+};
+
 // Create "Matches" collection
 export const MatchModel: Model<MatchDocument> = mongoose.model('Match', MatchSchema, 'Matches');
