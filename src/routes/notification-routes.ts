@@ -98,7 +98,7 @@ router.post(
 
             return res.status(201).json(notificationData);
         } catch (err) {
-            let status: number = errorMessages.find((e) => e === err.message) ? 404 : 500;
+            let status: number = errorMessages.find((e) => e === err.message) ? 404 : 400;
 
             return res.status(status).json({
                 timestamp: toUnixSeconds(new Date()),

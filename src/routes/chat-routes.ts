@@ -216,9 +216,9 @@ router.get(
                 const timeB = new Date(b.timestamp);
 
                 if (timeA < timeB) {
-                    return -1;
-                } else if (timeA > timeB) {
                     return 1;
+                } else if (timeA > timeB) {
+                    return -1;
                 } else {
                     return 0;
                 }
