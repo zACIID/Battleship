@@ -20,7 +20,7 @@ export const getUserData = (): User => {
         pwd_hash: knownBcryptDigest.pwdHash,
         salt: knownBcryptDigest.pwdSalt,
         roles: [UserRoles.Base],
-        status: UserStatus.Online,
+        status: UserStatus.Offline,
         stats: {
             elo: 0,
             topElo: 0,
